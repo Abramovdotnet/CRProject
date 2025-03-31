@@ -7,13 +7,16 @@
 
 import Foundation
 
-protocol Character : ObservableObject, Codable {
+protocol Character: ObservableObject, Codable {
     var id: UUID { get }
-    var name: String { get set }
-    var sex: Sex { get set }
-    var age: Int { get set }
-    var profession: String { get set }
-    var bloodMeter: BloodMeter { get }
+    var name: String { get }
+    var sex: Sex { get }
+    var age: Int { get }
+    var profession: String { get }
     var isVampire: Bool { get }
     var isAlive: Bool { get }
+    var bloodMeter: BloodMeter { get }
+    var isUnknown: Bool { get set }
+    
+    func shareBlood(amount: Float, from donor: any Character)
 }

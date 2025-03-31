@@ -3,11 +3,18 @@ import SwiftUI
 @main
 struct CRProjectApp: App {
     init() {
-        // Register services
-        DependencyManager.shared.register(GameTime())
-        DependencyManager.shared.register(VampireNatureRevealService())
-        DependencyManager.shared.register(BloodManagementService())
-        DependencyManager.shared.register(FeedingService())
+        // Register services in the correct order
+        let dependencyManager = DependencyManager.shared
+        
+        // Register StatisticsService first
+        dependencyManager.register(StatisticsService())
+        
+        // Then register other services
+        dependencyManager.register(VampireNatureRevealService())
+        dependencyManager.register(GameTimeService())
+        dependencyManager.register(BloodManagementService())
+        dependencyManager.register(FeedingService())
+        dependencyManager.register(InvestigationService())
     }
     
     var body: some SwiftUI.Scene {

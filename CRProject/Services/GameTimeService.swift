@@ -1,42 +1,31 @@
 import Foundation
+import Combine
 
-class GameTime: GameService {
-    private(set) var currentHour: Int = 18 // Start at 6 PM
-    private(set) var currentDay: Int = 1
-    var isNightTime: Bool { currentHour >= 20 || currentHour < 6 }
+class GameTimeService: GameService {
+    @Published private(set) var currentDay: Int = 0
+    @Published private(set) var currentHour: Int = 0
     
-    // Events
-    var onNewDay: (() -> Void)?
-    var onSunrise: (() -> Void)?
-    var onSunset: (() -> Void)?
+    private let statisticsService: StatisticsService
     
-    func advanceTime(hours: Int) {
-        currentHour += hours
-        
-        // Handle day progression
-        if currentHour >= 24 {
-            currentHour %= 24
-            currentDay += 1
-            onNewDay?()
-        }
-        
-        // Check for time-based events
-        checkTimeEvents()
+    init(statisticsService: StatisticsService = DependencyManager.shared.resolve()) {
+        self.statisticsService = statisticsService
     }
     
-    private func checkTimeEvents() {
-        if currentHour == 6 {
-            onSunrise?()
-        }
-        if currentHour == 20 {
-            onSunset?()
-        }
+    var isNightTime: Bool {
+        return currentHour >= 20 || currentHour < 6
     }
     
     var description: String {
-        return String(format: "%02d:00 (Day %d) - %@",
-                     currentHour,
-                     currentDay,
-                     isNightTime ? "Night" : "Day")
+        return "Day \(currentDay), \(currentHour):00"
+    }
+    
+    func advanceTime(hours: Int) {
+        let oldDay = currentDay
+        currentHour = (currentHour + hours) % 24
+        currentDay += (currentHour < hours ? 1 : 0)
+        
+        if currentDay > oldDay {
+            statisticsService.incrementDaysSurvived()
+        }
     }
 }

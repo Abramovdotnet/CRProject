@@ -16,6 +16,7 @@ class NPC: Character {
     let bloodMeter: BloodMeter = BloodMeter(initialBlood: 100.0)
     var isVampire: Bool { false }
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
+    var isUnknown: Bool = true
     
     init() {}
     
@@ -24,5 +25,15 @@ class NPC: Character {
         self.sex = sex
         self.age = age
         self.profession = profession
+    }
+    
+    func shareBlood(amount: Float, from donor: any Character) {
+        if donor.isVampire {
+            donor.bloodMeter.useBlood(amount)
+        } else {
+            let availableBlood = min(amount, donor.bloodMeter.bloodPercentage)
+            donor.bloodMeter.useBlood(availableBlood)
+            self.bloodMeter.addBlood(availableBlood)
+        }
     }
 }

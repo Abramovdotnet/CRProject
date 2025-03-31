@@ -1,39 +1,35 @@
 import Foundation
+import Combine
 
 class VampireNatureRevealService: GameService {
-    private let gameTime: GameTime
-    private var sceneAwareness: [UUID: Float] = [:]
-    private var lastVisitDays: [UUID: Int] = [:]
+    private var awarenessLevels: [UUID: Float] = [:]
+    private let awarenessPublisher = PassthroughSubject<UUID, Never>()
     
-    init(gameTime: GameTime = DependencyManager.shared.resolve()) {
-        self.gameTime = gameTime
+    var exposedPublisher: AnyPublisher<UUID, Never> {
+        awarenessPublisher
+            .filter { [weak self] sceneId in
+                self?.getAwareness(for: sceneId) ?? 0 >= 100
+            }
+            .eraseToAnyPublisher()
     }
     
     func getAwareness(for sceneId: UUID) -> Float {
-        return sceneAwareness[sceneId] ?? 0
+        return awarenessLevels[sceneId] ?? 0.0 // Default minimum awareness
     }
     
-    func increaseAwareness(for sceneId: UUID, amount: Float = 20.0) {
-        let currentAwareness = sceneAwareness[sceneId] ?? 0
-        sceneAwareness[sceneId] = min(currentAwareness + amount, 100.0)
-        lastVisitDays[sceneId] = gameTime.currentDay
-    }
-    
-    func decreaseAwareness(for sceneId: UUID) {
-        guard let lastVisit = lastVisitDays[sceneId] else { return }
-        let daysSinceLastVisit = gameTime.currentDay - lastVisit
+    func increaseAwareness(for sceneId: UUID, amount: Float) {
+        let currentAwareness = getAwareness(for: sceneId)
+        let newAwareness = min(currentAwareness + amount, 100.0)
+        awarenessLevels[sceneId] = newAwareness
         
-        if daysSinceLastVisit > 0 {
-            let decreaseAmount = Float(daysSinceLastVisit) * 10.0
-            let currentAwareness = sceneAwareness[sceneId] ?? 0
-            sceneAwareness[sceneId] = max(currentAwareness - decreaseAmount, 10.0)
-            lastVisitDays[sceneId] = gameTime.currentDay
+        if newAwareness >= 100 {
+            awarenessPublisher.send(sceneId)
         }
     }
     
-    func updateAllScenes() {
-        for sceneId in sceneAwareness.keys {
-            decreaseAwareness(for: sceneId)
-        }
+    func decreaseAwareness(for sceneId: UUID, amount: Float) {
+        let currentAwareness = getAwareness(for: sceneId)
+        let newAwareness = max(currentAwareness - amount, 10.0)
+        awarenessLevels[sceneId] = newAwareness
     }
 } 

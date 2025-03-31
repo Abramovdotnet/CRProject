@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DebugView: View {
     @StateObject private var viewModel = DebugViewViewModel()
+    @State private var showEndGame = false
     
     var body: some View {
         ScrollView {
@@ -27,16 +28,28 @@ struct DebugView: View {
                     VStack(alignment: .leading) {
                         Text("Game Time: \(viewModel.gameTime.description)")
                             .font(.headline)
-                        Text("Is Night: \(viewModel.gameTime.isNightTime ? "Yes" : "No")")
-                            .font(.subheadline)
+                        HStack {
+                            Text("Is Night: \(viewModel.gameTime.isNightTime ? "Yes" : "No")")
+                                .font(.subheadline)
+                            Text(viewModel.gameTime.isNightTime ? "🌙" : "☀️")
+                                .font(.title2)
+                        }
                     }
                     
                     Spacer()
                     
-                    Button("Respawn NPCs") {
-                        viewModel.respawnNPCs()
+                    HStack {
+                        Button("Respawn NPCs") {
+                            viewModel.respawnNPCs()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        
+                        Button("Reset Awareness") {
+                            viewModel.resetAwareness()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(.purple)
                     }
-                    .buttonStyle(.borderedProminent)
                 }
                 .padding()
                 .background(Color.gray.opacity(0.2))
@@ -100,29 +113,51 @@ struct DebugView: View {
                                     .foregroundColor(npc.isAlive ? .green : .red)
                             }
                             
-                            Text("Age: \(npc.age)")
-                            Text("Profession: \(npc.profession)")
-                            Text("Sex: \(npc.sex == .male ? "Male" : "Female")")
-                            Text("Is Vampire: \(npc.isVampire ? "Yes" : "No")")
-                            
-                            VStack(alignment: .leading) {
-                                Text("Blood Level: \(Int(viewModel.npcBloodPercentages[npc.id] ?? 0))%")
-                                ProgressView(value: viewModel.npcBloodPercentages[npc.id] ?? 0, total: 100)
-                                    .tint(.red)
+                            if npc.isUnknown {
+                                HStack {
+                                    Text("Info")
+                                        .font(.headline)
+                                        .foregroundColor(.gray)
+                                    Text("Hidden")
+                                        .font(.headline)
+                                        .foregroundColor(.gray)
+                                }
+                            } else {
+                                Text("Age: \(npc.age)")
+                                Text("Profession: \(npc.profession)")
+                                Text("Sex: \(npc.sex == .male ? "Male" : "Female")")
+                                Text("Is Vampire: \(npc.isVampire ? "Yes" : "No")")
+                                
+                                VStack(alignment: .leading) {
+                                    Text("Blood Level: \(Int(viewModel.npcBloodPercentages[npc.id] ?? 0))%")
+                                    ProgressView(value: viewModel.npcBloodPercentages[npc.id] ?? 0, total: 100)
+                                        .tint(.red)
+                                }
                             }
                             
                             HStack {
-                                Button("Feed on \(npc.name)") {
-                                    viewModel.feedOnNPC(npc)
+                                if !npc.isUnknown {
+                                    Button("Feed on \(npc.name)") {
+                                        viewModel.feedOnNPC(npc)
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .disabled(!npc.isAlive)
                                 }
-                                .buttonStyle(.borderedProminent)
-                                .disabled(!npc.isAlive)
                                 
                                 Button("Empty Blood") {
                                     viewModel.emptyNPCBlood(npc)
                                 }
                                 .buttonStyle(.borderedProminent)
                                 .disabled(!npc.isAlive)
+                                
+                                if npc.isUnknown {
+                                    Button("Investigate") {
+                                        viewModel.investigateNPC(npc)
+                                    }
+                                    .buttonStyle(.borderedProminent)
+                                    .tint(.blue)
+                                    .disabled(!viewModel.canInvestigateNPC(npc) || !npc.isAlive)
+                                }
                             }
                         }
                         .padding()
@@ -132,6 +167,12 @@ struct DebugView: View {
                 }
             }
             .padding()
+        }
+        .sheet(isPresented: $showEndGame) {
+            EndGameView(statistics: viewModel.statisticsService)
+        }
+        .onReceive(viewModel.vampireNatureRevealService.exposedPublisher) { _ in
+            showEndGame = true
         }
     }
 }
