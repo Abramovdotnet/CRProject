@@ -29,7 +29,7 @@ class DebugViewViewModel: ObservableObject {
         self.investigationService = DependencyManager.shared.resolve()
         
         // Create player
-        let createdPlayer = Player(name: "Vampire Lord", sex: .male, age: 300, profession: "Vampire")
+        let createdPlayer = Player(name: "Vampire Lord", sex: .male, age: 300, profession: .adventurer)
         self.player = createdPlayer
         self.playerBloodPercentage = createdPlayer.bloodMeter.bloodPercentage
         
@@ -60,8 +60,8 @@ class DebugViewViewModel: ObservableObject {
     }
     
     private static func createNPCs() -> [NPC] {
-        let professions = ["Farmer", "Merchant", "Guard", "Blacksmith", "Innkeeper", "Priest", "Scholar", "Hunter"]
-        return (0..<8).map { index in
+        let professions: [Profession] = [.adventurer, .merchant, .guardman, .blacksmith, .innkeeper, .priest, .hunter]
+        return (0..<7).map { index in
             NPCBuilder()
                 .name("NPC \(Int.random(in: 1...1000))")
                 .sex(Bool.random() ? .male : .female)
@@ -82,12 +82,13 @@ class DebugViewViewModel: ObservableObject {
         
         // Create new NPCs with random properties
         let npcCount = 8 // Increased from 5 to 8
+        let professions: [Profession] = [.adventurer, .merchant, .guardman, .blacksmith, .innkeeper, .priest, .hunter]
         for _ in 0..<npcCount {
             let npc = NPC(
                 name: "NPC \(Int.random(in: 1...1000))",
                 sex: Bool.random() ? .male : .female,
                 age: Int.random(in: 18...80),
-                profession: ["Farmer", "Merchant", "Guard", "Blacksmith", "Innkeeper", "Priest", "Scholar", "Hunter"].randomElement() ?? "Citizen"
+                profession: professions.randomElement() ?? .adventurer
             )
             npcs.append(npc)
             npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage

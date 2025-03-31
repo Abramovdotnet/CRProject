@@ -11,15 +11,13 @@ class Player: Character {
     var name: String = ""
     var sex: Sex = .male
     var age: Int = 0
-    var profession: String = ""
+    var profession: Profession = .adventurer
     let bloodMeter: BloodMeter = BloodMeter(initialBlood: 30.0)
     var isVampire: Bool { true }
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isUnknown: Bool = false
     
-    init() {}
-    
-    init(name: String, sex: Sex, age: Int, profession: String) {
+    init(name: String, sex: Sex, age: Int, profession: Profession) {
         self.name = name
         self.sex = sex
         self.age = age

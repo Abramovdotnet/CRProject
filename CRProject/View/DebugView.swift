@@ -106,32 +106,36 @@ struct DebugView: View {
                     ForEach(viewModel.npcs, id: \.id) { npc in
                         VStack(alignment: .leading, spacing: 5) {
                             HStack {
-                                Text("Name: \(npc.name)")
-                                    .font(.headline)
+                                if npc.isUnknown {
+                                    HStack {
+                                        Text("Info:")
+                                            .font(.headline)
+                                            .foregroundColor(.gray)
+                                        Text("Hidden")
+                                            .font(.headline)
+                                            .foregroundColor(.gray)
+                                    }
+                                } else {
+                                    Text("\(npc.name)")
+                                        .font(.headline)
+                                }
                                 Spacer()
                                 Text(npc.isAlive ? "Alive" : "Dead")
                                     .foregroundColor(npc.isAlive ? .green : .red)
                             }
                             
                             if npc.isUnknown {
-                                HStack {
-                                    Text("Info")
-                                        .font(.headline)
-                                        .foregroundColor(.gray)
-                                    Text("Hidden")
-                                        .font(.headline)
-                                        .foregroundColor(.gray)
+                                    Text("Sex: \(npc.sex == .male ? "Male" : "Female")")
                                 }
-                            } else {
-                                Text("Age: \(npc.age)")
-                                Text("Profession: \(npc.profession)")
-                                Text("Sex: \(npc.sex == .male ? "Male" : "Female")")
-                                Text("Is Vampire: \(npc.isVampire ? "Yes" : "No")")
-                                
-                                VStack(alignment: .leading) {
-                                    Text("Blood Level: \(Int(viewModel.npcBloodPercentages[npc.id] ?? 0))%")
-                                    ProgressView(value: viewModel.npcBloodPercentages[npc.id] ?? 0, total: 100)
-                                        .tint(.red)
+                                else {
+                                    Text("Age: \(npc.age)")
+                                    Text("Profession: \(npc.profession)")
+                                    Text("Is Vampire: \(npc.isVampire ? "Yes" : "No")")
+                                    
+                                    VStack(alignment: .leading) {
+                                        Text("Blood Level: \(Int(viewModel.npcBloodPercentages[npc.id] ?? 0))%")
+                                        ProgressView(value: viewModel.npcBloodPercentages[npc.id] ?? 0, total: 100)
+                                            .tint(.red)
                                 }
                             }
                             

@@ -12,7 +12,7 @@ protocol Character: ObservableObject, Codable {
     var name: String { get }
     var sex: Sex { get }
     var age: Int { get }
-    var profession: String { get }
+    var profession: Profession { get }
     var isVampire: Bool { get }
     var isAlive: Bool { get }
     var bloodMeter: BloodMeter { get }
