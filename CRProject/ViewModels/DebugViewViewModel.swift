@@ -11,15 +11,18 @@ class DebugViewViewModel: ObservableObject {
     // Add observable blood meter values
     @Published var playerBloodPercentage: Float = 0
     @Published var npcBloodPercentages: [UUID: Float] = [:]
+    @Published var sceneAwareness: Float = 0
     
     private let feedingService: FeedingService
     private let bloodService: BloodManagementService
+    private let vampireNatureRevealService: VampireNatureRevealService
     
     init() {
         // Initialize services first
-        self.feedingService = DependencyManager.shared.resolve()
-        self.bloodService = DependencyManager.shared.resolve()
         self.gameTime = DependencyManager.shared.resolve()
+        self.vampireNatureRevealService = DependencyManager.shared.resolve()
+        self.bloodService = DependencyManager.shared.resolve()
+        self.feedingService = DependencyManager.shared.resolve()
         
         // Create player
         let createdPlayer = Player(name: "Vampire Lord", sex: .male, age: 300, profession: "Vampire")
@@ -43,6 +46,8 @@ class DebugViewViewModel: ObservableObject {
             self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
         }
         
+        // Initialize scene awareness
+        self.sceneAwareness = vampireNatureRevealService.getAwareness(for: scene.id)
         
         // Add debug prompt after all properties are initialized
         DispatchQueue.main.async {
@@ -91,14 +96,29 @@ class DebugViewViewModel: ObservableObject {
     
     func feedOnNPC(_ npc: NPC) {
         do {
-            try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 20.0)
+            try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30.0, in: currentScene.id)
             
             self.playerBloodPercentage = player.bloodMeter.bloodPercentage
             self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
+            self.sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene.id)
             
             addDebugPrompt("Player fed on \(npc.name)")
         } catch {
             addDebugPrompt("Failed to feed: \(error.localizedDescription)")
+        }
+    }
+    
+    func emptyNPCBlood(_ npc: NPC) {
+        do {
+            try feedingService.emptyBlood(vampire: player, prey: npc, in: currentScene.id)
+            
+            self.playerBloodPercentage = player.bloodMeter.bloodPercentage
+            self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
+            self.sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene.id)
+            
+            addDebugPrompt("Player emptied blood of \(npc.name)")
+        } catch {
+            addDebugPrompt("Failed to empty blood: \(error.localizedDescription)")
         }
     }
     

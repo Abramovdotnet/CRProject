@@ -57,7 +57,7 @@ struct DebugView: View {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Text("Player")
-                            .font(.title2)
+                            .font(.headline)
                         Spacer()
                         Text(viewModel.player.isAlive ? "Alive" : "Dead")
                             .foregroundColor(viewModel.player.isAlive ? .green : .red)
@@ -74,6 +74,12 @@ struct DebugView: View {
                         ProgressView(value: viewModel.playerBloodPercentage, total: 100)
                             .tint(.red)
                     }
+                    
+                    VStack(alignment: .leading) {
+                        Text("Vampire Nature Awareness: \(Int(viewModel.sceneAwareness))%")
+                        ProgressView(value: viewModel.sceneAwareness, total: 100)
+                            .tint(.purple)
+                    }
                 }
                 .padding()
                 .background(Color.blue.opacity(0.1))
@@ -82,7 +88,7 @@ struct DebugView: View {
                 // NPCs
                 VStack(alignment: .leading, spacing: 15) {
                     Text("NPCs")
-                        .font(.title2)
+                        .font(.headline)
                     
                     ForEach(viewModel.npcs, id: \.id) { npc in
                         VStack(alignment: .leading, spacing: 5) {
@@ -105,11 +111,19 @@ struct DebugView: View {
                                     .tint(.red)
                             }
                             
-                            Button("Feed on \(npc.name)") {
-                                viewModel.feedOnNPC(npc)
+                            HStack {
+                                Button("Feed on \(npc.name)") {
+                                    viewModel.feedOnNPC(npc)
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .disabled(!npc.isAlive)
+                                
+                                Button("Empty Blood") {
+                                    viewModel.emptyNPCBlood(npc)
+                                }
+                                .buttonStyle(.borderedProminent)
+                                .disabled(!npc.isAlive)
                             }
-                            .buttonStyle(.borderedProminent)
-                            .disabled(!npc.isAlive)
                         }
                         .padding()
                         .background(Color.green.opacity(0.1))

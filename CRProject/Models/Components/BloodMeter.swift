@@ -17,7 +17,7 @@ class BloodMeter : ObservableObject, Codable {
     
     init(initialBlood: Float = 100.0) {
         self._currentBlood = min(max(initialBlood, 0), MAX_BLOOD)
-      }
+    }
     
     func addBlood(_ amount: Float) {
         guard amount > 0 else { return }
@@ -37,5 +37,11 @@ class BloodMeter : ObservableObject, Codable {
     
     func setBlood(_ amount: Float) {
         _currentBlood = min(max(amount, 0), MAX_BLOOD)
+    }
+    
+    func emptyBlood() -> Float {
+        let availableBlood = _currentBlood
+        _currentBlood = 0
+        return availableBlood
     }
 }

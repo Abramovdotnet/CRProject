@@ -18,13 +18,26 @@ class BloodManagementService: GameService {
             throw BloodError.insufficientBlood("Prey doesn't have enough blood")
         }
         
-        // Fixed method calls with proper parameter labels
         prey.bloodMeter.useBlood(amount)
         vampire.bloodMeter.addBlood(amount)
         
         // Notify observers of changes
         (vampire.objectWillChange as? ObservableObjectPublisher)?.send()
         (prey.objectWillChange as? ObservableObjectPublisher)?.send()
+    }
+    
+    func emptyBlood(vampire: any Character, prey: any Character) throws -> Float {
+        guard vampire.isVampire else {
+            throw BloodError.invalidRecipient("Blood recipient must be a vampire")
+        }
+        
+        guard !prey.isVampire else {
+            throw BloodError.invalidPrey("Cannot feed on another vampire")
+        }
+        
+        let availableBlood = prey.bloodMeter.emptyBlood()
+        vampire.bloodMeter.addBlood(availableBlood)
+        return availableBlood
     }
     
     func canFeed(vampire: any Character, prey: any Character, amount: Float) -> Bool {
