@@ -6,11 +6,47 @@ struct DebugView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
-                // Game Time Info
-                VStack(alignment: .leading) {
-                    Text("Game Time: \(viewModel.gameTime.description)")
+                // Debug Log (at the top)
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Debug Log")
                         .font(.headline)
-                    Text("Is Night: \(viewModel.gameTime.isNightTime ? "Yes" : "No")")
+                    
+                    ForEach(viewModel.debugPrompts, id: \.self) { prompt in
+                        Text(prompt)
+                            .font(.caption)
+                            .foregroundColor(.gray)
+                    }
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding()
+                .background(Color.gray.opacity(0.1))
+                .cornerRadius(10)
+                
+                // Game Time Info with Respawn Button
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Game Time: \(viewModel.gameTime.description)")
+                            .font(.headline)
+                        Text("Is Night: \(viewModel.gameTime.isNightTime ? "Yes" : "No")")
+                            .font(.subheadline)
+                    }
+                    
+                    Spacer()
+                    
+                    Button("Respawn NPCs") {
+                        viewModel.respawnNPCs()
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+                .padding()
+                .background(Color.gray.opacity(0.2))
+                .cornerRadius(10)
+                
+                // Scene Info
+                VStack(alignment: .leading) {
+                    Text("Scene: \(viewModel.currentScene.name)")
+                        .font(.headline)
+                    Text("Characters: \(viewModel.currentScene.getCharacters().count)")
                         .font(.subheadline)
                 }
                 .padding()
@@ -18,12 +54,20 @@ struct DebugView: View {
                 .cornerRadius(10)
                 
                 // Player Info
-                VStack(alignment: .leading, spacing: 10) {
-                    Text("Player")
-                        .font(.title)
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack {
+                        Text("Player")
+                            .font(.title2)
+                        Spacer()
+                        Text(viewModel.player.isAlive ? "Alive" : "Dead")
+                            .foregroundColor(viewModel.player.isAlive ? .green : .red)
+                    }
+                    
                     Text("Name: \(viewModel.player.name)")
                     Text("Age: \(viewModel.player.age)")
                     Text("Profession: \(viewModel.player.profession)")
+                    Text("Sex: \(viewModel.player.sex == .male ? "Male" : "Female")")
+                    Text("Is Vampire: \(viewModel.player.isVampire ? "Yes" : "No")")
                     
                     VStack(alignment: .leading) {
                         Text("Blood Level: \(Int(viewModel.playerBloodPercentage))%")
@@ -38,13 +82,22 @@ struct DebugView: View {
                 // NPCs
                 VStack(alignment: .leading, spacing: 15) {
                     Text("NPCs")
-                        .font(.title)
+                        .font(.title2)
                     
                     ForEach(viewModel.npcs, id: \.id) { npc in
                         VStack(alignment: .leading, spacing: 5) {
-                            Text("Name: \(npc.name)")
+                            HStack {
+                                Text("Name: \(npc.name)")
+                                    .font(.headline)
+                                Spacer()
+                                Text(npc.isAlive ? "Alive" : "Dead")
+                                    .foregroundColor(npc.isAlive ? .green : .red)
+                            }
+                            
                             Text("Age: \(npc.age)")
                             Text("Profession: \(npc.profession)")
+                            Text("Sex: \(npc.sex == .male ? "Male" : "Female")")
+                            Text("Is Vampire: \(npc.isVampire ? "Yes" : "No")")
                             
                             VStack(alignment: .leading) {
                                 Text("Blood Level: \(Int(viewModel.npcBloodPercentages[npc.id] ?? 0))%")
@@ -56,27 +109,13 @@ struct DebugView: View {
                                 viewModel.feedOnNPC(npc)
                             }
                             .buttonStyle(.borderedProminent)
+                            .disabled(!npc.isAlive)
                         }
                         .padding()
                         .background(Color.green.opacity(0.1))
                         .cornerRadius(10)
                     }
                 }
-                
-                // Debug Prompts
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Debug Log")
-                        .font(.title)
-                    
-                    ForEach(viewModel.debugPrompts, id: \.self) { prompt in
-                        Text(prompt)
-                            .font(.caption)
-                            .foregroundColor(.gray)
-                    }
-                }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
             }
             .padding()
         }

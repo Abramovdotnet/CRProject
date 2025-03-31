@@ -15,4 +15,5 @@ protocol Character : ObservableObject, Codable {
     var profession: String { get set }
     var bloodMeter: BloodMeter { get }
     var isVampire: Bool { get }
+    var isAlive: Bool { get }
 }

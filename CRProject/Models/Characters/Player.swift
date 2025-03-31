@@ -14,6 +14,7 @@ class Player: Character {
     var profession: String = ""
     let bloodMeter: BloodMeter = BloodMeter(initialBlood: 0.0)
     var isVampire: Bool { true }
+    var isAlive: Bool { bloodMeter.currentBlood > 0 }
     
     init() {}
     

@@ -15,6 +15,7 @@ class NPC: Character {
     var profession: String = ""
     let bloodMeter: BloodMeter = BloodMeter(initialBlood: 100.0)
     var isVampire: Bool { false }
+    var isAlive: Bool { bloodMeter.currentBlood > 0 }
     
     init() {}
     

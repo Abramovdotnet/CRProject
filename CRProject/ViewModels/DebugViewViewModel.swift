@@ -27,26 +27,7 @@ class DebugViewViewModel: ObservableObject {
         self.playerBloodPercentage = createdPlayer.bloodMeter.bloodPercentage
         
         // Create NPCs
-        let createdNPCs = [
-            NPCBuilder()
-                .name("John Smith")
-                .sex(.male)
-                .age(35)
-                .profession("Merchant")
-                .build(),
-            NPCBuilder()
-                .name("Sarah Johnson")
-                .sex(.female)
-                .age(28)
-                .profession("Nurse")
-                .build(),
-            NPCBuilder()
-                .name("Michael Brown")
-                .sex(.male)
-                .age(42)
-                .profession("Guard")
-                .build()
-        ]
+        let createdNPCs = DebugViewViewModel.createNPCs()
         self.npcs = createdNPCs
         
         // Create scene
@@ -69,17 +50,53 @@ class DebugViewViewModel: ObservableObject {
         }
     }
     
+    private static func createNPCs() -> [NPC] {
+        return [
+            NPCBuilder()
+                .name("John Smith")
+                .sex(.male)
+                .age(35)
+                .profession("Merchant")
+                .build(),
+            NPCBuilder()
+                .name("Sarah Johnson")
+                .sex(.female)
+                .age(28)
+                .profession("Nurse")
+                .build(),
+            NPCBuilder()
+                .name("Michael Brown")
+                .sex(.male)
+                .age(42)
+                .profession("Guard")
+                .build()
+        ]
+    }
+    
+    func respawnNPCs() {
+        let newNPCs = DebugViewViewModel.createNPCs()
+        self.npcs = newNPCs
+        
+        // Update scene with new NPCs
+        currentScene.setCharacters([player] + newNPCs)
+        
+        // Reset blood percentages
+        npcBloodPercentages.removeAll()
+        for npc in newNPCs {
+            self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
+        }
+        
+        addDebugPrompt("NPCs respawned")
+    }
+    
     func feedOnNPC(_ npc: NPC) {
         do {
             try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 20.0)
-            gameTime.advanceTime(hours: 1)
             
-            // Update blood percentages
             self.playerBloodPercentage = player.bloodMeter.bloodPercentage
             self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
             
             addDebugPrompt("Player fed on \(npc.name)")
-            addDebugPrompt("npc current blood level: \(npc.bloodMeter.currentBlood)")
         } catch {
             addDebugPrompt("Failed to feed: \(error.localizedDescription)")
         }

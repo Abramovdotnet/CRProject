@@ -4,9 +4,9 @@ import SwiftUI
 struct CRProjectApp: App {
     init() {
         // Register services
+        DependencyManager.shared.register(GameTime())
         DependencyManager.shared.register(BloodManagementService())
         DependencyManager.shared.register(FeedingService())
-        DependencyManager.shared.register(GameTime())
     }
     
     var body: some SwiftUI.Scene {
