@@ -15,6 +15,10 @@ struct CRProjectApp: App {
         dependencyManager.register(BloodManagementService())
         dependencyManager.register(FeedingService())
         dependencyManager.register(InvestigationService())
+        dependencyManager.register(GameStateService(
+            gameTime: dependencyManager.resolve(),
+            vampireNatureRevealService: dependencyManager.resolve()
+        ))
     }
     
     var body: some SwiftUI.Scene {

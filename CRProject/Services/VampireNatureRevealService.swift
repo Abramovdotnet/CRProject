@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class VampireNatureRevealService: GameService {
+class VampireNatureRevealService: ObservableObject, GameService {
     private var awarenessLevels: [UUID: Float] = [:]
     private let awarenessPublisher = PassthroughSubject<UUID, Never>()
     

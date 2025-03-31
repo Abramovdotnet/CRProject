@@ -4,8 +4,8 @@ import SwiftUI
 class DebugViewViewModel: ObservableObject {
     @Published var player: Player
     @Published var npcs: [NPC]
-    @Published var currentScene: Scene
     @Published var gameTime: GameTimeService
+    @Published var sceneReference: Scene
     @Published var debugPrompts: [String] = []
     
     // Add observable blood meter values
@@ -18,6 +18,7 @@ class DebugViewViewModel: ObservableObject {
     let bloodService: BloodManagementService
     let vampireNatureRevealService: VampireNatureRevealService
     let investigationService: InvestigationService
+    let gameStateService: GameStateService
     
     init() {
         // Initialize services first
@@ -27,6 +28,7 @@ class DebugViewViewModel: ObservableObject {
         self.bloodService = DependencyManager.shared.resolve()
         self.feedingService = DependencyManager.shared.resolve()
         self.investigationService = DependencyManager.shared.resolve()
+        self.gameStateService = DependencyManager.shared.resolve()
         
         // Create player
         let createdPlayer = Player(name: "Vampire Lord", sex: .male, age: 300, profession: .adventurer)
@@ -42,9 +44,13 @@ class DebugViewViewModel: ObservableObject {
             .withName("Town Square")
             .withCharacter(createdPlayer)
             .withCharacters(createdNPCs)
+            .withIsIndoor(false)
             .build()
-        self.currentScene = scene
+            
+        // Set scene in GameStateService
+        gameStateService.setCurrentScene(scene)
         
+        sceneReference = scene
         // Initialize NPC blood percentages
         for npc in createdNPCs {
             self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
@@ -99,11 +105,11 @@ class DebugViewViewModel: ObservableObject {
     
     func feedOnNPC(_ npc: NPC) {
         do {
-            try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30.0, in: currentScene.id)
+            try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30.0, in: sceneReference.id)
             
             self.playerBloodPercentage = player.bloodMeter.bloodPercentage
             self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
-            self.sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene.id)
+            self.sceneAwareness = vampireNatureRevealService.getAwareness(for: sceneReference.id)
             
             addDebugPrompt("Player fed on \(npc.name)")
         } catch {
@@ -113,11 +119,11 @@ class DebugViewViewModel: ObservableObject {
     
     func emptyNPCBlood(_ npc: NPC) {
         do {
-            try feedingService.emptyBlood(vampire: player, prey: npc, in: currentScene.id)
+            try feedingService.emptyBlood(vampire: player, prey: npc, in: sceneReference.id)
             
             self.playerBloodPercentage = player.bloodMeter.bloodPercentage
             self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
-            self.sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene.id)
+            self.sceneAwareness = vampireNatureRevealService.getAwareness(for: sceneReference.id)
             
             addDebugPrompt("Player emptied blood of \(npc.name)")
         } catch {
@@ -126,13 +132,14 @@ class DebugViewViewModel: ObservableObject {
     }
     
     func resetAwareness() {
-        vampireNatureRevealService.decreaseAwareness(for: currentScene.id, amount: 100.0)
-        self.sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene.id)
+        vampireNatureRevealService.decreaseAwareness(for: sceneReference.id, amount: 100.0)
+        self.sceneAwareness = vampireNatureRevealService.getAwareness(for: sceneReference.id)
         addDebugPrompt("Awareness reset to minimum")
     }
     
     func investigateNPC(_ npc: NPC) {
         investigationService.investigate(inspector: player, investigationObject: npc)
+        self.sceneAwareness = vampireNatureRevealService.getAwareness(for: sceneReference.id)
         self.playerBloodPercentage = player.bloodMeter.bloodPercentage
         addDebugPrompt("Player investigated \(npc.name)")
     }

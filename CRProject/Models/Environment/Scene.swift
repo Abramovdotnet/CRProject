@@ -5,6 +5,7 @@ class Scene: SceneProtocol, Codable, ObservableObject {
     let id: UUID = UUID()
     var name: String = ""
     var parentSceneId: UUID?
+    var isIndoor: Bool = false
     
     @Published private var _characters: [UUID: any Character] = [:]
     private var _childSceneIds: Set<UUID> = []
@@ -15,7 +16,7 @@ class Scene: SceneProtocol, Codable, ObservableObject {
     }
     
     private enum CodingKeys: String, CodingKey {
-        case id, name, parentSceneId
+        case id, name, parentSceneId, isIndoor
     }
     
     func getCharacters() -> [any Character] {
@@ -28,14 +29,6 @@ class Scene: SceneProtocol, Codable, ObservableObject {
     
     func getCharacter(by id: UUID) -> (any Character)? {
         return _characters[id]
-    }
-    
-    func addCharacter(_ character: any Character) {
-        _characters[character.id] = character
-    }
-    
-    func removeCharacter(by id: UUID) {
-        _characters.removeValue(forKey: id)
     }
     
     func addChildScene(_ childSceneId: UUID) {

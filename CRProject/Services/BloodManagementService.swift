@@ -14,10 +14,6 @@ class BloodManagementService: GameService {
             throw BloodError.invalidPrey("Cannot feed on another vampire")
         }
         
-        guard prey.bloodMeter.hasEnoughBlood(amount) else {
-            throw BloodError.insufficientBlood("Prey doesn't have enough blood")
-        }
-        
         prey.bloodMeter.useBlood(amount)
         vampire.bloodMeter.addBlood(amount)
         

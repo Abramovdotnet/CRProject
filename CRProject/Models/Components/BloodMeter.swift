@@ -26,9 +26,12 @@ class BloodMeter : ObservableObject, Codable {
     
     func useBlood(_ amount: Float) {
         guard amount > 0 else { return }
-        guard amount <= _currentBlood else { return }
         
-        _currentBlood -= amount
+        if _currentBlood <= amount {
+            _currentBlood = 0
+        } else {
+            _currentBlood -= amount
+        }
     }
     
     func hasEnoughBlood(_ amount: Float) -> Bool {

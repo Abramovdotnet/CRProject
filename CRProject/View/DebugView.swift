@@ -34,6 +34,8 @@ struct DebugView: View {
                             Text(viewModel.gameTime.isNightTime ? "🌙" : "☀️")
                                 .font(.title2)
                         }
+                        Text("Is indoor: \(viewModel.sceneReference.isIndoor ? "Yes" : "No")")
+                            .font(.headline)
                     }
                     
                     Spacer()
@@ -57,9 +59,9 @@ struct DebugView: View {
                 
                 // Scene Info
                 VStack(alignment: .leading) {
-                    Text("Scene: \(viewModel.currentScene.name)")
+                    Text("Scene: \(viewModel.sceneReference.name)")
                         .font(.headline)
-                    Text("Characters: \(viewModel.currentScene.getCharacters().count)")
+                    Text("Characters: \(viewModel.sceneReference.getCharacters().count)")
                         .font(.subheadline)
                 }
                 .padding()

@@ -41,7 +41,7 @@ class FeedingService: GameService {
         }
         
         let drainedBlood = try bloodService.emptyBlood(vampire: vampire, prey: prey)
-        gameTime.advanceTime(hours: 1)
+        gameTime.advanceTime(hours:1)
         statisticsService.incrementVictimsDrained()
         
         // Increase awareness more significantly when emptying blood
