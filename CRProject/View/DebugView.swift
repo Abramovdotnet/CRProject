@@ -5,174 +5,137 @@ struct DebugView: View {
     @State private var showEndGame = false
     
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 20) {
-                // Debug Log (at the top)
-                VStack(alignment: .leading, spacing: 5) {
-                    Text("Debug Log")
-                        .font(.headline)
+        ZStack {
+            // Background
+            Color.black.edgesIgnoringSafeArea(.all)
+            
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Debug Log
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("Chronicle")
+                            .font(.custom("Georgia", size: 24))
+                            .foregroundColor(.red)
+                        
+                        ForEach(viewModel.debugPrompts, id: \.self) { prompt in
+                            Text(prompt)
+                                .font(.custom("Georgia", size: 14))
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color(white: 0.1))
+                    .cornerRadius(10)
                     
-                    ForEach(viewModel.debugPrompts, id: \.self) { prompt in
-                        Text(prompt)
-                            .font(.caption)
+                    // Game Time Info
+                    VStack(spacing: 15) {
+                        HStack {
+                            VStack(alignment: .leading) {
+                                Text(viewModel.gameTime.description)
+                                    .font(.custom("Georgia", size: 20))
+                                    .foregroundColor(.white)
+                                HStack {
+                                    Text("Time of Day:")
+                                        .font(.custom("Georgia", size: 16))
+                                        .foregroundColor(.gray)
+                                    Text(viewModel.gameTime.isNightTime ? "Night 🌙" : "Day ☀️")
+                                        .font(.custom("Georgia", size: 16))
+                                        .foregroundColor(viewModel.gameTime.isNightTime ? .purple : .orange)
+                                }
+                                Text("Location: \(viewModel.sceneReference.isIndoor ? "Indoor" : "Outdoor")")
+                                    .font(.custom("Georgia", size: 16))
+                                    .foregroundColor(.gray)
+                            }
+                            
+                            Spacer()
+                            
+                            HStack(spacing: 10) {
+                                Button("Summon NPCs") {
+                                    viewModel.respawnNPCs()
+                                }
+                                .buttonStyle(VampireButtonStyle())
+                                
+                                Button("Purge Awareness") {
+                                    viewModel.resetAwareness()
+                                }
+                                .buttonStyle(VampireButtonStyle(color: .purple))
+                            }
+                        }
+                    }
+                    .padding()
+                    .background(Color(white: 0.1))
+                    .cornerRadius(10)
+                    
+                    // Scene Info
+                    VStack(alignment: .leading, spacing: 5) {
+                        Text("Location: \(viewModel.sceneReference.name)")
+                            .font(.custom("Georgia", size: 20))
+                            .foregroundColor(.white)
+                        Text("Mortals Present: \(viewModel.npcs.count)")
+                            .font(.custom("Georgia", size: 16))
                             .foregroundColor(.gray)
                     }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(10)
-                
-                // Game Time Info with Respawn Button
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text("Game Time: \(viewModel.gameTime.description)")
-                            .font(.headline)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding()
+                    .background(Color(white: 0.1))
+                    .cornerRadius(10)
+                    
+                    // Player Info
+                    VStack(alignment: .leading, spacing: 12) {
                         HStack {
-                            Text("Is Night: \(viewModel.gameTime.isNightTime ? "Yes" : "No")")
-                                .font(.subheadline)
-                            Text(viewModel.gameTime.isNightTime ? "🌙" : "☀️")
-                                .font(.title2)
+                            Text("The Vampire")
+                                .font(.custom("Georgia", size: 24))
+                                .foregroundColor(.red)
+                            Spacer()
+                            Text(viewModel.player.isAlive ? "Undead" : "Final Death")
+                                .foregroundColor(viewModel.player.isAlive ? .green : .red)
+                                .font(.custom("Georgia", size: 16))
                         }
-                        Text("Is indoor: \(viewModel.sceneReference.isIndoor ? "Yes" : "No")")
-                            .font(.headline)
-                    }
-                    
-                    Spacer()
-                    
-                    HStack {
-                        Button("Respawn NPCs") {
-                            viewModel.respawnNPCs()
-                        }
-                        .buttonStyle(.borderedProminent)
                         
-                        Button("Reset Awareness") {
-                            viewModel.resetAwareness()
+                        VStack(alignment: .leading, spacing: 8) {
+                            PlayerInfoRow(title: "Name", value: viewModel.player.name)
+                            PlayerInfoRow(title: "Age", value: "\(viewModel.player.age) years")
+                            PlayerInfoRow(title: "Profession", value: "\(viewModel.player.profession)")
+                            PlayerInfoRow(title: "Sex", value: viewModel.player.sex == .male ? "Male" : "Female")
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(.purple)
-                    }
-                }
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-                
-                // Scene Info
-                VStack(alignment: .leading) {
-                    Text("Scene: \(viewModel.sceneReference.name)")
-                        .font(.headline)
-                    Text("Characters: \(viewModel.sceneReference.getCharacters().count)")
-                        .font(.subheadline)
-                }
-                .padding()
-                .background(Color.gray.opacity(0.2))
-                .cornerRadius(10)
-                
-                // Player Info
-                VStack(alignment: .leading, spacing: 8) {
-                    HStack {
-                        Text("Player")
-                            .font(.headline)
-                        Spacer()
-                        Text(viewModel.player.isAlive ? "Alive" : "Dead")
-                            .foregroundColor(viewModel.player.isAlive ? .green : .red)
-                    }
-                    
-                    Text("Name: \(viewModel.player.name)")
-                    Text("Age: \(viewModel.player.age)")
-                    Text("Profession: \(viewModel.player.profession)")
-                    Text("Sex: \(viewModel.player.sex == .male ? "Male" : "Female")")
-                    Text("Is Vampire: \(viewModel.player.isVampire ? "Yes" : "No")")
-                    
-                    VStack(alignment: .leading) {
-                        Text("Blood Level: \(Int(viewModel.playerBloodPercentage))%")
-                        ProgressView(value: viewModel.playerBloodPercentage, total: 100)
-                            .tint(.red)
-                    }
-                    
-                    VStack(alignment: .leading) {
-                        Text("Vampire Nature Awareness: \(Int(viewModel.sceneAwareness))%")
-                        ProgressView(value: viewModel.sceneAwareness, total: 100)
-                            .tint(.purple)
-                    }
-                }
-                .padding()
-                .background(Color.blue.opacity(0.1))
-                .cornerRadius(10)
-                
-                // NPCs
-                VStack(alignment: .leading, spacing: 15) {
-                    Text("NPCs")
-                        .font(.headline)
-                    
-                    ForEach(viewModel.npcs, id: \.id) { npc in
+                        
                         VStack(alignment: .leading, spacing: 5) {
-                            HStack {
-                                if npc.isUnknown {
-                                    HStack {
-                                        Text("Info:")
-                                            .font(.headline)
-                                            .foregroundColor(.gray)
-                                        Text("Hidden")
-                                            .font(.headline)
-                                            .foregroundColor(.gray)
-                                    }
-                                } else {
-                                    Text("\(npc.name)")
-                                        .font(.headline)
-                                }
-                                Spacer()
-                                Text(npc.isAlive ? "Alive" : "Dead")
-                                    .foregroundColor(npc.isAlive ? .green : .red)
-                            }
-                            
-                            if npc.isUnknown {
-                                    Text("Sex: \(npc.sex == .male ? "Male" : "Female")")
-                                }
-                                else {
-                                    Text("Age: \(npc.age)")
-                                    Text("Profession: \(npc.profession)")
-                                    Text("Is Vampire: \(npc.isVampire ? "Yes" : "No")")
-                                    
-                                    VStack(alignment: .leading) {
-                                        Text("Blood Level: \(Int(viewModel.npcBloodPercentages[npc.id] ?? 0))%")
-                                        ProgressView(value: viewModel.npcBloodPercentages[npc.id] ?? 0, total: 100)
-                                            .tint(.red)
-                                }
-                            }
-                            
-                            HStack {
-                                if !npc.isUnknown {
-                                    Button("Feed on \(npc.name)") {
-                                        viewModel.feedOnNPC(npc)
-                                    }
-                                    .buttonStyle(.borderedProminent)
-                                    .disabled(!npc.isAlive)
-                                }
-                                
-                                Button("Empty Blood") {
-                                    viewModel.emptyNPCBlood(npc)
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .disabled(!npc.isAlive)
-                                
-                                if npc.isUnknown {
-                                    Button("Investigate") {
-                                        viewModel.investigateNPC(npc)
-                                    }
-                                    .buttonStyle(.borderedProminent)
-                                    .tint(.blue)
-                                    .disabled(!viewModel.canInvestigateNPC(npc) || !npc.isAlive)
-                                }
-                            }
+                            Text("Blood Reserves: \(Int(viewModel.playerBloodPercentage))%")
+                                .font(.custom("Georgia", size: 16))
+                                .foregroundColor(.red)
+                            ProgressView(value: viewModel.playerBloodPercentage, total: 100)
+                                .tint(.red)
                         }
-                        .padding()
-                        .background(Color.green.opacity(0.1))
-                        .cornerRadius(10)
+                        
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text("Mortal Suspicion: \(Int(viewModel.sceneAwareness))%")
+                                .font(.custom("Georgia", size: 16))
+                                .foregroundColor(.purple)
+                            ProgressView(value: viewModel.sceneAwareness, total: 100)
+                                .tint(.purple)
+                        }
                     }
+                    .padding()
+                    .background(Color(white: 0.1))
+                    .cornerRadius(10)
+                    
+                    // NPCs
+                    VStack(alignment: .leading, spacing: 15) {
+                        Text("Mortals")
+                            .font(.custom("Georgia", size: 24))
+                            .foregroundColor(.red)
+                        
+                        ForEach(viewModel.npcs, id: \.id) { npc in
+                            NPCView(npc: npc, viewModel: viewModel)
+                        }
+                    }
+                    .padding()
+                    .background(Color(white: 0.1))
+                    .cornerRadius(10)
                 }
+                .padding()
             }
-            .padding()
         }
         .sheet(isPresented: $showEndGame) {
             EndGameView(statistics: viewModel.statisticsService)
@@ -180,6 +143,109 @@ struct DebugView: View {
         .onReceive(viewModel.vampireNatureRevealService.exposedPublisher) { _ in
             showEndGame = true
         }
+    }
+}
+
+struct PlayerInfoRow: View {
+    let title: String
+    let value: String
+    
+    var body: some View {
+        HStack {
+            Text(title)
+                .font(.custom("Georgia", size: 16))
+                .foregroundColor(.gray)
+            Spacer()
+            Text(value)
+                .font(.custom("Georgia", size: 16))
+                .foregroundColor(.white)
+        }
+    }
+}
+
+struct NPCView: View {
+    let npc: NPC
+    @ObservedObject var viewModel: DebugViewViewModel
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                if npc.isUnknown {
+                    Text("Unknown Mortal")
+                        .font(.custom("Georgia", size: 18))
+                        .foregroundColor(.white)
+                } else {
+                    Text(npc.name)
+                        .font(.custom("Georgia", size: 18))
+                        .foregroundColor(.white)
+                }
+                Spacer()
+                Text(npc.isAlive ? "Living" : "Deceased")
+                    .font(.custom("Georgia", size: 14))
+                    .foregroundColor(npc.isAlive ? .green : .red)
+            }
+            
+            if npc.isUnknown {
+                Text("Information Hidden")
+                    .font(.custom("Georgia", size: 14))
+                    .foregroundColor(.gray)
+                    .italic()
+            } else {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text("Age: \(npc.age)")
+                    Text("Profession: \(npc.profession)")
+                    Text("Sex: \(npc.sex == .male ? "Male" : "Female")")
+                    
+                    VStack(alignment: .leading) {
+                        Text("Blood: \(Int(viewModel.npcBloodPercentages[npc.id] ?? 0))%")
+                        ProgressView(value: viewModel.npcBloodPercentages[npc.id] ?? 0, total: 100)
+                            .tint(.red)
+                    }
+                }
+                .font(.custom("Georgia", size: 14))
+                .foregroundColor(.gray)
+            }
+            
+            HStack(spacing: 10) {
+                if !npc.isUnknown {
+                    Button("Feed") {
+                        viewModel.feedOnNPC(npc)
+                    }
+                    .buttonStyle(VampireButtonStyle())
+                }
+                
+                Button("Drain") {
+                    viewModel.emptyNPCBlood(npc)
+                }
+                .buttonStyle(VampireButtonStyle(color: .red))
+                
+                if npc.isUnknown {
+                    Button("Investigate") {
+                        viewModel.investigateNPC(npc)
+                    }
+                    .buttonStyle(VampireButtonStyle(color: .blue))
+                    .disabled(!viewModel.canInvestigateNPC(npc))
+                }
+            }
+        }
+        .padding()
+        .background(Color(white: 0.15))
+        .cornerRadius(8)
+    }
+}
+
+struct VampireButtonStyle: ButtonStyle {
+    var color: Color = .blue
+    
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.horizontal, 15)
+            .padding(.vertical, 8)
+            .background(color.opacity(configuration.isPressed ? 0.7 : 1))
+            .foregroundColor(.white)
+            .font(.custom("Georgia", size: 14))
+            .cornerRadius(8)
+            .shadow(color: color.opacity(0.3), radius: 5, x: 0, y: 2)
     }
 }
 
