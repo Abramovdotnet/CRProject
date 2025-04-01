@@ -1,0 +1,289 @@
+{
+    "initialNode": "general_greeting",
+    "nodes": {
+        "general_greeting": {
+            "text": "Good evening. Can I help you with something?",
+            "options": [
+                {
+                    "text": "Just passing by",
+                    "type": "normal",
+                    "nextNode": "general_passing"
+                },
+                {
+                    "text": "Tell me about this place",
+                    "type": "normal",
+                    "nextNode": "general_place"
+                },
+                {
+                    "text": "Have you noticed anything strange lately?",
+                    "type": "normal",
+                    "nextNode": "general_strange"
+                },
+                {
+                    "text": "You look scared... [Intimidate]",
+                    "type": "intimidate",
+                    "nextNode": "general_intimidated",
+                    "requirements": {
+                        "minStrength": 2
+                    }
+                },
+                {
+                    "text": "I find you intriguing... [Seduce]",
+                    "type": "seduce",
+                    "nextNode": "general_seduced",
+                    "requirements": {
+                        "minCharisma": 2
+                    }
+                }
+            ]
+        },
+        "general_passing": {
+            "text": "Very well. Though... be careful out there. The nights aren't safe anymore.",
+            "options": [
+                {
+                    "text": "What do you mean?",
+                    "type": "normal",
+                    "nextNode": "general_night_danger"
+                },
+                {
+                    "text": "Leave",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_place": {
+            "text": "It's not safe to be out at this hour. Strange things happen in the dark...",
+            "options": [
+                {
+                    "text": "What kind of strange things?",
+                    "type": "normal",
+                    "nextNode": "general_dark",
+                    "requirements": {
+                        "isNight": true
+                    }
+                },
+                {
+                    "text": "Tell me about the town",
+                    "type": "normal",
+                    "nextNode": "general_town"
+                },
+                {
+                    "text": "I should go",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_strange": {
+            "text": "Lately? *looks around nervously* There are whispers... disappearances...",
+            "options": [
+                {
+                    "text": "Tell me about the disappearances",
+                    "type": "normal",
+                    "nextNode": "general_disappearances"
+                },
+                {
+                    "text": "What kind of whispers?",
+                    "type": "normal",
+                    "nextNode": "general_whispers"
+                },
+                {
+                    "text": "Never mind",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_dark": {
+            "text": "People disappearing... Strange noises in the night... And sometimes, in the shadows, you see...",
+            "options": [
+                {
+                    "text": "What do you see?",
+                    "type": "normal",
+                    "nextNode": "general_shadows"
+                },
+                {
+                    "text": "Tell me about the disappearances",
+                    "type": "normal",
+                    "nextNode": "general_disappearances"
+                },
+                {
+                    "text": "I've heard enough",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_shadows": {
+            "text": "Eyes... red eyes in the darkness. And sometimes... teeth.",
+            "options": [
+                {
+                    "text": "Interesting...",
+                    "type": "normal",
+                    "nextNode": "end"
+                },
+                {
+                    "text": "You've said too much",
+                    "type": "intimidate",
+                    "nextNode": "general_intimidated"
+                }
+            ]
+        },
+        "general_night_danger": {
+            "text": "The darkness... it's different now. Hungry. And those who walk in it...",
+            "options": [
+                {
+                    "text": "Go on",
+                    "type": "normal",
+                    "nextNode": "general_dark"
+                },
+                {
+                    "text": "I should leave",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_town": {
+            "text": "It used to be a peaceful place. But now... the nights grow longer, and fear spreads like a disease.",
+            "options": [
+                {
+                    "text": "Tell me more",
+                    "type": "normal",
+                    "nextNode": "general_fear"
+                },
+                {
+                    "text": "I've heard enough",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_fear": {
+            "text": "People bar their doors at sunset. The church bells don't ring anymore. And the graveyard... it's best not spoken of.",
+            "options": [
+                {
+                    "text": "The graveyard?",
+                    "type": "normal",
+                    "nextNode": "general_graveyard"
+                },
+                {
+                    "text": "That's enough",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_graveyard": {
+            "text": "Fresh graves appear without funerals. And sometimes... they're empty by morning.",
+            "options": [
+                {
+                    "text": "I see...",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_disappearances": {
+            "text": "Young ones mostly. Found pale and lifeless, if found at all. Two small marks on their necks...",
+            "options": [
+                {
+                    "text": "Vampire attacks...",
+                    "type": "normal",
+                    "nextNode": "general_vampire_known"
+                },
+                {
+                    "text": "How terrible",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_vampire_known": {
+            "text": "*grows pale* I... I've said too much. Please, forget we spoke of this!",
+            "options": [
+                {
+                    "text": "You can't hide the truth",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_whispers": {
+            "text": "They say there's a curse on the town. That creatures of the night walk among us, wearing familiar faces...",
+            "options": [
+                {
+                    "text": "Tell me more",
+                    "type": "normal",
+                    "nextNode": "general_curse"
+                },
+                {
+                    "text": "I should go",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_curse": {
+            "text": "Some say it started when the old manor was reopened. Strange nobles, never seen by day...",
+            "options": [
+                {
+                    "text": "Interesting...",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_intimidated": {
+            "text": "Please, I don't want any trouble! I'll tell you anything you want to know!",
+            "options": [
+                {
+                    "text": "Tell me about the vampires",
+                    "type": "normal",
+                    "nextNode": "general_vampire_info"
+                },
+                {
+                    "text": "That's more like it...",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_vampire_info": {
+            "text": "They... they hunt at night. The manor on the hill is their nest. Please, that's all I know!",
+            "options": [
+                {
+                    "text": "You've been helpful",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_seduced": {
+            "text": "I... I shouldn't... but there's something about you I can't resist...",
+            "options": [
+                {
+                    "text": "Tell me your secrets",
+                    "type": "normal",
+                    "nextNode": "general_secrets"
+                },
+                {
+                    "text": "Perfect...",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "general_secrets": {
+            "text": "I've seen them... the ones who hunt at night. They're beautiful, but deadly. Like you...",
+            "options": [
+                {
+                    "text": "You're very observant",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        }
+    }
+} 

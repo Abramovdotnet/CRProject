@@ -14,7 +14,7 @@ class DebugViewViewModel: ObservableObject {
     @Published var isNight: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
-    private let gameStateService: GameStateService
+    let gameStateService: GameStateService
     private let vampireNatureRevealService: VampireNatureRevealService
     private let feedingService: FeedingService
     private let investigationService: InvestigationService

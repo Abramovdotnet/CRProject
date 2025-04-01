@@ -310,6 +310,7 @@ private struct NPCInfoView: View {
     let npc: NPC
     @ObservedObject var viewModel: DebugViewViewModel
     let onClose: () -> Void
+    @State private var showingDialogue = false
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -334,14 +335,11 @@ private struct NPCInfoView: View {
                 }
                 
                 HStack {
-                    
-                    if npc.isUnknown {
-                        Button("Investigate") {
-                            viewModel.investigateNPC(npc)
-                        }
-                        .buttonStyle(VampireButtonStyle())
-                        .disabled(!viewModel.canInvestigateNPC(npc))
+                    Button("Investigate") {
+                        viewModel.investigateNPC(npc)
                     }
+                    .buttonStyle(VampireButtonStyle())
+                    .disabled(!viewModel.canInvestigateNPC(npc))
                     
                     Spacer()
                     
@@ -373,6 +371,13 @@ private struct NPCInfoView: View {
                         
                         Spacer()
                         
+                        Button("Dialogue") {
+                            showingDialogue = true
+                        }
+                        .buttonStyle(VampireButtonStyle())
+                        
+                        Spacer()
+                        
                         Button("Drain") {
                             viewModel.emptyBloodFromCharacter(npc)
                         }
@@ -385,6 +390,11 @@ private struct NPCInfoView: View {
         .padding()
         .background(Theme.secondaryColor)
         .cornerRadius(8)
+        .sheet(isPresented: $showingDialogue) {
+            if let player = viewModel.gameStateService.getPlayer() {
+                DialogueView(viewModel: DialogueViewModel(npc: npc, player: player))
+            }
+        }
     }
 }
 

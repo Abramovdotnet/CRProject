@@ -1,0 +1,1227 @@
+{
+    "Baker": {
+        "initialNode": "baker_greeting",
+        "nodes": {
+            "baker_greeting": {
+                "text": "Welcome to my bakery! What can I do for you today?",
+                "options": [
+                    {
+                        "text": "I'd like to ask about your work",
+                        "type": "normal",
+                        "nextNode": "baker_work"
+                    },
+                    {
+                        "text": "You seem nervous... [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "baker_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "You have such a charming smile... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "baker_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "baker_work": {
+                "text": "I've been baking bread for 20 years. It's honest work, though the nights can be long.",
+                "options": [
+                    {
+                        "text": "Tell me about your night shifts",
+                        "type": "normal",
+                        "nextNode": "baker_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Return to previous topic",
+                        "type": "normal",
+                        "nextNode": "baker_greeting"
+                    }
+                ]
+            },
+            "baker_intimidated": {
+                "text": "Please... don't hurt me! The storage room is unlocked at night, take whatever you want!",
+                "options": [
+                    {
+                        "text": "Good to know...",
+                        "type": "normal",
+                        "nextNode": "baker_end"
+                    }
+                ]
+            },
+            "baker_seduced": {
+                "text": "Oh my... perhaps we could discuss this somewhere more private?",
+                "options": [
+                    {
+                        "text": "Lead the way...",
+                        "type": "normal",
+                        "nextNode": "baker_end"
+                    }
+                ]
+            },
+            "baker_night": {
+                "text": "The ovens need to be hot by dawn. Sometimes I hear strange noises in the dark...",
+                "options": [
+                    {
+                        "text": "You have good reason to be afraid",
+                        "type": "normal",
+                        "nextNode": "baker_end"
+                    }
+                ]
+            },
+            "baker_end": {
+                "text": "I should get back to work now...",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Merchant": {
+        "initialNode": "merchant_greeting",
+        "nodes": {
+            "merchant_greeting": {
+                "text": "Welcome to my shop! Looking to trade?",
+                "options": [
+                    {
+                        "text": "What do you sell?",
+                        "type": "normal",
+                        "nextNode": "merchant_goods"
+                    },
+                    {
+                        "text": "Your prices seem high... [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "merchant_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "Perhaps we can negotiate... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "merchant_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "merchant_goods": {
+                "text": "All sorts of goods from across the land. Though some... special items are only available to certain customers.",
+                "options": [
+                    {
+                        "text": "Tell me more about these special items",
+                        "type": "normal",
+                        "nextNode": "merchant_special"
+                    },
+                    {
+                        "text": "Just browsing",
+                        "type": "normal",
+                        "nextNode": "merchant_end"
+                    }
+                ]
+            },
+            "merchant_special": {
+                "text": "I might have what you seek, but such items come at a price...",
+                "options": [
+                    {
+                        "text": "I understand",
+                        "type": "normal",
+                        "nextNode": "merchant_end"
+                    }
+                ]
+            },
+            "merchant_intimidated": {
+                "text": "Please, take what you want! Just don't hurt me or damage my goods!",
+                "options": [
+                    {
+                        "text": "That's better...",
+                        "type": "normal",
+                        "nextNode": "merchant_end"
+                    }
+                ]
+            },
+            "merchant_seduced": {
+                "text": "Well... I suppose I could offer you a special discount...",
+                "options": [
+                    {
+                        "text": "How generous of you...",
+                        "type": "normal",
+                        "nextNode": "merchant_end"
+                    }
+                ]
+            },
+            "merchant_end": {
+                "text": "Come back again soon...",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Guard": {
+        "initialNode": "guard_greeting",
+        "nodes": {
+            "guard_greeting": {
+                "text": "Move along, citizen. Nothing to see here.",
+                "options": [
+                    {
+                        "text": "What's happening here?",
+                        "type": "normal",
+                        "nextNode": "guard_situation"
+                    },
+                    {
+                        "text": "You don't want to mess with me... [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "guard_intimidated",
+                        "requirements": {
+                            "minStrength": 4
+                        }
+                    },
+                    {
+                        "text": "Surely we can work something out... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "guard_seduced",
+                        "requirements": {
+                            "minCharisma": 4
+                        }
+                    }
+                ]
+            },
+            "guard_situation": {
+                "text": "Official business. Keep moving.",
+                "options": [
+                    {
+                        "text": "Very well",
+                        "type": "normal",
+                        "nextNode": "guard_end"
+                    }
+                ]
+            },
+            "guard_intimidated": {
+                "text": "Listen, I don't want trouble. Just... be careful around here at night.",
+                "options": [
+                    {
+                        "text": "I'll keep that in mind",
+                        "type": "normal",
+                        "nextNode": "guard_end"
+                    }
+                ]
+            },
+            "guard_seduced": {
+                "text": "I... I shouldn't be telling you this, but strange things have been happening lately...",
+                "options": [
+                    {
+                        "text": "Do tell...",
+                        "type": "normal",
+                        "nextNode": "guard_end"
+                    }
+                ]
+            },
+            "guard_end": {
+                "text": "Move along now.",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Blacksmith": {
+        "initialNode": "blacksmith_greeting",
+        "nodes": {
+            "blacksmith_greeting": {
+                "text": "Welcome to my forge. Need something sharpened or repaired?",
+                "options": [
+                    {
+                        "text": "Tell me about your work",
+                        "type": "normal",
+                        "nextNode": "blacksmith_work"
+                    },
+                    {
+                        "text": "I need weapons... special ones [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "blacksmith_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "That's quite impressive craftsmanship... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "blacksmith_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "blacksmith_work": {
+                "text": "Been working the forge for decades. The fire never lies, and metal remembers.",
+                "options": [
+                    {
+                        "text": "What do you forge at night?",
+                        "type": "normal",
+                        "nextNode": "blacksmith_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Return to previous topic",
+                        "type": "normal",
+                        "nextNode": "blacksmith_greeting"
+                    }
+                ]
+            },
+            "blacksmith_night": {
+                "text": "The forge burns brightest in darkness. Some say it attracts... things.",
+                "options": [
+                    {
+                        "text": "Interesting...",
+                        "type": "normal",
+                        "nextNode": "blacksmith_end"
+                    }
+                ]
+            },
+            "blacksmith_intimidated": {
+                "text": "Keep your voice down! Fine... there's a hidden compartment under the anvil.",
+                "options": [
+                    {
+                        "text": "Show me",
+                        "type": "normal",
+                        "nextNode": "blacksmith_end"
+                    }
+                ]
+            },
+            "blacksmith_seduced": {
+                "text": "Well... I might have some special pieces I've been working on...",
+                "options": [
+                    {
+                        "text": "I'd love to see them",
+                        "type": "normal",
+                        "nextNode": "blacksmith_end"
+                    }
+                ]
+            },
+            "blacksmith_end": {
+                "text": "The forge calls...",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Miller": {
+        "initialNode": "miller_greeting",
+        "nodes": {
+            "miller_greeting": {
+                "text": "Welcome to the mill. Grain needs grinding?",
+                "options": [
+                    {
+                        "text": "How's business?",
+                        "type": "normal",
+                        "nextNode": "miller_business"
+                    },
+                    {
+                        "text": "What's really in those sacks? [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "miller_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "The mill seems... private [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "miller_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "miller_business": {
+                "text": "Steady as the wheel turns. Though strange things happen when darkness falls...",
+                "options": [
+                    {
+                        "text": "Tell me about the night",
+                        "type": "normal",
+                        "nextNode": "miller_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Back to previous topic",
+                        "type": "normal",
+                        "nextNode": "miller_greeting"
+                    }
+                ]
+            },
+            "miller_night": {
+                "text": "The wheel turns by itself sometimes. And the grain... it whispers.",
+                "options": [
+                    {
+                        "text": "Fascinating",
+                        "type": "normal",
+                        "nextNode": "miller_end"
+                    }
+                ]
+            },
+            "miller_intimidated": {
+                "text": "Alright! Some merchants pay extra to... process certain goods at night.",
+                "options": [
+                    {
+                        "text": "Go on...",
+                        "type": "normal",
+                        "nextNode": "miller_end"
+                    }
+                ]
+            },
+            "miller_seduced": {
+                "text": "The upper floor is quiet... and private.",
+                "options": [
+                    {
+                        "text": "Lead the way",
+                        "type": "normal",
+                        "nextNode": "miller_end"
+                    }
+                ]
+            },
+            "miller_end": {
+                "text": "The wheel keeps turning...",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Priest": {
+        "initialNode": "priest_greeting",
+        "nodes": {
+            "priest_greeting": {
+                "text": "Welcome, child. Seek you guidance or confession?",
+                "options": [
+                    {
+                        "text": "Tell me about the church",
+                        "type": "normal",
+                        "nextNode": "priest_church"
+                    },
+                    {
+                        "text": "What secrets do these walls hide? [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "priest_intimidated",
+                        "requirements": {
+                            "minStrength": 4
+                        }
+                    },
+                    {
+                        "text": "I seek... private counsel [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "priest_seduced",
+                        "requirements": {
+                            "minCharisma": 4
+                        }
+                    }
+                ]
+            },
+            "priest_church": {
+                "text": "This holy place has stood for centuries. Though lately, the nights grow darker...",
+                "options": [
+                    {
+                        "text": "What happens at night?",
+                        "type": "normal",
+                        "nextNode": "priest_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Return to previous topic",
+                        "type": "normal",
+                        "nextNode": "priest_greeting"
+                    }
+                ]
+            },
+            "priest_night": {
+                "text": "The candles flicker without wind, and the confessionals... they whisper sins unspoken.",
+                "options": [
+                    {
+                        "text": "Tell me more",
+                        "type": "normal",
+                        "nextNode": "priest_end"
+                    }
+                ]
+            },
+            "priest_intimidated": {
+                "text": "The crypt... there are things in the crypt that should remain hidden!",
+                "options": [
+                    {
+                        "text": "Show me",
+                        "type": "normal",
+                        "nextNode": "priest_end"
+                    }
+                ]
+            },
+            "priest_seduced": {
+                "text": "Even those who wear the cloth have... needs.",
+                "options": [
+                    {
+                        "text": "Indeed...",
+                        "type": "normal",
+                        "nextNode": "priest_end"
+                    }
+                ]
+            },
+            "priest_end": {
+                "text": "May the light protect you...",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Inkeeper": {
+        "initialNode": "innkeeper_greeting",
+        "nodes": {
+            "innkeeper_greeting": {
+                "text": "Welcome to my establishment! Need a room or just here for a drink?",
+                "options": [
+                    {
+                        "text": "Tell me about your guests",
+                        "type": "normal",
+                        "nextNode": "innkeeper_guests"
+                    },
+                    {
+                        "text": "I know you're hiding something... [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "innkeeper_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "Such a cozy establishment... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "innkeeper_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "innkeeper_guests": {
+                "text": "All sorts pass through here. Though some... only come at night.",
+                "options": [
+                    {
+                        "text": "Tell me about the night visitors",
+                        "type": "normal",
+                        "nextNode": "innkeeper_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Back to previous topic",
+                        "type": "normal",
+                        "nextNode": "innkeeper_greeting"
+                    }
+                ]
+            },
+            "innkeeper_night": {
+                "text": "Some guests never seem to eat or drink... and their rooms remain cold.",
+                "options": [
+                    {
+                        "text": "Interesting...",
+                        "type": "normal",
+                        "nextNode": "innkeeper_end"
+                    }
+                ]
+            },
+            "innkeeper_intimidated": {
+                "text": "The cellar... there's a hidden room behind the wine racks!",
+                "options": [
+                    {
+                        "text": "Show me",
+                        "type": "normal",
+                        "nextNode": "innkeeper_end"
+                    }
+                ]
+            },
+            "innkeeper_seduced": {
+                "text": "I might have a special room available...",
+                "options": [
+                    {
+                        "text": "Do tell",
+                        "type": "normal",
+                        "nextNode": "innkeeper_end"
+                    }
+                ]
+            },
+            "innkeeper_end": {
+                "text": "Mind how you go...",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Alchemist": {
+        "initialNode": "alchemist_greeting",
+        "nodes": {
+            "alchemist_greeting": {
+                "text": "Ah, a customer! Seeking potions, elixirs, or perhaps... something more exotic?",
+                "options": [
+                    {
+                        "text": "What do you sell?",
+                        "type": "normal",
+                        "nextNode": "alchemist_wares"
+                    },
+                    {
+                        "text": "Show me your real inventory... [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "alchemist_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "Perhaps we could make a special arrangement... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "alchemist_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "alchemist_wares": {
+                "text": "Healing potions, love elixirs, the usual fare. Though at night... I work on more interesting concoctions.",
+                "options": [
+                    {
+                        "text": "Tell me about your night work",
+                        "type": "normal",
+                        "nextNode": "alchemist_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Just browsing",
+                        "type": "normal",
+                        "nextNode": "alchemist_end"
+                    }
+                ]
+            },
+            "alchemist_night": {
+                "text": "Blood-based experiments... Some customers pay well for certain... properties.",
+                "options": [
+                    {
+                        "text": "Interesting...",
+                        "type": "normal",
+                        "nextNode": "alchemist_end"
+                    }
+                ]
+            },
+            "alchemist_intimidated": {
+                "text": "Not so loud! Fine... I have special brews in the back. Blood-strengthening potions, sunlight resistance...",
+                "options": [
+                    {
+                        "text": "Show me",
+                        "type": "normal",
+                        "nextNode": "alchemist_end"
+                    }
+                ]
+            },
+            "alchemist_seduced": {
+                "text": "Well... I do have some experimental elixirs that need testing...",
+                "options": [
+                    {
+                        "text": "I'm intrigued",
+                        "type": "normal",
+                        "nextNode": "alchemist_end"
+                    }
+                ]
+            },
+            "alchemist_end": {
+                "text": "Do come again... preferably after sunset.",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Minstrel": {
+        "initialNode": "minstrel_greeting",
+        "nodes": {
+            "minstrel_greeting": {
+                "text": "Greetings! Care to hear a tale or song? Though some stories are best left unsung...",
+                "options": [
+                    {
+                        "text": "What songs do you know?",
+                        "type": "normal",
+                        "nextNode": "minstrel_songs"
+                    },
+                    {
+                        "text": "Sing about the dark secrets... [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "minstrel_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "I'd love a private performance... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "minstrel_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "minstrel_songs": {
+                "text": "Oh, many tales of love and war. Though lately, my songs turn to darker themes...",
+                "options": [
+                    {
+                        "text": "Sing me a night song",
+                        "type": "normal",
+                        "nextNode": "minstrel_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Another time perhaps",
+                        "type": "normal",
+                        "nextNode": "minstrel_end"
+                    }
+                ]
+            },
+            "minstrel_night": {
+                "text": "*sings softly* 'In shadows deep where mortals sleep, the pale ones hunt their prey...'",
+                "options": [
+                    {
+                        "text": "Continue...",
+                        "type": "normal",
+                        "nextNode": "minstrel_end"
+                    }
+                ]
+            },
+            "minstrel_intimidated": {
+                "text": "Please! Those songs are forbidden! But... 'When noble blood turns cold as night, and teeth grow sharp and keen...'",
+                "options": [
+                    {
+                        "text": "Go on",
+                        "type": "normal",
+                        "nextNode": "minstrel_end"
+                    }
+                ]
+            },
+            "minstrel_seduced": {
+                "text": "I know a haunting melody that I only perform in private...",
+                "options": [
+                    {
+                        "text": "I'd love to hear it",
+                        "type": "normal",
+                        "nextNode": "minstrel_end"
+                    }
+                ]
+            },
+            "minstrel_end": {
+                "text": "Some songs are best left unfinished...",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Scribe": {
+        "initialNode": "scribe_greeting",
+        "nodes": {
+            "scribe_greeting": {
+                "text": "Welcome to my humble scriptorium. Seeking knowledge... or something more?",
+                "options": [
+                    {
+                        "text": "What do you write?",
+                        "type": "normal",
+                        "nextNode": "scribe_writing"
+                    },
+                    {
+                        "text": "Show me the forbidden texts... [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "scribe_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "Your knowledge intrigues me... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "scribe_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "scribe_writing": {
+                "text": "Letters, contracts, the usual. Though some texts speak of darker matters...",
+                "options": [
+                    {
+                        "text": "Tell me about these dark texts",
+                        "type": "normal",
+                        "nextNode": "scribe_dark",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Never mind",
+                        "type": "normal",
+                        "nextNode": "scribe_end"
+                    }
+                ]
+            },
+            "scribe_dark": {
+                "text": "Ancient chronicles speak of creatures that feed on blood... Some still walk among us.",
+                "options": [
+                    {
+                        "text": "Tell me more",
+                        "type": "normal",
+                        "nextNode": "scribe_end"
+                    }
+                ]
+            },
+            "scribe_intimidated": {
+                "text": "The black books? They're hidden beneath the floorboards... but the knowledge they contain...",
+                "options": [
+                    {
+                        "text": "Show me",
+                        "type": "normal",
+                        "nextNode": "scribe_end"
+                    }
+                ]
+            },
+            "scribe_seduced": {
+                "text": "Perhaps we could... review some of my private collections together?",
+                "options": [
+                    {
+                        "text": "Lead the way",
+                        "type": "normal",
+                        "nextNode": "scribe_end"
+                    }
+                ]
+            },
+            "scribe_end": {
+                "text": "Knowledge can be... dangerous.",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Hunter": {
+        "initialNode": "hunter_greeting",
+        "nodes": {
+            "hunter_greeting": {
+                "text": "Welcome, stranger. Hunting something specific... or avoiding being hunted?",
+                "options": [
+                    {
+                        "text": "What do you hunt?",
+                        "type": "normal",
+                        "nextNode": "hunter_prey"
+                    },
+                    {
+                        "text": "Tell me about the real predators... [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "hunter_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "You seem experienced in tracking... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "hunter_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "hunter_prey": {
+                "text": "Deer, boar... though lately, I've been tracking something far more dangerous.",
+                "options": [
+                    {
+                        "text": "What kind of creature?",
+                        "type": "normal",
+                        "nextNode": "hunter_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Good hunting",
+                        "type": "normal",
+                        "nextNode": "hunter_end"
+                    }
+                ]
+            },
+            "hunter_night": {
+                "text": "They look human, but their tracks... cold as death, and they never lead to where the sun shines.",
+                "options": [
+                    {
+                        "text": "Interesting...",
+                        "type": "normal",
+                        "nextNode": "hunter_end"
+                    }
+                ]
+            },
+            "hunter_intimidated": {
+                "text": "You want to know about them? Fine. They hunt at night, in noble clothes, with teeth like daggers...",
+                "options": [
+                    {
+                        "text": "Tell me more",
+                        "type": "normal",
+                        "nextNode": "hunter_end"
+                    }
+                ]
+            },
+            "hunter_seduced": {
+                "text": "Perhaps we could share hunting techniques... in private?",
+                "options": [
+                    {
+                        "text": "Lead the way",
+                        "type": "normal",
+                        "nextNode": "hunter_end"
+                    }
+                ]
+            },
+            "hunter_end": {
+                "text": "Watch your back... and your neck.",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Apothecary": {
+        "initialNode": "apothecary_greeting",
+        "nodes": {
+            "apothecary_greeting": {
+                "text": "Welcome to my shop. Seeking remedies... or perhaps protection?",
+                "options": [
+                    {
+                        "text": "What do you sell?",
+                        "type": "normal",
+                        "nextNode": "apothecary_wares"
+                    },
+                    {
+                        "text": "Show me your special remedies... [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "apothecary_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "I need something... personal [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "apothecary_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "apothecary_wares": {
+                "text": "Herbs, poultices, the usual remedies. Though some ailments require... special treatments.",
+                "options": [
+                    {
+                        "text": "Tell me about these treatments",
+                        "type": "normal",
+                        "nextNode": "apothecary_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Just looking",
+                        "type": "normal",
+                        "nextNode": "apothecary_end"
+                    }
+                ]
+            },
+            "apothecary_night": {
+                "text": "Garlic, silver nitrate... Some say they ward off more than disease.",
+                "options": [
+                    {
+                        "text": "Go on...",
+                        "type": "normal",
+                        "nextNode": "apothecary_end"
+                    }
+                ]
+            },
+            "apothecary_intimidated": {
+                "text": "Very well... I have blessed silver, concentrated garlic extract. For those who hunt the hunters...",
+                "options": [
+                    {
+                        "text": "Show me",
+                        "type": "normal",
+                        "nextNode": "apothecary_end"
+                    }
+                ]
+            },
+            "apothecary_seduced": {
+                "text": "I might have something... special in the back room.",
+                "options": [
+                    {
+                        "text": "Lead on",
+                        "type": "normal",
+                        "nextNode": "apothecary_end"
+                    }
+                ]
+            },
+            "apothecary_end": {
+                "text": "May these remedies serve you well... while you still breathe.",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Herald": {
+        "initialNode": "herald_greeting",
+        "nodes": {
+            "herald_greeting": {
+                "text": "Hail! Seeking news from the town crier? Though some news is best left unspoken...",
+                "options": [
+                    {
+                        "text": "What's the latest news?",
+                        "type": "normal",
+                        "nextNode": "herald_news"
+                    },
+                    {
+                        "text": "Tell me the real stories... [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "herald_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "Surely you have private news... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "herald_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "herald_news": {
+                "text": "Missing persons, strange sightings... The night watch has been doubled.",
+                "options": [
+                    {
+                        "text": "Tell me about the night",
+                        "type": "normal",
+                        "nextNode": "herald_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "That's all",
+                        "type": "normal",
+                        "nextNode": "herald_end"
+                    }
+                ]
+            },
+            "herald_night": {
+                "text": "Screams in the dark, bodies drained of blood... I've been ordered not to speak of it.",
+                "options": [
+                    {
+                        "text": "Interesting...",
+                        "type": "normal",
+                        "nextNode": "herald_end"
+                    }
+                ]
+            },
+            "herald_intimidated": {
+                "text": "The nobles! They're not what they seem! They hold midnight feasts where guests... disappear.",
+                "options": [
+                    {
+                        "text": "Tell me more",
+                        "type": "normal",
+                        "nextNode": "herald_end"
+                    }
+                ]
+            },
+            "herald_seduced": {
+                "text": "Well... I do know some very interesting rumors we could discuss privately...",
+                "options": [
+                    {
+                        "text": "Do tell",
+                        "type": "normal",
+                        "nextNode": "herald_end"
+                    }
+                ]
+            },
+            "herald_end": {
+                "text": "Remember, you didn't hear this from me...",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
+    "Cooper (Barrel Maker)": {
+        "initialNode": "cooper_greeting",
+        "nodes": {
+            "cooper_greeting": {
+                "text": "Welcome to my cooperage. Need a barrel or cask?",
+                "options": [
+                    {
+                        "text": "Tell me about your work",
+                        "type": "normal",
+                        "nextNode": "cooper_work"
+                    },
+                    {
+                        "text": "What do you hide in these barrels? [Intimidate]",
+                        "type": "intimidate",
+                        "nextNode": "cooper_intimidated",
+                        "requirements": {
+                            "minStrength": 3
+                        }
+                    },
+                    {
+                        "text": "Your craftsmanship is impressive... [Seduce]",
+                        "type": "seduce",
+                        "nextNode": "cooper_seduced",
+                        "requirements": {
+                            "minCharisma": 3
+                        }
+                    }
+                ]
+            },
+            "cooper_work": {
+                "text": "Every barrel tells a story. Some hold wine, some secrets...",
+                "options": [
+                    {
+                        "text": "Tell me about the night work",
+                        "type": "normal",
+                        "nextNode": "cooper_night",
+                        "requirements": {
+                            "isNight": true
+                        }
+                    },
+                    {
+                        "text": "Return to previous topic",
+                        "type": "normal",
+                        "nextNode": "cooper_greeting"
+                    }
+                ]
+            },
+            "cooper_night": {
+                "text": "Some clients need special barrels... ones that can hide more than just wine.",
+                "options": [
+                    {
+                        "text": "Interesting...",
+                        "type": "normal",
+                        "nextNode": "cooper_end"
+                    }
+                ]
+            },
+            "cooper_intimidated": {
+                "text": "The hollow barrels? They're... they're for the noble's special deliveries!",
+                "options": [
+                    {
+                        "text": "Show me",
+                        "type": "normal",
+                        "nextNode": "cooper_end"
+                    }
+                ]
+            },
+            "cooper_seduced": {
+                "text": "Perhaps we could discuss my... special commissions in private?",
+                "options": [
+                    {
+                        "text": "Lead the way",
+                        "type": "normal",
+                        "nextNode": "cooper_end"
+                    }
+                ]
+            },
+            "cooper_end": {
+                "text": "Mind the barrels as you go...",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    }
+}

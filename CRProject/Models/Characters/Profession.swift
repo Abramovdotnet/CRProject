@@ -26,4 +26,5 @@ enum Profession: String, CaseIterable, Codable {
     case innkeeper        = "Inkeeper"
     case adventurer      = "Adventurer"
     case wenche          = "Wenche"
+    case general         = "General"
 }
