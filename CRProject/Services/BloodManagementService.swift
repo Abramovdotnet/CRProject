@@ -1,5 +1,9 @@
 import Foundation
 
+extension Notification.Name {
+    static let bloodPercentageChanged = Notification.Name("bloodPercentageChanged")
+}
+
 import Foundation
 import Combine
 

@@ -7,6 +7,8 @@ struct CRProjectApp: App {
         let dependencyManager = DependencyManager.shared
         
         // Register StatisticsService first
+        dependencyManager.register(LocationReader())
+        dependencyManager.register(NPCReader())
         dependencyManager.register(StatisticsService())
         
         // Then register other services
@@ -23,7 +25,7 @@ struct CRProjectApp: App {
     
     var body: some SwiftUI.Scene {
         WindowGroup {
-            DebugView()
+            DebugView(viewModel:DebugViewViewModel())
         }
     }
 }

@@ -1,153 +1,228 @@
 import Foundation
-import SwiftUI
+import Combine
 
 class DebugViewViewModel: ObservableObject {
-    @Published var player: Player
-    @Published var npcs: [NPC]
-    @Published var gameTime: GameTimeService
-    @Published var sceneReference: Scene
-    @Published var debugPrompts: [String] = []
-    
-    // Add observable blood meter values
-    @Published var playerBloodPercentage: Float = 0
-    @Published var npcBloodPercentages: [UUID: Float] = [:]
+    @Published var currentScene: Scene?
+    @Published var parentScene: Scene?
+    @Published var childScenes: [Scene] = []
+    @Published var siblingScenes: [Scene] = []
+    @Published var npcs: [NPC] = []
     @Published var sceneAwareness: Float = 0
+    @Published var playerBloodPercentage: Float = 100
+    @Published var currentDay: Int = 1
+    @Published var currentHour: Int = 0
+    @Published var isNight: Bool = false
     
-    let statisticsService: StatisticsService
-    let feedingService: FeedingService
-    let bloodService: BloodManagementService
-    let vampireNatureRevealService: VampireNatureRevealService
-    let investigationService: InvestigationService
-    let gameStateService: GameStateService
+    private var cancellables = Set<AnyCancellable>()
+    private let gameStateService: GameStateService
+    private let vampireNatureRevealService: VampireNatureRevealService
+    private let feedingService: FeedingService
+    private let investigationService: InvestigationService
+    private let bloodManagementService: BloodManagementService
+    private let gameTime: GameTimeService
     
-    init() {
-        // Initialize services first
-        self.statisticsService = DependencyManager.shared.resolve()
-        self.gameTime = DependencyManager.shared.resolve()
-        self.vampireNatureRevealService = DependencyManager.shared.resolve()
-        self.bloodService = DependencyManager.shared.resolve()
-        self.feedingService = DependencyManager.shared.resolve()
-        self.investigationService = DependencyManager.shared.resolve()
-        self.gameStateService = DependencyManager.shared.resolve()
+    var playerName: String {
+        gameStateService.getPlayer()?.name ?? "Unknown"
+    }
+    
+    var playerStatus: String {
+        guard let player = gameStateService.getPlayer() else { return "Unknown" }
+        return player.isAlive ? "Alive" : "Dead"
+    }
+    
+    init(gameStateService: GameStateService = DependencyManager.shared.resolve(),
+         vampireNatureRevealService: VampireNatureRevealService = DependencyManager.shared.resolve(),
+         feedingService: FeedingService = DependencyManager.shared.resolve(),
+         investigationService: InvestigationService = DependencyManager.shared.resolve(),
+         bloodManagementService: BloodManagementService = DependencyManager.shared.resolve(),
+         gameTime: GameTimeService = DependencyManager.shared.resolve()) {
+        self.gameStateService = gameStateService
+        self.vampireNatureRevealService = vampireNatureRevealService
+        self.feedingService = feedingService
+        self.investigationService = investigationService
+        self.bloodManagementService = bloodManagementService
+        self.gameTime = gameTime
         
-        // Create player
-        let createdPlayer = Player(name: "Vampire Lord", sex: .male, age: 300, profession: .adventurer)
-        self.player = createdPlayer
-        self.playerBloodPercentage = createdPlayer.bloodMeter.bloodPercentage
+        // Create and set player
+        let player = NPCGenerator.createPlayer()
+        gameStateService.setPlayer(player)
         
-        // Create NPCs
-        let createdNPCs = DebugViewViewModel.createNPCs()
-        self.npcs = createdNPCs
+        playerBloodPercentage = player.bloodMeter.bloodPercentage
         
-        // Create scene
-        let scene = SceneBuilder()
-            .withName("Town Square")
-            .withCharacter(createdPlayer)
-            .withCharacters(createdNPCs)
-            .withIsIndoor(false)
-            .build()
+        // Create initial scene using LocationReader
+        do {
+            let initialScene = try LocationReader.getLocation(by: UUID(uuidString: "DF0B418F-0E65-4109-8944-66622EF59191")!) // East field Market
+            try gameStateService.changeLocation(to: initialScene.id)
+            respawnNPCs()
+        } catch {
+            print("Error creating initial scene: \(error)")
+        }
+        
+        // Subscribe to scene changes
+        gameStateService.$currentScene
+            .sink { [weak self] scene in
+                self?.currentScene = scene
+                self?.updateRelatedLocations(for: scene?.id)
+                self?.respawnNPCs()
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to parent scene changes
+        gameStateService.$parentScene
+            .assign(to: &$parentScene)
+        
+        // Subscribe to child scenes changes
+        gameStateService.$childScenes
+            .assign(to: &$childScenes)
+        
+        // Subscribe to sibling scenes changes
+        gameStateService.$siblingScenes
+            .assign(to: &$siblingScenes)
+        
+        // Subscribe to awareness changes
+        vampireNatureRevealService.exposedPublisher
+            .sink { [weak self] sceneId in
+                guard let self = self,
+                      sceneId == self.currentScene?.id else { return }
+                self.sceneAwareness = 100
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to blood changes
+        NotificationCenter.default.publisher(for: .bloodPercentageChanged)
+            .sink { [weak self] _ in
+                self?.updatePlayerBloodPercentage()
+            }
+            .store(in: &cancellables)
             
-        // Set scene in GameStateService
-        gameStateService.setCurrentScene(scene)
+        // Initial updates
+        updatePlayerBloodPercentage()
+        updateSceneAwareness()
         
-        sceneReference = scene
-        // Initialize NPC blood percentages
-        for npc in createdNPCs {
-            self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
-        }
-        
-        // Initialize scene awareness
-        self.sceneAwareness = vampireNatureRevealService.getAwareness(for: scene.id)
-        
-        // Add debug prompt after all properties are initialized
-        DispatchQueue.main.async {
-            self.addDebugPrompt("Scene created: \(scene.name)")
-        }
+        // Subscribe to day changes
+        gameTime.$currentDay
+            .assign(to: &$currentDay)
+            
+        // Subscribe to hour changes
+        gameTime.$currentHour
+            .assign(to: &$currentHour)
+            
+        // Subscribe to night/day changes
+        gameTime.$isNightTime
+            .sink { [weak self] isNight in
+                self?.isNight = isNight
+            }
+            .store(in: &cancellables)
     }
     
-    private static func createNPCs() -> [NPC] {
-        let professions: [Profession] = [.adventurer, .merchant, .guardman, .blacksmith, .innkeeper, .priest, .hunter]
-        return (0..<7).map { index in
-            NPCBuilder()
-                .name("NPC \(Int.random(in: 1...1000))")
-                .sex(Bool.random() ? .male : .female)
-                .age(Int.random(in: 18...80))
-                .profession(professions[index])
-                .build()
-        }
+    // MARK: - Navigation Methods
+    func navigateToParent() {
+        guard let parentScene = parentScene else { return }
+        try? gameStateService.changeLocation(to: parentScene.id)
+        currentScene = gameStateService.currentScene
     }
     
-    func canInvestigateNPC(_ npc: NPC) -> Bool {
-        return investigationService.canInvestigate(inspector: player, investigationObject: npc)
+    func navigateToChild(_ scene: Scene) {
+        try? gameStateService.changeLocation(to: scene.id)
+        currentScene = gameStateService.currentScene
     }
     
+    func navigateToSibling(_ scene: Scene) {
+        try? gameStateService.changeLocation(to: scene.id)
+        currentScene = gameStateService.currentScene
+    }
+    
+    // MARK: - NPC Management
     func respawnNPCs() {
-        // Clear existing NPCs
-        npcs.removeAll()
-        npcBloodPercentages.removeAll()
+        print("Respawning NPCs...")
+        npcs = []
+        let count = Int.random(in: 2...4)
+        print("Generating \(count) NPCs")
         
-        // Create new NPCs with random properties
-        let npcCount = 8 // Increased from 5 to 8
-        let professions: [Profession] = [.adventurer, .merchant, .guardman, .blacksmith, .innkeeper, .priest, .hunter]
-        for _ in 0..<npcCount {
-            let npc = NPC(
-                name: "NPC \(Int.random(in: 1...1000))",
-                sex: Bool.random() ? .male : .female,
-                age: Int.random(in: 18...80),
-                profession: professions.randomElement() ?? .adventurer
-            )
-            npcs.append(npc)
-            npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
+        npcs = NPCReader.getRandomNPCs(count: 10)
+        
+        for npc in npcs {
+            print("Created NPC: \(npc.name)")
         }
         
-        addDebugPrompt("Respawned \(npcCount) NPCs")
-    }
-    
-    func feedOnNPC(_ npc: NPC) {
-        do {
-            try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30.0, in: sceneReference.id)
-            
-            self.playerBloodPercentage = player.bloodMeter.bloodPercentage
-            self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
-            self.sceneAwareness = vampireNatureRevealService.getAwareness(for: sceneReference.id)
-            
-            addDebugPrompt("Player fed on \(npc.name)")
-        } catch {
-            addDebugPrompt("Failed to feed: \(error.localizedDescription)")
-        }
-    }
-    
-    func emptyNPCBlood(_ npc: NPC) {
-        do {
-            try feedingService.emptyBlood(vampire: player, prey: npc, in: sceneReference.id)
-            
-            self.playerBloodPercentage = player.bloodMeter.bloodPercentage
-            self.npcBloodPercentages[npc.id] = npc.bloodMeter.bloodPercentage
-            self.sceneAwareness = vampireNatureRevealService.getAwareness(for: sceneReference.id)
-            
-            addDebugPrompt("Player emptied blood of \(npc.name)")
-        } catch {
-            addDebugPrompt("Failed to empty blood: \(error.localizedDescription)")
-        }
-    }
-    
-    func resetAwareness() {
-        vampireNatureRevealService.decreaseAwareness(for: sceneReference.id, amount: 100.0)
-        self.sceneAwareness = vampireNatureRevealService.getAwareness(for: sceneReference.id)
-        addDebugPrompt("Awareness reset to minimum")
+        print("Total NPCs: \(npcs.count)")
     }
     
     func investigateNPC(_ npc: NPC) {
+        guard let player = gameStateService.getPlayer(),
+              investigationService.canInvestigate(inspector: player, investigationObject: npc) else {
+            return
+        }
         investigationService.investigate(inspector: player, investigationObject: npc)
-        self.sceneAwareness = vampireNatureRevealService.getAwareness(for: sceneReference.id)
-        self.playerBloodPercentage = player.bloodMeter.bloodPercentage
-        addDebugPrompt("Player investigated \(npc.name)")
+        updateSceneAwareness()
     }
     
-    private func addDebugPrompt(_ message: String) {
-        debugPrompts.insert(message, at: 0)
-        if debugPrompts.count > 10 {
-            debugPrompts.removeLast()
+    func resetAwareness() {
+        vampireNatureRevealService.decreaseAwareness(for: currentScene?.id ?? UUID(), amount: 100)
+        sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
+    }
+    
+    // MARK: - Blood Management
+    func feedOnCharacter(_ npc: NPC) {
+        guard let player = gameStateService.getPlayer(),
+              feedingService.canFeed(vampire: player, prey: npc) else {
+            return
         }
+        let sceneId = currentScene?.id ?? UUID()
+        do {
+            try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30, in: sceneId)
+            updatePlayerBloodPercentage()
+            vampireNatureRevealService.increaseAwareness(for: currentScene?.id ?? UUID(), amount: 20)
+            sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
+        } catch {
+            print("Error feeding on character: \(error)")
+        }
+    }
+    
+    func emptyBloodFromCharacter(_ npc: NPC) {
+        guard let player = gameStateService.getPlayer(),
+              feedingService.canFeed(vampire: player, prey: npc) else {
+            return
+        }
+        do {
+            try feedingService.emptyBlood(vampire: player, prey: npc, in: currentScene?.id ?? UUID())
+            updatePlayerBloodPercentage()
+            sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
+        } catch {
+            print("Error emptying blood: \(error)")
+        }
+    }
+    
+    func canFeedOnCharacter(_ npc: NPC) -> Bool {
+        guard let player = gameStateService.getPlayer() else { return false }
+        return feedingService.canFeed(vampire: player, prey: npc)
+    }
+    
+    func canInvestigateNPC(_ npc: NPC) -> Bool {
+        guard let player = gameStateService.getPlayer() else { return false }
+        return investigationService.canInvestigate(inspector: player, investigationObject: npc)
+    }
+    
+    // MARK: - Private Methods
+    private func updateRelatedLocations(for locationId: UUID?) {
+        guard let locationId = locationId else { return }
+        
+        do {
+            parentScene = try LocationReader.getParentLocation(for: locationId)
+            childScenes = try LocationReader.getChildLocations(for: locationId)
+            siblingScenes = try LocationReader.getSiblingLocations(for: locationId)
+        } catch {
+            print("Error updating related locations: \(error)")
+        }
+    }
+    
+    private func updatePlayerBloodPercentage() {
+        guard let player = gameStateService.getPlayer() else { return }
+        self.playerBloodPercentage = bloodManagementService.getBloodPercentage(of: player)
+    }
+    
+    private func updateSceneAwareness() {
+        guard let currentSceneId = currentScene?.id else { return }
+        sceneAwareness = vampireNatureRevealService.getAwareness(for: currentSceneId)
     }
 } 

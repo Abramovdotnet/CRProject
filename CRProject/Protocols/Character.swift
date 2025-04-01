@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol Character: ObservableObject, Codable {
+protocol Character: Identifiable, ObservableObject, Codable {
     var id: UUID { get }
     var name: String { get }
     var sex: Sex { get }

@@ -7,7 +7,7 @@
 import Foundation
 
 class Player: Character {
-    let id: UUID = UUID()
+    var id: UUID = UUID()
     var name: String = ""
     var sex: Sex = .male
     var age: Int = 0
@@ -17,11 +17,12 @@ class Player: Character {
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isUnknown: Bool = false
     
-    init(name: String, sex: Sex, age: Int, profession: Profession) {
+    init(name: String, sex: Sex, age: Int, profession: Profession, id: UUID) {
         self.name = name
         self.sex = sex
         self.age = age
         self.profession = profession
+        self.id = id
     }
     
     func shareBlood(amount: Float, from donor: any Character) {

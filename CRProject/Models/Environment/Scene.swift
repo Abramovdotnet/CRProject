@@ -1,8 +1,8 @@
 import Foundation
 import Combine
 
-class Scene: SceneProtocol, Codable, ObservableObject {
-    let id: UUID = UUID()
+class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
+    var id: UUID = UUID()
     var name: String = ""
     var parentSceneId: UUID?
     var isIndoor: Bool = false
@@ -15,6 +15,16 @@ class Scene: SceneProtocol, Codable, ObservableObject {
         set { _childSceneIds = Set(newValue) }
     }
     
+    init(id: UUID, name: String,  isIndoor: Bool, parentSceneId: UUID? = nil) {
+        self.id = id
+        self.name = name
+        self.isIndoor = isIndoor
+        self.parentSceneId = parentSceneId
+    }
+    
+    init() {
+        
+    }
     private enum CodingKeys: String, CodingKey {
         case id, name, parentSceneId, isIndoor
     }
