@@ -13,6 +13,9 @@ enum Theme {
     static let titleFont = Font.custom("Optima-Bold", size: 24)
     static let headingFont = Font.custom("Optima-Bold", size: 18)
     static let bodyFont = Font.custom("Optima", size: 16)
+    
+    static let subheadingFont = Font.headline
+    static let captionFont = Font.caption
 }
 
 struct VampireButtonStyle: ButtonStyle {

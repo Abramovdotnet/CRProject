@@ -29,7 +29,7 @@ class VampireNatureRevealService: ObservableObject, GameService {
     
     func decreaseAwareness(for sceneId: UUID, amount: Float) {
         let currentAwareness = getAwareness(for: sceneId)
-        let newAwareness = max(currentAwareness - amount, 10.0)
+        let newAwareness = max(currentAwareness - amount, 0.0)
         awarenessLevels[sceneId] = newAwareness
     }
 } 

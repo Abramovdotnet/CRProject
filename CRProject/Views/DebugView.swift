@@ -2,6 +2,7 @@ import SwiftUI
 
 struct DebugView: View {
     @ObservedObject var viewModel: DebugViewViewModel
+    @State private var showingNavigation = false
     
     var body: some View {
         ZStack {
@@ -14,11 +15,28 @@ struct DebugView: View {
                 // Main Content
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
+                        // Navigation Button
+                        Button(action: { showingNavigation = true }) {
+                            HStack {
+                                Image(systemName: "moon.stars.fill")
+                                    .foregroundColor(Theme.accentColor)
+                                Text(viewModel.currentScene?.name ?? "Unknown")
+                                    .font(Theme.bodyFont)
+                                Spacer()
+                                Text("\(viewModel.childScenes.count + viewModel.siblingScenes.count + (viewModel.parentScene != nil ? 1 : 0)) locations")
+                                    .font(Theme.captionFont)
+                                    .foregroundColor(Theme.textColor.opacity(0.7))
+                                Image(systemName: "chevron.right")
+                                    .foregroundColor(Theme.textColor.opacity(0.5))
+                            }
+                            .padding()
+                            .background(Theme.secondaryColor)
+                            .cornerRadius(8)
+                        }
+                        .buttonStyle(PlainButtonStyle())
+                        
                         // Location Info
                         LocationInfoView(scene: viewModel.currentScene, viewModel: viewModel)
-                        
-                        // Navigation
-                        NavigationView(viewModel: viewModel)
                         
                         // NPCs List
                         NPCsListView(viewModel: viewModel)
@@ -31,6 +49,9 @@ struct DebugView: View {
             }
         }
         .foregroundColor(Theme.textColor)
+        .sheet(isPresented: $showingNavigation) {
+            NavigationDetailView(viewModel: viewModel)
+        }
     }
 }
 
@@ -46,6 +67,10 @@ private struct TopWidgetView: View {
                     .font(Theme.headingFont)
                 Text("\(viewModel.currentHour):00")
                     .font(Theme.bodyFont)
+                if let isIndoors = viewModel.currentScene?.isIndoor {
+                    Text("Is indoors: " + ( isIndoors ? " Yes" : " No"))
+                        .font(Theme.bodyFont)
+                }
             }
             
             Spacer()
@@ -78,111 +103,155 @@ private struct TopWidgetView: View {
 // MARK: - Location Info
 private struct LocationInfoView: View {
     let scene: Scene?
-    let viewModel: DebugViewViewModel
+    @ObservedObject var viewModel: DebugViewViewModel
     
     var body: some View {
-        HStack(alignment: .top, spacing: 0)
-        {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(scene?.name ?? "Unknown Location")
-                    .font(Theme.titleFont)
-                if let description = scene?.name {
-                    Text(description)
-                        .font(Theme.bodyFont)
-                }
-            }
-            Spacer()
-            VStack(alignment: .center, spacing: 8) {
-                Text("Characters: ")
-                    .font(Theme.titleFont)
-                if let isIndoors = scene?.isIndoor {
-                    Text("Is indoors: " + ( isIndoors ? " Yes" : " No"))
-                        .font(Theme.bodyFont)
-                }
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Location awareness: \(Int(viewModel.sceneAwareness))%")
+                .font(Theme.bodyFont)
+            
+            ProgressBar(value: Double(viewModel.sceneAwareness / 100.0), color: Theme.awarenessProgressColor)
         }
     }
 }
 
-// MARK: - Navigation
-private struct NavigationView: View {
+// MARK: - Location Navigation View
+private struct LocationNavigationView: View {
     @ObservedObject var viewModel: DebugViewViewModel
-    @State private var isExpanded = false
+    @State private var showLocationDetails: Bool = false
+    @State private var selectedLocation: Scene?
     
     var body: some View {
-        DisclosureGroup(
-            isExpanded: $isExpanded,
-            content: {
-                VStack(spacing: 12) {
-                    // Parent Location
-                    if let parentScene = viewModel.parentScene {
-                        Button(action: { viewModel.navigateToParent() }) {
-                            HStack {
-                                Image(systemName: "arrow.up.circle.fill")
-                                    .font(.title2)
-                                Text("To \(parentScene.name)")
-                                    .font(Theme.bodyFont)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.caption)
-                            }
-                            .padding()
-                            .background(Theme.secondaryColor)
-                            .cornerRadius(8)
-                        }
-                    }
-                    
-                    // Child Locations
-                    ForEach(viewModel.childScenes, id: \.id) { scene in
-                        Button(action: { viewModel.navigateToChild(scene) }) {
-                            HStack {
-                                Image(systemName: "arrow.down.circle.fill")
-                                    .font(.title2)
-                                Text("To \(scene.name)")
-                                    .font(Theme.bodyFont)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.caption)
-                            }
-                            .padding()
-                            .background(Theme.secondaryColor)
-                            .cornerRadius(8)
-                        }
-                    }
-                    
-                    // Sibling Locations
-                    ForEach(viewModel.siblingScenes, id: \.id) { scene in
-                        Button(action: { viewModel.navigateToSibling(scene) }) {
-                            HStack {
-                                Image(systemName: "arrow.right.circle.fill")
-                                    .font(.title2)
-                                Text("To \(scene.name)")
-                                    .font(Theme.bodyFont)
-                                Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.caption)
-                            }
-                            .padding()
-                            .background(Theme.secondaryColor)
-                            .cornerRadius(8)
-                        }
-                    }
-                }
-            },
-            label: {
-                HStack {
-                    Text("Navigation")
-                        .font(Theme.headingFont)
-                    Spacer()
-                    Text("\(viewModel.childScenes.count + viewModel.siblingScenes.count + (viewModel.parentScene != nil ? 1 : 0)) locations")
-                        .font(Theme.bodyFont)
-                        .foregroundColor(.gray)
-                }
+        VStack(spacing: 0) {
+            // Current Location Header
+            HStack {
+                Image(systemName: "moon.stars.fill")
+                    .foregroundColor(Theme.accentColor)
+                Text(viewModel.currentScene?.name ?? "Unknown Location")
+                    .font(Theme.headingFont)
+                Spacer()
             }
-        )
-        .padding()
-        .background(Theme.secondaryColor)
-        .cornerRadius(8)
+            .padding()
+            .background(Theme.secondaryColor)
+            
+            // Navigation Options
+            ScrollView {
+                VStack(spacing: 16) {
+                    // Parent Location (Return)
+                    if let parent = viewModel.parentScene {
+                        LocationButton(
+                            location: parent,
+                            type: .parent,
+                            action: { viewModel.navigateToParent() }
+                        )
+                    }
+                    
+                    // Nearby Locations (Siblings)
+                    if !viewModel.siblingScenes.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Nearby Locations")
+                                .font(Theme.subheadingFont)
+                                .foregroundColor(Theme.textColor.opacity(0.7))
+                            
+                            ForEach(viewModel.siblingScenes) { scene in
+                                LocationButton(
+                                    location: scene,
+                                    type: .sibling,
+                                    action: { viewModel.navigateToSibling(scene) }
+                                )
+                            }
+                        }
+                    }
+                    
+                    // Explorable Areas (Children)
+                    if !viewModel.childScenes.isEmpty {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Explorable Areas")
+                                .font(Theme.subheadingFont)
+                                .foregroundColor(Theme.textColor.opacity(0.7))
+                            
+                            ForEach(viewModel.childScenes) { scene in
+                                LocationButton(
+                                    location: scene,
+                                    type: .child,
+                                    action: { viewModel.navigateToChild(scene) }
+                                )
+                            }
+                        }
+                    }
+                }
+                .padding()
+            }
+        }
+        .background(Theme.backgroundColor)
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Location Button
+private struct LocationButton: View {
+    let location: Scene
+    let type: LocationType
+    let action: () -> Void
+    
+    enum LocationType {
+        case parent
+        case sibling
+        case child
+        
+        var icon: String {
+            switch self {
+            case .parent: "arrow.up.circle.fill"
+            case .sibling: "arrow.right.circle.fill"
+            case .child: "arrow.down.circle.fill"
+            }
+        }
+        
+        var color: Color {
+            switch self {
+            case .parent: .blue
+            case .sibling: .purple
+            case .child: .green
+            }
+        }
+        
+        var label: String {
+            switch self {
+            case .parent: "Return to"
+            case .sibling: "Go to"
+            case .child: "Enter"
+            }
+        }
+    }
+    
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                Image(systemName: type.icon)
+                    .foregroundColor(type.color)
+                    .font(.system(size: 20))
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("\(type.label) \(location.name)")
+                        .font(Theme.bodyFont)
+                        .foregroundColor(Theme.textColor)
+                    
+                    Text(location.isIndoor ? "Indoor Location" : "Outdoor Location")
+                        .font(Theme.captionFont)
+                        .foregroundColor(Theme.textColor.opacity(0.7))
+                        .lineLimit(1)
+                }
+                
+                Spacer()
+                
+                Image(systemName: "chevron.right")
+                    .foregroundColor(Theme.textColor.opacity(0.5))
+            }
+            .padding()
+            .background(Theme.secondaryColor.opacity(0.5))
+            .cornerRadius(8)
+        }
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -193,7 +262,7 @@ private struct NPCsListView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            Text("Characters")
+            Text("Characters : \(viewModel.npcs.count)")
                 .font(Theme.headingFont)
             
             if let selectedNPC = selectedNPC {
@@ -251,8 +320,8 @@ private struct NPCInfoView: View {
                 Text(npc.isAlive ? "Alive" : "Dead")
                     .foregroundColor(npc.isAlive ? .green : .red)
                 Button(action: onClose) {
-                    Image(systemName: "xmark.circle.fill")
-                        .foregroundColor(Theme.textColor)
+                    Image(systemName: "chevron.up")
+                        .foregroundColor(Theme.textColor.opacity(0.5))
                 }
             }
             
@@ -335,12 +404,6 @@ private struct BottomWidgetView: View {
                 Text("Blood: \(Int(viewModel.playerBloodPercentage))%")
                     .font(Theme.bodyFont)
                 ProgressBar(value: Double(viewModel.playerBloodPercentage / 100.0), color: Theme.bloodProgressColor)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Awareness: \(Int(viewModel.sceneAwareness))%")
-                    .font(Theme.bodyFont)
-                ProgressBar(value: Double(viewModel.sceneAwareness / 100.0), color: Theme.awarenessProgressColor)
             }
         }
         .padding()

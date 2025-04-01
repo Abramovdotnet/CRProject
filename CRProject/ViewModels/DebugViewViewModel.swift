@@ -53,6 +53,9 @@ class DebugViewViewModel: ObservableObject {
         do {
             let initialScene = try LocationReader.getLocation(by: UUID(uuidString: "DF0B418F-0E65-4109-8944-66622EF59191")!) // East field Market
             try gameStateService.changeLocation(to: initialScene.id)
+            
+            // Set default awareness to 0
+            vampireNatureRevealService.decreaseAwareness(for: initialScene.id, amount: 100)
             respawnNPCs()
         } catch {
             print("Error creating initial scene: \(error)")
@@ -120,16 +123,19 @@ class DebugViewViewModel: ObservableObject {
         guard let parentScene = parentScene else { return }
         try? gameStateService.changeLocation(to: parentScene.id)
         currentScene = gameStateService.currentScene
+        sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
     }
     
     func navigateToChild(_ scene: Scene) {
         try? gameStateService.changeLocation(to: scene.id)
         currentScene = gameStateService.currentScene
+        sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
     }
     
     func navigateToSibling(_ scene: Scene) {
         try? gameStateService.changeLocation(to: scene.id)
         currentScene = gameStateService.currentScene
+        sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
     }
     
     // MARK: - NPC Management
@@ -174,6 +180,7 @@ class DebugViewViewModel: ObservableObject {
             updatePlayerBloodPercentage()
             vampireNatureRevealService.increaseAwareness(for: currentScene?.id ?? UUID(), amount: 20)
             sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
+            print(sceneAwareness)
         } catch {
             print("Error feeding on character: \(error)")
         }
@@ -224,5 +231,9 @@ class DebugViewViewModel: ObservableObject {
     private func updateSceneAwareness() {
         guard let currentSceneId = currentScene?.id else { return }
         sceneAwareness = vampireNatureRevealService.getAwareness(for: currentSceneId)
+    }
+    
+    func getLocationAwareness(_ scene: Scene) -> Float {
+        return vampireNatureRevealService.getAwareness(for: scene.id)
     }
 } 
