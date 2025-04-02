@@ -5,22 +5,28 @@ struct DebugView: View {
     @State private var showingNavigation = false
     
     var body: some View {
-        if viewModel.isGameEnd{
+        if viewModel.isGameEnd {
             EndGameView()
         } else {
             ZStack {
-                Image("MainSceneBackground") // Your asset name
-                           .resizable()
-
-                           .ignoresSafeArea() // Fullscreen
+                Image("MainSceneBackground")
+                    .resizable()
+                    .ignoresSafeArea()
                 
                 VStack(spacing: 0) {
-                    // Top Widget
+                    // Top Widget - will now stick to top
                     TopWidgetView(viewModel: viewModel)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.clear) // Optional: add background if needed
                     
-                    // Main Content
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 20) {
+                    // Main Content Area
+                    HStack(alignment: .top, spacing: 20) {  // Changed to .top alignment
+                        // NPCs List
+                        CircularNPCView(npcs: viewModel.npcs)
+                        
+                        Spacer()
+                        
+                        VStack(alignment: .leading) {
                             // Navigation Button
                             Button(action: { showingNavigation = true }) {
                                 HStack {
@@ -43,15 +49,10 @@ struct DebugView: View {
                             
                             // Location Info
                             LocationInfoView(scene: viewModel.currentScene, viewModel: viewModel)
-                            
-                            // NPCs List
-                            NPCsListView(viewModel: viewModel)
                         }
                         .padding()
                     }
-                    
-                    // Bottom Widget
-                    BottomWidgetView(viewModel: viewModel)
+                    .frame(maxHeight: .infinity)  // Allow content to expand
                 }
             }
             .foregroundColor(Theme.textColor)
@@ -62,223 +63,7 @@ struct DebugView: View {
     }
 }
 
-// MARK: - Top Widget
-private struct TopWidgetView: View {
-    @ObservedObject var viewModel: DebugViewViewModel
-    
-    var body: some View {
-        HStack {
-            // World Info
-            Image(systemName: viewModel.isNight ? "moon.fill" : "sun.max.fill")
-                .font(Theme.bodyFont)
-                .foregroundColor(viewModel.isNight ? .white : .yellow)
-            Text(" \(viewModel.currentHour):00")
-                .font(Theme.headingFont)
-            Text("Day \(viewModel.currentDay)")
-                .font(Theme.bodyFont)
-            if let isIndoors = viewModel.currentScene?.isIndoor {
-                Text("Is indoors: " + ( isIndoors ? " Yes" : " No"))
-                    .font(Theme.bodyFont)
-            }
-            
-            Spacer()
-            
-            Text("Blood: \(Int(viewModel.playerBloodPercentage))%")
-                .font(Theme.bodyFont)
-            ProgressBar(value: Double(viewModel.playerBloodPercentage / 100.0), color: Theme.bloodProgressColor)
-            
-            Spacer()
-            
-            if let scene = viewModel.currentScene,
-               scene.name.lowercased().contains("tavern"),
-               !viewModel.isNight,
-               viewModel.isAwarenessSafe {
-                Button(action: {
-                    viewModel.skipTimeToNight()
-                }) {
-                    Image(systemName: "moon.fill")
-                        .font(Theme.bodyFont)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                }
-            }
-            Button(action: {
-                viewModel.respawnNPCs()
-            }) {
-                Image(systemName: "figure.walk")
-                    .font(Theme.bodyFont)
-                    .foregroundColor(.yellow)
-                    .cornerRadius(12)
-            }
-            Button(action: {
-                viewModel.resetAwareness()
-            }) {
-                Image(systemName: "figure.walk.diamond")
-                    .font(Theme.bodyFont)
-                    .foregroundColor(.yellow)
-                    .cornerRadius(12)
-                
-            }
-        }
-        .padding(.top, 5)
-        .padding(.bottom, 5)
-    }
-}
 
-// MARK: - Location Info
-private struct LocationInfoView: View {
-    let scene: Scene?
-    @ObservedObject var viewModel: DebugViewViewModel
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text("Location awareness: \(Int(viewModel.sceneAwareness))%")
-                .font(Theme.bodyFont)
-            
-            ProgressBar(value: Double(viewModel.sceneAwareness / 100.0), color: Theme.awarenessProgressColor)
-        }
-    }
-}
-
-// MARK: - Location Navigation View
-private struct LocationNavigationView: View {
-    @ObservedObject var viewModel: DebugViewViewModel
-    @State private var showLocationDetails: Bool = false
-    @State private var selectedLocation: Scene?
-    
-    var body: some View {
-        VStack(spacing: 0) {
-            // Current Location Header
-            HStack {
-                Image(systemName: "moon.stars.fill")
-                    .foregroundColor(Theme.accentColor)
-                Text(viewModel.currentScene?.name ?? "Unknown Location")
-                    .font(Theme.headingFont)
-                Spacer()
-            }
-            .padding()
-            .background(Theme.secondaryColor)
-            
-            // Navigation Options
-            ScrollView {
-                VStack(spacing: 16) {
-                    // Parent Location (Return)
-                    if let parent = viewModel.parentScene {
-                        LocationButton(
-                            location: parent,
-                            type: .parent,
-                            action: { viewModel.navigateToParent() }
-                        )
-                    }
-                    
-                    // Nearby Locations (Siblings)
-                    if !viewModel.siblingScenes.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Nearby Locations")
-                                .font(Theme.subheadingFont)
-                                .foregroundColor(Theme.textColor.opacity(0.7))
-                            
-                            ForEach(viewModel.siblingScenes) { scene in
-                                LocationButton(
-                                    location: scene,
-                                    type: .sibling,
-                                    action: { viewModel.navigateToSibling(scene) }
-                                )
-                            }
-                        }
-                    }
-                    
-                    // Explorable Areas (Children)
-                    if !viewModel.childScenes.isEmpty {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Explorable Areas")
-                                .font(Theme.subheadingFont)
-                                .foregroundColor(Theme.textColor.opacity(0.7))
-                            
-                            ForEach(viewModel.childScenes) { scene in
-                                LocationButton(
-                                    location: scene,
-                                    type: .child,
-                                    action: { viewModel.navigateToChild(scene) }
-                                )
-                            }
-                        }
-                    }
-                }
-                .padding()
-            }
-        }
-        .background(Theme.backgroundColor)
-        .cornerRadius(12)
-    }
-}
-
-// MARK: - Location Button
-private struct LocationButton: View {
-    let location: Scene
-    let type: LocationType
-    let action: () -> Void
-    
-    enum LocationType {
-        case parent
-        case sibling
-        case child
-        
-        var icon: String {
-            switch self {
-            case .parent: "arrow.up.circle.fill"
-            case .sibling: "arrow.right.circle.fill"
-            case .child: "arrow.down.circle.fill"
-            }
-        }
-        
-        var color: Color {
-            switch self {
-            case .parent: .blue
-            case .sibling: .purple
-            case .child: .green
-            }
-        }
-        
-        var label: String {
-            switch self {
-            case .parent: "Return to"
-            case .sibling: "Go to"
-            case .child: "Enter"
-            }
-        }
-    }
-    
-    var body: some View {
-        Button(action: action) {
-            HStack {
-                Image(systemName: type.icon)
-                    .foregroundColor(type.color)
-                    .font(.system(size: 20))
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(type.label) \(location.name)")
-                        .font(Theme.bodyFont)
-                        .foregroundColor(Theme.textColor)
-                    
-                    Text(location.isIndoor ? "Indoor Location" : "Outdoor Location")
-                        .font(Theme.captionFont)
-                        .foregroundColor(Theme.textColor.opacity(0.7))
-                        .lineLimit(1)
-                }
-                
-                Spacer()
-                
-                Image(systemName: "chevron.right")
-                    .foregroundColor(Theme.textColor.opacity(0.5))
-            }
-            .padding()
-            .background(Theme.secondaryColor.opacity(0.5))
-            .cornerRadius(8)
-        }
-        .buttonStyle(PlainButtonStyle())
-    }
-}
 
 // MARK: - NPCs List
 private struct NPCsListView: View {

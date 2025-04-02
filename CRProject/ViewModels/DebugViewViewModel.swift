@@ -152,7 +152,7 @@ class DebugViewViewModel: ObservableObject {
         let count = Int.random(in: 2...4)
         print("Generating \(count) NPCs")
         
-        npcs = NPCReader.getRandomNPCs(count: Int.random(in: 1...20))
+        npcs = NPCReader.getRandomNPCs(count: Int.random(in: 1...10))
         
         for npc in npcs {
             print("Created NPC: \(npc.name)")

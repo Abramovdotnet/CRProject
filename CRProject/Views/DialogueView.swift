@@ -6,7 +6,9 @@ struct DialogueView: View {
     
     var body: some View {
         ZStack {
-            Theme.backgroundColor.ignoresSafeArea()
+            Image("MainSceneBackground")
+                .resizable()
+                .ignoresSafeArea()
             
             VStack(spacing: 0) {
                 // Header
