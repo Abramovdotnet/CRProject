@@ -10,9 +10,22 @@ struct DialogueView: View {
             
             VStack(spacing: 0) {
                 // Header
+                VStack(alignment: .center, spacing: 8) {
+                    Text("Blood: \(Int(viewModel.npc.bloodMeter.bloodPercentage))%")
+                        .font(Theme.bodyFont)
+                    ProgressBar(value: Double(viewModel.npc.bloodMeter.bloodPercentage / 100.0), color: Theme.bloodProgressColor)
+                }.padding(.top, 10)
                 HStack {
                     VStack(alignment: .leading) {
                         Text(viewModel.npc.name)
+                            .font(Theme.headingFont)
+                        Text("Age: \(viewModel.npc.age)")
+                            .font(Theme.captionFont)
+                            .foregroundColor(Theme.textColor.opacity(0.7))
+                    }
+                    Spacer()
+                    VStack(alignment: .leading) {
+                        Text(viewModel.npc.sex == .male ? "Male" : "Female")
                             .font(Theme.headingFont)
                         Text(viewModel.npc.profession.rawValue.capitalized)
                             .font(Theme.captionFont)
@@ -24,6 +37,7 @@ struct DialogueView: View {
                             .foregroundColor(Theme.textColor.opacity(0.7))
                             .font(.title2)
                     }
+     
                 }
                 .padding()
                 .background(Theme.secondaryColor)
@@ -37,7 +51,7 @@ struct DialogueView: View {
                                 .font(Theme.bodyFont)
                                 .padding()
                                 .frame(maxWidth: .infinity, alignment: .leading)
-                                .background(Theme.secondaryColor.opacity(0.5))
+                                .background(Theme.primaryColor.opacity(0.5))
                                 .cornerRadius(8)
                         }
                         

@@ -12,6 +12,7 @@ class GameStateService : ObservableObject, GameService{
     @Published var parentScene: Scene?
     @Published var childScenes: [Scene] = []
     @Published var siblingScenes: [Scene] = []
+    @Published var showEndGame: Bool = false
     
     private let gameTime: GameTimeService
     private let vampireNatureRevealService: VampireNatureRevealService
@@ -32,6 +33,21 @@ class GameStateService : ObservableObject, GameService{
             .publisher(for: .timeAdvanced)
             .sink { [weak self] _ in
                 self?.handleTimeAdvanced()
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to time advancement notifications
+        NotificationCenter.default
+            .publisher(for: .safeTimeAdvanced)
+            .sink { [weak self] _ in
+                self?.handleSafeTimeAdvanced()
+            }
+            .store(in: &cancellables)
+        
+        NotificationCenter.default
+            .publisher(for: .exposed)
+            .sink { [weak self] _ in
+                self?.endGame()
             }
             .store(in: &cancellables)
     }
@@ -89,4 +105,17 @@ class GameStateService : ObservableObject, GameService{
             vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
         }
     }
-} 
+    
+    private func handleSafeTimeAdvanced() {
+        guard let scene = currentScene else { return }
+        
+        // Reduce awareness for nearest scenes by 5
+        for scene in siblingScenes {
+            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
+        }
+    }
+    
+    private func endGame() {
+        self.showEndGame = true
+    }
+}

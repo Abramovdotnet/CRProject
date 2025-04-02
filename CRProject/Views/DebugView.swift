@@ -5,52 +5,59 @@ struct DebugView: View {
     @State private var showingNavigation = false
     
     var body: some View {
-        ZStack {
-            Theme.backgroundColor.ignoresSafeArea()
-            
-            VStack(spacing: 20) {
-                // Top Widget
-                TopWidgetView(viewModel: viewModel)
+        if viewModel.isGameEnd{
+            EndGameView()
+        } else {
+            ZStack {
+                Image("MainSceneBackground") // Your asset name
+                           .resizable()
+
+                           .ignoresSafeArea() // Fullscreen
                 
-                // Main Content
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        // Navigation Button
-                        Button(action: { showingNavigation = true }) {
-                            HStack {
-                                Image(systemName: "moon.stars.fill")
-                                    .foregroundColor(Theme.accentColor)
-                                Text(viewModel.currentScene?.name ?? "Unknown")
-                                    .font(Theme.bodyFont)
-                                Spacer()
-                                Text("\(viewModel.childScenes.count + viewModel.siblingScenes.count + (viewModel.parentScene != nil ? 1 : 0)) locations")
-                                    .font(Theme.captionFont)
-                                    .foregroundColor(Theme.textColor.opacity(0.7))
-                                Image(systemName: "chevron.right")
-                                    .foregroundColor(Theme.textColor.opacity(0.5))
+                VStack(spacing: 0) {
+                    // Top Widget
+                    TopWidgetView(viewModel: viewModel)
+                    
+                    // Main Content
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 20) {
+                            // Navigation Button
+                            Button(action: { showingNavigation = true }) {
+                                HStack {
+                                    Image(systemName: "moon.stars.fill")
+                                        .foregroundColor(Theme.accentColor)
+                                    Text(viewModel.currentScene?.name ?? "Unknown")
+                                        .font(Theme.bodyFont)
+                                    Spacer()
+                                    Text("\(viewModel.childScenes.count + viewModel.siblingScenes.count + (viewModel.parentScene != nil ? 1 : 0)) locations")
+                                        .font(Theme.captionFont)
+                                        .foregroundColor(Theme.textColor.opacity(0.7))
+                                    Image(systemName: "chevron.right")
+                                        .foregroundColor(Theme.textColor.opacity(0.5))
+                                }
+                                .padding()
+                                .background(Theme.secondaryColor)
+                                .cornerRadius(8)
                             }
-                            .padding()
-                            .background(Theme.secondaryColor)
-                            .cornerRadius(8)
+                            .buttonStyle(PlainButtonStyle())
+                            
+                            // Location Info
+                            LocationInfoView(scene: viewModel.currentScene, viewModel: viewModel)
+                            
+                            // NPCs List
+                            NPCsListView(viewModel: viewModel)
                         }
-                        .buttonStyle(PlainButtonStyle())
-                        
-                        // Location Info
-                        LocationInfoView(scene: viewModel.currentScene, viewModel: viewModel)
-                        
-                        // NPCs List
-                        NPCsListView(viewModel: viewModel)
+                        .padding()
                     }
-                    .padding()
+                    
+                    // Bottom Widget
+                    BottomWidgetView(viewModel: viewModel)
                 }
-                
-                // Bottom Widget
-                BottomWidgetView(viewModel: viewModel)
             }
-        }
-        .foregroundColor(Theme.textColor)
-        .sheet(isPresented: $showingNavigation) {
-            NavigationDetailView(viewModel: viewModel)
+            .foregroundColor(Theme.textColor)
+            .sheet(isPresented: $showingNavigation) {
+                NavigationDetailView(viewModel: viewModel)
+            }
         }
     }
 }
@@ -62,41 +69,59 @@ private struct TopWidgetView: View {
     var body: some View {
         HStack {
             // World Info
-            VStack(alignment: .leading) {
-                Text("Day \(viewModel.currentDay)")
-                    .font(Theme.headingFont)
-                Text("\(viewModel.currentHour):00")
+            Image(systemName: viewModel.isNight ? "moon.fill" : "sun.max.fill")
+                .font(Theme.bodyFont)
+                .foregroundColor(viewModel.isNight ? .white : .yellow)
+            Text(" \(viewModel.currentHour):00")
+                .font(Theme.headingFont)
+            Text("Day \(viewModel.currentDay)")
+                .font(Theme.bodyFont)
+            if let isIndoors = viewModel.currentScene?.isIndoor {
+                Text("Is indoors: " + ( isIndoors ? " Yes" : " No"))
                     .font(Theme.bodyFont)
-                if let isIndoors = viewModel.currentScene?.isIndoor {
-                    Text("Is indoors: " + ( isIndoors ? " Yes" : " No"))
-                        .font(Theme.bodyFont)
-                }
             }
             
             Spacer()
             
-            // Day/Night Indicator
-            Image(systemName: viewModel.isNight ? "moon.fill" : "sun.max.fill")
-                .font(.title)
-                .foregroundColor(viewModel.isNight ? .white : .yellow)
+            Text("Blood: \(Int(viewModel.playerBloodPercentage))%")
+                .font(Theme.bodyFont)
+            ProgressBar(value: Double(viewModel.playerBloodPercentage / 100.0), color: Theme.bloodProgressColor)
             
             Spacer()
             
-            // Control Buttons
-            HStack(spacing: 10) {
-                Button("R") {
-                    viewModel.respawnNPCs()
+            if let scene = viewModel.currentScene,
+               scene.name.lowercased().contains("tavern"),
+               !viewModel.isNight,
+               viewModel.isAwarenessSafe {
+                Button(action: {
+                    viewModel.skipTimeToNight()
+                }) {
+                    Image(systemName: "moon.fill")
+                        .font(Theme.bodyFont)
+                        .foregroundColor(.white)
+                        .cornerRadius(12)
                 }
-                .buttonStyle(VampireButtonStyle())
+            }
+            Button(action: {
+                viewModel.respawnNPCs()
+            }) {
+                Image(systemName: "figure.walk")
+                    .font(Theme.bodyFont)
+                    .foregroundColor(.yellow)
+                    .cornerRadius(12)
+            }
+            Button(action: {
+                viewModel.resetAwareness()
+            }) {
+                Image(systemName: "figure.walk.diamond")
+                    .font(Theme.bodyFont)
+                    .foregroundColor(.yellow)
+                    .cornerRadius(12)
                 
-                Button("A") {
-                    viewModel.resetAwareness()
-                }
-                .buttonStyle(VampireButtonStyle())
             }
         }
-        .padding()
-        .background(Theme.secondaryColor)
+        .padding(.top, 5)
+        .padding(.bottom, 5)
     }
 }
 
@@ -403,21 +428,18 @@ private struct BottomWidgetView: View {
     @ObservedObject var viewModel: DebugViewViewModel
     
     var body: some View {
-        VStack(spacing: 10) {
-            HStack {
-                Text(viewModel.playerName)
-                    .font(Theme.headingFont)
-                Spacer()
-            }
+        HStack {
+            Text("Debug:")
+                .font(Theme.bodyFont)
             
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Blood: \(Int(viewModel.playerBloodPercentage))%")
-                    .font(Theme.bodyFont)
-                ProgressBar(value: Double(viewModel.playerBloodPercentage / 100.0), color: Theme.bloodProgressColor)
-            }
+            Spacer()
+            
+            Text("Blood: \(Int(viewModel.playerBloodPercentage))%")
+                .font(Theme.bodyFont)
+            
         }
-        .padding()
-        .background(Theme.secondaryColor)
+        .padding(.top, 5)
+        .padding(.bottom, 5)
     }
 }
 

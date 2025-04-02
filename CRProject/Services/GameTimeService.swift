@@ -3,6 +3,7 @@ import Combine
 
 extension Notification.Name {
     static let timeAdvanced = Notification.Name("timeAdvanced")
+    static let safeTimeAdvanced = Notification.Name("safeTimeAdvanced")
 }
 
 class GameTimeService: GameService {
@@ -36,6 +37,19 @@ class GameTimeService: GameService {
         currentTime = Calendar.current.date(byAdding: .hour, value: hours, to: currentTime) ?? currentTime
         updateNightTimeStatus()
         NotificationCenter.default.post(name: .timeAdvanced, object: nil)
+    }
+    func advanceTimeSafe(hours: Int = 1) {
+        let oldDay = currentDay
+        currentHour = (currentHour + hours) % 24
+        currentDay += (currentHour < hours ? 1 : 0)
+        
+        if currentDay > oldDay {
+            statisticsService.incrementDaysSurvived()
+        }
+        
+        currentTime = Calendar.current.date(byAdding: .hour, value: hours, to: currentTime) ?? currentTime
+        updateNightTimeStatus()
+        NotificationCenter.default.post(name: .safeTimeAdvanced, object: nil)
     }
     
     private func updateNightTimeStatus() {

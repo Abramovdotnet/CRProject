@@ -1,6 +1,10 @@
 import Foundation
 import Combine
 
+extension Notification.Name {
+    static let exposed = Notification.Name("exposed")
+}
+
 class VampireNatureRevealService: ObservableObject, GameService {
     private var awarenessLevels: [UUID: Float] = [:]
     private let awarenessPublisher = PassthroughSubject<UUID, Never>()
@@ -24,6 +28,7 @@ class VampireNatureRevealService: ObservableObject, GameService {
         
         if newAwareness >= 100 {
             awarenessPublisher.send(sceneId)
+            NotificationCenter.default.post(name: .exposed, object: nil)
         }
     }
     

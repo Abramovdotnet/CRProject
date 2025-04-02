@@ -21,6 +21,8 @@ struct CRProjectApp: App {
             gameTime: dependencyManager.resolve(),
             vampireNatureRevealService: dependencyManager.resolve()
         ))
+    
+
     }
     
     var body: some SwiftUI.Scene {

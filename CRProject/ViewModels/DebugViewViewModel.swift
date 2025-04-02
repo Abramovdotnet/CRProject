@@ -12,6 +12,7 @@ class DebugViewViewModel: ObservableObject {
     @Published var currentDay: Int = 1
     @Published var currentHour: Int = 0
     @Published var isNight: Bool = false
+    @Published var isGameEnd: Bool = false
     
     private var cancellables = Set<AnyCancellable>()
     let gameStateService: GameStateService
@@ -97,6 +98,12 @@ class DebugViewViewModel: ObservableObject {
                 self?.updatePlayerBloodPercentage()
             }
             .store(in: &cancellables)
+        
+        NotificationCenter.default.publisher(for: .exposed)
+            .sink { [weak self] _ in
+                self?.endGame()
+            }
+            .store(in: &cancellables)
             
         // Initial updates
         updatePlayerBloodPercentage()
@@ -145,13 +152,17 @@ class DebugViewViewModel: ObservableObject {
         let count = Int.random(in: 2...4)
         print("Generating \(count) NPCs")
         
-        npcs = NPCReader.getRandomNPCs(count: 10)
+        npcs = NPCReader.getRandomNPCs(count: Int.random(in: 1...20))
         
         for npc in npcs {
             print("Created NPC: \(npc.name)")
         }
         
         print("Total NPCs: \(npcs.count)")
+    }
+    
+    func endGame(){
+        isGameEnd = true
     }
     
     func investigateNPC(_ npc: NPC) {
@@ -161,6 +172,7 @@ class DebugViewViewModel: ObservableObject {
         }
         investigationService.investigate(inspector: player, investigationObject: npc)
         updateSceneAwareness()
+        playerBloodPercentage = player.bloodMeter.bloodPercentage
     }
     
     func resetAwareness() {
@@ -235,5 +247,16 @@ class DebugViewViewModel: ObservableObject {
     
     func getLocationAwareness(_ scene: Scene) -> Float {
         return vampireNatureRevealService.getAwareness(for: scene.id)
+    }
+    
+    var isAwarenessSafe: Bool {
+        guard let currentSceneId = currentScene?.id else { return true }
+        return vampireNatureRevealService.getAwareness(for: currentSceneId) < 100
+    }
+    
+    func skipTimeToNight() {
+        while !gameTime.isNightTime {
+            gameTime.advanceTimeSafe()
+        }
     }
 } 

@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct EndGameView: View {
-    let statistics: StatisticsService
+    let statistics: StatisticsService = DependencyManager.shared.resolve()
+    
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -28,7 +29,8 @@ struct EndGameView: View {
                 .padding()
                 
                 Button("Exit") {
-                    dismiss()
+                    DebugView(viewModel: DebugViewViewModel())
+                    dismiss
                 }
                 .buttonStyle(.borderedProminent)
                 .tint(.red)
@@ -56,7 +58,3 @@ struct StatRow: View {
         .frame(width: 200)
     }
 }
-
-#Preview {
-    EndGameView(statistics: StatisticsService())
-} 
