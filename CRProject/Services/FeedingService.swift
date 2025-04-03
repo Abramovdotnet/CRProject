@@ -5,15 +5,18 @@ class FeedingService: GameService {
     private let gameTime: GameTimeService
     private let vampireNatureRevealService: VampireNatureRevealService
     private let statisticsService: StatisticsService
+    private let gameEventsBus: GameEventsBusService
     
     init(bloodService: BloodManagementService = DependencyManager.shared.resolve(),
          gameTime: GameTimeService = DependencyManager.shared.resolve(),
          vampireNatureRevealService: VampireNatureRevealService = DependencyManager.shared.resolve(),
-         statisticsService: StatisticsService = DependencyManager.shared.resolve()) {
+         statisticsService: StatisticsService = DependencyManager.shared.resolve(),
+         gameEventsBus: GameEventsBusService = DependencyManager.shared.resolve()) {
         self.bloodService = bloodService
         self.gameTime = gameTime
         self.vampireNatureRevealService = vampireNatureRevealService
         self.statisticsService = statisticsService
+        self.gameEventsBus = gameEventsBus
     }
     
     func canFeed(vampire: any Character, prey: any Character) -> Bool {
@@ -33,6 +36,12 @@ class FeedingService: GameService {
         
         // Increase awareness in the scene where feeding occurred
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: 10.0)
+        
+        gameEventsBus.addEventMessage("Player consumed \(prey.name) blood.")
+        
+        if !prey.isAlive {
+            gameEventsBus.addWarningMessage("* I just killed \(prey.name)! Feel satisfied... *")
+        }
     }
     
     func emptyBlood(vampire: any Character, prey: any Character, in sceneId: UUID) throws {
@@ -46,6 +55,9 @@ class FeedingService: GameService {
         
         // Increase awareness more significantly when emptying blood
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: 30.0)
+        
+        gameEventsBus.addEventMessage("Player drained \(prey.name) empty.")
+        gameEventsBus.addWarningMessage("* Yet another victim of my countless thirst... *")
     }
 }
 

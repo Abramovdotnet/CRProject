@@ -32,7 +32,7 @@ struct NavigationDetailView: View {
                         if let parent = viewModel.parentScene {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Return")
-                                    .font(Theme.subheadingFont)
+                                    .font(Theme.captionFont)
                                     .foregroundColor(Theme.textColor.opacity(0.7))
                                 
                                 NavigationButton(
@@ -52,7 +52,7 @@ struct NavigationDetailView: View {
                         if !viewModel.siblingScenes.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Nearby Locations")
-                                    .font(Theme.subheadingFont)
+                                    .font(Theme.captionFont)
                                     .foregroundColor(Theme.textColor.opacity(0.7))
                                 
                                 ForEach(viewModel.siblingScenes.sorted(by: { 

@@ -1,7 +1,5 @@
 import SwiftUI
 
-import SwiftUI
-
 struct MainSceneView: View {
     @ObservedObject var viewModel: MainSceneViewModel
     @StateObject private var npcManager = NPCInteractionManager.shared
@@ -22,46 +20,85 @@ struct MainSceneView: View {
                         .frame(maxWidth: .infinity)
                         .background(Color.clear)
                     
-                    HStack(alignment: .top, spacing: 20) {
-                        CircularNPCView(
-                            npcs: viewModel.npcs,
-                            onAction: handleNPCAction
-                        )
-                        Spacer()
-                        
-                        VStack(alignment: .leading) {
-                            Button(action: {
-                                // Animation sequence
-                                withAnimation(.easeInOut(duration: 0.1)) {
-                                    compassScale = 0.9
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    withAnimation(.spring()) {
-                                        compassScale = 1.0
-                                        showingNavigation = true
+                    GeometryReader { geometry in
+                        HStack(spacing: 20) {
+                            // Left section: NPC Wheel (40%)
+                            CircularNPCView(
+                                npcs: viewModel.npcs,
+                                onAction: handleNPCAction
+                            )
+                            .frame(width: geometry.size.width * 0.5)
+                            
+                            // Right section: Location Info and Chat (60%)
+                            VStack(spacing: 20) {
+                                // Location Info
+                                VStack(alignment: .leading, spacing: 10) {
+                                    HStack(alignment: .top, spacing: 10) {
+                                        VStack(alignment: .leading, spacing: 4) {
+                                            Text(viewModel.currentScene?.name ?? "Unknown")
+                                                .font(Theme.captionFont)
+                                            LocationInfoView(scene: viewModel.currentScene, viewModel: viewModel)
+                                        }
+                                        .frame(width: 100)
+                                        
+                                        ZStack {
+                                            Button(action: {
+                                                withAnimation(.easeInOut(duration: 0.1)) {
+                                                    compassScale = 0.9
+                                                }
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                    withAnimation(.spring()) {
+                                                        compassScale = 1.0
+                                                        showingNavigation = true
+                                                    }
+                                                }
+                                            }) {
+                                                ZStack {
+                                                    // 1. Frame (bottom layer)
+                                                    Image("iconFrame")
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fit)
+                                                        .frame(width: 60 * 1.1, height: 60 * 1.1)
+                                                    
+                                                    // 2. Background circle (middle layer)
+                                                    Circle()
+                                                        .fill(Color.black.opacity(0.7))
+                                                        .frame(width: 60 * 0.85, height: 60 * 0.85)
+                                                        .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                                                        .overlay(
+                                                            Circle()
+                                                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                                        )
+                                                    
+                                                    // 3. Compass icon (top layer)
+                                                    Image("compassAlt")
+                                                        .resizable()
+                                                        .aspectRatio(contentMode: .fit)
+                                                        .frame(width: 60 * 0.8, height: 60 * 0.8)
+                                                }
+                                                .scaleEffect(compassScale)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            .contentShape(Circle())
+                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                        }
+                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
                                     }
                                 }
-                            }) {
-                                VStack {
-                                    Image("compassAlt")
-                                        .resizable()
-                                        .frame(width: 100, height: 100) // Fixed size
-                                        .scaleEffect(compassScale)
-                                        .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
-                                    
-                                    Text(viewModel.currentScene?.name ?? "Unknown")
-                                        .font(Theme.bodyFont)
-                                        .padding(.top, 4)
-                                    
-                                    LocationInfoView(scene: viewModel.currentScene, viewModel: viewModel)
-                                        .frame(width: 100)
-                                }
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                
+                                // Chat History
+                                ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
+                                    .frame(maxWidth: .infinity)
+                                    .frame(maxHeight: .infinity)
+                                    .padding(.bottom, 15)
+                                
                             }
-                            .buttonStyle(PlainButtonStyle())
+                            .frame(width: geometry.size.width * 0.5)
                         }
-                        .padding()
+                        .frame(maxHeight: .infinity)
                     }
-                    .frame(maxHeight: .infinity)
+                    .padding(.horizontal)
                 }
             }
             .foregroundColor(Theme.textColor)

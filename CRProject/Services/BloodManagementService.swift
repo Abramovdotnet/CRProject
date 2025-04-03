@@ -8,6 +8,11 @@ import Foundation
 import Combine
 
 class BloodManagementService: GameService {
+    private let gameEventsBus: GameEventsBusService
+    
+    init(gameEventsBus: GameEventsBusService = DependencyManager.shared.resolve()) {
+        self.gameEventsBus = gameEventsBus
+    }
     
     func feed(vampire: any Character, prey: any Character, amount: Float) throws {
         guard vampire.isVampire else {

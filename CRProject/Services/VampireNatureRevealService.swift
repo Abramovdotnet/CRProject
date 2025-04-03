@@ -8,6 +8,11 @@ extension Notification.Name {
 class VampireNatureRevealService: ObservableObject, GameService {
     private var awarenessLevels: [UUID: Float] = [:]
     private let awarenessPublisher = PassthroughSubject<UUID, Never>()
+    private let gameEventsBus: GameEventsBusService
+    
+    init(gameEventsBus: GameEventsBusService = DependencyManager.shared.resolve()) {
+        self.gameEventsBus = gameEventsBus
+    }
     
     var exposedPublisher: AnyPublisher<UUID, Never> {
         awarenessPublisher
@@ -29,6 +34,10 @@ class VampireNatureRevealService: ObservableObject, GameService {
         if newAwareness >= 100 {
             awarenessPublisher.send(sceneId)
             NotificationCenter.default.post(name: .exposed, object: nil)
+        }
+        
+        if newAwareness > 70 {
+            gameEventsBus.addWarningMessage("* People almost discovered me!")
         }
     }
     

@@ -16,15 +16,19 @@ class GameStateService : ObservableObject, GameService{
     
     private let gameTime: GameTimeService
     private let vampireNatureRevealService: VampireNatureRevealService
+    private let gameEventsBus: GameEventsBusService
     private var cancellables = Set<AnyCancellable>()
     private let locationReader: LocationReader
     private let vampireReader: NPCReader
     
-    init(gameTime: GameTimeService, vampireNatureRevealService: VampireNatureRevealService,
+    init(gameTime: GameTimeService, 
+         vampireNatureRevealService: VampireNatureRevealService,
+         gameEventsBus: GameEventsBusService = DependencyManager.shared.resolve(),
          locationReader: LocationReader = DependencyManager.shared.resolve(),
          vampireReader: NPCReader = DependencyManager.shared.resolve()) {
         self.gameTime = gameTime
         self.vampireNatureRevealService = vampireNatureRevealService
+        self.gameEventsBus = gameEventsBus
         self.locationReader = locationReader
         self.vampireReader = vampireReader
         
@@ -72,6 +76,7 @@ class GameStateService : ObservableObject, GameService{
         
         // Advance time when changing location
         gameTime.advanceTime()
+        gameEventsBus.addSystemMessage("Player entered \(currentScene?.name ?? "").")
     }
     
     private func updateRelatedLocations(for locationId: UUID) {
@@ -107,6 +112,10 @@ class GameStateService : ObservableObject, GameService{
         
         // Reduce player blood pool
         player?.bloodMeter.useBlood(5)
+        
+        if player?.bloodMeter.currentBlood ?? 0 <= 30 {
+            gameEventsBus.addWarningMessage("* I feel huge lack of blood!*")
+        }
     }
     
     private func handleSafeTimeAdvanced() {

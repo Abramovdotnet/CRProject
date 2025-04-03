@@ -6,14 +6,15 @@ struct CRProjectApp: App {
         // Register services in the correct order
         let dependencyManager = DependencyManager.shared
         
-        // Register StatisticsService first
+        // Register core services first
         dependencyManager.register(LocationReader())
         dependencyManager.register(NPCReader())
         dependencyManager.register(StatisticsService())
+        dependencyManager.register(GameTimeService())
+        dependencyManager.register(GameEventsBusService())
         
         // Then register other services
         dependencyManager.register(VampireNatureRevealService())
-        dependencyManager.register(GameTimeService())
         dependencyManager.register(BloodManagementService())
         dependencyManager.register(FeedingService())
         dependencyManager.register(InvestigationService())
@@ -21,13 +22,11 @@ struct CRProjectApp: App {
             gameTime: dependencyManager.resolve(),
             vampireNatureRevealService: dependencyManager.resolve()
         ))
-    
-
     }
     
     var body: some SwiftUI.Scene {
         WindowGroup {
-            MainSceneView(viewModel:MainSceneViewModel())
+            MainSceneView(viewModel: MainSceneViewModel())
         }
     }
 }

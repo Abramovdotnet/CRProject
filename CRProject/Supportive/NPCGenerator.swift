@@ -90,8 +90,8 @@ class NPCGenerator {
         
         for _ in 0..<count {
             let sex = Bool.random() ? "male" : "female"
-            let firstName = sex == "male" ? maleFirstNames.randomElement()! : femaleFirstNames.randomElement()!
-            let lastName = lastNames.randomElement()!
+            let firstName = "Saren"
+            let lastName = "Crowd"
             let profession = professions.randomElement()!
             
             // Determine if this NPC should be a vampire

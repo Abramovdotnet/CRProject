@@ -4,6 +4,8 @@ import Combine
 extension Notification.Name {
     static let timeAdvanced = Notification.Name("timeAdvanced")
     static let safeTimeAdvanced = Notification.Name("safeTimeAdvanced")
+    static let nightAppears = Notification.Name("nightAppears")
+    static let dayAppears = Notification.Name("dayAppears")
 }
 
 class GameTimeService: GameService {
@@ -53,6 +55,16 @@ class GameTimeService: GameService {
     }
     
     private func updateNightTimeStatus() {
+        let currentValue = isNightTime
+        
         isNightTime = self.currentHour >= 20 || self.currentHour < 6
+        
+        if currentValue != isNightTime {
+            if isNightTime {
+                NotificationCenter.default.post(name: .nightAppears, object: nil)
+            } else {
+                NotificationCenter.default.post(name: .dayAppears, object: nil)
+            }
+        }
     }
 }

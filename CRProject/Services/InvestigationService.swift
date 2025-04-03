@@ -4,13 +4,16 @@ class InvestigationService: GameService {
     private let bloodService: BloodManagementService
     private let gameTime: GameTimeService
     private let statisticsService: StatisticsService
+    private let gameEventsBus: GameEventsBusService
     
     init(bloodService: BloodManagementService = DependencyManager.shared.resolve(),
          gameTime: GameTimeService = DependencyManager.shared.resolve(),
-         statisticsService: StatisticsService = DependencyManager.shared.resolve()) {
+         statisticsService: StatisticsService = DependencyManager.shared.resolve(),
+         gameEventsBus: GameEventsBusService = DependencyManager.shared.resolve()) {
         self.bloodService = bloodService
         self.gameTime = gameTime
         self.statisticsService = statisticsService
+        self.gameEventsBus = gameEventsBus
     }
     
     func canInvestigate(inspector: any Character, investigationObject: any Character) -> Bool {
@@ -38,5 +41,9 @@ class InvestigationService: GameService {
         
         // Update statistics
         statisticsService.incrementInvestigations()
+        
+        gameEventsBus.addSystemMessage("\(investigationObject.name). " +
+                                        "It's \(investigationObject.sex) " +
+                                       "\(investigationObject.profession).")
     }
 } 

@@ -418,9 +418,10 @@ struct NPCButton: View {
                     .frame(width: size * 0.8, height: size * 0.8) // Smaller than background
                     .rotationEffect(.degrees(rotation))
                     .clipShape(Circle())
+                    .opacity(npc.isAlive ? 1.0 : 0.4)
             }
         }
-        .shadow(color: .black, radius: 1, x: 0, y: 2)
+        .shadow(color: .black, radius: 3, x: 0, y: 2)
         .buttonStyle(PlainButtonStyle())
         .contentShape(Circle())
     }
