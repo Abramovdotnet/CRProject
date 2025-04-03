@@ -7,10 +7,9 @@ struct LocationInfoView: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Location awareness: \(Int(viewModel.sceneAwareness))%")
-                .font(Theme.bodyFont)
-            
             ProgressBar(value: Double(viewModel.sceneAwareness / 100.0), color: Theme.awarenessProgressColor)
+            Text("Awareness: \(Int(viewModel.sceneAwareness))%")
+                .font(Theme.bodyFont)
         }
     }
 }

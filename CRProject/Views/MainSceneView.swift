@@ -1,9 +1,12 @@
 import SwiftUI
 
+import SwiftUI
+
 struct MainSceneView: View {
     @ObservedObject var viewModel: MainSceneViewModel
     @StateObject private var npcManager = NPCInteractionManager.shared
     @State private var showingNavigation = false
+    @State private var compassScale: CGFloat = 1.0
     
     var body: some View {
         if viewModel.isGameEnd {
@@ -27,34 +30,38 @@ struct MainSceneView: View {
                         Spacer()
                         
                         VStack(alignment: .leading) {
-                            Button(action: { showingNavigation = true }) {
-                                HStack {
-                                    Image(systemName: "moon.stars.fill")
-                                        .foregroundColor(Theme.accentColor)
+                            Button(action: {
+                                // Animation sequence
+                                withAnimation(.easeInOut(duration: 0.1)) {
+                                    compassScale = 0.9
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    withAnimation(.spring()) {
+                                        compassScale = 1.0
+                                        showingNavigation = true
+                                    }
+                                }
+                            }) {
+                                VStack {
+                                    Image("compassAlt")
+                                        .resizable()
+                                        .frame(width: 100, height: 100) // Fixed size
+                                        .scaleEffect(compassScale)
+                                        .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
+                                    
                                     Text(viewModel.currentScene?.name ?? "Unknown")
                                         .font(Theme.bodyFont)
-                                    Spacer()
-                                    Text("\(viewModel.childScenes.count + viewModel.siblingScenes.count + (viewModel.parentScene != nil ? 1 : 0)) locations")
-                                        .font(Theme.captionFont)
-                                        .foregroundColor(Theme.textColor.opacity(0.7))
-                                    Image(systemName: "chevron.right")
-                                        .foregroundColor(Theme.textColor.opacity(0.5))
+                                        .padding(.top, 4)
+                                    
+                                    LocationInfoView(scene: viewModel.currentScene, viewModel: viewModel)
+                                        .frame(width: 100)
                                 }
-                                .padding()
-                                .background(Theme.secondaryColor)
-                                .cornerRadius(8)
                             }
                             .buttonStyle(PlainButtonStyle())
-                            
-                            LocationInfoView(scene: viewModel.currentScene, viewModel: viewModel)
                         }
                         .padding()
                     }
                     .frame(maxHeight: .infinity)
-                    
-                    BottomWidgetView(viewModel: viewModel)
-                        .frame(maxWidth: .infinity)
-                        .background(Color.clear)
                 }
             }
             .foregroundColor(Theme.textColor)

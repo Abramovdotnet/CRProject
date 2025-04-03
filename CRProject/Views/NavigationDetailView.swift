@@ -13,35 +13,22 @@ struct NavigationDetailView: View {
             VStack(spacing: 0) {
                 // Header
                 HStack {
-                    Button(action: { dismiss() }) {
-                        HStack(spacing: 8) {
-                            Image(systemName: "chevron.left")
-                            Text("Back")
-                        }
-                        .foregroundColor(Theme.textColor)
-                    }
-                    Spacer()
                     Text("Navigation")
                         .font(Theme.headingFont)
                     Spacer()
+                    Button(action: { dismiss() }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .foregroundColor(Theme.textColor.opacity(0.7))
+                            .font(.title2)
+                    }
                 }
                 .padding()
                 .background(Theme.secondaryColor)
                 
-                // Current Location
-                HStack {
-                    Image(systemName: "moon.stars.fill")
-                        .foregroundColor(Theme.accentColor)
-                    Text(viewModel.currentScene?.name ?? "Unknown Location")
-                        .font(Theme.headingFont)
-                    Spacer()
-                }
-                .padding()
-                .background(Theme.secondaryColor.opacity(0.7))
-                
+                // Navigation Content
                 ScrollView {
-                    VStack(spacing: 16) {
-                        // Parent Location
+                    HStack(alignment: .top, spacing: 20) {
+                        // Parent Location Column
                         if let parent = viewModel.parentScene {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Return")
@@ -52,62 +39,72 @@ struct NavigationDetailView: View {
                                     location: parent,
                                     type: .parent,
                                     awareness: viewModel.getLocationAwareness(parent),
-                                    action: { 
+                                    action: {
                                         viewModel.navigateToParent()
                                         dismiss()
                                     }
                                 )
                             }
+                            .frame(maxWidth: .infinity)
                         }
                         
-                        // Nearby Locations
+                        // Nearby Locations Column
                         if !viewModel.siblingScenes.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Nearby Locations")
                                     .font(Theme.subheadingFont)
                                     .foregroundColor(Theme.textColor.opacity(0.7))
                                 
-                                ForEach(viewModel.siblingScenes) { scene in
+                                ForEach(viewModel.siblingScenes.sorted(by: { 
+                                    viewModel.getLocationAwareness($0) > viewModel.getLocationAwareness($1) 
+                                })) { scene in
                                     NavigationButton(
                                         location: scene,
                                         type: .sibling,
                                         awareness: viewModel.getLocationAwareness(scene),
-                                        action: { 
+                                        action: {
                                             viewModel.navigateToSibling(scene)
                                             dismiss()
                                         }
                                     )
                                 }
                             }
+                            .frame(maxWidth: .infinity)
                         }
                         
-                        // Explorable Areas
+                        // Explorable Areas Column
                         if !viewModel.childScenes.isEmpty {
                             VStack(alignment: .leading, spacing: 8) {
                                 Text("Explorable Areas")
                                     .font(Theme.subheadingFont)
                                     .foregroundColor(Theme.textColor.opacity(0.7))
                                 
-                                ForEach(viewModel.childScenes) { scene in
+                                ForEach(viewModel.childScenes.sorted(by: { 
+                                    viewModel.getLocationAwareness($0) > viewModel.getLocationAwareness($1) 
+                                })) { scene in
                                     NavigationButton(
                                         location: scene,
                                         type: .child,
                                         awareness: viewModel.getLocationAwareness(scene),
-                                        action: { 
+                                        action: {
                                             viewModel.navigateToChild(scene)
                                             dismiss()
                                         }
                                     )
                                 }
                             }
+                            .frame(maxWidth: .infinity)
                         }
                     }
                     .padding()
                 }
             }
         }
-        .foregroundColor(Theme.textColor)
     }
+}
+
+#Preview {
+    NavigationDetailView(viewModel: MainSceneViewModel())
 }
 
 private struct NavigationButton: View {

@@ -104,6 +104,9 @@ class GameStateService : ObservableObject, GameService{
         for scene in siblingScenes {
             vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
         }
+        
+        // Reduce player blood pool
+        player?.bloodMeter.useBlood(5)
     }
     
     private func handleSafeTimeAdvanced() {

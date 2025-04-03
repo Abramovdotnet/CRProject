@@ -12,11 +12,7 @@ struct DialogueView: View {
             
             VStack(spacing: 0) {
                 // Header
-                VStack(alignment: .center, spacing: 8) {
-                    Text("Blood: \(Int(viewModel.npc.bloodMeter.bloodPercentage))%")
-                        .font(Theme.bodyFont)
-                    ProgressBar(value: Double(viewModel.npc.bloodMeter.bloodPercentage / 100.0), color: Theme.bloodProgressColor)
-                }.padding(.top, 10)
+
                 HStack {
                     VStack(alignment: .leading) {
                         Text(viewModel.npc.name)

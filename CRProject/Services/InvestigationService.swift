@@ -33,11 +33,6 @@ class InvestigationService: GameService {
         // Adjust game time
         gameTime.advanceTime(hours: 1)
         
-        // Share blood if inspector is vampire
-        if inspector.isVampire {
-            inspector.shareBlood(amount: 10.0, from: inspector)
-        }
-        
         // Investigate the object
         investigationObject.isUnknown = false
         

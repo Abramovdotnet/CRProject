@@ -48,7 +48,7 @@ class MainSceneViewModel: ObservableObject {
         let player = NPCGenerator.createPlayer()
         gameStateService.setPlayer(player)
         
-        playerBloodPercentage = player.bloodMeter.bloodPercentage
+        updatePlayerBloodPercentage()
         
         // Create initial scene using LocationReader
         do {
@@ -130,19 +130,22 @@ class MainSceneViewModel: ObservableObject {
         guard let parentScene = parentScene else { return }
         try? gameStateService.changeLocation(to: parentScene.id)
         currentScene = gameStateService.currentScene
-        sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
+        updateSceneAwareness()
+        updatePlayerBloodPercentage()
     }
     
     func navigateToChild(_ scene: Scene) {
         try? gameStateService.changeLocation(to: scene.id)
         currentScene = gameStateService.currentScene
-        sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
+        updateSceneAwareness()
+        updatePlayerBloodPercentage()
     }
     
     func navigateToSibling(_ scene: Scene) {
         try? gameStateService.changeLocation(to: scene.id)
         currentScene = gameStateService.currentScene
-        sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
+        updateSceneAwareness()
+        updatePlayerBloodPercentage()
     }
     
     // MARK: - NPC Management
@@ -172,12 +175,12 @@ class MainSceneViewModel: ObservableObject {
         }
         investigationService.investigate(inspector: player, investigationObject: npc)
         updateSceneAwareness()
-        playerBloodPercentage = player.bloodMeter.bloodPercentage
+        updatePlayerBloodPercentage()
     }
     
     func resetAwareness() {
         vampireNatureRevealService.decreaseAwareness(for: currentScene?.id ?? UUID(), amount: 100)
-        sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
+        updateSceneAwareness()
     }
     
     // MARK: - Blood Management
@@ -191,7 +194,7 @@ class MainSceneViewModel: ObservableObject {
             try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30, in: sceneId)
             updatePlayerBloodPercentage()
             vampireNatureRevealService.increaseAwareness(for: currentScene?.id ?? UUID(), amount: 20)
-            sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
+            updateSceneAwareness()
             print(sceneAwareness)
         } catch {
             print("Error feeding on character: \(error)")
@@ -206,7 +209,7 @@ class MainSceneViewModel: ObservableObject {
         do {
             try feedingService.emptyBlood(vampire: player, prey: npc, in: currentScene?.id ?? UUID())
             updatePlayerBloodPercentage()
-            sceneAwareness = vampireNatureRevealService.getAwareness(for: currentScene?.id ?? UUID())
+            updateSceneAwareness()
         } catch {
             print("Error emptying blood: \(error)")
         }
