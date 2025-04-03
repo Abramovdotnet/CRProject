@@ -29,7 +29,7 @@ struct EndGameView: View {
                 .padding()
                 
                 Button("Exit") {
-                    DebugView(viewModel: DebugViewViewModel())
+                    MainSceneView(viewModel: MainSceneViewModel())
                     dismiss
                 }
                 .buttonStyle(.borderedProminent)

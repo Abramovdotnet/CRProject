@@ -25,6 +25,11 @@ class RotationAnimator: NSObject {
 
 struct CircularNPCView: View {
     let npcs: [NPC]
+    var onInvestigate: (NPC) -> Void
+    var onStartConversation: (NPC) -> Void
+    var onFeed: (NPC) -> Void
+    var onDrain: (NPC) -> Void
+    
     @State private var rotationAngle: Double = 0
     @State private var selectedNPC: NPC? = nil
     @State private var animatedNPC: NPC? = nil
@@ -84,52 +89,67 @@ struct CircularNPCView: View {
                 
                 // Context Menu View
                 if let npc = selectedNPC {
-                    Color.clear
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            withAnimation(.spring()) {
+        Color.clear
+            .contentShape(Rectangle())
+            .onTapGesture {
+                withAnimation(.spring()) {
+                    selectedNPC = nil
+                }
+            }
+        
+        VStack(spacing: 8) {
+            NPCButtonPreview(npc: npc)
+                .transition(.scale.combined(with: .opacity))
+            
+            VStack(spacing: 4) {
+                ContextMenuButton(
+                    action: {
+                        onInvestigate(npc)
+                    },
+                    label: "Investigate",
+                    icon: "arrow.triangle.2.circlepath",
+                    color: Color.blue
+                )
+                ContextMenuButton(
+                    action: {
+                        onStartConversation(npc)  // Direct pass-through
+                        selectedNPC = nil
+                    },
+                    label: "Start conversation",
+                    icon: "bubble.left",
+                    color: .blue
+                )
+                ContextMenuButton(
+                    action: {
+                        onFeed(npc)
+                        if !npc.isAlive {
                                 selectedNPC = nil
                             }
-                        }
-                    
-                    VStack(spacing: 8) {
-                        NPCButtonPreview(npc: npc)
-                            .transition(.scale.combined(with: .opacity))
-                        
-                        VStack(spacing: 4) {
-                            ContextMenuButton(
-                                action: { selectedNPC = nil },
-                                label: "Investigate",
-                                icon: "arrow.triangle.2.circlepath",
-                                color: Color.blue
-                            )
-                            ContextMenuButton(
-                                action: { selectedNPC = nil },
-                                label: "Start conversation",
-                                icon: "bubble.left",
-                                color: Color.blue
-                            )
-                            ContextMenuButton(
-                                action: { selectedNPC = nil },
-                                label: "Feed",
-                                icon: "drop.fill",
-                                color: Color.red
-                            )
-                            ContextMenuButton(
-                                action: { selectedNPC = nil },
-                                label: "Drain",
-                                icon: "bolt.fill",
-                                color: Color.red
-                            )
-                        }
-                        .padding(8)
-                        .background(Theme.secondaryColor.opacity(0.9))
-                        .cornerRadius(8)
-                        .frame(width: 280)
-                        .shadow(radius: 5)
-                    }
-                    .transition(.opacity.combined(with: .scale(scale: 0.9)))
-                }
+                    },
+                    label: "Feed",
+                    icon: "drop.fill",
+                    color: Color.red
+                )
+                ContextMenuButton(
+                    action: {
+                        onDrain(npc)
+                        if !npc.isAlive {
+                                selectedNPC = nil
+                            }
+                    },
+                    label: "Drain",
+                    icon: "bolt.fill",
+                    color: Color.red
+                )
+            }
+            .padding(8)
+            .background(Theme.secondaryColor.opacity(0.9))
+            .cornerRadius(8)
+            .frame(width: 280)
+            .shadow(radius: 5)
+        }
+        .transition(.opacity.combined(with: .scale(scale: 0.9)))
+    }
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
             .onAppear {

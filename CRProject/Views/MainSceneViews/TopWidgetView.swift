@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Top Widget
 struct TopWidgetView: View {
-    @ObservedObject var viewModel: DebugViewViewModel
+    @ObservedObject var viewModel: MainSceneViewModel
     
     var body: some View {
         HStack {

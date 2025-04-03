@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct NavigationDetailView: View {
-    @ObservedObject var viewModel: DebugViewViewModel
+    @ObservedObject var viewModel: MainSceneViewModel
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {

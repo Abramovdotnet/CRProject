@@ -3,7 +3,7 @@ import SwiftUI
 // MARK: - Location Info
 struct LocationInfoView: View {
     let scene: Scene?
-    @ObservedObject var viewModel: DebugViewViewModel
+    @ObservedObject var viewModel: MainSceneViewModel
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -17,7 +17,7 @@ struct LocationInfoView: View {
 
 // MARK: - Location Navigation View
 struct LocationNavigationView: View {
-    @ObservedObject var viewModel: DebugViewViewModel
+    @ObservedObject var viewModel: MainSceneViewModel
     @State private var showLocationDetails: Bool = false
     @State private var selectedLocation: Scene?
     

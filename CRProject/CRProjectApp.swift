@@ -27,7 +27,7 @@ struct CRProjectApp: App {
     
     var body: some SwiftUI.Scene {
         WindowGroup {
-            DebugView(viewModel:DebugViewViewModel())
+            MainSceneView(viewModel:MainSceneViewModel())
         }
     }
 }

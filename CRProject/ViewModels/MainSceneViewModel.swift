@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class DebugViewViewModel: ObservableObject {
+class MainSceneViewModel: ObservableObject {
     @Published var currentScene: Scene?
     @Published var parentScene: Scene?
     @Published var childScenes: [Scene] = []
