@@ -13,6 +13,7 @@ protocol SceneProtocol: Codable, ObservableObject {
     var parentSceneId: UUID? { get set }
     var childSceneIds: [UUID] { get }
     var isIndoor: Bool { get }
+    var sceneType: SceneType { get set }
     
     func getCharacters() -> [any Character]
     func setCharacters(_ characters: [any Character])

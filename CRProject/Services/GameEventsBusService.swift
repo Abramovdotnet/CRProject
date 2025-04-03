@@ -50,7 +50,7 @@ class GameEventsBusService: GameService, ObservableObject {
             let newMessage = ChatMessage(
                 timestampHour: gameTimeService.currentHour,
                 timestampDay: gameTimeService.currentDay,
-                timestampHourString: gameTimeService.currentHour.description + ":00",
+                timestampHourString: gameTimeService.currentHour.description + ":00 - ",
                 message: message,  // Pass the optional, let ChatMessage handle it
                 type: type
             )

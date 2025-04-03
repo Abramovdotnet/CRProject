@@ -17,6 +17,7 @@ protocol Character: Identifiable, ObservableObject, Codable {
     var isAlive: Bool { get }
     var bloodMeter: BloodMeter { get }
     var isUnknown: Bool { get set }
+    var isSleeping: Bool { get set }
     
     func shareBlood(amount: Float, from donor: any Character)
 }

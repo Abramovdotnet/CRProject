@@ -16,6 +16,7 @@ class Player: Character {
     var isVampire: Bool { true }
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isUnknown: Bool = false
+    var isSleeping: Bool = false
     
     init(name: String, sex: Sex, age: Int, profession: Profession, id: UUID) {
         self.name = name

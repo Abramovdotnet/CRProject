@@ -1,0 +1,590 @@
+[
+  {
+    "id": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a",
+    "name": "Northern Realm",
+    "sceneType": "kingdom",
+    "isIndoor": false,
+    "parentSceneId": null
+  },
+  {
+    "id": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a",
+    "name": "Frosthaven",
+    "sceneType": "city",
+    "isIndoor": false,
+    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c",
+    "name": "Frosthaven Market District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Frosthaven Temple District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Frosthaven Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Frosthaven Palace District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Frosthaven Academy District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Frosthaven Arena District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Frosthaven Grand Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "The Frosty Mug Tavern",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Ice Forge Blacksmith",
+    "sceneType": "blacksmith",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Temple of Frost",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Northern Lights Shrine",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Frosthaven Royal Palace",
+    "sceneType": "royalPalace",
+    "isIndoor": true,
+    "parentSceneId": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Ice Castle",
+    "sceneType": "castle",
+    "isIndoor": true,
+    "parentSceneId": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Frosthaven Academy",
+    "sceneType": "wizardTower",
+    "isIndoor": true,
+    "parentSceneId": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Frosthaven Library",
+    "sceneType": "library",
+    "isIndoor": true,
+    "parentSceneId": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Frosthaven Arena",
+    "sceneType": "arena",
+    "isIndoor": true,
+    "parentSceneId": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Ice Warrior's Training Grounds",
+    "sceneType": "arena",
+    "isIndoor": false,
+    "parentSceneId": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Frosthaven Ice Gardens",
+    "sceneType": "garden",
+    "isIndoor": false,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Frosthaven Ice Sculpture Gallery",
+    "sceneType": "gallery",
+    "isIndoor": true,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Frosthaven Ice Mage's Guild",
+    "sceneType": "mages_guild",
+    "isIndoor": true,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Frosthaven Ice Forge",
+    "sceneType": "forge",
+    "isIndoor": true,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Frosthaven Ice Arena Training Grounds",
+    "sceneType": "arena",
+    "isIndoor": false,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Frosthaven Ice Warrior's Guild",
+    "sceneType": "fighters_guild",
+    "isIndoor": true,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Frosthaven Ice Thieves' Guild",
+    "sceneType": "thieves_guild",
+    "isIndoor": true,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Frosthaven Ice Concert Hall",
+    "sceneType": "concert_hall",
+    "isIndoor": true,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Frosthaven Ice Museum",
+    "sceneType": "museum",
+    "isIndoor": true,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Frosthaven Ice Archive",
+    "sceneType": "archive",
+    "isIndoor": true,
+    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Icepeak Crystal Gardens",
+    "sceneType": "garden",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Icepeak Crystal Gallery",
+    "sceneType": "gallery",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Icepeak Crystal Mage's Guild",
+    "sceneType": "mages_guild",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Icepeak Crystal Forge",
+    "sceneType": "forge",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Icepeak Crystal Arena Training Grounds",
+    "sceneType": "arena",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Icepeak Crystal Warrior's Guild",
+    "sceneType": "fighters_guild",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Icepeak Crystal Thieves' Guild",
+    "sceneType": "thieves_guild",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Icepeak Crystal Concert Hall",
+    "sceneType": "concert_hall",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Icepeak Crystal Museum",
+    "sceneType": "museum",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Icepeak Crystal Archive",
+    "sceneType": "archive",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Frozen Wastes",
+    "sceneType": "wilderness",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Glacier Pass",
+    "sceneType": "mountain_pass",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Aurora Observatory",
+    "sceneType": "observatory",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Frost Giant Ruins",
+    "sceneType": "ruins",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Ice Dragon's Lair",
+    "sceneType": "dungeon",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Frozen Lake",
+    "sceneType": "lake",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Snow Elf Village",
+    "sceneType": "village",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Ice Witch's Tower",
+    "sceneType": "tower",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Frost Troll Caves",
+    "sceneType": "cave",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Icepeak",
+    "sceneType": "city",
+    "isIndoor": false,
+    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Icepeak Market District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Icepeak Temple District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Icepeak Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Icepeak Academy District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Icepeak Crystal Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "The Crystal Mug Tavern",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Crystal Forge Blacksmith",
+    "sceneType": "blacksmith",
+    "isIndoor": true,
+    "parentSceneId": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Temple of Ice",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Crystal Shrine",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Icepeak Academy",
+    "sceneType": "wizardTower",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Icepeak Library",
+    "sceneType": "library",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Silverpeak",
+    "sceneType": "city",
+    "isIndoor": false,
+    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Silverpeak Market District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Silverpeak Temple District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Silverpeak Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Silverpeak Academy District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Silverpeak Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "The Silver Mug Tavern",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Silver Forge Blacksmith",
+    "sceneType": "blacksmith",
+    "isIndoor": true,
+    "parentSceneId": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Temple of Silver",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Silver Shrine",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Silverpeak Academy",
+    "sceneType": "wizardTower",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Silverpeak Library",
+    "sceneType": "library",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Dawnhaven",
+    "sceneType": "city",
+    "isIndoor": false,
+    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Dawnhaven Market District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Dawnhaven Temple District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Dawnhaven Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Dawnhaven Academy District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Dawnhaven Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "The Dawn Mug Tavern",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Dawn Forge Blacksmith",
+    "sceneType": "blacksmith",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Temple of Dawn",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Dawn Shrine",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Dawnhaven Academy",
+    "sceneType": "wizardTower",
+    "isIndoor": true,
+    "parentSceneId": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Dawnhaven Library",
+    "sceneType": "library",
+    "isIndoor": true,
+    "parentSceneId": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d"
+  }
+] 

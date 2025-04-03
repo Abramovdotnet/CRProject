@@ -36,16 +36,23 @@ struct CircularNPCView: View {
     @State private var hapticEngine: CHHapticEngine?
     @State private var isWheelSpinning = true
     
-    // Layout constants
-    private let radius: CGFloat = 115
-    private let npcButtonSize: CGFloat = 70
-    private let sigilSize: CGFloat = 130
-    private let autoRotationSpeed: Double = 0.08
-    
-    // Immediate interaction flags
+    // Menu visibility states
     @State private var isMenuVisible = false
     @State private var isMenuDismissing = false
-
+    
+    // Inner circle rotations
+    @State private var rotationAngle2: Double = 0 // Middle circle (counter-clockwise)
+    @State private var rotationAngle3: Double = 0 // Inner circle (clockwise)
+    
+    // Layout constants with increased spacing
+    private let outerRadius: CGFloat = 135
+    private let middleRadius: CGFloat = 90
+    private let innerRadius: CGFloat = 55
+    private let npcButtonSize: CGFloat = 45
+    private let sigilSize: CGFloat = 130
+    private let autoRotationSpeed: Double = 0.18
+    private let circleSpacing: CGFloat = 45
+    
     var body: some View {
         GeometryReader { geometry in
             let center = CGPoint(x: geometry.size.width/2, y: geometry.size.height/2)
@@ -54,8 +61,30 @@ struct CircularNPCView: View {
                 // Fixed center sigil
                 sigilView(center: center)
                 
-                // NPC wheel container
-                npcWheelView(geometry: geometry, center: center)
+                // Outer circle (spins clockwise) - Highest zIndex since it's on top
+                npcWheelView(geometry: geometry, center: center,
+                            radius: outerRadius, rotation: rotationAngle,
+                            clockwise: true, npcs: Array(npcs.prefix(min(10, npcs.count))),
+                            buttonSize: npcButtonSize)
+                    .zIndex(3)
+                
+                // Middle circle (spins counter-clockwise)
+                if npcs.count > 10 {
+                    npcWheelView(geometry: geometry, center: center,
+                                radius: middleRadius, rotation: rotationAngle2,
+                                clockwise: false, npcs: Array(npcs[10..<min(20, npcs.count)]),
+                                buttonSize: npcButtonSize * 0.75)
+                        .zIndex(2)
+                }
+                
+                // Inner circle (spins clockwise)
+                if npcs.count > 20 {
+                    npcWheelView(geometry: geometry, center: center,
+                                radius: innerRadius, rotation: rotationAngle3,
+                                clockwise: true, npcs: Array(npcs.suffix(from: 20)),
+                                buttonSize: npcButtonSize * 0.6)
+                        .zIndex(1)
+                }
                 
                 // Context Menu View
                 contextMenuView()
@@ -66,10 +95,15 @@ struct CircularNPCView: View {
                 rotationAnimator.onUpdate = { frameDuration in
                     DispatchQueue.main.async {
                         if isWheelSpinning && !isMenuVisible {
-                            withAnimation(.linear(duration: 1.0)) {
-                                rotationAngle += autoRotationSpeed * frameDuration * 60
-                                if rotationAngle >= 360 { rotationAngle = 0 }
-                            }
+                            // Remove the animation wrapper - let the display link handle smooth updates
+                            rotationAngle += autoRotationSpeed * frameDuration * 60        // Outer clockwise
+                            rotationAngle2 -= autoRotationSpeed * 0.7 * frameDuration * 60 // Middle counter-clockwise
+                            rotationAngle3 += autoRotationSpeed * 0.5 * frameDuration * 60 // Inner clockwise
+                            
+                            // Normalize angles
+                            rotationAngle = rotationAngle.truncatingRemainder(dividingBy: 360)
+                            rotationAngle2 = rotationAngle2.truncatingRemainder(dividingBy: 360)
+                            rotationAngle3 = rotationAngle3.truncatingRemainder(dividingBy: 360)
                         }
                     }
                 }
@@ -79,13 +113,52 @@ struct CircularNPCView: View {
                 rotationAnimator.stop()
             }
         }
-        .frame(height: 270)
+        .frame(height: 300)
         .contentShape(Rectangle())
         .onTapGesture {
             if isMenuVisible {
                 dismissMenu()
             }
         }
+    }
+    
+    private func npcWheelView(geometry: GeometryProxy, center: CGPoint,
+                            radius: CGFloat, rotation: Double, clockwise: Bool,
+                            npcs: [NPC], buttonSize: CGFloat) -> some View {
+        ZStack {
+            ForEach(npcs.indices, id: \.self) { index in
+                let npc = npcs[index]
+                let angle = Angle(degrees: (360 / Double(npcs.count)) * Double(index) - 90)
+                let position = positionOnCircle(angle: angle, radius: radius)
+                
+                NPCButton(npc: npc, size: buttonSize, rotation: clockwise ? -rotation : rotation)
+                    .position(x: position.x + center.x, y: position.y + center.y)
+                    .scaleEffect(animatedNPC?.id == npc.id ? 1.1 : 1.0)
+                    .animation(.spring(response: 0.2, dampingFraction: 0.5), value: animatedNPC?.id == npc.id)
+                    .highPriorityGesture(
+                        TapGesture()
+                            .onEnded {
+                                guard !isMenuVisible && !isMenuDismissing else { return }
+                                
+                                triggerHaptic()
+                                withAnimation {
+                                    animatedNPC = npc
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    isMenuVisible = true
+                                    withAnimation(.spring()) {
+                                        selectedNPC = npc
+                                        animatedNPC = nil
+                                        isWheelSpinning = false
+                                    }
+                                }
+                            }
+                    )
+                    .zIndex(selectedNPC?.id == npc.id ? 3 : 1)
+            }
+        }
+        .rotationEffect(.degrees(rotation), anchor: .center)
+        .disabled(isMenuVisible || isMenuDismissing)
     }
     
     // MARK: - Subviews
@@ -100,47 +173,56 @@ struct CircularNPCView: View {
             .zIndex(0)
     }
     
-    private func npcWheelView(geometry: GeometryProxy, center: CGPoint) -> some View {
-        ZStack {
-            ForEach(npcs, id: \.id) { npc in
-                npcButton(npc: npc, center: center)
+    private func npcWheelView(geometry: GeometryProxy, center: CGPoint,
+                            radius: CGFloat, rotation: Double, clockwise: Bool) -> some View {
+        let npcsForCircle: [NPC]
+        let buttonSize: CGFloat
+        
+        if radius == innerRadius {
+            npcsForCircle = Array(npcs.suffix(from: 20))
+            buttonSize = npcButtonSize * 0.6
+        } else if radius == middleRadius {
+            npcsForCircle = Array(npcs[10..<min(20, npcs.count)])
+            buttonSize = npcButtonSize * 0.75
+        } else {
+            npcsForCircle = Array(npcs.prefix(min(10, npcs.count)))
+            buttonSize = npcButtonSize
+        }
+        
+        return ZStack {
+            ForEach(npcsForCircle.indices, id: \.self) { index in
+                let npc = npcsForCircle[index]
+                let angle = Angle(degrees: (360 / Double(npcsForCircle.count)) * Double(index) - 90)
+                let position = positionOnCircle(angle: angle, radius: radius)
+                
+                NPCButton(npc: npc, size: buttonSize, rotation: clockwise ? -rotation : rotation)
+                    .position(x: position.x + center.x, y: position.y + center.y)
+                    .scaleEffect(animatedNPC?.id == npc.id ? 1.1 : 1.0)
+                    .animation(.spring(response: 0.2, dampingFraction: 0.5), value: animatedNPC?.id == npc.id)
+                    .highPriorityGesture(
+                        TapGesture()
+                            .onEnded {
+                                guard !isMenuVisible && !isMenuDismissing else { return }
+                                
+                                triggerHaptic()
+                                withAnimation {
+                                    animatedNPC = npc
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    isMenuVisible = true
+                                    withAnimation(.spring()) {
+                                        selectedNPC = npc
+                                        animatedNPC = nil
+                                        isWheelSpinning = false
+                                    }
+                                }
+                            }
+                    )
+                    .zIndex(selectedNPC?.id == npc.id ? 3 : 1)
             }
         }
-        .frame(width: geometry.size.width, height: geometry.size.height)
-        .rotationEffect(.degrees(rotationAngle))
+        .rotationEffect(.degrees(rotation))
         .disabled(isMenuVisible || isMenuDismissing)
-        .zIndex(1)
-    }
-    
-    private func npcButton(npc: NPC, center: CGPoint) -> some View {
-        let index = npcs.firstIndex(where: { $0.id == npc.id })!
-        let angle = angleForNPC(index: index, total: npcs.count)
-        let position = positionOnCircle(angle: angle, radius: radius)
-        
-        return NPCButton(npc: npc, size: npcButtonSize, rotation: -rotationAngle)
-            .position(x: position.x + center.x, y: position.y + center.y)
-            .scaleEffect(animatedNPC?.id == npc.id ? 1.1 : 1.0)
-            .animation(.spring(response: 0.2, dampingFraction: 0.5), value: animatedNPC?.id == npc.id)
-            .highPriorityGesture(
-                TapGesture()
-                    .onEnded {
-                        guard !isMenuVisible && !isMenuDismissing else { return }
-                        
-                        triggerHaptic()
-                        withAnimation {
-                            animatedNPC = npc
-                        }
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            isMenuVisible = true
-                            withAnimation(.spring()) {
-                                selectedNPC = npc
-                                animatedNPC = nil
-                                isWheelSpinning = false
-                            }
-                        }
-                    }
-            )
-            .zIndex(selectedNPC?.id == npc.id ? 3 : 1)
     }
     
     private func contextMenuView() -> some View {
@@ -202,17 +284,27 @@ struct CircularNPCView: View {
                 }
                 Spacer()
             }
+            
             HStack {
                 Text("Status: ")
                     .font(Theme.captionFont)
                 Text(npc.isAlive ? "Alive" : "Dead")
                     .font(.caption)
                     .foregroundColor(npc.isAlive ? .green : .red)
+                
+                if npc.isSleeping {
+                    Image(systemName: "moon.fill")
+                        .font(.caption)
+                    Text(" Sleeping")
+                        .font(Theme.captionFont)
+                }
+                
                 if !npc.isUnknown {
                     Text("Blood: \(Int(npc.bloodMeter.currentBlood))%")
                         .font(Theme.bodyFont)
                 }
             }
+            
             if !npc.isUnknown {
                 VStack {
                     ProgressBar(value: Double(npc.bloodMeter.currentBlood / 100.0), color: Theme.bloodProgressColor)
@@ -398,29 +490,27 @@ struct NPCButton: View {
     var body: some View {
         Button(action: {}) {
             ZStack {
-                // Metallic frame (placed first so it appears underneath)
+                // Metallic frame (bottom layer)
                 Image("iconFrame")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: size * 1.02, height: size * 1.02)
-                    .rotationEffect(.degrees(rotation))
-                    .clipShape(Circle())
+                    .frame(width: size * 1.1, height: size * 1.1)
                 
-                // Background circle
+                // Background circle (middle layer)
                 Circle()
                     .fill(Color.black.opacity(0.7))
-                    .frame(width: size * 0.85, height: size * 0.85) // Smaller to fit inside frame
+                    .frame(width: size * 0.85, height: size * 0.85)
                     .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
                     .overlay(
                         Circle()
                             .stroke(Color.white.opacity(0.2), lineWidth: 1)
                     )
                 
-                // NPC icon (smaller to fit inside the frame)
+                // NPC icon (top layer)
                 Image(getImageName(npc: npc))
                     .resizable()
                     .aspectRatio(contentMode: .fit)
-                    .frame(width: size * 0.8, height: size * 0.8) // Smaller than background
+                    .frame(width: size * 0.8, height: size * 0.8)
                     .rotationEffect(.degrees(rotation))
                     .clipShape(Circle())
                     .opacity(npc.isAlive ? 1.0 : 0.4)
@@ -462,7 +552,6 @@ struct NPCButtonPreview: View {
         .buttonStyle(PlainButtonStyle())
         .contentShape(Rectangle())
         .contextMenu {
-            // Single context menu with all actions
             VStack(spacing: 4) {
                 ContextMenuButton(
                     action: { onAction(.investigate(npc)) },
@@ -520,6 +609,5 @@ struct ContextMenuButton: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
-        .contentShape(Rectangle())
     }
 }

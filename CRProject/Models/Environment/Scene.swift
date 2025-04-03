@@ -6,6 +6,7 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
     var name: String = ""
     var parentSceneId: UUID?
     var isIndoor: Bool = false
+    var sceneType: SceneType = .castle
     
     @Published private var _characters: [UUID: any Character] = [:]
     private var _childSceneIds: Set<UUID> = []
@@ -15,11 +16,12 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
         set { _childSceneIds = Set(newValue) }
     }
     
-    init(id: UUID, name: String,  isIndoor: Bool, parentSceneId: UUID? = nil) {
+    init(id: UUID, name: String, isIndoor: Bool, parentSceneId: UUID?, sceneType: SceneType) {
         self.id = id
         self.name = name
         self.isIndoor = isIndoor
         self.parentSceneId = parentSceneId
+        self.sceneType = sceneType
     }
     
     init() {

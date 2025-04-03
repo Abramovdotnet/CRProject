@@ -1,0 +1,205 @@
+[
+  {
+    "id": "1A2B3C4D-E5F6-7G8H-9I0J-1K2L3M4N5O6P",
+    "name": "Central Plains",
+    "sceneType": "kingdom",
+    "isIndoor": false,
+    "parentSceneId": null
+  },
+  {
+    "id": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q",
+    "name": "Greenfield",
+    "sceneType": "city",
+    "isIndoor": false,
+    "parentSceneId": "1A2B3C4D-E5F6-7G8H-9I0J-1K2L3M4N5O6P"
+  },
+  {
+    "id": "3C4D5E6F-G7H8-9I0J-1K2L-3M4N5O6P7Q8R",
+    "name": "Greenfield Market Square",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+  },
+  {
+    "id": "4D5E6F7G-H8I9-0J1K-2L3M-4N5O6P7Q8R9S",
+    "name": "Greenfield Temple District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+  },
+  {
+    "id": "5E6F7G8H-I9J0-1K2L-3M4N-5O6P7Q8R9S0T",
+    "name": "Greenfield Residential Quarter",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+  },
+  {
+    "id": "6F7G8H9I-J0K1-2L3M-4N5O-6P7Q8R9S0T1U",
+    "name": "The Green Leaf Tavern",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "3C4D5E6F-G7H8-9I0J-1K2L-3M4N5O6P7Q8R"
+  },
+  {
+    "id": "7G8H9I0J-K1L2-3M4N-5O6P-7Q8R9S0T1U2V",
+    "name": "Greenfield Central Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "3C4D5E6F-G7H8-9I0J-1K2L-3M4N5O6P7Q8R"
+  },
+  {
+    "id": "8H9I0J1K-L2M3-4N5O-6P7Q-8R9S0T1U2V3W",
+    "name": "Temple of Nature",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "4D5E6F7G-H8I9-0J1K-2L3M-4N5O6P7Q8R9S"
+  },
+  {
+    "id": "9I0J1K2L-M3N4-5O6P-7Q8R-9S0T1U2V3W4X",
+    "name": "Greenfield Palace",
+    "sceneType": "palace",
+    "isIndoor": true,
+    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+  },
+  {
+    "id": "0J1K2L3M-N4O5-6P7Q-8R9S-0T1U2V3W4X5Y",
+    "name": "Greenfield Library",
+    "sceneType": "library",
+    "isIndoor": true,
+    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+  },
+  {
+    "id": "1K2L3M4N-O5P6-7Q8R-9S0T-1U2V3W4X5Y6Z",
+    "name": "Greenfield Academy",
+    "sceneType": "academy",
+    "isIndoor": true,
+    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+  },
+  {
+    "id": "2L3M4N5O-P6Q7-8R9S-0T1U-2V3W4X5Y6Z7A",
+    "name": "Greenfield Arena",
+    "sceneType": "arena",
+    "isIndoor": false,
+    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+  },
+  {
+    "id": "3M4N5O6P-Q7R8-9S0T-1U2V-3W4X5Y6Z7A8B",
+    "name": "Greenfield Farmlands",
+    "sceneType": "farmland",
+    "isIndoor": false,
+    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+  },
+  {
+    "id": "4N5O6P7Q-R8S9-0T1U-2V3W-4X5Y6Z7A8B9C",
+    "name": "Greenfield Windmill",
+    "sceneType": "windmill",
+    "isIndoor": true,
+    "parentSceneId": "3M4N5O6P-Q7R8-9S0T-1U2V-3W4X5Y6Z7A8B"
+  },
+  {
+    "id": "5O6P7Q8R-S9T0-1U2V-3W4X-5Y6Z7A8B9C0D",
+    "name": "Greenfield Granary",
+    "sceneType": "granary",
+    "isIndoor": true,
+    "parentSceneId": "3M4N5O6P-Q7R8-9S0T-1U2V-3W4X5Y6Z7A8B"
+  },
+  {
+    "id": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E",
+    "name": "Meadowview",
+    "sceneType": "city",
+    "isIndoor": false,
+    "parentSceneId": "1A2B3C4D-E5F6-7G8H-9I0J-1K2L3M4N5O6P"
+  },
+  {
+    "id": "7Q8R9S0T-U1V2-3W4X-5Y6Z-7A8B9C0D1E2F",
+    "name": "Meadowview Market Square",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+  },
+  {
+    "id": "8R9S0T1U-V2W3-4X5Y-6Z7A-8B9C0D1E2F3G",
+    "name": "Meadowview Temple District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+  },
+  {
+    "id": "9S0T1U2V-W3X4-5Y6Z-7A8B-9C0D1E2F3G4H",
+    "name": "Meadowview Residential Quarter",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+  },
+  {
+    "id": "0T1U2V3W-X4Y5-6Z7A-8B9C-0D1E2F3G4H5I",
+    "name": "The Meadow Inn",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "7Q8R9S0T-U1V2-3W4X-5Y6Z-7A8B9C0D1E2F"
+  },
+  {
+    "id": "1U2V3W4X-Y5Z6-7A8B-9C0D-1E2F3G4H5I6J",
+    "name": "Meadowview Central Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "7Q8R9S0T-U1V2-3W4X-5Y6Z-7A8B9C0D1E2F"
+  },
+  {
+    "id": "2V3W4X5Y-Z6A7-8B9C-0D1E-2F3G4H5I6J7K",
+    "name": "Temple of the Meadow",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "8R9S0T1U-V2W3-4X5Y-6Z7A-8B9C0D1E2F3G"
+  },
+  {
+    "id": "3W4X5Y6Z-A7B8-9C0D-1E2F-3G4H5I6J7K8L",
+    "name": "Meadowview Palace",
+    "sceneType": "palace",
+    "isIndoor": true,
+    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+  },
+  {
+    "id": "4X5Y6Z7A-B8C9-0D1E-2F3G-4H5I6J7K8L9M",
+    "name": "Meadowview Library",
+    "sceneType": "library",
+    "isIndoor": true,
+    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+  },
+  {
+    "id": "5Y6Z7A8B-C9D0-1E2F-3G4H-5I6J7K8L9M0N",
+    "name": "Meadowview Academy",
+    "sceneType": "academy",
+    "isIndoor": true,
+    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+  },
+  {
+    "id": "6Z7A8B9C-D0E1-2F3G-4H5I-6J7K8L9M0N1O",
+    "name": "Meadowview Arena",
+    "sceneType": "arena",
+    "isIndoor": false,
+    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+  },
+  {
+    "id": "7A8B9C0D-E1F2-3G4H-5I6J-7K8L9M0N1O2P",
+    "name": "Meadowview Farmlands",
+    "sceneType": "farmland",
+    "isIndoor": false,
+    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+  },
+  {
+    "id": "8B9C0D1E-F2G3-4H5I-6J7K-8L9M0N1O2P3Q",
+    "name": "Meadowview Windmill",
+    "sceneType": "windmill",
+    "isIndoor": true,
+    "parentSceneId": "7A8B9C0D-E1F2-3G4H-5I6J-7K8L9M0N1O2P"
+  },
+  {
+    "id": "9C0D1E2F-G3H4-5I6J-7K8L-9M0N1O2P3Q4R",
+    "name": "Meadowview Granary",
+    "sceneType": "granary",
+    "isIndoor": true,
+    "parentSceneId": "7A8B9C0D-E1F2-3G4H-5I6J-7K8L9M0N1O2P"
+  }
+] 

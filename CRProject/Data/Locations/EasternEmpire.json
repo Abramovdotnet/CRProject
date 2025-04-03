@@ -1,0 +1,436 @@
+[
+  {
+    "id": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a",
+    "name": "Eastern Empire",
+    "sceneType": "kingdom",
+    "isIndoor": false,
+    "parentSceneId": null
+  },
+  {
+    "id": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a",
+    "name": "Dragon's Reach",
+    "sceneType": "city",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "3a4b5c6d-d4e5-6f7a-8b9c-0d1e2f3a4b5c",
+    "name": "Dragon's Reach Market District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Dragon's Reach Temple District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "5a6b7c8d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Dragon's Reach Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "6a7b8c9d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Dragon's Reach Palace District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "7a8b9c0d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Dragon's Reach Academy District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "8a9b0c1d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Dragon's Reach Arena District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "9a0b1c2d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Dragon's Reach Grand Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "3a4b5c6d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
+  },
+  {
+    "id": "0a1b2c3d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "The Dragon's Mug Tavern",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "3a4b5c6d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
+  },
+  {
+    "id": "1a2b3c4d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Dragon Forge Blacksmith",
+    "sceneType": "blacksmith",
+    "isIndoor": true,
+    "parentSceneId": "3a4b5c6d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
+  },
+  {
+    "id": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Temple of the Dragon",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "3a4b5c6d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Dragon's Shrine",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Dragon's Reach Royal Palace",
+    "sceneType": "royalPalace",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-e7f8-9a0b-1c2d-3e4f5a6b7c8d"
+  },
+  {
+    "id": "5a6b7c8d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Dragon's Keep",
+    "sceneType": "castle",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-e7f8-9a0b-1c2d-3e4f5a6b7c8d"
+  },
+  {
+    "id": "6a7b8c9d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Dragon's Reach Academy",
+    "sceneType": "wizardTower",
+    "isIndoor": true,
+    "parentSceneId": "7a8b9c0d-f8e9-0a1b-2c3d-4e5f6a7b8c9d"
+  },
+  {
+    "id": "7a8b9c0d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Dragon's Reach Library",
+    "sceneType": "library",
+    "isIndoor": true,
+    "parentSceneId": "7a8b9c0d-f8e9-0a1b-2c3d-4e5f6a7b8c9d"
+  },
+  {
+    "id": "8a9b0c1d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Dragon's Reach Arena",
+    "sceneType": "arena",
+    "isIndoor": true,
+    "parentSceneId": "8a9b0c1d-e9f0-1a2b-3c4d-5e6f7a8b9c0d"
+  },
+  {
+    "id": "9a0b1c2d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Dragon Warrior's Training Grounds",
+    "sceneType": "arena",
+    "isIndoor": false,
+    "parentSceneId": "8a9b0c1d-e9f0-1a2b-3c4d-5e6f7a8b9c0d"
+  },
+  {
+    "id": "0a1b2c3d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Dragon's Reach Gardens",
+    "sceneType": "garden",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "1a2b3c4d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Dragon's Reach Art Gallery",
+    "sceneType": "gallery",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Dragon's Reach Mage's Guild",
+    "sceneType": "mages_guild",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "3a4b5c6d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Dragon's Reach Forge",
+    "sceneType": "forge",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Dragon's Reach Arena Training Grounds",
+    "sceneType": "arena",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "5a6b7c8d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Dragon's Reach Warrior's Guild",
+    "sceneType": "fighters_guild",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "6a7b8c9d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Dragon's Reach Thieves' Guild",
+    "sceneType": "thieves_guild",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "7a8b9c0d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Dragon's Reach Concert Hall",
+    "sceneType": "concert_hall",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "8a9b0c1d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Dragon's Reach Museum",
+    "sceneType": "museum",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "9a0b1c2d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Dragon's Reach Archive",
+    "sceneType": "archive",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "0a1b2c3d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Phoenix Peak",
+    "sceneType": "city",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "1a2b3c4d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Phoenix Peak Market District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
+  },
+  {
+    "id": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Phoenix Peak Temple District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
+  },
+  {
+    "id": "3a4b5c6d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Phoenix Peak Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
+  },
+  {
+    "id": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Phoenix Peak Academy District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
+  },
+  {
+    "id": "5a6b7c8d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Phoenix Peak Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
+  },
+  {
+    "id": "6a7b8c9d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "The Phoenix Mug Tavern",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
+  },
+  {
+    "id": "7a8b9c0d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Phoenix Forge Blacksmith",
+    "sceneType": "blacksmith",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
+  },
+  {
+    "id": "8a9b0c1d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Temple of the Phoenix",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
+  },
+  {
+    "id": "9a0b1c2d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Phoenix Shrine",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
+  },
+  {
+    "id": "0a1b2c3d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Phoenix Peak Academy",
+    "sceneType": "wizardTower",
+    "isIndoor": true,
+    "parentSceneId": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "1a2b3c4d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Phoenix Peak Library",
+    "sceneType": "library",
+    "isIndoor": true,
+    "parentSceneId": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Jade City",
+    "sceneType": "city",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "3a4b5c6d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Jade City Market District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
+  },
+  {
+    "id": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Jade City Temple District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
+  },
+  {
+    "id": "5a6b7c8d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Jade City Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
+  },
+  {
+    "id": "6a7b8c9d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Jade City Academy District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
+  },
+  {
+    "id": "7a8b9c0d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Jade City Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "3a4b5c6d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "8a9b0c1d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "The Jade Mug Tavern",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "3a4b5c6d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "9a0b1c2d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Jade Forge Blacksmith",
+    "sceneType": "blacksmith",
+    "isIndoor": true,
+    "parentSceneId": "3a4b5c6d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "0a1b2c3d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Temple of Jade",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "1a2b3c4d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Jade Shrine",
+    "sceneType": "temple",
+    "isIndoor": true,
+    "parentSceneId": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Jade City Academy",
+    "sceneType": "wizardTower",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-e7f8-9a0b-1c2d-3e4f5a6b7c8d"
+  },
+  {
+    "id": "3a4b5c6d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Jade City Library",
+    "sceneType": "library",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-e7f8-9a0b-1c2d-3e4f5a6b7c8d"
+  },
+  {
+    "id": "4a5b6c7d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Dragon's Spine Mountains",
+    "sceneType": "mountain_pass",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "5a6b7c8d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Phoenix Nest",
+    "sceneType": "mountainFortress",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "6a7b8c9d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Jade Mines",
+    "sceneType": "mine",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "7a8b9c0d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Dragon's Breath Volcano",
+    "sceneType": "mountain",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "8a9b0c1d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Phoenix Rise",
+    "sceneType": "mountain",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "9a0b1c2d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Jade Valley",
+    "sceneType": "valley",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "0a1b2c3d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Dragon's Roost",
+    "sceneType": "tower",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "1a2b3c4d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Phoenix Watch",
+    "sceneType": "tower",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  },
+  {
+    "id": "2a3b4c5d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Jade Watch",
+    "sceneType": "tower",
+    "isIndoor": true,
+    "parentSceneId": "1a2b3c4d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
+  }
+] 

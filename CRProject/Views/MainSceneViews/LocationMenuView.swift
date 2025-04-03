@@ -131,6 +131,10 @@ struct LocationButton: View {
                     .font(.system(size: 20))
                 
                 VStack(alignment: .leading, spacing: 4) {
+                    Text("\(type.label) \(location.sceneType.displayName)")
+                        .font(Theme.bodyFont)
+                        .foregroundColor(Theme.textColor)
+                    
                     Text("\(type.label) \(location.name)")
                         .font(Theme.bodyFont)
                         .foregroundColor(Theme.textColor)

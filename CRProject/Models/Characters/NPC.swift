@@ -17,6 +17,7 @@ class NPC: Character {
     var isVampire: Bool = false
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isUnknown: Bool = true
+    var isSleeping: Bool = false
     
     init() {}
     

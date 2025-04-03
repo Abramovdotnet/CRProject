@@ -20,6 +20,7 @@ class GameStateService : ObservableObject, GameService{
     private var cancellables = Set<AnyCancellable>()
     private let locationReader: LocationReader
     private let vampireReader: NPCReader
+    private let locationEventsService: LocationEventsService
     
     init(gameTime: GameTimeService, 
          vampireNatureRevealService: VampireNatureRevealService,
@@ -31,6 +32,7 @@ class GameStateService : ObservableObject, GameService{
         self.gameEventsBus = gameEventsBus
         self.locationReader = locationReader
         self.vampireReader = vampireReader
+        self.locationEventsService = LocationEventsService(gameEventsBus: gameEventsBus, vampireNatureRevealService: vampireNatureRevealService)
         
         // Subscribe to time advancement notifications
         NotificationCenter.default
@@ -65,11 +67,15 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func changeLocation(to locationId: UUID) throws {
+        print("Changing location to ID: \(locationId)")
+        
         // Try to find and set the new location
         let newLocation = try LocationReader.getLocation(by: locationId)
+        print("Found new location: \(newLocation.name)")
         
         // Update current scene
         currentScene = newLocation
+        print("Current scene set to: \(currentScene?.name ?? "None")")
         
         // Update related locations
         updateRelatedLocations(for: locationId)
@@ -80,14 +86,25 @@ class GameStateService : ObservableObject, GameService{
     }
     
     private func updateRelatedLocations(for locationId: UUID) {
+        print("GameStateService updating related locations for ID: \(locationId)")
+        
         // Get parent location
         parentScene = LocationReader.getParentLocation(for: locationId)
+        print("Parent scene: \(parentScene?.name ?? "None")")
         
         // Get child locations
         childScenes = LocationReader.getChildLocations(for: locationId)
+        print("Child scenes count: \(childScenes.count)")
+        for scene in childScenes {
+            print("Child scene: \(scene.name)")
+        }
         
         // Get sibling locations
         siblingScenes = LocationReader.getSiblingLocations(for: locationId)
+        print("Sibling scenes count: \(siblingScenes.count)")
+        for scene in siblingScenes {
+            print("Sibling scene: \(scene.name)")
+        }
     }
     
     private func handleTimeAdvanced() {
@@ -116,6 +133,14 @@ class GameStateService : ObservableObject, GameService{
         if player?.bloodMeter.currentBlood ?? 0 <= 30 {
             gameEventsBus.addDangerMessage(message: "* I feel huge lack of blood!*")
         }
+        
+        // Update NPC sleeping states
+        locationEventsService.updateNPCSleepingState(scene: scene, isNight: gameTime.isNightTime)
+        
+        // Generate and broadcast a location event
+        if let eventText = locationEventsService.generateEvent(scene: scene, isNight: gameTime.isNightTime) {
+            locationEventsService.broadcastEvent(eventText)
+        }
     }
     
     private func handleSafeTimeAdvanced() {
@@ -124,6 +149,14 @@ class GameStateService : ObservableObject, GameService{
         // Reduce awareness for nearest scenes by 5
         for scene in siblingScenes {
             vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
+        }
+        
+        // Update NPC sleeping states
+        locationEventsService.updateNPCSleepingState(scene: scene, isNight: gameTime.isNightTime)
+        
+        // Generate and broadcast a location event
+        if let eventText = locationEventsService.generateEvent(scene: scene, isNight: gameTime.isNightTime) {
+            locationEventsService.broadcastEvent(eventText)
         }
     }
     

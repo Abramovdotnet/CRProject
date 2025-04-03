@@ -52,7 +52,11 @@ class MainSceneViewModel: ObservableObject {
         
         // Create initial scene using LocationReader
         do {
-            let initialScene = try LocationReader.getLocation(by: UUID(uuidString: "DF0B418F-0E65-4109-8944-66622EF59191")!) // East field Market
+            guard let initialSceneId = UUID(uuidString: "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a") else {
+                print("Error: Invalid initial scene ID")
+                return
+            }
+            let initialScene = try LocationReader.getLocation(by: initialSceneId)
             try gameStateService.changeLocation(to: initialScene.id)
             
             // Set default awareness to 0
@@ -155,7 +159,7 @@ class MainSceneViewModel: ObservableObject {
         let count = Int.random(in: 2...4)
         print("Generating \(count) NPCs")
         
-        npcs = NPCReader.getRandomNPCs(count: Int.random(in: 1...10))
+        npcs = NPCReader.getRandomNPCs(count: Int.random(in: 1...30))
         
         for npc in npcs {
             print("Created NPC: \(npc.name)")
@@ -229,12 +233,24 @@ class MainSceneViewModel: ObservableObject {
     private func updateRelatedLocations(for locationId: UUID?) {
         guard let locationId = locationId else { return }
         
-        do {
-            parentScene = try LocationReader.getParentLocation(for: locationId)
-            childScenes = try LocationReader.getChildLocations(for: locationId)
-            siblingScenes = try LocationReader.getSiblingLocations(for: locationId)
-        } catch {
-            print("Error updating related locations: \(error)")
+        print("Updating related locations for ID: \(locationId)")
+        
+        // Get parent location
+        parentScene = LocationReader.getParentLocation(for: locationId)
+        print("Parent scene: \(parentScene?.name ?? "None")")
+        
+        // Get child locations
+        childScenes = LocationReader.getChildLocations(for: locationId)
+        print("Child scenes count: \(childScenes.count)")
+        for scene in childScenes {
+            print("Child scene: \(scene.name)")
+        }
+        
+        // Get sibling locations
+        siblingScenes = LocationReader.getSiblingLocations(for: locationId)
+        print("Sibling scenes count: \(siblingScenes.count)")
+        for scene in siblingScenes {
+            print("Sibling scene: \(scene.name)")
         }
     }
     
