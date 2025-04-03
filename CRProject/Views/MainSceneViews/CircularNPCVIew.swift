@@ -303,10 +303,6 @@ struct CircularNPCView: View {
     
     private func handleAction(action: NPCAction, npc: NPC) {
         onAction(action)
-        if case .drain = action, !npc.isAlive {
-            isMenuDismissing = false
-            isMenuVisible = true
-        }
     }
     
     private func prepareHaptics() {
@@ -520,9 +516,10 @@ struct ContextMenuButton: View {
                     .foregroundColor(color)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(6)
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
-        .padding(6)
+        .contentShape(Rectangle())
     }
 }
