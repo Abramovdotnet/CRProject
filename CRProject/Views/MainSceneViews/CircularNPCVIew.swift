@@ -25,10 +25,7 @@ class RotationAnimator: NSObject {
 
 struct CircularNPCView: View {
     let npcs: [NPC]
-    var onInvestigate: (NPC) -> Void
-    var onStartConversation: (NPC) -> Void
-    var onFeed: (NPC) -> Void
-    var onDrain: (NPC) -> Void
+    var onAction: (NPCAction) -> Void
     
     @State private var rotationAngle: Double = 0
     @State private var selectedNPC: NPC? = nil
@@ -98,45 +95,30 @@ struct CircularNPCView: View {
             }
         
         VStack(spacing: 8) {
-            NPCButtonPreview(npc: npc)
+            NPCButtonPreview(npc: npc, onAction: onAction)
                 .transition(.scale.combined(with: .opacity))
             
             VStack(spacing: 4) {
                 ContextMenuButton(
-                    action: {
-                        onInvestigate(npc)
-                    },
+                    action: { onAction(.investigate(npc)) },
                     label: "Investigate",
                     icon: "arrow.triangle.2.circlepath",
                     color: Color.blue
                 )
                 ContextMenuButton(
-                    action: {
-                        onStartConversation(npc)  // Direct pass-through
-                        selectedNPC = nil
-                    },
+                    action: { onAction(.startConversation(npc)) },
                     label: "Start conversation",
                     icon: "bubble.left",
                     color: .blue
                 )
                 ContextMenuButton(
-                    action: {
-                        onFeed(npc)
-                        if !npc.isAlive {
-                                selectedNPC = nil
-                            }
-                    },
+                    action: { onAction(.feed(npc)) },
                     label: "Feed",
                     icon: "drop.fill",
                     color: Color.red
                 )
                 ContextMenuButton(
-                    action: {
-                        onDrain(npc)
-                        if !npc.isAlive {
-                                selectedNPC = nil
-                            }
-                    },
+                    action: { onAction(.drain(npc)) },
                     label: "Drain",
                     icon: "bolt.fill",
                     color: Color.red
@@ -249,38 +231,70 @@ struct NPCButton: View {
 
 struct NPCButtonPreview: View {
     let npc: NPC
+    let onAction: (NPCAction) -> Void
+    @State private var isContextMenuVisible = false
     
     var body: some View {
-        VStack(spacing: 2) {
-            Text(npc.sex == .male ? "♂" : "♀")
-                .font(.title3)
-                .foregroundColor(npc.sex == .male ? .green : .purple)
-            
-            if npc.isUnknown {
-                HStack{
-                    Text("Sex: \(npc.sex)")
-                        .font(.caption)
-                    Text("Age: \(npc.age)")
-                        .font(.caption)
-                }
-            } else {
-                VStack(spacing: 2) {
-                    Text(npc.name)
-                        .font(.headline)
-                    Text("Sex: \(npc.sex)")
-                        .font(.caption)
-                    Text("Profession: \(npc.profession)")
-                        .font(.caption)
-                    Text("Age: \(npc.age)")
-                        .font(.caption)
+        Button(action: { isContextMenuVisible = true }) {
+            VStack(spacing: 4) {
+                Image(systemName: "person.circle.fill")
+                    .font(.system(size: 40))
+                    .foregroundColor(npc.isVampire ? .red : .blue)
+                
+                if npc.isUnknown {
+                    HStack{
+                        Text("Sex: \(npc.sex)")
+                            .font(.caption)
+                        Text("Age: \(npc.age)")
+                            .font(.caption)
+                    }
+                } else {
+                    VStack(spacing: 2) {
+                        Text(npc.name)
+                            .font(.headline)
+                        Text("Sex: \(npc.sex)")
+                            .font(.caption)
+                        Text("Profession: \(npc.profession)")
+                            .font(.caption)
+                        Text("Age: \(npc.age)")
+                            .font(.caption)
+                    }
                 }
             }
+            .padding()
+            .background(Theme.secondaryColor)
+            .cornerRadius(10)
         }
-        .padding(8)
-        .frame(width: 180)
-        .background(Theme.secondaryColor.opacity(0.7))
-        .cornerRadius(8)
-        .shadow(radius: 3)
+        .buttonStyle(PlainButtonStyle())
+        .contextMenu {
+            VStack(spacing: 4) {
+                ContextMenuButton(
+                    action: { onAction(.investigate(npc)) },
+                    label: "Investigate",
+                    icon: "arrow.triangle.2.circlepath",
+                    color: Color.blue
+                )
+                ContextMenuButton(
+                    action: { onAction(.startConversation(npc)) },
+                    label: "Start conversation",
+                    icon: "bubble.left",
+                    color: .blue
+                )
+                ContextMenuButton(
+                    action: { onAction(.feed(npc)) },
+                    label: "Feed",
+                    icon: "drop.fill",
+                    color: Color.red
+                )
+                ContextMenuButton(
+                    action: { onAction(.drain(npc)) },
+                    label: "Drain",
+                    icon: "bolt.fill",
+                    color: Color.red
+                )
+            }
+        }
+        .id("npc_\(npc.id)_\(npc.isUnknown)") // Add unique ID based on NPC state
     }
 }
 

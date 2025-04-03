@@ -2,10 +2,8 @@ import SwiftUI
 
 struct MainSceneView: View {
     @ObservedObject var viewModel: MainSceneViewModel
-    @StateObject private var dialogueManager = DialogueManager.shared
+    @StateObject private var npcManager = NPCInteractionManager.shared
     @State private var showingNavigation = false
-    @State private var showingDialogue = false
-    @State private var dialogueNPC: NPC? // Track which NPC we're talking to
     
     var body: some View {
         if viewModel.isGameEnd {
@@ -23,16 +21,9 @@ struct MainSceneView: View {
                     
                     HStack(alignment: .top, spacing: 20) {
                         CircularNPCView(
-                              npcs: viewModel.npcs,
-                              onInvestigate: viewModel.investigateNPC,
-                              onStartConversation: { npc in
-                                  if let player = viewModel.gameStateService.getPlayer() {
-                                      dialogueManager.startDialogue(with: npc, player: player)
-                                  }
-                              },
-                              onFeed: viewModel.feedOnCharacter,
-                              onDrain: viewModel.emptyBloodFromCharacter)
-                        
+                            npcs: viewModel.npcs,
+                            onAction: handleNPCAction
+                        )
                         Spacer()
                         
                         VStack(alignment: .leading) {
@@ -60,20 +51,44 @@ struct MainSceneView: View {
                         .padding()
                     }
                     .frame(maxHeight: .infinity)
+                    
+                    BottomWidgetView(viewModel: viewModel)
+                        .frame(maxWidth: .infinity)
+                        .background(Color.clear)
                 }
             }
             .foregroundColor(Theme.textColor)
             .sheet(isPresented: $showingNavigation) {
                 NavigationDetailView(viewModel: viewModel)
             }
-            .sheet(isPresented: $dialogueManager.isPresented) {
-                if let npc = dialogueManager.currentNPC,
-                    let player = dialogueManager.player {
+            .sheet(isPresented: $npcManager.isShowingDialogue) {
+                if let npc = npcManager.currentNPC,
+                   let player = viewModel.gameStateService.getPlayer() {
                     DialogueView(viewModel: DialogueViewModel(npc: npc, player: player))
                 }
             }
         }
     }
+    
+    private func handleNPCAction(_ action: NPCAction) {
+        switch action {
+        case .startConversation(let npc):
+            npcManager.startConversation(with: npc)
+        case .feed(let npc):
+            viewModel.feedOnCharacter(npc)
+        case .drain(let npc):
+            viewModel.emptyBloodFromCharacter(npc)
+        case .investigate(let npc):
+            viewModel.investigateNPC(npc)
+        }
+    }
+}
+
+enum NPCAction {
+    case startConversation(NPC)
+    case feed(NPC)
+    case drain(NPC)
+    case investigate(NPC)
 }
 
 // MARK: - Bottom Widget
