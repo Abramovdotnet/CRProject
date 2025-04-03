@@ -210,8 +210,8 @@ class MainSceneViewModel: ObservableObject {
             try feedingService.emptyBlood(vampire: player, prey: npc, in: currentScene?.id ?? UUID())
             updatePlayerBloodPercentage()
             updateSceneAwareness()
+            print("Blood emptied")
         } catch {
-            print("Error emptying blood: \(error)")
         }
     }
     

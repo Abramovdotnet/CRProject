@@ -92,6 +92,10 @@ class GameEventsBusService: GameService, ObservableObject {
     func addDialogueMessage(message: String? = nil) {
         addMessage(message: message, type: .dialogue)
     }
+    
+    func addDangerMessage(message: String? = nil) {
+        addMessage(message: message, type: .danger)
+    }
 
     func addCommonMessage(message: String? = nil) {
         addMessage(message: message, type: .common)

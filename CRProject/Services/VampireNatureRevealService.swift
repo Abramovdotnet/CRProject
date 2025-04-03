@@ -37,7 +37,7 @@ class VampireNatureRevealService: ObservableObject, GameService {
         }
         
         if newAwareness > 70 {
-            gameEventsBus.addWarningMessage("* People almost discovered me!")
+            gameEventsBus.addDangerMessage(message: "* People almost discovered me!")
         }
     }
     

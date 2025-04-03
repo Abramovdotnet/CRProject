@@ -9,6 +9,7 @@ enum MessageType: String, CaseIterable {
     case system
     case dialogue
     case event
+    case danger
 }
 
 struct ChatMessage: Identifiable {
@@ -44,17 +45,17 @@ struct ChatMessageView: View {
         case .system: return .blue
         case .dialogue: return .green
         case .event: return .orange
+        case .danger: return .red
         }
     }
     
     var body: some View {
         HStack(alignment: .top) {
             Text(message.timestampHourString)
-                .font(.system(size: 10, design: .monospaced))
-                .foregroundColor(.gray)
+                .font(Theme.bodyFont)
             
             Text(message.message)
-                .font(.caption)
+                .font(Theme.bodyFont)
                 .foregroundColor(typeColor.opacity(0.9))
         }
         .opacity(isAppearing ? 1 : 0)
@@ -109,6 +110,8 @@ struct ChatHistoryView: View {
                 }
             }
         }
+        .padding(.bottom, 8)
+        .padding(.top, 8)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(Theme.secondaryColor.opacity(0.9))

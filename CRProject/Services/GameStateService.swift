@@ -114,7 +114,7 @@ class GameStateService : ObservableObject, GameService{
         player?.bloodMeter.useBlood(5)
         
         if player?.bloodMeter.currentBlood ?? 0 <= 30 {
-            gameEventsBus.addWarningMessage("* I feel huge lack of blood!*")
+            gameEventsBus.addDangerMessage(message: "* I feel huge lack of blood!*")
         }
     }
     

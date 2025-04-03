@@ -190,22 +190,32 @@ struct CircularNPCView: View {
     
     private func actionButtons(for npc: NPC) -> some View {
         VStack(spacing: 4) {
+            if !npc.isUnknown {
+                if npc.isVampire {
+                    Text("Vampire")
+                        .font(Theme.subheadingFont)
+                        .foregroundColor(Color.red)
+                } else {
+                    Text("Mortal")
+                        .font(Theme.subheadingFont)
+                        .foregroundColor(Color.blue)
+                }
+                Spacer()
+            }
             HStack {
                 Text("Status: ")
                     .font(Theme.captionFont)
                 Text(npc.isAlive ? "Alive" : "Dead")
                     .font(.caption)
                     .foregroundColor(npc.isAlive ? .green : .red)
+                if !npc.isUnknown {
+                    Text("Blood: \(Int(npc.bloodMeter.currentBlood))%")
+                        .font(Theme.bodyFont)
+                }
             }
             if !npc.isUnknown {
-                if npc.isVampire {
-                    Text("Vampire")
-                        .font(Theme.captionFont)
-                        .foregroundColor(Color.red)
-                } else {
-                    Text("Mortal")
-                        .font(Theme.captionFont)
-                        .foregroundColor(Color.blue)
+                VStack {
+                    ProgressBar(value: Double(npc.bloodMeter.currentBlood / 100.0), color: Theme.bloodProgressColor)
                 }
                 Spacer()
             }
@@ -213,8 +223,6 @@ struct CircularNPCView: View {
             if npc.isUnknown {
                 HStack {
                     Text("Sex: \(npc.sex)")
-                        .font(.caption)
-                    Text("Age: \(npc.age)")
                         .font(.caption)
                 }
             } else {
@@ -296,7 +304,8 @@ struct CircularNPCView: View {
     private func handleAction(action: NPCAction, npc: NPC) {
         onAction(action)
         if case .drain = action, !npc.isAlive {
-            dismissMenu()
+            isMenuDismissing = false
+            isMenuVisible = true
         }
     }
     

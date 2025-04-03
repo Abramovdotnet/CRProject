@@ -56,8 +56,7 @@ class FeedingService: GameService {
         // Increase awareness more significantly when emptying blood
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: 30.0)
         
-        gameEventsBus.addEventMessage("Player drained \(prey.name) empty.")
-        gameEventsBus.addWarningMessage("* Yet another victim of my countless thirst... *")
+        gameEventsBus.addEventMessage("Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
     }
 }
 
