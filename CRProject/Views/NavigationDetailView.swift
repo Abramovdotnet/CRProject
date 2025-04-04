@@ -136,10 +136,10 @@ struct NavigationWebView: View {
             let siblings = Array(viewModel.siblingScenes.prefix(maxSiblingNodes))
             guard let index = siblings.firstIndex(where: { $0.id == location.id }) else { return nil }
             let angle = 2 * .pi / CGFloat(siblings.count) * CGFloat(index)
-            let radius = min(leftColumnWidth, geometry.size.height) * 0.22
+            let radius = min(leftColumnWidth, geometry.size.height) * 0.3
             return CGPoint(
-                x: currentPosition.x + cos(angle) * radius,
-                y: currentPosition.y + sin(angle) * radius
+                x: currentPosition.x + cos(angle) * radius * 1.4,
+                y: currentPosition.y + sin(angle) * radius * 1.3
             )
         }
         
@@ -150,7 +150,7 @@ struct NavigationWebView: View {
             let angle = 2 * .pi / CGFloat(children.count) * CGFloat(index)
             let radius = min(leftColumnWidth, geometry.size.height) * 0.42
             return CGPoint(
-                x: currentPosition.x + cos(angle) * radius,
+                x: currentPosition.x + cos(angle) * radius * 2,
                 y: currentPosition.y + sin(angle) * radius
             )
         }
@@ -251,7 +251,46 @@ struct LocationNode: View {
         return location.isIndoor ? "house.circle.fill" : "tree.circle.fill"
     }
     
-    private var relationshipLabel: String {
+    var body: some View {
+        VStack{
+            Button(action: onSelected) {
+                ZStack {
+                    Image("iconFrame")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 60 * 1.05, height: 60 * 1.05)
+                    Circle()
+                        .fill(Color.black.opacity(0.7))
+                        .frame(width: 60 * 0.9, height: 60 * 0.9)
+                        .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                        .overlay(
+                            Circle()
+                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                        )
+                    Image("roundStoneTexture")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 60 * 0.8, height: 60 * 0.8)
+                    
+                    VStack{
+                        Image(systemName: location.sceneType.iconName)
+                            .font(.system(size: 18)) // Slightly smaller for better fit
+                            .foregroundColor(iconColor)
+                        Text("\(relationshipLabel().description) " + location.name)
+                            .font(Theme.smallFont)
+                            .foregroundColor(Theme.textColor)
+                    }
+                }
+                .buttonStyle(PlainButtonStyle())
+                .contentShape(Circle())
+                .shadow(color: .black, radius: 3, x: 0, y: 2)
+            }
+        }
+        .disabled(!isAccessible)
+        .opacity(location.id == currentLocation?.id ? 1.0 : isAccessible ? 1.0 : 0.4)  // More contrast for inaccessible nodes
+    }
+    
+    func relationshipLabel() -> String {
         if location.id == currentLocation?.id {
             return "Current"
         } else if location.id == currentLocation?.parentSceneId {
@@ -262,28 +301,6 @@ struct LocationNode: View {
             return "Sibling"
         }
         return ""
-    }
-    
-    var body: some View {
-        VStack{
-            Button(action: onSelected) {
-                VStack(spacing: 2) {
-                    Image(systemName: location.sceneType.iconName)
-                        .font(.system(size: 18)) // Slightly smaller for better fit
-                        .foregroundColor(Theme.textColor)
-                }
-                .frame(width: 40, height: 40) // Slightly larger for better readability
-                .background(backgroundStyle)
-                .clipShape(Circle())
-                .overlay(Circle().stroke(borderStyle, lineWidth: 2))
-                .shadow(color: shadowColor, radius: 4, x: 0, y: 2)
-            }
-            Text(location.name)
-                .font(Theme.bodyFont)
-                .foregroundColor(Theme.textColor)
-        }
-        .disabled(!isAccessible)
-        .opacity(location.id == currentLocation?.id ? 1.0 : isAccessible ? 1.0 : 0.4)  // More contrast for inaccessible nodes
     }
     
     private var backgroundStyle: Color {
@@ -300,24 +317,36 @@ struct LocationNode: View {
     }
     
     private var borderStyle: Color {
-        if location.id == currentLocation?.id {
-            return .white
+        if relationshipLabel() == "Parent" {
+            return .blue
+        } else if relationshipLabel() == "Sibling" {
+            return .purple
+        } else if relationshipLabel() == "Child" {
+            return .green
         }
         return isAccessible ? Theme.primaryColor : Theme.primaryColor.opacity(0.3)
     }
     
     private var iconColor: Color {
-        if location.id == currentLocation?.id {
-            return .white
+        if relationshipLabel() == "Parent" {
+            return Color.blue
+        } else if relationshipLabel() == "Sibling" {
+            return Color.purple
+        } else if relationshipLabel() == "Child" {
+            return Color.green
         }
-        return isAccessible ? Theme.primaryColor : Theme.primaryColor.opacity(0.3)
+        return Color.red
     }
     
     private var shadowColor: Color {
-        if location.id == currentLocation?.id {
-            return Theme.primaryColor.opacity(0.5)
+        if relationshipLabel() == "Parent" {
+            return Color.blue.opacity(0.5)
+        } else if relationshipLabel() == "Sibling" {
+            return Color.purple.opacity(0.5)
+        } else if relationshipLabel() == "Child" {
+            return Color.green.opacity(0.5)
         }
-        return Color.black.opacity(0.2)
+        return Color.red.opacity(0.5)
     }
 }
 
