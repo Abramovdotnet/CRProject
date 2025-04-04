@@ -64,6 +64,7 @@ struct NavigationDetailView: View {
 // MARK: - Supporting Views
 struct NavigationWebView: View {
     @ObservedObject var viewModel: MainSceneViewModel
+    @ObservedObject var vampireNatureRevealService: VampireNatureRevealService = DependencyManager.shared.resolve()
     @Binding var offset: CGPoint
     @Binding var scale: CGFloat
     let geometry: GeometryProxy
@@ -95,14 +96,16 @@ struct NavigationWebView: View {
                     
                     // Location nodes
                     ForEach(viewModel.allVisibleScenes) { location in
+                        let nodeData = LocationNodeData(
+                            location: location,
+                            currentLocation: viewModel.currentScene,
+                            playerBlood: Int(viewModel.playerBloodPercentage),
+                            awarenessLevel: Int(vampireNatureRevealService.getAwareness(for: location.id)),
+                            onSelected: { onLocationSelected(location) }
+                        )
                         if let position = relativePosition(for: location) {
                             VStack{
-                                LocationNode(
-                                    location: location,
-                                    currentLocation: viewModel.currentScene,
-                                    playerBlood: Int(viewModel.playerBloodPercentage),
-                                    onSelected: { onLocationSelected(location) }
-                                )
+                                LocationNode(data: nodeData)
                                 .position(position)
                                 .zIndex(location.id == viewModel.currentScene?.id ? 100 : 1)
                             }
@@ -228,32 +231,36 @@ struct NavigationWebView: View {
     }
 }
 
-struct LocationNode: View {
+struct LocationNodeData {
     let location: Scene
     let currentLocation: Scene?
     let playerBlood: Int
-
+    let awarenessLevel: Int
+    
     let onSelected: () -> Void
+}
+struct LocationNode: View {
+    let data: LocationNodeData
     
     private var isAccessible: Bool {
-        guard location.id != currentLocation?.id else { return false }  // Disable current location
-        return (playerBlood - 5) >= 10
+        guard data.location.id != data.currentLocation?.id else { return false }  // Disable current location
+        return (data.playerBlood - 5) >= 10
     }
     
     private var relationshipIcon: String {
-        if location.id == currentLocation?.parentSceneId {
+        if data.location.id == data.currentLocation?.parentSceneId {
             return "arrow.up.circle.fill"  // Parent
-        } else if location.parentSceneId == currentLocation?.id {
+        } else if data.location.parentSceneId == data.currentLocation?.id {
             return "arrow.down.circle.fill"  // Child
-        } else if location.parentSceneId == currentLocation?.parentSceneId {
+        } else if data.location.parentSceneId == data.currentLocation?.parentSceneId {
             return "arrow.left.and.right.circle.fill"  // Sibling
         }
-        return location.isIndoor ? "house.circle.fill" : "tree.circle.fill"
+        return data.location.isIndoor ? "house.circle.fill" : "tree.circle.fill"
     }
     
     var body: some View {
         VStack{
-            Button(action: onSelected) {
+            Button(action: data.onSelected) {
                 ZStack {
                     Image("iconFrame")
                         .resizable()
@@ -273,12 +280,28 @@ struct LocationNode: View {
                         .frame(width: 60 * 0.8, height: 60 * 0.8)
                     
                     VStack{
-                        Image(systemName: location.sceneType.iconName)
-                            .font(.system(size: 18)) // Slightly smaller for better fit
+                        Image(systemName: data.location.sceneType.iconName)
+                            .font(.system(size: 14)) // Slightly smaller for better fit
                             .foregroundColor(iconColor)
-                        Text("\(relationshipLabel().description) " + location.name)
+                        Text(data.location.name)
+                            .font(Theme.captionFont)
+                            .foregroundColor(Theme.textColor)
+                        Text(data.location.sceneType.displayName)
                             .font(Theme.smallFont)
                             .foregroundColor(Theme.textColor)
+                        
+                        ZStack{
+                            Rectangle()
+                                .foregroundColor(.black.opacity(0.5))
+                                .frame(width: 60, height: 8)
+                                .cornerRadius(4)
+                            
+                            // Progress fill (active part)
+                            Rectangle()
+                                .foregroundColor(Theme.awarenessProgressColor)
+                                .frame(width: 60 * CGFloat(data.awarenessLevel / 100), height: 8)
+                                .cornerRadius(4)
+                        }
                     }
                 }
                 .buttonStyle(PlainButtonStyle())
@@ -287,30 +310,30 @@ struct LocationNode: View {
             }
         }
         .disabled(!isAccessible)
-        .opacity(location.id == currentLocation?.id ? 1.0 : isAccessible ? 1.0 : 0.4)  // More contrast for inaccessible nodes
+        .opacity(data.location.id == data.currentLocation?.id ? 1.0 : isAccessible ? 1.0 : 0.4)  // More contrast for inaccessible nodes
     }
     
     func relationshipLabel() -> String {
-        if location.id == currentLocation?.id {
+        if data.location.id == data.currentLocation?.id {
             return "Current"
-        } else if location.id == currentLocation?.parentSceneId {
+        } else if data.location.id == data.currentLocation?.parentSceneId {
             return "Parent"
-        } else if location.parentSceneId == currentLocation?.id {
+        } else if data.location.parentSceneId == data.currentLocation?.id {
             return "Child"
-        } else if location.parentSceneId == currentLocation?.parentSceneId {
+        } else if data.location.parentSceneId == data.currentLocation?.parentSceneId {
             return "Sibling"
         }
         return ""
     }
     
     private var backgroundStyle: Color {
-        if location.id == currentLocation?.id {
+        if data.location.id == data.currentLocation?.id {
             return Theme.primaryColor
         }
-        if location.id == currentLocation?.parentSceneId {
+        if data.location.id == data.currentLocation?.parentSceneId {
             return Theme.secondaryColor  // Full opacity for parent
         }
-        if location.parentSceneId == currentLocation?.id {
+        if data.location.parentSceneId == data.currentLocation?.id {
             return Theme.secondaryColor.opacity(0.8)  // Slightly more opaque for children
         }
         return isAccessible ? Theme.secondaryColor.opacity(0.7) : Theme.secondaryColor.opacity(0.4)
