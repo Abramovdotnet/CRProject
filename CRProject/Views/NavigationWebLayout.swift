@@ -195,11 +195,12 @@ struct StraightConnectionLine: View {
         .stroke(
             Theme.primaryColor.opacity(Double(connection.awareness)),
             style: StrokeStyle(
-                lineWidth: connection.isParentConnection ? 3 : 2,
+                lineWidth: connection.isParentConnection ? 3 : 1,
                 lineCap: .round,
                 lineJoin: .round
             )
         )
+        .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
     }
 }
 

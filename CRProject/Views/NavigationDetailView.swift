@@ -14,10 +14,6 @@ struct NavigationDetailView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Image("MainSceneBackground")
-                    .resizable()
-                    .ignoresSafeArea()
-                
                 // Navigation Web
                 NavigationWebView(
                     viewModel: viewModel,
@@ -89,31 +85,44 @@ struct NavigationWebView: View {
                         .resizable()
                         .ignoresSafeArea()
                     
-                    // Connection lines
-                    ForEach(connections) { connection in
-                        StraightConnectionLine(connection: connection)
-                    }
-                    
-                    // Location nodes
-                    ForEach(viewModel.allVisibleScenes) { location in
-                        let nodeData = LocationNodeData(
-                            location: location,
-                            currentLocation: viewModel.currentScene,
-                            playerBlood: Int(viewModel.playerBloodPercentage),
-                            awarenessLevel: Int(vampireNatureRevealService.getAwareness(for: location.id)),
-                            onSelected: { onLocationSelected(location) }
-                        )
-                        if let position = relativePosition(for: location) {
-                            VStack{
-                                LocationNode(data: nodeData)
-                                .position(position)
-                                .zIndex(location.id == viewModel.currentScene?.id ? 100 : 1)
+                    // Map content in a ZStack with content scaled and offset
+                    ZStack {
+                        // Connection lines
+                        ForEach(connections) { connection in
+                            StraightConnectionLine(connection: connection)
+                        }
+                        
+                        // Location nodes
+                        ForEach(viewModel.allVisibleScenes) { location in
+                            let nodeData = LocationNodeData(
+                                location: location,
+                                currentLocation: viewModel.currentScene,
+                                playerBlood: Int(viewModel.playerBloodPercentage),
+                                awarenessLevel: Int(vampireNatureRevealService.getAwareness(for: location.id)),
+                                onSelected: { onLocationSelected(location) }
+                            )
+                            if let position = relativePosition(for: location) {
+                                VStack{
+                                    LocationNode(data: nodeData)
+                                    .position(position)
+                                    .zIndex(location.id == viewModel.currentScene?.id ? 100 : 1)
+                                }
                             }
                         }
                     }
+                    .offset(x: offset.x, y: offset.y)
+                    .scaleEffect(scale)
+                    
+                    // Top widget overlay that stays fixed at the top
+                    VStack {
+                        TopWidgetView(viewModel: viewModel)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, geometry.safeAreaInsets.top)
+                            .foregroundColor(Theme.textColor)
+                        
+                        Spacer()
+                    }
                 }
-                .offset(x: offset.x, y: offset.y)
-                .scaleEffect(scale)
             )
             .onChange(of: viewModel.currentScene?.id) { _ in
                 withAnimation(.easeInOut(duration: 0.3)) {
@@ -141,7 +150,7 @@ struct NavigationWebView: View {
             let angle = 2 * .pi / CGFloat(siblings.count) * CGFloat(index)
             let radius = min(leftColumnWidth, geometry.size.height) * 0.3
             return CGPoint(
-                x: currentPosition.x + cos(angle) * radius * 1.4,
+                x: currentPosition.x + cos(angle) * radius * 1.6,
                 y: currentPosition.y + sin(angle) * radius * 1.3
             )
         }
@@ -154,7 +163,7 @@ struct NavigationWebView: View {
             let radius = min(leftColumnWidth, geometry.size.height) * 0.42
             return CGPoint(
                 x: currentPosition.x + cos(angle) * radius * 2,
-                y: currentPosition.y + sin(angle) * radius
+                y: currentPosition.y + sin(angle) * radius * 0.95
             )
         }
         
@@ -281,25 +290,34 @@ struct LocationNode: View {
                     
                     VStack{
                         Image(systemName: data.location.sceneType.iconName)
-                            .font(.system(size: 14)) // Slightly smaller for better fit
+                            .font(Theme.smallFont) // Slightly smaller for better fit
                             .foregroundColor(iconColor)
+                            .padding(.top, 33)
+
                         Text(data.location.name)
                             .font(Theme.captionFont)
                             .foregroundColor(Theme.textColor)
+                        
                         Text(data.location.sceneType.displayName)
                             .font(Theme.smallFont)
                             .foregroundColor(Theme.textColor)
+ 
+                        Text("Awareness: \(data.awarenessLevel)%")
+                            .font(Theme.smallFont)
+                            .foregroundColor(Theme.textColor)
+                            .padding(.top, 6)
+                            .padding(.bottom, -5)
                         
-                        ZStack{
+                        ZStack (alignment: .leading) {
                             Rectangle()
                                 .foregroundColor(.black.opacity(0.5))
-                                .frame(width: 60, height: 8)
+                                .frame(width: 60, height: 7)
                                 .cornerRadius(4)
                             
                             // Progress fill (active part)
                             Rectangle()
                                 .foregroundColor(Theme.awarenessProgressColor)
-                                .frame(width: 60 * CGFloat(data.awarenessLevel / 100), height: 8)
+                                .frame(width: 56 * CGFloat(data.awarenessLevel) / 100, height: 6)
                                 .cornerRadius(4)
                         }
                     }
