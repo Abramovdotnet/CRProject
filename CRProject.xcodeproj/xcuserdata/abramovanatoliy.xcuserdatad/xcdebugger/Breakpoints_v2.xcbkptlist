@@ -572,9 +572,9 @@
             filePath = "CRProject/ViewModels/MainSceneViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "211"
-            endingLineNumber = "211"
-            landmarkName = "feedOnCharacter(_:)"
+            startingLineNumber = "195"
+            endingLineNumber = "195"
+            landmarkName = "respawnNPCs()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -896,6 +896,22 @@
             endingLineNumber = "62"
             landmarkName = "getLocation(by:)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "470DBA63-6448-467A-9CDD-74445879F572"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Views/NavigationDetailView.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "31"
+            endingLineNumber = "31"
+            landmarkName = "body"
+            landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

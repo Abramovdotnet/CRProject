@@ -35,6 +35,7 @@ struct CircularNPCView: View {
     @State private var rotationAnimator = RotationAnimator()
     @State private var hapticEngine: CHHapticEngine?
     @State private var isWheelSpinning = true
+    @State private var lightningPhase: CGFloat = 0
     
     // Menu visibility states
     @State private var isMenuVisible = false
@@ -53,6 +54,10 @@ struct CircularNPCView: View {
     private let autoRotationSpeed: Double = 0.18
     private let circleSpacing: CGFloat = 45
     
+    // Lightning colors
+    private let darkCrimson = Color(red: 0.6, green: 0.0, blue: 0.1)
+    private let crimsonGlow = Color(red: 0.8, green: 0.2, blue: 0.3)
+    
     var body: some View {
         GeometryReader { geometry in
             let center = CGPoint(x: geometry.size.width/2, y: geometry.size.height/2)
@@ -60,6 +65,9 @@ struct CircularNPCView: View {
             ZStack {
                 // Fixed center sigil
                 sigilView(center: center)
+                
+                // Draw lightning connections first (behind buttons)
+                lightningConnections(center: center, geometry: geometry)
                 
                 // Outer circle (spins clockwise) - Highest zIndex since it's on top
                 npcWheelView(geometry: geometry, center: center,
@@ -104,6 +112,9 @@ struct CircularNPCView: View {
                             rotationAngle = rotationAngle.truncatingRemainder(dividingBy: 360)
                             rotationAngle2 = rotationAngle2.truncatingRemainder(dividingBy: 360)
                             rotationAngle3 = rotationAngle3.truncatingRemainder(dividingBy: 360)
+                            
+                            // Update lightning animation
+                            lightningPhase += 0.05
                         }
                     }
                 }
@@ -120,6 +131,104 @@ struct CircularNPCView: View {
                 dismissMenu()
             }
         }
+    }
+    
+    private func lightningConnections(center: CGPoint, geometry: GeometryProxy) -> some View {
+        Canvas { context, size in
+            // Draw lightning to all known NPCs
+            for npc in npcs where !npc.isUnknown {
+                guard let buttonPosition = positionForNPC(npc: npc, center: center) else { continue }
+                
+                // Create a lightning path from center to NPC button
+                let start = center
+                let end = buttonPosition
+                
+                // Create multiple lightning bolts for a more dramatic effect
+                for i in 0..<3 { // Three layers of lightning for thickness
+                    let offset = CGFloat(i) * 3 - 3 // Creates variation in paths
+                    let jitter: CGFloat = 8 // Increased jitter for more organic look
+                    
+                    var path = Path()
+                    path.move(to: start)
+                    
+                    let segments = 12 // More segments for smoother lightning
+                    for i in 1..<segments {
+                        let progress = CGFloat(i) / CGFloat(segments)
+                        let baseX = start.x + (end.x - start.x) * progress
+                        let baseY = start.y + (end.y - start.y) * progress
+                        
+                        // Add jitter that decreases toward the end
+                        let offsetX = (CGFloat.random(in: -jitter...jitter) + offset) * (1 - progress)
+                        let offsetY = (CGFloat.random(in: -jitter...jitter) + offset) * (1 - progress)
+                        
+                        path.addLine(to: CGPoint(
+                            x: baseX + offsetX * sin(lightningPhase * 2 + CGFloat(i) * 0.5),
+                            y: baseY + offsetY * cos(lightningPhase * 1.5 + CGFloat(i) * 0.3)
+                        ))
+                    }
+                    
+                    path.addLine(to: end)
+                    
+                    // Main lightning stroke with dark crimson gradient
+                    context.stroke(
+                        path,
+                        with: .linearGradient(
+                            Gradient(colors: [darkCrimson, crimsonGlow]),
+                            startPoint: start,
+                            endPoint: end
+                        ),
+                        lineWidth: i == 0 ? 0.2 : 0.1 // Thicker main line
+                    )
+                    
+                    // Add intense glow
+                    context.blendMode = .plusLighter
+                    context.stroke(
+                        path,
+                        with: .color(crimsonGlow.opacity(0.4)),
+                        lineWidth: 0.5 // Wider glow
+                    )
+                    
+                    // Add subtle outer glow
+                    context.blendMode = .screen
+                    context.stroke(
+                        path,
+                        with: .color(Color.white.opacity(0.1)),
+                        lineWidth: 0.7
+                    )
+                }
+            }
+        }
+    }
+    
+    private func positionForNPC(npc: NPC, center: CGPoint) -> CGPoint? {
+        let allNPCs = npcs
+        guard let index = allNPCs.firstIndex(where: { $0.id == npc.id }) else { return nil }
+        
+        let circleIndex: Int
+        let radius: CGFloat
+        let rotation: Double
+        
+        if index < 10 {
+            circleIndex = index
+            radius = outerRadius
+            rotation = rotationAngle
+        } else if index < 20 {
+            circleIndex = index - 10
+            radius = middleRadius
+            rotation = rotationAngle2
+        } else {
+            circleIndex = index - 20
+            radius = innerRadius
+            rotation = rotationAngle3
+        }
+        
+        let circleCount = index < 10 ? min(10, allNPCs.count) :
+                          index < 20 ? min(10, max(0, allNPCs.count - 10)) :
+                          max(0, allNPCs.count - 20)
+        
+        let angle = Angle(degrees: (360 / Double(circleCount)) * Double(circleIndex) - 90 + rotation)
+        let position = positionOnCircle(angle: angle, radius: radius)
+        return CGPoint(x: position.x + center.x, y: position.y + center.y)
     }
     
     private func npcWheelView(geometry: GeometryProxy, center: CGPoint,
@@ -171,58 +280,6 @@ struct CircularNPCView: View {
             .shadow(color: .black, radius: 3, x: 0, y: 2)
             .position(center)
             .zIndex(0)
-    }
-    
-    private func npcWheelView(geometry: GeometryProxy, center: CGPoint,
-                            radius: CGFloat, rotation: Double, clockwise: Bool) -> some View {
-        let npcsForCircle: [NPC]
-        let buttonSize: CGFloat
-        
-        if radius == innerRadius {
-            npcsForCircle = Array(npcs.suffix(from: 20))
-            buttonSize = npcButtonSize * 0.6
-        } else if radius == middleRadius {
-            npcsForCircle = Array(npcs[10..<min(20, npcs.count)])
-            buttonSize = npcButtonSize * 0.75
-        } else {
-            npcsForCircle = Array(npcs.prefix(min(10, npcs.count)))
-            buttonSize = npcButtonSize
-        }
-        
-        return ZStack {
-            ForEach(npcsForCircle.indices, id: \.self) { index in
-                let npc = npcsForCircle[index]
-                let angle = Angle(degrees: (360 / Double(npcsForCircle.count)) * Double(index) - 90)
-                let position = positionOnCircle(angle: angle, radius: radius)
-                
-                NPCButton(npc: npc, size: buttonSize, rotation: clockwise ? -rotation : rotation)
-                    .position(x: position.x + center.x, y: position.y + center.y)
-                    .scaleEffect(animatedNPC?.id == npc.id ? 1.1 : 1.0)
-                    .animation(.spring(response: 0.2, dampingFraction: 0.5), value: animatedNPC?.id == npc.id)
-                    .highPriorityGesture(
-                        TapGesture()
-                            .onEnded {
-                                guard !isMenuVisible && !isMenuDismissing else { return }
-                                
-                                triggerHaptic()
-                                withAnimation {
-                                    animatedNPC = npc
-                                }
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                    isMenuVisible = true
-                                    withAnimation(.spring()) {
-                                        selectedNPC = npc
-                                        animatedNPC = nil
-                                        isWheelSpinning = false
-                                    }
-                                }
-                            }
-                    )
-                    .zIndex(selectedNPC?.id == npc.id ? 3 : 1)
-            }
-        }
-        .rotationEffect(.degrees(rotation))
-        .disabled(isMenuVisible || isMenuDismissing)
     }
     
     private func contextMenuView() -> some View {
@@ -481,7 +538,7 @@ struct CircularNPCView: View {
     }
 }
 
-// MARK: - NPC Button
+// MARK: - NPC Button (simplified without lightning or blue border)
 struct NPCButton: View {
     let npc: NPC
     let size: CGFloat
@@ -490,30 +547,21 @@ struct NPCButton: View {
     var body: some View {
         Button(action: {}) {
             ZStack {
-                // Metallic frame (bottom layer)
                 Image("iconFrame")
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: size * 1.1, height: size * 1.1)
-                
-                // Background circle (middle layer)
-                Circle()
-                    .fill(Color.black.opacity(0.7))
-                    .frame(width: size * 0.85, height: size * 0.85)
-                    .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                    .frame(width: size, height: size)
+                    .overlay(
+                        Image(getImageName(npc: npc))
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: size * 0.7, height: size * 0.7)
+                            .rotationEffect(.degrees(rotation))
+                    )
                     .overlay(
                         Circle()
-                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                            .stroke(npc.isVampire ? Color.red : Color.clear, lineWidth: 2) // Only red border for vampires
+                            .opacity(npc.isUnknown ? 0 : 1)
                     )
-                
-                // NPC icon (top layer)
-                Image(getImageName(npc: npc))
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: size * 0.8, height: size * 0.8)
-                    .rotationEffect(.degrees(rotation))
-                    .clipShape(Circle())
-                    .opacity(npc.isAlive ? 1.0 : 0.4)
             }
         }
         .shadow(color: .black, radius: 3, x: 0, y: 2)
@@ -609,5 +657,21 @@ struct ContextMenuButton: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(PlainButtonStyle())
+    }
+}
+
+struct LightningPath: Shape {
+    var points: [CGPoint]
+    
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        guard let firstPoint = points.first else { return path }
+        
+        path.move(to: firstPoint)
+        for point in points.dropFirst() {
+            path.addLine(to: point)
+        }
+        
+        return path
     }
 }

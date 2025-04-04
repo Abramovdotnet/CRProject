@@ -138,27 +138,57 @@ class MainSceneViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    // MARK: - Navigation Methods
     func navigateToParent() {
         guard let parentScene = parentScene else { return }
+        
+        // Store current positions for animation
+        let oldPositions = locationPositions
+        
         try? gameStateService.changeLocation(to: parentScene.id)
         currentScene = gameStateService.currentScene
-        updateSceneAwareness()
-        updatePlayerBloodPercentage()
+        
+        // Trigger position update with animation
+        withAnimation(.easeInOut(duration: 0.6)) {
+            if let oldPos = oldPositions {
+                locationPositions = oldPos
+            }
+            updateSceneAwareness()
+            updatePlayerBloodPercentage()
+        }
     }
     
     func navigateToChild(_ scene: Scene) {
+        // Store current positions for animation
+        let oldPositions = locationPositions
+        
         try? gameStateService.changeLocation(to: scene.id)
         currentScene = gameStateService.currentScene
-        updateSceneAwareness()
-        updatePlayerBloodPercentage()
+        
+        // Trigger position update with animation
+        withAnimation(.easeInOut(duration: 0.6)) {
+            if let oldPos = oldPositions {
+                locationPositions = oldPos
+            }
+            updateSceneAwareness()
+            updatePlayerBloodPercentage()
+        }
     }
     
     func navigateToSibling(_ scene: Scene) {
+        // Store current positions for animation
+        let oldPositions = locationPositions
+        
         try? gameStateService.changeLocation(to: scene.id)
         currentScene = gameStateService.currentScene
-        updateSceneAwareness()
-        updatePlayerBloodPercentage()
+        
+        // Trigger position update with animation
+        withAnimation(.easeInOut(duration: 0.6)) {
+            if let oldPos = oldPositions {
+                locationPositions = oldPos
+            }
+            updateSceneAwareness()
+            updatePlayerBloodPercentage()
+        }
     }
     
     // MARK: - NPC Management
@@ -242,25 +272,19 @@ class MainSceneViewModel: ObservableObject {
     private func updateRelatedLocations(for locationId: UUID?) {
         guard let locationId = locationId else { return }
         
-        print("Updating related locations for ID: \(locationId)")
+        print("DEBUG: Starting updateRelatedLocations for ID: \(locationId)")
         
         // Get parent location
         parentScene = LocationReader.getParentLocation(for: locationId)
-        print("Parent scene: \(parentScene?.name ?? "None")")
+        print("DEBUG: Parent scene loaded: \(parentScene?.name ?? "None") with ID: \(parentScene?.id.uuidString ?? "No ID")")
         
         // Get child locations
         childScenes = LocationReader.getChildLocations(for: locationId)
-        print("Child scenes count: \(childScenes.count)")
-        for scene in childScenes {
-            print("Child scene: \(scene.name)")
-        }
+        print("DEBUG: Child scenes count: \(childScenes.count)")
         
         // Get sibling locations
         siblingScenes = LocationReader.getSiblingLocations(for: locationId)
-        print("Sibling scenes count: \(siblingScenes.count)")
-        for scene in siblingScenes {
-            print("Sibling scene: \(scene.name)")
-        }
+        print("DEBUG: Sibling scenes count: \(siblingScenes.count)")
     }
     
     private func updatePlayerBloodPercentage() {
@@ -289,13 +313,139 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func updateLocationPositions(in geometry: GeometryProxy) {
-        locationPositions = calculateLocationPositions(in: geometry)
-        updateVisibleLocations()
+        // Debounce rapid updates
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            // Calculate new positions
+            let newPositions = self.calculateLocationPositions(in: geometry)
+            
+            // Only update if positions have changed significantly
+            if self.shouldUpdatePositions(newPositions) {
+                withAnimation(.easeInOut(duration: 0.6)) {
+                    self.locationPositions = newPositions
+                    self.updateVisibleLocations()
+                }
+            }
+        }
     }
     
     private func updateVisibleLocations() {
-        guard let positions = locationPositions else { return }
+        guard let positions = locationPositions else {
+            visibleLocations.removeAll()
+            return
+        }
         visibleLocations = Set(positions.keys)
+    }
+    
+    private func calculateLocationPositions(in geometry: GeometryProxy) -> [UUID: CGPoint] {
+        var positions: [UUID: CGPoint] = [:]
+        guard let currentScene = currentScene else { return positions }
+        
+        let margin: CGFloat = 60
+        let availableWidth = geometry.size.width - margin * 2
+        let availableHeight = geometry.size.height - margin * 2
+        
+        // Determine if we're using split view (has parent) or centered view
+        let hasParent = parentScene != nil
+        let leftColumnWidth = hasParent ? availableWidth * 0.6 : availableWidth
+        let rightColumnWidth = hasParent ? availableWidth * 0.4 : 0
+        
+        // Calculate center points for both columns
+        let leftCenter = CGPoint(
+            x: margin + leftColumnWidth / 2,
+            y: geometry.size.height / 2
+        )
+        
+        let rightCenter = hasParent ? CGPoint(
+            x: margin + leftColumnWidth + rightColumnWidth / 2,
+            y: geometry.size.height / 2
+        ) : .zero
+        
+        // Position current scene at left column center
+        positions[currentScene.id] = leftCenter
+        
+        // Calculate radii for concentric circles
+        let innerRadius = min(leftColumnWidth, availableHeight) * 0.3
+        let outerRadius = min(leftColumnWidth, availableHeight) * 0.45
+        
+        // Position siblings in inner circle (clock positions)
+        let siblings = Array(siblingScenes.prefix(10))
+        if !siblings.isEmpty {
+            let angleStep = 2 * CGFloat.pi / max(12, CGFloat(siblings.count))
+            let startAngle = -CGFloat.pi / 2 // Start from 12 o'clock
+            
+            for (index, sibling) in siblings.enumerated() {
+                let angle = startAngle + angleStep * CGFloat(index)
+                positions[sibling.id] = CGPoint(
+                    x: leftCenter.x + cos(angle) * innerRadius,
+                    y: leftCenter.y + sin(angle) * innerRadius
+                )
+            }
+        }
+        
+        // Position children in outer circle
+        let children = Array(childScenes.prefix(10))
+        if !children.isEmpty {
+            let angleStep = 2 * CGFloat.pi / max(12, CGFloat(children.count))
+            let startAngle = -CGFloat.pi / 2 // Start from 12 o'clock
+            
+            for (index, child) in children.enumerated() {
+                let angle = startAngle + angleStep * CGFloat(index)
+                positions[child.id] = CGPoint(
+                    x: leftCenter.x + cos(angle) * outerRadius,
+                    y: leftCenter.y + sin(angle) * outerRadius
+                )
+            }
+        }
+        
+        // Handle parent and parent's siblings if they exist
+        if let parent = parentScene {
+            // Position parent at right column center
+            positions[parent.id] = rightCenter
+            
+            // Position parent's siblings in circle around parent
+            let parentSiblings = Array(LocationReader.getSiblingLocations(for: parent.id).prefix(10))
+            if !parentSiblings.isEmpty {
+                let parentCircleRadius = min(rightColumnWidth, availableHeight) * 0.35
+                let angleStep = 2 * CGFloat.pi / max(12, CGFloat(parentSiblings.count))
+                let startAngle = -CGFloat.pi / 2 // Start from 12 o'clock
+                
+                for (index, sibling) in parentSiblings.enumerated() {
+                    let angle = startAngle + angleStep * CGFloat(index)
+                    positions[sibling.id] = CGPoint(
+                        x: rightCenter.x + cos(angle) * parentCircleRadius,
+                        y: rightCenter.y + sin(angle) * parentCircleRadius
+                    )
+                }
+            }
+        }
+        
+        // Ensure all positions are within bounds
+        return positions.mapValues { pos in
+            CGPoint(
+                x: pos.x.clamped(to: margin...geometry.size.width - margin),
+                y: pos.y.clamped(to: margin...geometry.size.height - margin)
+            )
+        }
+    }
+    
+    // Helper to determine if position update is needed
+    private func shouldUpdatePositions(_ newPositions: [UUID: CGPoint]) -> Bool {
+        guard let currentPositions = locationPositions else { return true }
+        
+        // Check if the number of positions has changed
+        if currentPositions.count != newPositions.count { return true }
+        
+        // Check if any position has changed significantly
+        let threshold: CGFloat = 1.0
+        for (id, newPos) in newPositions {
+            guard let currentPos = currentPositions[id] else { return true }
+            let distance = hypot(newPos.x - currentPos.x, newPos.y - currentPos.y)
+            if distance > threshold { return true }
+        }
+        
+        return false
     }
     
     func isLocationAccessible(_ scene: Scene) -> Bool {
@@ -311,37 +461,25 @@ extension MainSceneViewModel {
     var allVisibleScenes: [Scene] {
         var scenes = [Scene]()
         
-        // 1. Add current scene if exists
+        // Add parent and limited parent's siblings
+        if let parent = parentScene {
+            scenes.append(parent)
+            let parentSiblings = LocationReader.getSiblingLocations(for: parent.id)
+            scenes.append(contentsOf: parentSiblings.prefix(10))
+        }
+        
+        // Add limited siblings
+        scenes.append(contentsOf: siblingScenes.prefix(10))
+        
+        // Add limited children
+        scenes.append(contentsOf: childScenes.prefix(10))
+        
+        // Add current scene last to ensure it's rendered on top
         if let current = currentScene {
             scenes.append(current)
         }
         
-        // 2. Add parent scene if exists
-        if let parent = parentScene {
-            scenes.append(parent)
-        }
-        
-        // 3. Add all sibling scenes
-        scenes.append(contentsOf: siblingScenes)
-        
-        // 4. Add all child scenes
-        scenes.append(contentsOf: childScenes)
-        
-        // 5. Add "cousin" scenes (siblings of parent)
-        if let parent = parentScene,
-           let _ = try? LocationReader.getParentLocation(for: parent.id) {
-            let auntsUncles = LocationReader.getSiblingLocations(for: parent.id)
-            scenes.append(contentsOf: auntsUncles)
-            
-            // 6. Add second-level children (children of siblings)
-            for sibling in siblingScenes {
-                let niecesNephews = LocationReader.getChildLocations(for: sibling.id)
-                scenes.append(contentsOf: niecesNephews)
-            }
-        }
-        
-        // Remove duplicates and limit to 15 scenes max
-        return Array(Set(scenes)).prefix(15).map { $0 }
+        return scenes.uniqued()
     }
     
     func updateVisibleScenes() {

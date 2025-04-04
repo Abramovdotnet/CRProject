@@ -27,7 +27,6 @@ struct NavigationDetailView: View {
                     onLocationSelected: { location in
                         if canTravelTo(location) {
                             viewModel.navigateToLocation(location)
-                            dismiss()
                         }
                     }
                 )
@@ -63,128 +62,165 @@ struct NavigationDetailView: View {
 }
 
 // MARK: - Supporting Views
-
-private struct NavigationWebView: View {
-    let viewModel: MainSceneViewModel
+struct NavigationWebView: View {
+    @ObservedObject var viewModel: MainSceneViewModel
     @Binding var offset: CGPoint
     @Binding var scale: CGFloat
     let geometry: GeometryProxy
     let onLocationSelected: (Scene) -> Void
-    @State private var startOffset: CGPoint = .zero
+    
+    // Layout constants
+    private let maxChildNodes = 10
+    private let maxSiblingNodes = 10
+    private let maxParentSiblingNodes = 10
+    private let margin: CGFloat = 40
+    
+    // Current position always at center
+    private var currentPosition: CGPoint {
+        CGPoint(x: geometry.size.width/2, y: geometry.size.height/2)
+    }
     
     var body: some View {
-        // Fixed drag area that covers the entire view
-        Color.white.opacity(0.1)
-            .frame(width: geometry.size.width, height: geometry.size.height)
-            .contentShape(Rectangle())
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { value in
-                        if value.translation == .zero {
-                            startOffset = offset
-                        }
-                        
-                        // Direct 1:1 movement with finger
-                        let newX = startOffset.x + value.translation.width
-                        let newY = startOffset.y + value.translation.height
-                        
-                        offset = CGPoint(
-                            x: newX.clamped(to: -200...200),
-                            y: newY.clamped(to: -200...200)
-                        )
-                    }
-                    .onEnded { value in
-                        // Small momentum effect
-                        let velocity = CGPoint(
-                            x: value.predictedEndLocation.x - value.location.x,
-                            y: value.predictedEndLocation.y - value.location.y
-                        )
-                        
-                        withAnimation(.interpolatingSpring(
-                            mass: 0.8,
-                            stiffness: 350,
-                            damping: 25,
-                            initialVelocity: 0
-                        )) {
-                            let finalX = offset.x + velocity.x * 0.05  // Reduced momentum
-                            let finalY = offset.y + velocity.y * 0.05
-                            
-                            offset = CGPoint(
-                                x: finalX.clamped(to: -200...200),
-                                y: finalY.clamped(to: -200...200)
-                            )
-                        }
-                    }
-            )
-            .gesture(
-                MagnificationGesture()
-                    .onChanged { value in
-                        scale = value.magnitude.clamped(to: 0.2...0.8)
-                    }
-                    .onEnded { value in
-                        withAnimation(.interpolatingSpring(
-                            mass: 0.8,
-                            stiffness: 350,
-                            damping: 25,
-                            initialVelocity: 0
-                        )) {
-                            scale = value.magnitude.clamped(to: 0.2...0.8)
-                        }
-                    }
-            )
-            .overlay {
-                // Movable content
+        Color.clear
+            .overlay(
                 ZStack {
-                    // Connection Lines Layer
-                    ForEach(viewModel.allConnections) { connection in
-                        ConnectionLine(
-                            from: connection.from,
-                            to: connection.to,
-                            awareness: connection.awareness
-                        )
+                    // Connection lines
+                    ForEach(connections) { connection in
+                        StraightConnectionLine(connection: connection)
                     }
                     
-                    // Location Nodes Layer
-                    ForEach(viewModel.allLocations) { location in
-                        if let position = viewModel.locationPositions?[location.id] {
+                    // Location nodes
+                    ForEach(viewModel.allVisibleScenes) { location in
+                        if let position = relativePosition(for: location) {
                             LocationNode(
                                 location: location,
                                 currentLocation: viewModel.currentScene,
-                                bloodCost: 5,
                                 playerBlood: Int(viewModel.playerBloodPercentage),
                                 onSelected: { onLocationSelected(location) }
                             )
                             .position(position)
+                            .zIndex(location.id == viewModel.currentScene?.id ? 100 : 1)
                         }
                     }
                 }
                 .offset(x: offset.x, y: offset.y)
                 .scaleEffect(scale)
-            }
-            .animation(.easeInOut, value: viewModel.currentScene?.id)
-            .onAppear {
-                viewModel.updateLocationPositions(in: geometry)
-            }
-            .onChange(of: viewModel.currentScene?.id) { _, _ in
-                withAnimation(.easeInOut) {
-                    offset = .zero
-                    startOffset = .zero
-                    viewModel.updateLocationPositions(in: geometry)
+            )
+            .onChange(of: viewModel.currentScene?.id) { _ in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    offset = .zero // Reset offset on location change
                 }
             }
     }
+    
+    // Calculate position relative to current node's center
+    private func relativePosition(for location: Scene) -> CGPoint? {
+        guard let current = viewModel.currentScene else { return nil }
+        
+        if location.id == current.id {
+            return currentPosition
+        }
+        
+        let hasParent = viewModel.parentScene != nil
+        let availableWidth = geometry.size.width - margin * 2
+        let leftColumnWidth = hasParent ? availableWidth * 0.6 : availableWidth
+        
+        // Siblings in inner circle
+        if viewModel.siblingScenes.contains(where: { $0.id == location.id }) {
+            let siblings = Array(viewModel.siblingScenes.prefix(maxSiblingNodes))
+            guard let index = siblings.firstIndex(where: { $0.id == location.id }) else { return nil }
+            let angle = 2 * .pi / CGFloat(siblings.count) * CGFloat(index)
+            let radius = min(leftColumnWidth, geometry.size.height) * 0.3
+            return CGPoint(
+                x: currentPosition.x + cos(angle) * radius,
+                y: currentPosition.y + sin(angle) * radius
+            )
+        }
+        
+        // Children in outer circle
+        if viewModel.childScenes.contains(where: { $0.id == location.id }) {
+            let children = Array(viewModel.childScenes.prefix(maxChildNodes))
+            guard let index = children.firstIndex(where: { $0.id == location.id }) else { return nil }
+            let angle = 2 * .pi / CGFloat(children.count) * CGFloat(index)
+            let radius = min(leftColumnWidth, geometry.size.height) * 0.45
+            return CGPoint(
+                x: currentPosition.x + cos(angle) * radius,
+                y: currentPosition.y + sin(angle) * radius
+            )
+        }
+        
+        // Parent in right column center
+        if let parent = viewModel.parentScene, location.id == parent.id {
+            let rightCenter = CGPoint(
+                x: currentPosition.x + (geometry.size.width * 0.3), // 30% into right column
+                y: currentPosition.y
+            )
+            return rightCenter
+        }
+        
+        // Parent siblings in right column circle
+        if let parent = viewModel.parentScene,
+           LocationReader.getSiblingLocations(for: parent.id).contains(where: { $0.id == location.id }) {
+            let parentSiblings = Array(LocationReader.getSiblingLocations(for: parent.id).prefix(maxParentSiblingNodes))
+            guard let index = parentSiblings.firstIndex(where: { $0.id == location.id }) else { return nil }
+            let rightCenter = CGPoint(
+                x: currentPosition.x + (geometry.size.width * 0.3),
+                y: currentPosition.y
+            )
+            let angle = 2 * .pi / CGFloat(parentSiblings.count) * CGFloat(index)
+            let radius = min(geometry.size.width * 0.2, geometry.size.height) * 0.35
+            return CGPoint(
+                x: rightCenter.x + cos(angle) * radius,
+                y: rightCenter.y + sin(angle) * radius
+            )
+        }
+        
+        return nil
+    }
+    
+    private var connections: [Connection] {
+        var connections = [Connection]()
+        guard let current = viewModel.currentScene,
+              let currentPos = relativePosition(for: current) else {
+            return connections
+        }
+        
+        // Connect to parent (straight horizontal line to right)
+        if let parent = viewModel.parentScene,
+           let parentPos = relativePosition(for: parent) {
+            connections.append(Connection(
+                from: currentPos,
+                to: parentPos,
+                awareness: 1.0,
+                isParentConnection: true
+            ))
+        }
+        
+        // Connect to children (radial lines)
+        for child in viewModel.childScenes.prefix(maxChildNodes) {
+            if let childPos = relativePosition(for: child) {
+                connections.append(Connection(
+                    from: currentPos,
+                    to: childPos,
+                    awareness: 1.0
+                ))
+            }
+        }
+        
+        return connections
+    }
 }
 
-private struct LocationNode: View {
+struct LocationNode: View {
     let location: Scene
     let currentLocation: Scene?
-    let bloodCost: Int
     let playerBlood: Int
+
     let onSelected: () -> Void
     
     private var isAccessible: Bool {
         guard location.id != currentLocation?.id else { return false }  // Disable current location
-        return (playerBlood - bloodCost) >= 10
+        return (playerBlood - 5) >= 10
     }
     
     private var relationshipIcon: String {
@@ -212,35 +248,24 @@ private struct LocationNode: View {
     }
     
     var body: some View {
-        Button(action: onSelected) {
-            VStack(spacing: 4) {
-                Image(systemName: relationshipIcon)
-                    .font(.system(size: 24))
-                    .foregroundColor(iconColor)
-                Text(location.name)
-                    .font(Theme.captionFont)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.center)
-                    .foregroundColor(textColor)
-                if let label = relationshipLabel {
-                    Text(label)
-                        .font(.caption2)
-                        .foregroundColor(textColor.opacity(0.8))
+            Button(action: onSelected) {
+                VStack(spacing: 2) {
+                    Image(systemName: location.sceneType.iconName)
+                        .font(.system(size: 20)) // Slightly smaller for better fit
+                        .foregroundColor(iconColor)
+                    
+                    Text(location.name)
+                        .font(Theme.bodyFont) // Configurable font size
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                        .foregroundColor(Theme.textColor)
                 }
+                .frame(width: 80, height: 80) // Slightly larger for better readability
+                .background(backgroundStyle)
+                .clipShape(Circle())
+                .overlay(Circle().stroke(borderStyle, lineWidth: 2))
+                .shadow(color: shadowColor, radius: 4, x: 0, y: 2)
             }
-            .frame(width: 100, height: 100)  // Increased size
-            .background(
-                ZStack {
-                    Circle()
-                        .fill(backgroundStyle)
-                    Circle()
-                        .fill(Color.black.opacity(0.3))  // Dark overlay for better contrast
-                }
-            )
-            .clipShape(Circle())
-            .overlay(Circle().stroke(borderStyle, lineWidth: 3))  // Increased border width
-            .shadow(color: shadowColor, radius: 8, x: 0, y: 2)  // Enhanced shadow
-        }
         .disabled(!isAccessible)
         .opacity(location.id == currentLocation?.id ? 1.0 : isAccessible ? 1.0 : 0.4)  // More contrast for inaccessible nodes
     }
@@ -270,13 +295,6 @@ private struct LocationNode: View {
             return .white
         }
         return isAccessible ? Theme.primaryColor : Theme.primaryColor.opacity(0.3)
-    }
-    
-    private var textColor: Color {
-        if location.id == currentLocation?.id {
-            return .white
-        }
-        return isAccessible ? Theme.textColor : Theme.textColor.opacity(0.3)
     }
     
     private var shadowColor: Color {
@@ -358,7 +376,7 @@ private struct NavigationControls: View {
                     .font(.title3)
             }
             
-            Button(action: { 
+            Button(action: {
                 withAnimation(.spring()) {
                     scale = 0.8  // Reset to default scale
                     offset = .zero
@@ -507,4 +525,4 @@ extension Array where Element: Identifiable {
 
 #Preview {
     NavigationDetailView(viewModel: MainSceneViewModel())
-} 
+}
