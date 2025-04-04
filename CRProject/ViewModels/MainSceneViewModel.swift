@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import SwiftUI
 
 class MainSceneViewModel: ObservableObject {
     @Published var currentScene: Scene?
@@ -13,6 +14,9 @@ class MainSceneViewModel: ObservableObject {
     @Published var currentHour: Int = 0
     @Published var isNight: Bool = false
     @Published var isGameEnd: Bool = false
+    @Published var sceneSplit: Int = 0
+    @Published private(set) var locationPositions: [UUID: CGPoint]?
+    @Published private(set) var visibleLocations: Set<UUID> = []
     
     private var cancellables = Set<AnyCancellable>()
     let gameStateService: GameStateService
@@ -29,6 +33,11 @@ class MainSceneViewModel: ObservableObject {
     var playerStatus: String {
         guard let player = gameStateService.getPlayer() else { return "Unknown" }
         return player.isAlive ? "Alive" : "Dead"
+    }
+    
+    func adjustScene()
+    {
+        sceneSplit = sceneSplit + 1
     }
     
     init(gameStateService: GameStateService = DependencyManager.shared.resolve(),
@@ -278,4 +287,69 @@ class MainSceneViewModel: ObservableObject {
             gameTime.advanceTimeSafe()
         }
     }
-} 
+    
+    func updateLocationPositions(in geometry: GeometryProxy) {
+        locationPositions = calculateLocationPositions(in: geometry)
+        updateVisibleLocations()
+    }
+    
+    private func updateVisibleLocations() {
+        guard let positions = locationPositions else { return }
+        visibleLocations = Set(positions.keys)
+    }
+    
+    func isLocationAccessible(_ scene: Scene) -> Bool {
+        guard let player = gameStateService.getPlayer() else { return false }
+        let bloodCost: Float = 5 // Standard blood cost for movement
+        let currentBlood = Float(player.bloodMeter.currentBlood)
+        let bloodAfterTravel = currentBlood - bloodCost
+        return bloodAfterTravel >= 10 // 10% threshold
+    }
+}
+
+extension MainSceneViewModel {
+    var allVisibleScenes: [Scene] {
+        var scenes = [Scene]()
+        
+        // 1. Add current scene if exists
+        if let current = currentScene {
+            scenes.append(current)
+        }
+        
+        // 2. Add parent scene if exists
+        if let parent = parentScene {
+            scenes.append(parent)
+        }
+        
+        // 3. Add all sibling scenes
+        scenes.append(contentsOf: siblingScenes)
+        
+        // 4. Add all child scenes
+        scenes.append(contentsOf: childScenes)
+        
+        // 5. Add "cousin" scenes (siblings of parent)
+        if let parent = parentScene,
+           let _ = try? LocationReader.getParentLocation(for: parent.id) {
+            let auntsUncles = LocationReader.getSiblingLocations(for: parent.id)
+            scenes.append(contentsOf: auntsUncles)
+            
+            // 6. Add second-level children (children of siblings)
+            for sibling in siblingScenes {
+                let niecesNephews = LocationReader.getChildLocations(for: sibling.id)
+                scenes.append(contentsOf: niecesNephews)
+            }
+        }
+        
+        // Remove duplicates and limit to 15 scenes max
+        return Array(Set(scenes)).prefix(15).map { $0 }
+    }
+    
+    func updateVisibleScenes() {
+        guard let currentId = currentScene?.id else { return }
+        
+        // Update all relationships
+        parentScene = LocationReader.getParentLocation(for: currentId)
+        siblingScenes = LocationReader.getSiblingLocations(for: currentId)
+        childScenes = LocationReader.getChildLocations(for: currentId)
+    }
+}

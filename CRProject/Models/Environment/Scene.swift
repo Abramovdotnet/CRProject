@@ -51,3 +51,14 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
         _childSceneIds.remove(childSceneId)
     }
 }
+
+extension Scene: Hashable {
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+    
+    static func == (lhs: Scene, rhs: Scene) -> Bool {
+        return lhs.id == rhs.id
+    }
+}
+

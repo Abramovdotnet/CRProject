@@ -1,205 +1,604 @@
 [
   {
-    "id": "1A2B3C4D-E5F6-7G8H-9I0J-1K2L3M4N5O6P",
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
     "name": "Central Plains",
     "sceneType": "kingdom",
     "isIndoor": false,
     "parentSceneId": null
   },
   {
-    "id": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q",
-    "name": "Greenfield",
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Goldenfield",
     "sceneType": "city",
     "isIndoor": false,
-    "parentSceneId": "1A2B3C4D-E5F6-7G8H-9I0J-1K2L3M4N5O6P"
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
   },
   {
-    "id": "3C4D5E6F-G7H8-9I0J-1K2L-3M4N5O6P7Q8R",
-    "name": "Greenfield Market Square",
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Goldenfield North Residential District",
     "sceneType": "district",
     "isIndoor": false,
-    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "4D5E6F7G-H8I9-0J1K-2L3M-4N5O6P7Q8R9S",
-    "name": "Greenfield Temple District",
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Goldenfield South Residential District",
     "sceneType": "district",
     "isIndoor": false,
-    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "5E6F7G8H-I9J0-1K2L-3M4N-5O6P7Q8R9S0T",
-    "name": "Greenfield Residential Quarter",
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Goldenfield East Residential District",
     "sceneType": "district",
     "isIndoor": false,
-    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "6F7G8H9I-J0K1-2L3M-4N5O-6P7Q8R9S0T1U",
-    "name": "The Green Leaf Tavern",
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Goldenfield West Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "The Golden Rose Inn",
     "sceneType": "tavern",
     "isIndoor": true,
-    "parentSceneId": "3C4D5E6F-G7H8-9I0J-1K2L-3M4N5O6P7Q8R"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "7G8H9I0J-K1L2-3M4N-5O6P-7Q8R9S0T1U2V",
-    "name": "Greenfield Central Market",
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Goldenfield Market",
     "sceneType": "market",
     "isIndoor": false,
-    "parentSceneId": "3C4D5E6F-G7H8-9I0J-1K2L-3M4N5O6P7Q8R"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "8H9I0J1K-L2M3-4N5O-6P7Q-8R9S0T1U2V3W",
-    "name": "Temple of Nature",
-    "sceneType": "temple",
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Goldenfield Castle",
+    "sceneType": "castle",
     "isIndoor": true,
-    "parentSceneId": "4D5E6F7G-H8I9-0J1K-2L3M-4N5O6P7Q8R9S"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "9I0J1K2L-M3N4-5O6P-7Q8R-9S0T1U2V3W4X",
-    "name": "Greenfield Palace",
-    "sceneType": "palace",
-    "isIndoor": true,
-    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
-  },
-  {
-    "id": "0J1K2L3M-N4O5-6P7Q-8R9S-0T1U2V3W4X5Y",
-    "name": "Greenfield Library",
-    "sceneType": "library",
-    "isIndoor": true,
-    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
-  },
-  {
-    "id": "1K2L3M4N-O5P6-7Q8R-9S0T-1U2V3W4X5Y6Z",
-    "name": "Greenfield Academy",
-    "sceneType": "academy",
-    "isIndoor": true,
-    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
-  },
-  {
-    "id": "2L3M4N5O-P6Q7-8R9S-0T1U-2V3W4X5Y6Z7A",
-    "name": "Greenfield Arena",
-    "sceneType": "arena",
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Goldenfield North Gate",
+    "sceneType": "city_gate",
     "isIndoor": false,
-    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "3M4N5O6P-Q7R8-9S0T-1U2V-3W4X5Y6Z7A8B",
-    "name": "Greenfield Farmlands",
-    "sceneType": "farmland",
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Goldenfield South Gate",
+    "sceneType": "city_gate",
     "isIndoor": false,
-    "parentSceneId": "2B3C4D5E-F6G7-8H9I-0J1K-2L3M4N5O6P7Q"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "4N5O6P7Q-R8S9-0T1U-2V3W-4X5Y6Z7A8B9C",
-    "name": "Greenfield Windmill",
-    "sceneType": "windmill",
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Goldenfield East Gate",
+    "sceneType": "city_gate",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Goldenfield West Gate",
+    "sceneType": "city_gate",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Goldenfield North Guard Post",
+    "sceneType": "guard_post",
     "isIndoor": true,
-    "parentSceneId": "3M4N5O6P-Q7R8-9S0T-1U2V-3W4X5Y6Z7A8B"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "5O6P7Q8R-S9T0-1U2V-3W4X-5Y6Z7A8B9C0D",
-    "name": "Greenfield Granary",
-    "sceneType": "granary",
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Goldenfield South Guard Post",
+    "sceneType": "guard_post",
     "isIndoor": true,
-    "parentSceneId": "3M4N5O6P-Q7R8-9S0T-1U2V-3W4X5Y6Z7A8B"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E",
-    "name": "Meadowview",
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Goldenfield East Guard Post",
+    "sceneType": "guard_post",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Goldenfield West Guard Post",
+    "sceneType": "guard_post",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Goldenfield North Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Goldenfield South Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Goldenfield East Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Goldenfield West Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Goldenfield North Farm",
+    "sceneType": "farm",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Goldenfield South Farm",
+    "sceneType": "farm",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Goldenfield Mill",
+    "sceneType": "mill",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Goldenfield Gold Mine",
+    "sceneType": "mine",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Harvestvale",
     "sceneType": "city",
     "isIndoor": false,
-    "parentSceneId": "1A2B3C4D-E5F6-7G8H-9I0J-1K2L3M4N5O6P"
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
   },
   {
-    "id": "7Q8R9S0T-U1V2-3W4X-5Y6Z-7A8B9C0D1E2F",
-    "name": "Meadowview Market Square",
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Harvestvale North Residential District",
     "sceneType": "district",
     "isIndoor": false,
-    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
   },
   {
-    "id": "8R9S0T1U-V2W3-4X5Y-6Z7A-8B9C0D1E2F3G",
-    "name": "Meadowview Temple District",
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Harvestvale South Residential District",
     "sceneType": "district",
     "isIndoor": false,
-    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
   },
   {
-    "id": "9S0T1U2V-W3X4-5Y6Z-7A8B-9C0D1E2F3G4H",
-    "name": "Meadowview Residential Quarter",
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Harvestvale East Residential District",
     "sceneType": "district",
     "isIndoor": false,
-    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
   },
   {
-    "id": "0T1U2V3W-X4Y5-6Z7A-8B9C-0D1E2F3G4H5I",
-    "name": "The Meadow Inn",
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Harvestvale West Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "The Harvest Rose Inn",
     "sceneType": "tavern",
     "isIndoor": true,
-    "parentSceneId": "7Q8R9S0T-U1V2-3W4X-5Y6Z-7A8B9C0D1E2F"
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
   },
   {
-    "id": "1U2V3W4X-Y5Z6-7A8B-9C0D-1E2F3G4H5I6J",
-    "name": "Meadowview Central Market",
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Harvestvale Market",
     "sceneType": "market",
     "isIndoor": false,
-    "parentSceneId": "7Q8R9S0T-U1V2-3W4X-5Y6Z-7A8B9C0D1E2F"
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
   },
   {
-    "id": "2V3W4X5Y-Z6A7-8B9C-0D1E-2F3G4H5I6J7K",
-    "name": "Temple of the Meadow",
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Harvestvale Castle",
+    "sceneType": "castle",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Harvestvale North Gate",
+    "sceneType": "city_gate",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Harvestvale South Gate",
+    "sceneType": "city_gate",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Harvestvale East Gate",
+    "sceneType": "city_gate",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Harvestvale West Gate",
+    "sceneType": "city_gate",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Harvestvale North Guard Post",
+    "sceneType": "guard_post",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Harvestvale South Guard Post",
+    "sceneType": "guard_post",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Harvestvale East Guard Post",
+    "sceneType": "guard_post",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Harvestvale West Guard Post",
+    "sceneType": "guard_post",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Harvestvale North Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Harvestvale South Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Harvestvale East Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Harvestvale West Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Harvestvale North Farm",
+    "sceneType": "farm",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Harvestvale South Farm",
+    "sceneType": "farm",
+    "isIndoor": false,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Harvestvale Mill",
+    "sceneType": "mill",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Harvestvale Iron Mine",
+    "sceneType": "mine",
+    "isIndoor": true,
+    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Rivercross",
+    "sceneType": "city",
+    "isIndoor": false,
+    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Rivercross North Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Rivercross South Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Rivercross East Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Rivercross West Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "The River Rose Inn",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Rivercross Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Rivercross Castle",
+    "sceneType": "castle",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Rivercross North Gate",
+    "sceneType": "city_gate",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Rivercross South Gate",
+    "sceneType": "city_gate",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Rivercross East Gate",
+    "sceneType": "city_gate",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Rivercross West Gate",
+    "sceneType": "city_gate",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Rivercross North Guard Post",
+    "sceneType": "guard_post",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Rivercross South Guard Post",
+    "sceneType": "guard_post",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "Rivercross East Guard Post",
+    "sceneType": "guard_post",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Rivercross West Guard Post",
+    "sceneType": "guard_post",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Rivercross North Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Rivercross South Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Rivercross East Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Rivercross West Road",
+    "sceneType": "road",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Rivercross North Farm",
+    "sceneType": "farm",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Rivercross South Farm",
+    "sceneType": "farm",
+    "isIndoor": false,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Rivercross Mill",
+    "sceneType": "mill",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Rivercross Copper Mine",
+    "sceneType": "mine",
+    "isIndoor": true,
+    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
+  },
+  {
+    "id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Goldenfield Central Residential District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "b2c3d4e5-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Goldenfield Noble District",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "c3d4e5f6-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "The Golden Crown Inn",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "d4e5f6g7-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
+    "name": "The Golden Chalice Inn",
+    "sceneType": "tavern",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "e5f6g7h8-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
+    "name": "Goldenfield East Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "f6g7h8i9-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
+    "name": "Goldenfield West Market",
+    "sceneType": "market",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "g7h8i9j0-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
+    "name": "Temple of the Golden Sun",
     "sceneType": "temple",
     "isIndoor": true,
-    "parentSceneId": "8R9S0T1U-V2W3-4X5Y-6Z7A-8B9C0D1E2F3G"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "3W4X5Y6Z-A7B8-9C0D-1E2F-3G4H5I6J7K8L",
-    "name": "Meadowview Palace",
-    "sceneType": "palace",
+    "id": "h8i9j0k1-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
+    "name": "Temple of the Harvest Moon",
+    "sceneType": "temple",
     "isIndoor": true,
-    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "4X5Y6Z7A-B8C9-0D1E-2F3G-4H5I6J7K8L9M",
-    "name": "Meadowview Library",
-    "sceneType": "library",
-    "isIndoor": true,
-    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
-  },
-  {
-    "id": "5Y6Z7A8B-C9D0-1E2F-3G4H-5I6J7K8L9M0N",
-    "name": "Meadowview Academy",
+    "id": "i9j0k1l2-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
+    "name": "Goldenfield Academy",
     "sceneType": "academy",
     "isIndoor": true,
-    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "6Z7A8B9C-D0E1-2F3G-4H5I-6J7K8L9M0N1O",
-    "name": "Meadowview Arena",
+    "id": "j0k1l2m3-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
+    "name": "Goldenfield Artisan Quarter",
+    "sceneType": "district",
+    "isIndoor": false,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "k1l2m3n4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
+    "name": "Goldenfield Grand Library",
+    "sceneType": "library",
+    "isIndoor": true,
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
+  },
+  {
+    "id": "l2m3n4o5-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
+    "name": "Goldenfield Arena",
     "sceneType": "arena",
-    "isIndoor": false,
-    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
-  },
-  {
-    "id": "7A8B9C0D-E1F2-3G4H-5I6J-7K8L9M0N1O2P",
-    "name": "Meadowview Farmlands",
-    "sceneType": "farmland",
-    "isIndoor": false,
-    "parentSceneId": "6P7Q8R9S-T0U1-2V3W-4X5Y-6Z7A8B9C0D1E"
-  },
-  {
-    "id": "8B9C0D1E-F2G3-4H5I-6J7K-8L9M0N1O2P3Q",
-    "name": "Meadowview Windmill",
-    "sceneType": "windmill",
     "isIndoor": true,
-    "parentSceneId": "7A8B9C0D-E1F2-3G4H-5I6J-7K8L9M0N1O2P"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
-    "id": "9C0D1E2F-G3H4-5I6J-7K8L-9M0N1O2P3Q4R",
-    "name": "Meadowview Granary",
-    "sceneType": "granary",
+    "id": "m3n4o5p6-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
+    "name": "Goldenfield Merchant Guild",
+    "sceneType": "guild",
     "isIndoor": true,
-    "parentSceneId": "7A8B9C0D-E1F2-3G4H-5I6J-7K8L9M0N1O2P"
+    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   }
 ] 
