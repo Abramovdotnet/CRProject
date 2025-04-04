@@ -103,7 +103,20 @@ struct MainSceneView: View {
             }
             .foregroundColor(Theme.textColor)
             .sheet(isPresented: $showingNavigation) {
-                NavigationDetailView(viewModel: viewModel)
+                GeometryReader { geometry in
+                    NavigationWebView(
+                        viewModel: viewModel,
+                        offset: .constant(.zero), // Managed externally if needed
+                        scale: .constant(1.0),    // Managed externally if needed
+                        geometry: geometry,
+                        onLocationSelected: { location in
+                            if viewModel.isLocationAccessible(location) {
+                                viewModel.navigateToLocation(location)
+                            }
+                        }
+                    )
+                    .background(Color.black.edgesIgnoringSafeArea(.all))
+                }
             }
             .sheet(isPresented: $npcManager.isShowingDialogue) {
                 if let npc = npcManager.currentNPC,

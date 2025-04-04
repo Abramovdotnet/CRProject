@@ -73,17 +73,21 @@ struct NavigationWebView: View {
     private let maxChildNodes = 10
     private let maxSiblingNodes = 10
     private let maxParentSiblingNodes = 10
-    private let margin: CGFloat = 40
+    private let margin: CGFloat = 50
     
     // Current position always at center
     private var currentPosition: CGPoint {
-        CGPoint(x: geometry.size.width/2, y: geometry.size.height/2)
+        CGPoint(x: geometry.size.width/2, y: (geometry.size.height/2) + 10)
     }
     
     var body: some View {
         Color.clear
             .overlay(
                 ZStack {
+                    Image("MainSceneBackground")
+                        .resizable()
+                        .ignoresSafeArea()
+                    
                     // Connection lines
                     ForEach(connections) { connection in
                         StraightConnectionLine(connection: connection)
@@ -92,14 +96,16 @@ struct NavigationWebView: View {
                     // Location nodes
                     ForEach(viewModel.allVisibleScenes) { location in
                         if let position = relativePosition(for: location) {
-                            LocationNode(
-                                location: location,
-                                currentLocation: viewModel.currentScene,
-                                playerBlood: Int(viewModel.playerBloodPercentage),
-                                onSelected: { onLocationSelected(location) }
-                            )
-                            .position(position)
-                            .zIndex(location.id == viewModel.currentScene?.id ? 100 : 1)
+                            VStack{
+                                LocationNode(
+                                    location: location,
+                                    currentLocation: viewModel.currentScene,
+                                    playerBlood: Int(viewModel.playerBloodPercentage),
+                                    onSelected: { onLocationSelected(location) }
+                                )
+                                .position(position)
+                                .zIndex(location.id == viewModel.currentScene?.id ? 100 : 1)
+                            }
                         }
                     }
                 }
@@ -130,7 +136,7 @@ struct NavigationWebView: View {
             let siblings = Array(viewModel.siblingScenes.prefix(maxSiblingNodes))
             guard let index = siblings.firstIndex(where: { $0.id == location.id }) else { return nil }
             let angle = 2 * .pi / CGFloat(siblings.count) * CGFloat(index)
-            let radius = min(leftColumnWidth, geometry.size.height) * 0.3
+            let radius = min(leftColumnWidth, geometry.size.height) * 0.22
             return CGPoint(
                 x: currentPosition.x + cos(angle) * radius,
                 y: currentPosition.y + sin(angle) * radius
@@ -142,7 +148,7 @@ struct NavigationWebView: View {
             let children = Array(viewModel.childScenes.prefix(maxChildNodes))
             guard let index = children.firstIndex(where: { $0.id == location.id }) else { return nil }
             let angle = 2 * .pi / CGFloat(children.count) * CGFloat(index)
-            let radius = min(leftColumnWidth, geometry.size.height) * 0.45
+            let radius = min(leftColumnWidth, geometry.size.height) * 0.42
             return CGPoint(
                 x: currentPosition.x + cos(angle) * radius,
                 y: currentPosition.y + sin(angle) * radius
@@ -207,6 +213,17 @@ struct NavigationWebView: View {
             }
         }
         
+        // Connect to children (radial lines)
+        for sibling in viewModel.siblingScenes.prefix(maxSiblingNodes) {
+            if let siblingPos = relativePosition(for: sibling) {
+                connections.append(Connection(
+                    from: currentPos,
+                    to: siblingPos,
+                    awareness: 1.0
+                ))
+            }
+        }
+        
         return connections
     }
 }
@@ -234,7 +251,7 @@ struct LocationNode: View {
         return location.isIndoor ? "house.circle.fill" : "tree.circle.fill"
     }
     
-    private var relationshipLabel: String? {
+    private var relationshipLabel: String {
         if location.id == currentLocation?.id {
             return "Current"
         } else if location.id == currentLocation?.parentSceneId {
@@ -244,28 +261,27 @@ struct LocationNode: View {
         } else if location.parentSceneId == currentLocation?.parentSceneId {
             return "Sibling"
         }
-        return nil
+        return ""
     }
     
     var body: some View {
+        VStack{
             Button(action: onSelected) {
                 VStack(spacing: 2) {
                     Image(systemName: location.sceneType.iconName)
-                        .font(.system(size: 20)) // Slightly smaller for better fit
-                        .foregroundColor(iconColor)
-                    
-                    Text(location.name)
-                        .font(Theme.bodyFont) // Configurable font size
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
+                        .font(.system(size: 18)) // Slightly smaller for better fit
                         .foregroundColor(Theme.textColor)
                 }
-                .frame(width: 80, height: 80) // Slightly larger for better readability
+                .frame(width: 40, height: 40) // Slightly larger for better readability
                 .background(backgroundStyle)
                 .clipShape(Circle())
                 .overlay(Circle().stroke(borderStyle, lineWidth: 2))
                 .shadow(color: shadowColor, radius: 4, x: 0, y: 2)
             }
+            Text(location.name)
+                .font(Theme.bodyFont)
+                .foregroundColor(Theme.textColor)
+        }
         .disabled(!isAccessible)
         .opacity(location.id == currentLocation?.id ? 1.0 : isAccessible ? 1.0 : 0.4)  // More contrast for inaccessible nodes
     }
