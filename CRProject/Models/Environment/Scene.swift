@@ -1,6 +1,10 @@
 import Foundation
 import Combine
 
+extension Notification.Name {
+    static let sceneCharactersChanged = Notification.Name("sceneCharactersChanged")
+}
+
 class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
     var id: UUID = UUID()
     var name: String = ""
@@ -38,6 +42,8 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
     
     func setCharacters(_ characters: [any Character]) {
         _characters = characters.reduce(into: [:]) { $0[$1.id] = $1 }
+        // Post notification when characters are changed
+        NotificationCenter.default.post(name: .sceneCharactersChanged, object: self)
     }
     
     func getCharacter(by id: UUID) -> (any Character)? {

@@ -21,6 +21,7 @@ class GameStateService : ObservableObject, GameService{
     private let locationReader: LocationReader
     private let vampireReader: NPCReader
     private var locationEventsService: LocationEventsService!
+    private var npcPopulationService: NPCPopulationService!
     
     init(gameTime: GameTimeService, 
          vampireNatureRevealService: VampireNatureRevealService,
@@ -33,12 +34,16 @@ class GameStateService : ObservableObject, GameService{
         self.locationReader = locationReader
         self.vampireReader = vampireReader
         
-        // Initialize locationEventsService after all properties are set
+        // Initialize locationEventsService first
         self.locationEventsService = LocationEventsService(
             gameEventsBus: gameEventsBus,
             vampireNatureRevealService: vampireNatureRevealService,
             gameStateService: self
         )
+        
+        // Initialize NPCPopulationService using DependencyManager
+        DependencyManager.shared.register(NPCPopulationService(gameStateService: self, gameEventsBus: gameEventsBus))
+        self.npcPopulationService = DependencyManager.shared.resolve()
         
         // Subscribe to time advancement notifications
         NotificationCenter.default
@@ -116,6 +121,11 @@ class GameStateService : ObservableObject, GameService{
     private func handleTimeAdvanced() {
         guard let scene = currentScene else { return }
         
+        // Load npcs
+        if let scene = currentScene {
+            npcPopulationService.updatePopulation(for: scene )
+        }
+        
         // If current scene is indoor and it's not night time, increase awareness
         if scene.isIndoor && !gameTime.isNightTime {
             vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 10)
@@ -141,16 +151,17 @@ class GameStateService : ObservableObject, GameService{
         }
         
         // Update NPC sleeping states
-        locationEventsService.updateNPCSleepingState(scene: scene, isNight: gameTime.isNightTime)
+        updateNPCSleepingState(isNight: gameTime.isNightTime)
         
         // Generate and broadcast a location event
-        if let eventText = locationEventsService.generateEvent(scene: scene, isNight: gameTime.isNightTime) {
-            locationEventsService.broadcastEvent(eventText)
-        }
+        generateLocationEvent()
     }
     
     private func handleSafeTimeAdvanced() {
-        guard let scene = currentScene else { return }
+        guard let currentScene = currentScene else { return }
+        
+        // Load npcs
+        npcPopulationService.start()
         
         // Reduce awareness for nearest scenes by 5
         for scene in siblingScenes {
@@ -158,15 +169,40 @@ class GameStateService : ObservableObject, GameService{
         }
         
         // Update NPC sleeping states
-        locationEventsService.updateNPCSleepingState(scene: scene, isNight: gameTime.isNightTime)
+        updateNPCSleepingState(isNight: gameTime.isNightTime)
         
         // Generate and broadcast a location event
-        if let eventText = locationEventsService.generateEvent(scene: scene, isNight: gameTime.isNightTime) {
+        if let eventText = locationEventsService.generateEvent(scene: currentScene, isNight: gameTime.isNightTime) {
+            locationEventsService.broadcastEvent(eventText)
+        }
+    }
+    
+    func updateNPCSleepingState(isNight: Bool) {
+        let sleepChance = isNight ? 90 : 10 // 90% chance at night, 10% during day
+        
+        guard let characters = currentScene?.getCharacters() else { return }
+        for npc in characters {
+            if !npc.isVampire && npc.isAlive {
+                let shouldSleep = Int.random(in: 0...100) < sleepChance
+                npc.isSleeping = shouldSleep
+                DebugLogService.shared.log("\(npc.name) is sleeping: \(shouldSleep)", category: "NPC")
+            }
+        }
+    }
+    
+    func generateLocationEvent() {
+        guard let currentScene = currentScene else { return }
+        
+        if let eventText = locationEventsService.generateEvent(scene: currentScene, isNight: gameTime.isNightTime) {
             locationEventsService.broadcastEvent(eventText)
         }
     }
     
     private func endGame() {
         self.showEndGame = true
+    }
+    
+    var isNightTime: Bool {
+        return gameTime.isNightTime
     }
 }

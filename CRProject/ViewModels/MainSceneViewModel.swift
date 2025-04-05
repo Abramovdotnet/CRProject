@@ -65,7 +65,20 @@ class MainSceneViewModel: ObservableObject {
             .sink { [weak self] scene in
                 self?.currentScene = scene
                 self?.updateRelatedLocations(for: scene?.id)
-                self?.respawnNPCs()
+                // Update NPCs when scene changes
+                if let characters = scene?.getCharacters() {
+                    self?.npcs = characters.compactMap { $0 as? NPC }
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to scene character changes
+        NotificationCenter.default.publisher(for: .sceneCharactersChanged)
+            .sink { [weak self] notification in
+                guard let scene = notification.object as? Scene,
+                      scene.id == self?.currentScene?.id else { return }
+                let characters = scene.getCharacters()
+                self?.npcs = characters.compactMap { $0 as? NPC }
             }
             .store(in: &cancellables)
         
@@ -101,7 +114,6 @@ class MainSceneViewModel: ObservableObject {
             
             // Set default awareness to 0
             vampireNatureRevealService.decreaseAwareness(for: initialScene.id, amount: 100)
-            respawnNPCs()
         } catch {
             DebugLogService.shared.log("Error creating initial scene: \(error)", category: "Error")
         }

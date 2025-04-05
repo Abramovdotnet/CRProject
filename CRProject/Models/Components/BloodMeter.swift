@@ -9,19 +9,24 @@ import Foundation
 
 class BloodMeter : ObservableObject, Codable {
     private var _currentBlood: Float
-    private let MAX_BLOOD: Float = 100
+    private var maxBlood: Float = 100
     
-    var currentBlood: Float { get { return _currentBlood }}
-    var maxBlood: Float { get { return MAX_BLOOD }}
-    var bloodPercentage: Float { get { return _currentBlood / MAX_BLOOD * 100.0 }}
+    var currentBlood: Float {
+        get { _currentBlood }
+        set { _currentBlood = min(max(newValue, 0), maxBlood) }
+    }
     
-    init(initialBlood: Float = 100.0) {
-        self._currentBlood = min(max(initialBlood, 0), MAX_BLOOD)
+    var bloodPercentage: Float {
+        return (_currentBlood / maxBlood) * 100
+    }
+    
+    init(initialBlood: Float) {
+        self._currentBlood = min(max(initialBlood, 0), maxBlood)
     }
     
     func addBlood(_ amount: Float) {
         guard amount > 0 else { return }
-        _currentBlood = min(_currentBlood + amount, MAX_BLOOD)
+        _currentBlood = min(_currentBlood + amount, maxBlood)
     }
     
     func useBlood(_ amount: Float) {
@@ -38,13 +43,13 @@ class BloodMeter : ObservableObject, Codable {
         return amount <= _currentBlood
     }
     
-    func setBlood(_ amount: Float) {
-        _currentBlood = min(max(amount, 0), MAX_BLOOD)
-    }
-    
     func emptyBlood() -> Float {
         let availableBlood = _currentBlood
         _currentBlood = 0
         return availableBlood
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case _currentBlood, maxBlood
     }
 }

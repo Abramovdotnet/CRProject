@@ -56,18 +56,6 @@ class LocationEventsService : GameService {
         }
     }
     
-    func updateNPCSleepingState(scene: Scene, isNight: Bool) {
-        let sleepChance = isNight ? 90 : 10 // 90% chance at night, 10% during day
-        
-        for npc in scene.getCharacters() {
-            if !npc.isVampire && npc.isAlive {
-                let shouldSleep = Int.random(in: 0...100) < sleepChance
-                npc.isSleeping = shouldSleep
-                DebugLogService.shared.log("\(npc.name) is sleeping: \(shouldSleep)", category: "NPC")
-            }
-        }
-    }
-    
     private func hasNPCsChanged(scene: Scene) -> Bool {
         let currentNPCs = scene.getCharacters().reduce(into: [UUID: any Character]()) { $0[$1.id] = $1 }
         

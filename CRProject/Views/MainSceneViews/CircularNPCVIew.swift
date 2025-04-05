@@ -67,7 +67,7 @@ struct CircularNPCView: View {
                 sigilView(center: center)
                 
                 // Draw lightning connections first (behind buttons)
-                lightningConnections(center: center, geometry: geometry)
+                //lightningConnections(center: center, geometry: geometry)
                 
                 // Outer circle (spins clockwise) - Highest zIndex since it's on top
                 npcWheelView(geometry: geometry, center: center,
@@ -114,7 +114,7 @@ struct CircularNPCView: View {
                             rotationAngle3 = rotationAngle3.truncatingRemainder(dividingBy: 360)
                             
                             // Update lightning animation
-                            lightningPhase += 0.05
+                            //lightningPhase += 0.05
                         }
                     }
                 }
@@ -266,7 +266,7 @@ struct CircularNPCView: View {
                     .zIndex(selectedNPC?.id == npc.id ? 3 : 1)
             }
         }
-        .rotationEffect(.degrees(rotation), anchor: .center)
+        //.rotationEffect(.degrees(rotation), anchor: .center)
         .disabled(isMenuVisible || isMenuDismissing)
     }
     
@@ -549,20 +549,35 @@ struct NPCButton: View {
     var body: some View {
         Button(action: {}) {
             ZStack {
-                Image(getImageName(npc: npc))
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: size * 0.82, height: size * 0.82)
-                
                 Image("iconFrame")
                     .resizable()
                     .frame(width: size, height: size)
-                    .overlay(
-                        Circle()
-                            .stroke(npc.isVampire ? Color.red : Color.clear, lineWidth: 2) // Only red border for vampires
-                            .opacity(npc.isUnknown ? 0 : 1)
-                    )
-            }.rotationEffect(.degrees(rotation))
+                    .rotationEffect(.degrees(rotation))
+                
+                if npc.isUnknown {
+                    Image(getImageName(npc: npc))
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: size * 0.82, height: size * 0.82)
+                } else {
+                    
+                    Image("roundStoneTexture")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: size * 0.82, height: size * 0.82)
+                    
+                    if npc.isAlive {
+                        Image(systemName: npc.profession.icon)
+                            .foregroundColor(Color(npc.profession.color))
+                    } else {
+                        Image("graveIcon")
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: size * 0.82, height: size * 0.82)
+                    }
+                }
+                
+            }
         }
         .shadow(color: .black, radius: 3, x: 0, y: 2)
         .buttonStyle(PlainButtonStyle())
@@ -574,11 +589,7 @@ struct NPCButton: View {
             if npc.isUnknown {
                 return npc.sex == .male ? "maleIcon" : "femaleIconAlt"
             } else {
-                if npc.isVampire {
-                    return npc.sex == .male ? "vampireMaleIcon" : "vampireFemaleIcon"
-                } else {
-                    return npc.sex == .male ? "maleIcon" : "femaleIconAlt"
-                }
+                return npc.sex == .male ? "maleIcon" : "femaleIconAlt"
             }
         } else {
             return "graveIcon"
