@@ -131,7 +131,6 @@ class LocationReader : GameService {
         let parentIdString = location["parentSceneId"] as? String,
         let parentId = UUID(uuidString: parentIdString),
         !parentIdString.isEmpty else {
-            DebugLogService.shared.log("Could not find location or parent ID", category: "Error")
             return []
         }
         

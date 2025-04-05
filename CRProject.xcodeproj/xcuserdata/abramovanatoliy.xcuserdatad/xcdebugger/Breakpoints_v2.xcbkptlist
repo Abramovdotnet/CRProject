@@ -718,8 +718,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "70"
             endingLineNumber = "70"
-            landmarkName = "hasNPCsChanged(scene:)"
-            landmarkType = "7">
+            landmarkName = "LocationEventsService"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -750,7 +750,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "123"
             endingLineNumber = "123"
-            landmarkName = "generateEvent(scene:isNight:)"
+            landmarkName = "getMatchingEvents(scene:isNight:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -766,7 +766,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "126"
             endingLineNumber = "126"
-            landmarkName = "generateEvent(scene:isNight:)"
+            landmarkName = "getMatchingEvents(scene:isNight:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -894,7 +894,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "62"
             endingLineNumber = "62"
-            landmarkName = "getLocation(by:)"
+            landmarkName = "loadLocations()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -974,7 +974,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "61"
             endingLineNumber = "61"
-            landmarkName = "getLocation(by:)"
+            landmarkName = "loadLocations()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -990,7 +990,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "71"
             endingLineNumber = "71"
-            landmarkName = "getLocation(by:)"
+            landmarkName = "loadLocations()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1134,8 +1134,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "57"
             endingLineNumber = "57"
-            landmarkName = "LocationEventsService"
-            landmarkType = "3">
+            landmarkName = "loadEvents()"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1166,7 +1166,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "81"
             endingLineNumber = "81"
-            landmarkName = "getLocationType(scene:)"
+            landmarkName = "hasNPCsChanged(scene:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1174,7 +1174,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "6334CFEF-1F0C-42C5-A27E-DCE673E9A6E0"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CRProject/Services/LocationEventsService.swift"
@@ -1182,7 +1182,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "84"
             endingLineNumber = "84"
-            landmarkName = "getLocationType(scene:)"
+            landmarkName = "hasNPCsChanged(scene:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

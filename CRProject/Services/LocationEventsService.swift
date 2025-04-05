@@ -6,6 +6,7 @@ class LocationEventsService : GameService {
     private weak var vampireNatureRevealService: VampireNatureRevealService?
     private weak var gameStateService: GameStateService?
     private var lastNPCs: [UUID: any Character] = [:]
+    private var deadNPCs: [UUID: any Character] = [:]  // Track dead NPCs
     
     init(gameEventsBus: GameEventsBusService, vampireNatureRevealService: VampireNatureRevealService, gameStateService: GameStateService) {
         self.gameEventsBus = gameEventsBus
@@ -69,9 +70,20 @@ class LocationEventsService : GameService {
     
     private func hasNPCsChanged(scene: Scene) -> Bool {
         let currentNPCs = scene.getCharacters().reduce(into: [UUID: any Character]()) { $0[$1.id] = $1 }
+        
+        // Check for newly dead NPCs
+        for (id, npc) in lastNPCs {
+            if let currentNPC = currentNPCs[id], !currentNPC.isAlive && npc.isAlive {
+                deadNPCs[id] = npc
+                DebugLogService.shared.log("NPC \(npc.name) has died!", category: "Event")
+                // Increase awareness when an NPC dies
+                vampireNatureRevealService?.increaseAwareness(for: scene.id, amount: 30)
+            }
+        }
+        
         let hasChanged = !currentNPCs.keys.elementsEqual(lastNPCs.keys)
         lastNPCs = currentNPCs
-        return hasChanged
+        return hasChanged || !deadNPCs.isEmpty
     }
     
     private func hasVampire(scene: Scene) -> Bool {
@@ -93,19 +105,49 @@ class LocationEventsService : GameService {
         }
     }
     
-    func generateEvent(scene: Scene, isNight: Bool) -> String? {
-        DebugLogService.shared.log("=== Starting Event Generation ===", category: "Event")
-        DebugLogService.shared.log("Scene: \(scene.name)", category: "Event")
-        DebugLogService.shared.log("Is Night: \(isNight)", category: "Event")
-        DebugLogService.shared.log("Total available events: \(events.count)", category: "Event")
+    private func getMatchingEvents(scene: Scene, isNight: Bool) -> [EventTemplate] {
+        let awarenessLevel = vampireNatureRevealService?.getAwareness(for: scene.id) ?? 0
         
-        guard let vampireNatureRevealService = vampireNatureRevealService,
-              let gameStateService = gameStateService else {
-            DebugLogService.shared.log("Required services are nil", category: "Error")
-            return nil
+        // If there are dead NPCs, prioritize death-related events
+        if !deadNPCs.isEmpty {
+            return events.filter { event in
+                // Basic conditions
+                guard event.time == (isNight ? "night" : "day") &&
+                        event.locationType == scene.sceneType.rawValue &&
+                        event.sceneType == scene.sceneType.rawValue &&
+                      event.isIndoors == scene.isIndoor else {
+                    return false
+                }
+                
+                // NPC count check
+                let npcCount = scene.getCharacters().count
+                guard npcCount >= event.minNPCs && npcCount <= event.maxNPCs else {
+                    return false
+                }
+                
+                // Awareness level check - prioritize high awareness for death events
+                guard Int(awarenessLevel) >= event.minAwareness && Int(awarenessLevel) <= event.maxAwareness else {
+                    return false
+                }
+                
+                // Check for required professions
+                if !event.requiredProfessions.isEmpty {
+                    let hasRequiredProfession = scene.getCharacters().contains { npc in
+                        event.requiredProfessions.contains(npc.profession.rawValue)
+                    }
+                    guard hasRequiredProfession else {
+                        return false
+                    }
+                }
+                
+                // Prioritize events that mention death, discovery, or investigation
+                let deathRelatedKeywords = ["discovery", "panic", "hunt", "meeting", "funeral", "vigil", "warning"]
+                return deathRelatedKeywords.contains { event.id.contains($0) }
+            }
         }
         
-        let availableEvents = events.filter { event in
+        // Regular event filtering for non-death situations
+        return events.filter { event in
             DebugLogService.shared.log("Checking event: \(event.id)", category: "Event")
             
             // Check time of day
@@ -132,17 +174,6 @@ class LocationEventsService : GameService {
                 }
             }
             
-            // Check required professions
-            if !event.requiredProfessions.isEmpty {
-                let hasRequiredProfession = scene.getCharacters().contains { npc in
-                    event.requiredProfessions.contains(npc.profession.rawValue)
-                }
-                guard hasRequiredProfession else {
-                    DebugLogService.shared.log("Missing required profession: \(event.requiredProfessions)", category: "Event")
-                    return false
-                }
-            }
-            
             // Check required ages
             if !event.requiredAges.isEmpty {
                 let hasRequiredAge = scene.getCharacters().contains { npc in
@@ -155,7 +186,7 @@ class LocationEventsService : GameService {
             }
             
             // Check blood level
-            let bloodLevel = gameStateService.getPlayer()?.bloodMeter.currentBlood ?? 0
+            let bloodLevel = gameStateService?.getPlayer()?.bloodMeter.currentBlood ?? 0
             guard Int(bloodLevel) >= event.minBloodLevel && Int(bloodLevel) <= event.maxBloodLevel else {
                 DebugLogService.shared.log("Blood level mismatch: Event requires \(event.minBloodLevel)-\(event.maxBloodLevel), current level is \(bloodLevel)", category: "Event")
                 return false
@@ -173,13 +204,6 @@ class LocationEventsService : GameService {
             // Check indoor/outdoor
             guard event.isIndoors == scene.isIndoor else {
                 DebugLogService.shared.log("Indoor/outdoor mismatch: Event requires \(event.isIndoors ? "indoors" : "outdoors")", category: "Event")
-                return false
-            }
-            
-            // Check awareness level
-            let awarenessLevel = vampireNatureRevealService.getAwareness(for: scene.id )
-            guard Int(awarenessLevel) >= event.minAwareness && Int(awarenessLevel) <= event.maxAwareness else {
-                DebugLogService.shared.log("Awareness level mismatch: Event requires \(event.minAwareness)-\(event.maxAwareness), current level is \(awarenessLevel)", category: "Event")
                 return false
             }
             
@@ -226,47 +250,33 @@ class LocationEventsService : GameService {
             DebugLogService.shared.log("Event \(event.id) passed all checks", category: "Event")
             return true
         }
+    }
+    
+    func generateEvent(scene: Scene, isNight: Bool) -> String? {
+        let hasChanged = hasNPCsChanged(scene: scene)
+        let matchingEvents = getMatchingEvents(scene: scene, isNight: isNight)
         
-        DebugLogService.shared.log("Found \(availableEvents.count) matching events", category: "Event")
-        
-        guard let selectedEvent = availableEvents.randomElement() else {
-            DebugLogService.shared.log("No matching events found", category: "Error")
+        guard !matchingEvents.isEmpty else {
+            DebugLogService.shared.log("No matching events found", category: "Event")
             return nil
         }
         
-        DebugLogService.shared.log("Selected event: \(selectedEvent.id)", category: "Event")
-        DebugLogService.shared.log("Template: \(selectedEvent.template)", category: "Event")
+        let selectedEvent = matchingEvents.randomElement()!
+        let npcs = scene.getCharacters().shuffled()
         
-        // Replace placeholders in the template
         var eventText = selectedEvent.template
-        let characters = scene.getCharacters()
         
-        // Replace NPC placeholders
-        var usedNPCIds: Set<String> = []
-        for i in 1... {
-            let placeholder = "{NPC\(i)}"
-            if eventText.contains(placeholder) {
-                // Filter out already used NPCs
-                let availableNPCs = characters.filter { !usedNPCIds.contains($0.id.uuidString) }
-                if let randomNPC = availableNPCs.randomElement() {
-                    eventText = eventText.replacingOccurrences(of: placeholder, with: randomNPC.name)
-                    usedNPCIds.insert(randomNPC.id.uuidString)
-                    DebugLogService.shared.log("Replaced \(placeholder) with \(randomNPC.name)", category: "Event")
-                } else {
-                    eventText = eventText.replacingOccurrences(of: placeholder, with: "someone")
-                    DebugLogService.shared.log("Replaced \(placeholder) with 'someone'", category: "Event")
-                }
-            } else {
-                break
+        // Replace NPC placeholders with actual names
+        for i in 1...3 {
+            if i <= npcs.count {
+                eventText = eventText.replacingOccurrences(of: "{NPC\(i)}", with: npcs[i-1].name)
             }
         }
         
-        // Replace {LOCATION}
-        eventText = eventText.replacingOccurrences(of: "{LOCATION}", with: scene.name)
-        DebugLogService.shared.log("Replaced {LOCATION} with \(scene.name)", category: "Event")
-        
-        DebugLogService.shared.log("Final event text: \(eventText)", category: "Event")
-        DebugLogService.shared.log("=== End Event Generation ===", category: "Event")
+        // Clear dead NPCs list after generating a death-related event
+        if selectedEvent.id.contains("discovery") || selectedEvent.id.contains("funeral") {
+            deadNPCs.removeAll()
+        }
         
         return eventText
     }

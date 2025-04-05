@@ -1,0 +1,240 @@
+# Event Generation Rules (EGR)
+
+## References
+- Professions: Models/Characters/Profession.swift
+- Locations/Scenes: Models/Environment/SceneType.swift
+- Event Template: Models/Events/EventsData.swift
+- Event Examples: Resources/GeneralEvents.json
+
+## Valid Professions (from Profession enum)
+1. blacksmith = "Blacksmith"
+2. miller = "Miller"
+3. cooper = "Cooper (Barrel Maker)"
+4. chandler = "Chandler (Candle Maker)"
+5. priest = "Priest"
+6. bowyer = "Bowyer (Bow Maker)"
+7. armorer = "Armorer"
+8. merchant = "Merchant"
+9. carpenter = "Carpenter"
+10. thatcher = "Thatcher (Roof Maker)"
+11. tanner = "Tanner (Leather Worker)"
+12. weaver = "Weaver"
+13. hunter = "Hunter"
+14. tailor = "Tailor"
+15. baker = "Baker"
+16. butcher = "Butcher"
+17. brewer = "Brewer"
+18. apothecary = "Apothecary"
+19. scribe = "Scribe"
+20. herald = "Herald"
+21. minstrel = "Minstrel"
+22. guardman = "Guard"
+23. alchemist = "Alchemist"
+24. farrier = "Farrier (Horse Shoer)"
+25. innkeeper = "Innkeeper"
+26. adventurer = "Adventurer"
+27. wenche = "Wenche"
+28. general = "General"
+
+## Valid Locations/Scene Types (from SceneType enum)
+### Huge Locations
+- castle
+- royalPalace
+- greatCathedral
+- wizardTower
+- mountainFortress
+- harborCity
+- ancientRuins
+- enchantedForest
+- battlefield
+- palace
+- fortress
+- desert
+- oasis
+- lake
+- mountain_pass
+- wilderness
+- ruins
+- observatory
+
+### Capitals and Major Settlements
+- town
+- city
+- kingdom
+- village
+
+### Districts and Areas
+- district
+- docks
+- city_gate
+
+### Medium Locations
+- tavern
+- villageSquare
+- blacksmith
+- alchemistShop
+- library
+- forest
+- temple
+- dungeon
+- crossroads
+- cemetery
+- market
+- farm
+- bridge
+- secretGrove
+- inn
+- hospital
+- outskirts
+- valley
+- mill
+- guard_post
+- herbalistHut
+- arena
+- port
+- lighthouse
+- shipyard
+- fishery
+- club
+- mine
+- guild
+- tower
+- house
+- residential
+- estate
+- workshop
+- forge
+- academy
+- shrine
+- monastery
+- archive
+- museum
+- gallery
+- concert_hall
+- garrison
+- mages_guild
+- thieves_guild
+- fighters_guild
+- garden
+- cave
+- road
+
+## Event Template Structure
+```swift
+struct EventTemplate {
+    id: String                    // Unique identifier
+    time: String                  // "day" or "night"
+    minNPCs: Int                  // Minimum NPCs required (1-50)
+    maxNPCs: Int                  // Maximum NPCs allowed (1-50)
+    requiredGenders: [String]     // Empty or ["Male", "Female"]
+    requiredProfessions: [String] // Empty or array of valid professions
+    requiredAges: [Int]          // Empty or [minAge, maxAge]
+    minBloodLevel: Int           // 0-100
+    maxBloodLevel: Int           // 0-100
+    sleepingRequired: Bool       // Whether sleeping NPCs are needed
+    isIndoors: Bool             // Indoor/outdoor location
+    minAwareness: Int           // 0-100
+    maxAwareness: Int           // 0-100
+    locationType: String        // Must match SceneType
+    sceneType: String          // Must match SceneType
+    npcChangeRequired: Bool     // Whether NPC changes are required
+    vampirePresence: String    // "required", "forbidden", or "optional"
+    template: String           // Event text with {NPC1}, {NPC2}, {NPC3} placeholders
+    requiresVampire: Bool      // Optional, defaults to false
+    requiresNPCChange: Bool    // Optional, defaults to false
+    isDeathEvent: Bool        // Optional, defaults to false
+    awarenessIncrease: Int?   // Optional, amount to increase awareness
+}
+```
+
+## Event Generation Rules
+
+### 1. Time Rules
+- Events must specify either "day" or "night"
+- Time affects NPC availability and event types
+- Vampire-related events typically occur at night
+- Death discoveries can happen any time
+
+### 2. NPC Requirements
+- minNPCs must be ≥ 1 and ≤ maxNPCs
+- maxNPCs must be ≤ 50 (reasonable limit for one location)
+- Template can reference up to 3 NPCs ({NPC1}, {NPC2}, {NPC3})
+- Required professions must match Profession enum values
+- Age ranges should be reasonable (typically 18-100)
+
+### 3. Location Rules
+- locationType and sceneType must match SceneType enum values
+- isIndoors should match the typical nature of the location
+- Some events are location-specific (e.g., blacksmith events in forge)
+- Huge locations can contain multiple event types
+
+### 4. Awareness System
+- Awareness range: 0-100
+- Higher awareness = more vampire-related events
+- Death events increase awareness
+- Awareness affects event availability:
+  - 0-30: Normal events
+  - 31-60: Suspicious events
+  - 61-90: Vampire-aware events
+  - 91-100: Full panic events
+
+### 5. Vampire Presence
+- "required": Vampire must be present
+- "forbidden": No vampires allowed
+- "optional": Vampires may or may not be present
+- Vampire events typically increase awareness
+
+### 6. Event Categories
+1. Normal Events (awareness 0-30)
+   - Daily life
+   - Commerce
+   - Entertainment
+   - Social interactions
+
+2. Suspicious Events (awareness 31-60)
+   - Strange occurrences
+   - Mysterious figures
+   - Unexplained incidents
+   - Rumors and gossip
+
+3. Vampire-Aware Events (awareness 61-90)
+   - Vampire sightings
+   - Protective measures
+   - Hunter activities
+   - Public fear
+
+4. Crisis Events (awareness 91-100)
+   - Mass panic
+   - Organized resistance
+   - Sanctuary seeking
+   - Military response
+
+### 7. Template Guidelines
+- Use medieval language style
+- Include multiple NPC interactions
+- Describe visible actions and reactions
+- Consider time of day and location
+- Reference profession-specific activities
+- Include environmental details
+
+### 8. Death Event Rules
+- Mark with isDeathEvent = true
+- Include awareness increase
+- Trigger follow-up events
+- Consider impact on community
+- Reference vampire hunting response
+
+### 9. Event Chains
+- Death events can trigger investigation events
+- High awareness can trigger protection events
+- Vampire sightings lead to increased security
+- Community response escalates with awareness
+
+### 10. Profession Interactions
+- Guards maintain order
+- Priests provide blessings/protection
+- Blacksmiths forge weapons
+- Merchants affect economy
+- Hunters track vampires
+- Heralds spread news
+- Scribes document events 

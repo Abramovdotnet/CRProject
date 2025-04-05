@@ -38,10 +38,70 @@ public struct EventTemplate: Codable, Equatable {
     public let vampirePresence: String
     /// Template text for the event with placeholders
     public let template: String
+    /// Whether this event requires a vampire
+    public let requiresVampire: Bool
+    /// Whether this event requires an NPC change
+    public let requiresNPCChange: Bool
+    /// Whether this event is a death event
+    public let isDeathEvent: Bool
+    /// Optional awareness increase for this event
+    public let awarenessIncrease: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case id, time, minNPCs, maxNPCs, requiredGenders, requiredProfessions
+        case requiredAges, minBloodLevel, maxBloodLevel, sleepingRequired, isIndoors
+        case minAwareness, maxAwareness, locationType, sceneType, npcChangeRequired
+        case vampirePresence, template, requiresVampire, requiresNPCChange, isDeathEvent
+        case awarenessIncrease
+    }
+    
+    public init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(String.self, forKey: .id)
+        time = try container.decode(String.self, forKey: .time)
+        minNPCs = try container.decode(Int.self, forKey: .minNPCs)
+        maxNPCs = try container.decode(Int.self, forKey: .maxNPCs)
+        requiredGenders = try container.decode([String].self, forKey: .requiredGenders)
+        requiredProfessions = try container.decode([String].self, forKey: .requiredProfessions)
+        requiredAges = try container.decode([Int].self, forKey: .requiredAges)
+        minBloodLevel = try container.decode(Int.self, forKey: .minBloodLevel)
+        maxBloodLevel = try container.decode(Int.self, forKey: .maxBloodLevel)
+        sleepingRequired = try container.decode(Bool.self, forKey: .sleepingRequired)
+        isIndoors = try container.decode(Bool.self, forKey: .isIndoors)
+        minAwareness = try container.decode(Int.self, forKey: .minAwareness)
+        maxAwareness = try container.decode(Int.self, forKey: .maxAwareness)
+        locationType = try container.decode(String.self, forKey: .locationType)
+        sceneType = try container.decode(String.self, forKey: .sceneType)
+        npcChangeRequired = try container.decode(Bool.self, forKey: .npcChangeRequired)
+        vampirePresence = try container.decode(String.self, forKey: .vampirePresence)
+        template = try container.decode(String.self, forKey: .template)
+        requiresVampire = try container.decodeIfPresent(Bool.self, forKey: .requiresVampire) ?? false
+        requiresNPCChange = try container.decodeIfPresent(Bool.self, forKey: .requiresNPCChange) ?? false
+        isDeathEvent = try container.decodeIfPresent(Bool.self, forKey: .isDeathEvent) ?? false
+        awarenessIncrease = try container.decodeIfPresent(Int.self, forKey: .awarenessIncrease)
+    }
 }
 
 /// Container for event templates loaded from JSON
 public struct EventsData: Codable {
     /// Array of event templates
     public let events: [EventTemplate]
+    
+    public static func load() -> EventsData? {
+        if let url = Bundle.main.url(forResource: "GeneralEvents", withExtension: "json"),
+           let data = try? Data(contentsOf: url) {
+            do {
+                let eventsData = try JSONDecoder().decode(EventsData.self, from: data)
+                
+                // Validate events after loading
+                EventValidationService.shared.validateEvents(in: eventsData.events)
+                
+                return eventsData
+            } catch {
+                DebugLogService.shared.log("Error decoding events: \(error)", category: "Error")
+                return nil
+            }
+        }
+        return nil
+    }
 } 

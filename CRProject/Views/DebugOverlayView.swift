@@ -82,8 +82,8 @@ struct DebugOverlayView: View {
                         }
                     }
                 }
-                .frame(maxHeight: geometry.size.height / 3)
-                .background(Color.black.opacity(0.7))
+                .frame(maxHeight: geometry.size.height / 2)
+                .background(Color.black.opacity(0.5))
                 .cornerRadius(8)
                 .padding(.horizontal, 8)
                 .padding(.top, 4)
