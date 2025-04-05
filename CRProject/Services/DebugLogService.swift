@@ -55,7 +55,10 @@ class DebugLogService {
     
     private func appendToErrorsFile(_ message: String) {
         let timestamp = DateFormatter.localizedString(from: Date(), dateStyle: .none, timeStyle: .medium)
-        let errorLine = "[\(timestamp)] \(message)\n"
+        
+        // Get the caller file path
+        let callerFile = #file
+        let errorLine = "[\(timestamp)] [\(callerFile)] \(message)\n"
         
         do {
             if let fileHandle = try? FileHandle(forWritingTo: errorsFilePath) {

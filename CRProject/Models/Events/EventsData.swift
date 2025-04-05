@@ -40,8 +40,6 @@ public struct EventTemplate: Codable, Equatable {
     public let template: String
     /// Whether this event requires a vampire
     public let requiresVampire: Bool
-    /// Whether this event requires an NPC change
-    public let requiresNPCChange: Bool
     /// Whether this event is a death event
     public let isDeathEvent: Bool
     /// Optional awareness increase for this event
@@ -51,7 +49,7 @@ public struct EventTemplate: Codable, Equatable {
         case id, time, minNPCs, maxNPCs, requiredGenders, requiredProfessions
         case requiredAges, minBloodLevel, maxBloodLevel, sleepingRequired, isIndoors
         case minAwareness, maxAwareness, locationType, sceneType, npcChangeRequired
-        case vampirePresence, template, requiresVampire, requiresNPCChange, isDeathEvent
+        case vampirePresence, template, requiresVampire, isDeathEvent
         case awarenessIncrease
     }
     
@@ -76,7 +74,6 @@ public struct EventTemplate: Codable, Equatable {
         vampirePresence = try container.decode(String.self, forKey: .vampirePresence)
         template = try container.decode(String.self, forKey: .template)
         requiresVampire = try container.decodeIfPresent(Bool.self, forKey: .requiresVampire) ?? false
-        requiresNPCChange = try container.decodeIfPresent(Bool.self, forKey: .requiresNPCChange) ?? false
         isDeathEvent = try container.decodeIfPresent(Bool.self, forKey: .isDeathEvent) ?? false
         awarenessIncrease = try container.decodeIfPresent(Int.self, forKey: .awarenessIncrease)
     }

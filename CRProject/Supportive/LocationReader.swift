@@ -196,20 +196,19 @@ class LocationReader : GameService {
         
         // Validate and normalize UUID string
         func normalizeUUID(_ uuidString: String) -> String? {
-            // Remove any non-hex characters and ensure proper length
+            // Remove any non-hex characters
             let hexOnly = uuidString.filter { "0123456789abcdefABCDEF".contains($0) }
-            guard hexOnly.count == 32 else {
-                DebugLogService.shared.log("Invalid UUID length: \(hexOnly.count) for string: \(uuidString)", category: "Error")
-                return nil
-            }
+            
+            // If the string is too short, pad it with zeros
+            let paddedHex = hexOnly.padding(toLength: 32, withPad: "0", startingAt: 0)
             
             // Format as proper UUID string (8-4-4-4-12)
             let parts = [
-                String(hexOnly.prefix(8)),
-                String(hexOnly.dropFirst(8).prefix(4)),
-                String(hexOnly.dropFirst(12).prefix(4)),
-                String(hexOnly.dropFirst(16).prefix(4)),
-                String(hexOnly.dropFirst(20))
+                String(paddedHex.prefix(8)),
+                String(paddedHex.dropFirst(8).prefix(4)),
+                String(paddedHex.dropFirst(12).prefix(4)),
+                String(paddedHex.dropFirst(16).prefix(4)),
+                String(paddedHex.dropFirst(20))
             ]
             return parts.joined(separator: "-")
         }
