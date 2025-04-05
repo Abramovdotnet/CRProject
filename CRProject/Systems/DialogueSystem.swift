@@ -17,7 +17,7 @@ class DialogueSystem {
             do {
                 professionDialogues = try JSONDecoder().decode([String: DialogueTree].self, from: data)
             } catch {
-                print("Error loading profession dialogues: \(error)")
+                DebugLogService.shared.log("Error loading profession dialogues: \(error)", category: "Error")
             }
         }
         
@@ -26,7 +26,7 @@ class DialogueSystem {
             do {
                 generalDialogues = try JSONDecoder().decode(DialogueTree.self, from: data)
             } catch {
-                print("Error loading general dialogues: \(error)")
+                DebugLogService.shared.log("Error loading general dialogues: \(error)", category: "Error")
             }
         }
     }
@@ -45,7 +45,7 @@ class DialogueSystem {
         
         // If still not found and not already trying general dialogue, return general dialogue
         if profession != Profession.general.rawValue {
-            print("No specific dialogue found for \(profession), falling back to general dialogue")
+            DebugLogService.shared.log("No specific dialogue found for \(profession), falling back to general dialogue", category: "Dialogue")
             return getGeneralDialogueTree()
         }
         

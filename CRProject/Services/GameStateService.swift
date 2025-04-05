@@ -20,7 +20,7 @@ class GameStateService : ObservableObject, GameService{
     private var cancellables = Set<AnyCancellable>()
     private let locationReader: LocationReader
     private let vampireReader: NPCReader
-    private let locationEventsService: LocationEventsService
+    private var locationEventsService: LocationEventsService!
     
     init(gameTime: GameTimeService, 
          vampireNatureRevealService: VampireNatureRevealService,
@@ -32,7 +32,13 @@ class GameStateService : ObservableObject, GameService{
         self.gameEventsBus = gameEventsBus
         self.locationReader = locationReader
         self.vampireReader = vampireReader
-        self.locationEventsService = LocationEventsService(gameEventsBus: gameEventsBus, vampireNatureRevealService: vampireNatureRevealService)
+        
+        // Initialize locationEventsService after all properties are set
+        self.locationEventsService = LocationEventsService(
+            gameEventsBus: gameEventsBus,
+            vampireNatureRevealService: vampireNatureRevealService,
+            gameStateService: self
+        )
         
         // Subscribe to time advancement notifications
         NotificationCenter.default
@@ -67,15 +73,15 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func changeLocation(to locationId: UUID) throws {
-        print("Changing location to ID: \(locationId)")
+        DebugLogService.shared.log("Changing location to ID: \(locationId)", category: "Location")
         
         // Try to find and set the new location
         let newLocation = try LocationReader.getLocation(by: locationId)
-        print("Found new location: \(newLocation.name)")
+        DebugLogService.shared.log("Found new location: \(newLocation.name)", category: "Location")
         
         // Update current scene
         currentScene = newLocation
-        print("Current scene set to: \(currentScene?.name ?? "None")")
+        DebugLogService.shared.log("Current scene set to: \(currentScene?.name ?? "None")", category: "Location")
         
         // Update related locations
         updateRelatedLocations(for: locationId)
@@ -86,24 +92,24 @@ class GameStateService : ObservableObject, GameService{
     }
     
     private func updateRelatedLocations(for locationId: UUID) {
-        print("GameStateService updating related locations for ID: \(locationId)")
+        DebugLogService.shared.log("GameStateService updating related locations for ID: \(locationId)", category: "Location")
         
         // Get parent location
         parentScene = LocationReader.getParentLocation(for: locationId)
-        print("Parent scene: \(parentScene?.name ?? "None")")
+        DebugLogService.shared.log("Parent scene: \(parentScene?.name ?? "None")", category: "Location")
         
         // Get child locations
         childScenes = LocationReader.getChildLocations(for: locationId)
-        print("Child scenes count: \(childScenes.count)")
+        DebugLogService.shared.log("Child scenes count: \(childScenes.count)", category: "Location")
         for scene in childScenes {
-            print("Child scene: \(scene.name)")
+            DebugLogService.shared.log("Child scene: \(scene.name)", category: "Location")
         }
         
         // Get sibling locations
         siblingScenes = LocationReader.getSiblingLocations(for: locationId)
-        print("Sibling scenes count: \(siblingScenes.count)")
+        DebugLogService.shared.log("Sibling scenes count: \(siblingScenes.count)", category: "Location")
         for scene in siblingScenes {
-            print("Sibling scene: \(scene.name)")
+            DebugLogService.shared.log("Sibling scene: \(scene.name)", category: "Location")
         }
     }
     

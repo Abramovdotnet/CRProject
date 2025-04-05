@@ -17,6 +17,7 @@ class MainSceneViewModel: ObservableObject {
     @Published var sceneSplit: Int = 0
     @Published private(set) var locationPositions: [UUID: CGPoint]?
     @Published private(set) var visibleLocations: Set<UUID> = []
+    @Published var isDebugOverlayVisible = false
     
     private var cancellables = Set<AnyCancellable>()
     let gameStateService: GameStateService
@@ -59,22 +60,6 @@ class MainSceneViewModel: ObservableObject {
         
         updatePlayerBloodPercentage()
         
-        // Create initial scene using LocationReader
-        do {
-            guard let initialSceneId = UUID(uuidString: "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a") else {
-                print("Error: Invalid initial scene ID")
-                return
-            }
-            let initialScene = try LocationReader.getLocation(by: initialSceneId)
-            try gameStateService.changeLocation(to: initialScene.id)
-            
-            // Set default awareness to 0
-            vampireNatureRevealService.decreaseAwareness(for: initialScene.id, amount: 100)
-            respawnNPCs()
-        } catch {
-            print("Error creating initial scene: \(error)")
-        }
-        
         // Subscribe to scene changes
         gameStateService.$currentScene
             .sink { [weak self] scene in
@@ -104,6 +89,22 @@ class MainSceneViewModel: ObservableObject {
                 self.sceneAwareness = 100
             }
             .store(in: &cancellables)
+        
+        // Create initial scene using LocationReader
+        do {
+            guard let initialSceneId = UUID(uuidString: "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a") else {
+                DebugLogService.shared.log("Error: Invalid initial scene ID", category: "Error")
+                return
+            }
+            let initialScene = try LocationReader.getLocation(by: initialSceneId)
+            try gameStateService.changeLocation(to: initialScene.id)
+            
+            // Set default awareness to 0
+            vampireNatureRevealService.decreaseAwareness(for: initialScene.id, amount: 100)
+            respawnNPCs()
+        } catch {
+            DebugLogService.shared.log("Error creating initial scene: \(error)", category: "Error")
+        }
         
         // Subscribe to blood changes
         NotificationCenter.default.publisher(for: .bloodPercentageChanged)
@@ -193,18 +194,20 @@ class MainSceneViewModel: ObservableObject {
     
     // MARK: - NPC Management
     func respawnNPCs() {
-        print("Respawning NPCs...")
+        DebugLogService.shared.log("Respawning NPCs...", category: "NPC")
         npcs = []
         let count = Int.random(in: 2...4)
-        print("Generating \(count) NPCs")
+        DebugLogService.shared.log("Generating \(count) NPCs", category: "NPC")
         
         npcs = NPCReader.getRandomNPCs(count: Int.random(in: 1...30))
         
         for npc in npcs {
-            print("Created NPC: \(npc.name)")
+            DebugLogService.shared.log("Created NPC: \(npc.name)", category: "NPC")
         }
         
-        print("Total NPCs: \(npcs.count)")
+        gameStateService.currentScene?.setCharacters(npcs)
+        
+        DebugLogService.shared.log("Total NPCs: \(npcs.count)", category: "NPC")
     }
     
     func endGame(){
@@ -238,9 +241,9 @@ class MainSceneViewModel: ObservableObject {
             updatePlayerBloodPercentage()
             vampireNatureRevealService.increaseAwareness(for: currentScene?.id ?? UUID(), amount: 20)
             updateSceneAwareness()
-            print(sceneAwareness)
+            DebugLogService.shared.log("\(sceneAwareness)", category: "Debug")
         } catch {
-            print("Error feeding on character: \(error)")
+            DebugLogService.shared.log("Error feeding on character: \(error)", category: "Error")
         }
     }
     
@@ -253,7 +256,7 @@ class MainSceneViewModel: ObservableObject {
             try feedingService.emptyBlood(vampire: player, prey: npc, in: currentScene?.id ?? UUID())
             updatePlayerBloodPercentage()
             updateSceneAwareness()
-            print("Blood emptied")
+            DebugLogService.shared.log("Blood emptied", category: "Debug")
         } catch {
         }
     }
@@ -272,19 +275,19 @@ class MainSceneViewModel: ObservableObject {
     private func updateRelatedLocations(for locationId: UUID?) {
         guard let locationId = locationId else { return }
         
-        print("DEBUG: Starting updateRelatedLocations for ID: \(locationId)")
+        DebugLogService.shared.log("DEBUG: Starting updateRelatedLocations for ID: \(locationId)", category: "Debug")
         
         // Get parent location
         parentScene = LocationReader.getParentLocation(for: locationId)
-        print("DEBUG: Parent scene loaded: \(parentScene?.name ?? "None") with ID: \(parentScene?.id.uuidString ?? "No ID")")
+        DebugLogService.shared.log("DEBUG: Parent scene loaded: \(parentScene?.name ?? "None") with ID: \(parentScene?.id.uuidString ?? "No ID")", category: "Debug")
         
         // Get child locations
         childScenes = LocationReader.getChildLocations(for: locationId)
-        print("DEBUG: Child scenes count: \(childScenes.count)")
+        DebugLogService.shared.log("DEBUG: Child scenes count: \(childScenes.count)", category: "Debug")
         
         // Get sibling locations
         siblingScenes = LocationReader.getSiblingLocations(for: locationId)
-        print("DEBUG: Sibling scenes count: \(siblingScenes.count)")
+        DebugLogService.shared.log("DEBUG: Sibling scenes count: \(siblingScenes.count)", category: "Debug")
     }
     
     private func updatePlayerBloodPercentage() {
@@ -454,6 +457,11 @@ class MainSceneViewModel: ObservableObject {
         let currentBlood = Float(player.bloodMeter.currentBlood)
         let bloodAfterTravel = currentBlood - bloodCost
         return bloodAfterTravel >= 10 // 10% threshold
+    }
+    
+    func toggleDebugOverlay() {
+        isDebugOverlayVisible.toggle()
+        DebugLogService.shared.log("Debug overlay \(isDebugOverlayVisible ? "shown" : "hidden")", category: "Debug")
     }
 }
 

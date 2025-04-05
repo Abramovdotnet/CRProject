@@ -201,18 +201,20 @@ struct NavigationWebView: View {
                 connections.append(Connection(
                     from: currentPos,
                     to: childPos,
-                    awareness: 1.0
+                    awareness: 1.0,
+                    isChildConnection: true
                 ))
             }
         }
         
-        // Connect to children (radial lines)
+        // Connect to sibling (radial lines)
         for sibling in viewModel.siblingScenes.prefix(maxSiblingNodes) {
             if let siblingPos = relativePosition(for: sibling) {
                 connections.append(Connection(
                     from: currentPos,
                     to: siblingPos,
-                    awareness: 1.0
+                    awareness: 1.0,
+                    isSiblingConnection: true
                 ))
             }
         }

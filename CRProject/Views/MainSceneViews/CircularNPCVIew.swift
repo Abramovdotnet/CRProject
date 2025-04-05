@@ -378,12 +378,14 @@ struct CircularNPCView: View {
                 VStack(spacing: 2) {
                     Text(npc.name)
                         .font(.headline)
-                    Text("Sex: \(npc.sex)")
-                        .font(.caption)
-                    Text("Profession: \(npc.profession)")
-                        .font(.caption)
-                    Text("Age: \(npc.age)")
-                        .font(.caption)
+                    HStack {
+                        Text("Sex: \(npc.sex)")
+                            .font(.caption)
+                        Text("Profession: \(npc.profession)")
+                            .font(.caption)
+                        Text("Age: \(npc.age)")
+                            .font(.caption)
+                    }
                 }
             }
             
@@ -460,7 +462,7 @@ struct CircularNPCView: View {
             hapticEngine = try CHHapticEngine()
             try hapticEngine?.start()
         } catch {
-            print("Haptic engine error: \(error.localizedDescription)")
+            DebugLogService.shared.log("Haptic engine error: \(error.localizedDescription)", category: "Error")
         }
     }
     
@@ -480,7 +482,7 @@ struct CircularNPCView: View {
             let player = try hapticEngine?.makePlayer(with: pattern)
             try player?.start(atTime: 0)
         } catch {
-            print("Haptic failed: \(error.localizedDescription)")
+            DebugLogService.shared.log("Haptic failed: \(error.localizedDescription)", category: "Error")
             prepareHaptics()
         }
     }
@@ -521,7 +523,7 @@ struct CircularNPCView: View {
             let player = try hapticEngine?.makePlayer(with: pattern)
             try player?.start(atTime: 0)
         } catch {
-            print("Haptic failed: \(error.localizedDescription)")
+            DebugLogService.shared.log("Haptic failed: \(error.localizedDescription)", category: "Error")
             prepareHaptics()
         }
     }
@@ -547,22 +549,20 @@ struct NPCButton: View {
     var body: some View {
         Button(action: {}) {
             ZStack {
+                Image(getImageName(npc: npc))
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: size * 0.82, height: size * 0.82)
+                
                 Image("iconFrame")
                     .resizable()
                     .frame(width: size, height: size)
-                    .overlay(
-                        Image(getImageName(npc: npc))
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: size * 0.7, height: size * 0.7)
-                            .rotationEffect(.degrees(rotation))
-                    )
                     .overlay(
                         Circle()
                             .stroke(npc.isVampire ? Color.red : Color.clear, lineWidth: 2) // Only red border for vampires
                             .opacity(npc.isUnknown ? 0 : 1)
                     )
-            }
+            }.rotationEffect(.degrees(rotation))
         }
         .shadow(color: .black, radius: 3, x: 0, y: 2)
         .buttonStyle(PlainButtonStyle())

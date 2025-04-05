@@ -14,14 +14,14 @@ final class DependencyManager {
         lock.lock()
         defer { lock.unlock() }
         services[ObjectIdentifier(T.self)] = service
-        print("📦 Registered service: \(T.self)")
+        DebugLogService.shared.log("📦 Registered service: \(T.self)", category: "Dependency")
     }
     
     func register<T: GameService>(_ type: T.Type, factory: @escaping () -> T) {
         lock.lock()
         defer { lock.unlock() }
         services[ObjectIdentifier(T.self)] = factory()
-        print("📦 Registered service: \(T.self)")
+        DebugLogService.shared.log("📦 Registered service: \(T.self)", category: "Dependency")
     }
     
     // MARK: - Resolution
@@ -48,13 +48,13 @@ final class DependencyManager {
         lock.lock()
         defer { lock.unlock() }
         services.removeValue(forKey: ObjectIdentifier(T.self))
-        print("🗑️ Removed service: \(T.self)")
+        DebugLogService.shared.log("🗑️ Removed service: \(T.self)", category: "Dependency")
     }
     
     func clear() {
         lock.lock()
         defer { lock.unlock() }
         services.removeAll()
-        print("🧹 Cleared all services")
+        DebugLogService.shared.log("🧹 Cleared all services", category: "Dependency")
     }
 }

@@ -24,7 +24,8 @@ struct CRProjectApp: App {
         ))
         dependencyManager.register(LocationEventsService(
             gameEventsBus:dependencyManager.resolve(),
-            vampireNatureRevealService: dependencyManager.resolve()
+            vampireNatureRevealService: dependencyManager.resolve(),
+            gameStateService: dependencyManager.resolve()
         ))
         
     }

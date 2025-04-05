@@ -203,6 +203,16 @@ struct StraightConnectionLine: View {
         )
         .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
     }
+    
+    private func getConnectionColor() -> Color {
+        if connection.isParentConnection {
+            return Color.blue.opacity(Double(connection.awareness))
+        } else if connection.isChildConnection {
+            return Color.green.opacity(Double(connection.awareness))
+        } else {
+            return Color.purple.opacity(Double(connection.awareness))
+        }
+    }
 }
 
 // Updated Connection model
@@ -212,4 +222,6 @@ struct Connection: Identifiable {
     let to: CGPoint
     let awareness: Float
     var isParentConnection: Bool = false
+    var isSiblingConnection: Bool = false
+    var isChildConnection: Bool = false
 }

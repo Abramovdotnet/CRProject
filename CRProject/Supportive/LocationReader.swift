@@ -11,7 +11,7 @@ class LocationReader : GameService {
     
     static func loadLocations() {
         if locations == nil {
-            print("Loading locations from JSON files...")
+            DebugLogService.shared.log("Loading locations from JSON files...", category: "Location")
             var allLocations: [[String: Any]] = []
             var seenIDs = Set<String>()
             
@@ -25,7 +25,7 @@ class LocationReader : GameService {
             ]
             
             for kingdomFile in kingdomFiles {
-                print("Attempting to load \(kingdomFile).json")
+                DebugLogService.shared.log("Attempting to load \(kingdomFile).json", category: "Location")
                 if let url = Bundle.main.url(forResource: kingdomFile, withExtension: "json"),
                    let data = try? Data(contentsOf: url),
                    let kingdomLocations = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
@@ -34,8 +34,8 @@ class LocationReader : GameService {
                     for location in kingdomLocations {
                         if let id = location["id"] as? String {
                             if seenIDs.contains(id) {
-                                print("⚠️ WARNING: Duplicate ID found in \(kingdomFile).json: \(id)")
-                                print("Location name: \(location["name"] as? String ?? "Unknown")")
+                                DebugLogService.shared.log("⚠️ WARNING: Duplicate ID found in \(kingdomFile).json: \(id)", category: "Warning")
+                                DebugLogService.shared.log("Location name: \(location["name"] as? String ?? "Unknown")", category: "Location")
                                 // Skip this location to prevent overwriting
                                 continue
                             }
@@ -44,29 +44,29 @@ class LocationReader : GameService {
                         }
                     }
                     
-                    print("Successfully loaded \(kingdomLocations.count) locations from \(kingdomFile)")
+                    DebugLogService.shared.log("Successfully loaded \(kingdomLocations.count) locations from \(kingdomFile)", category: "Location")
                 } else {
-                    print("Could not find or load \(kingdomFile).json")
+                    DebugLogService.shared.log("Could not find or load \(kingdomFile).json", category: "Error")
                 }
             }
             
             if allLocations.isEmpty {
-                print("Warning: No locations were loaded from any path!")
+                DebugLogService.shared.log("Warning: No locations were loaded from any path!", category: "Warning")
             } else {
                 locations = allLocations
-                print("Successfully loaded \(locations?.count ?? 0) total locations")
+                DebugLogService.shared.log("Successfully loaded \(locations?.count ?? 0) total locations", category: "Location")
                 
                 // Print location details for debugging
                 for location in locations ?? [] {
                     if let name = location["name"] as? String,
                        let id = location["id"] as? String,
                        let parentId = location["parentSceneId"] as? String {
-                        print("Location: \(name), ID: \(id), Parent ID: \(parentId)")
+                        DebugLogService.shared.log("Location: \(name), ID: \(id), Parent ID: \(parentId)", category: "Location")
                     }
                 }
             }
         } else {
-            print("Locations already loaded, count: \(locations?.count ?? 0)")
+            DebugLogService.shared.log("Locations already loaded, count: \(locations?.count ?? 0)", category: "Location")
         }
     }
     
@@ -74,35 +74,35 @@ class LocationReader : GameService {
         loadLocations()
         
         guard let locations = locations else {
-            print("Locations array is nil")
+            DebugLogService.shared.log("Locations array is nil", category: "Error")
             throw LocationError.locationsNotLoaded
         }
         
-        print("Searching for location with ID: \(id)")
+        DebugLogService.shared.log("Searching for location with ID: \(id)", category: "Location")
         for location in locations {
             if let locationIdString = location["id"] as? String,
                let locationId = UUID(uuidString: locationIdString),
                locationId == id {
-                print("Found matching location: \(location["name"] as? String ?? "Unknown")")
+                DebugLogService.shared.log("Found matching location: \(location["name"] as? String ?? "Unknown")", category: "Location")
                 return try createScene(from: location)
             }
         }
         
-        print("Location not found with ID: \(id)")
+        DebugLogService.shared.log("Location not found with ID: \(id)", category: "Error")
         throw LocationError.locationNotFound
     }
     
     static func getChildLocations(for parentId: UUID) -> [Scene] {
         loadLocations()
         
-        print("Searching for child locations of parent ID: \(parentId)")
+        DebugLogService.shared.log("Searching for child locations of parent ID: \(parentId)", category: "Location")
         let childLocations = locations?
             .filter { 
                 if let parentSceneIdString = $0["parentSceneId"] as? String,
                    let parentSceneId = UUID(uuidString: parentSceneIdString) {
                     let isMatch = parentSceneId == parentId
                     if isMatch {
-                        print("Found child location: \($0["name"] as? String ?? "Unknown") with parent ID: \(parentSceneId)")
+                        DebugLogService.shared.log("Found child location: \($0["name"] as? String ?? "Unknown") with parent ID: \(parentSceneId)", category: "Location")
                     }
                     return isMatch
                 }
@@ -111,14 +111,14 @@ class LocationReader : GameService {
             .compactMap { try? createScene(from: $0) }
             ?? []
         
-        print("Found \(childLocations.count) child locations")
+        DebugLogService.shared.log("Found \(childLocations.count) child locations", category: "Location")
         return childLocations
     }
     
     static func getSiblingLocations(for locationId: UUID) -> [Scene] {
         loadLocations()
         
-        print("Searching for sibling locations of location ID: \(locationId)")
+        DebugLogService.shared.log("Searching for sibling locations of location ID: \(locationId)", category: "Location")
         
         // First find the current location and its parent ID
         guard let location = locations?.first(where: { 
@@ -131,11 +131,11 @@ class LocationReader : GameService {
         let parentIdString = location["parentSceneId"] as? String,
         let parentId = UUID(uuidString: parentIdString),
         !parentIdString.isEmpty else {
-            print("Could not find location or parent ID")
+            DebugLogService.shared.log("Could not find location or parent ID", category: "Error")
             return []
         }
         
-        print("Found parent ID: \(parentId)")
+        DebugLogService.shared.log("Found parent ID: \(parentId)", category: "Location")
         
         // Find all locations with the same parent ID (excluding the current location)
         let siblings = locations?
@@ -146,7 +146,7 @@ class LocationReader : GameService {
                    let siblingParentId = UUID(uuidString: siblingParentIdString) {
                     let isSibling = siblingParentId == parentId && id != locationId
                     if isSibling {
-                        print("Found sibling location: \($0["name"] as? String ?? "Unknown")")
+                        DebugLogService.shared.log("Found sibling location: \($0["name"] as? String ?? "Unknown")", category: "Location")
                     }
                     return isSibling
                 }
@@ -155,7 +155,7 @@ class LocationReader : GameService {
             .compactMap { try? createScene(from: $0) }
             ?? []
         
-        print("Found \(siblings.count) sibling locations")
+        DebugLogService.shared.log("Found \(siblings.count) sibling locations", category: "Location")
         return siblings
     }
     
@@ -191,7 +191,7 @@ class LocationReader : GameService {
               let name = data["name"] as? String,
               let isIndoor = data["isIndoor"] as? Bool,
               let sceneTypeString = data["sceneType"] as? String else {
-            print("Failed to create scene from data: \(data)")
+            DebugLogService.shared.log("Failed to create scene from data: \(data)", category: "Error")
             throw LocationError.invalidData
         }
         
@@ -200,7 +200,7 @@ class LocationReader : GameService {
             // Remove any non-hex characters and ensure proper length
             let hexOnly = uuidString.filter { "0123456789abcdefABCDEF".contains($0) }
             guard hexOnly.count == 32 else {
-                print("Invalid UUID length: \(hexOnly.count) for string: \(uuidString)")
+                DebugLogService.shared.log("Invalid UUID length: \(hexOnly.count) for string: \(uuidString)", category: "Error")
                 return nil
             }
             
@@ -218,7 +218,7 @@ class LocationReader : GameService {
         // Parse scene ID
         guard let normalizedId = normalizeUUID(idString),
               let id = UUID(uuidString: normalizedId) else {
-            print("Failed to create valid UUID from string: \(idString)")
+            DebugLogService.shared.log("Failed to create valid UUID from string: \(idString)", category: "Error")
             throw LocationError.invalidData
         }
         
@@ -295,7 +295,7 @@ class LocationReader : GameService {
         case "forge": sceneType = .forge
         case "fishery": sceneType = .fishery
         default: 
-            print("Unknown scene type: \(sceneTypeString), defaulting to castle")
+            DebugLogService.shared.log("Unknown scene type: \(sceneTypeString), defaulting to castle", category: "Warning")
             sceneType = .castle
         }
         

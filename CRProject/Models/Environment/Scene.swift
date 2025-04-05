@@ -7,6 +7,7 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
     var parentSceneId: UUID?
     var isIndoor: Bool = false
     var sceneType: SceneType = .castle
+    var runtimeID: UUID? = UUID()
     
     @Published private var _characters: [UUID: any Character] = [:]
     private var _childSceneIds: Set<UUID> = []

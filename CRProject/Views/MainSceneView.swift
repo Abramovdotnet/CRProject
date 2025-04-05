@@ -11,9 +11,14 @@ struct MainSceneView: View {
             EndGameView()
         } else {
             ZStack {
-                Image("MainSceneBackground")
+                Image(uiImage: UIImage(named: viewModel.currentScene!.sceneType.rawValue) ?? UIImage(named: "MainSceneBackground")!)
                     .resizable()
                     .ignoresSafeArea()
+                    .onAppear {
+                        let imageName = UIImage(named: viewModel.currentScene!.sceneType.rawValue) != nil ? 
+                            viewModel.currentScene!.sceneType.rawValue : "MainSceneBackground"
+                        DebugLogService.shared.log("Loading background: \(imageName)", category: "Scene")
+                    }
                 
                 VStack(spacing: 0) {
                     TopWidgetView(viewModel: viewModel)
@@ -124,6 +129,7 @@ struct MainSceneView: View {
                     DialogueView(viewModel: DialogueViewModel(npc: npc, player: player))
                 }
             }
+            .withDebugOverlay(viewModel: viewModel)
         }
     }
     

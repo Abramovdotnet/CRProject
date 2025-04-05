@@ -20,12 +20,12 @@ class LocationGenerator {
     ]
     
     static func generateLocations() -> [[String: Any]] {
-        print("Starting location generation...")
+        DebugLogService.shared.log("Starting location generation...", category: "Location")
         var locations: [[String: Any]] = []
         
         // Generate huge locations
         for hugeName in hugeLocationNames {
-            print("Generating huge location: \(hugeName)")
+            DebugLogService.shared.log("Generating huge location: \(hugeName)", category: "Location")
             let hugeId = UUID()
             locations.append([
                 "id": hugeId.uuidString,
@@ -39,7 +39,7 @@ class LocationGenerator {
             for _ in 0..<townCount {
                 let townId = UUID()
                 let townName = "\(townPrefixes.randomElement()!) \(townSuffixes.randomElement()!)"
-                print("  Generating town: \(townName)")
+                DebugLogService.shared.log("  Generating town: \(townName)", category: "Location")
                 locations.append([
                     "id": townId.uuidString,
                     "name": townName,
@@ -75,17 +75,17 @@ class LocationGenerator {
             }
         }
         
-        print("Generated \(locations.count) total locations")
+        DebugLogService.shared.log("Generated \(locations.count) total locations", category: "Location")
         return locations
     }
     
     static func saveToFile() {
-        print("Starting save to file...")
+        DebugLogService.shared.log("Starting save to file...", category: "Location")
         let locations = generateLocations()
-        print("Converting to JSON...")
+        DebugLogService.shared.log("Converting to JSON...", category: "Location")
         let jsonData = try! JSONSerialization.data(withJSONObject: locations, options: .prettyPrinted)
         
-        print("Creating Data directory if needed...")
+        DebugLogService.shared.log("Creating Data directory if needed...", category: "Location")
         // Create Data directory if it doesn't exist
         let fileManager = FileManager.default
         let dataDirectory = "Data"
@@ -93,10 +93,10 @@ class LocationGenerator {
             try! fileManager.createDirectory(atPath: dataDirectory, withIntermediateDirectories: true)
         }
         
-        print("Writing to file...")
+        DebugLogService.shared.log("Writing to file...", category: "Location")
         let fileURL = URL(fileURLWithPath: "Data/Locations.json")
         try! jsonData.write(to: fileURL)
-        print("Generated \(locations.count) locations and saved to Locations.json")
+        DebugLogService.shared.log("Generated \(locations.count) locations and saved to Locations.json", category: "Location")
     }
 }
 

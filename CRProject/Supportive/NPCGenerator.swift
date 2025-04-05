@@ -115,7 +115,7 @@ class NPCGenerator {
             npcs.append(npc)
         }
         
-        print("Generated NPCs with \(vampireCount) vampires (\(Double(vampireCount) / Double(count) * 100)% of population)")
+        DebugLogService.shared.log("Generated NPCs with \(vampireCount) vampires (\(Double(vampireCount) / Double(count) * 100)% of population)", category: "NPC")
         return npcs
     }
     
@@ -132,7 +132,7 @@ class NPCGenerator {
         
         let fileURL = URL(fileURLWithPath: "Data/NPCs.json")
         try! jsonData.write(to: fileURL)
-        print("Generated \(npcs.count) NPCs and saved to NPCs.json")
+        DebugLogService.shared.log("Generated \(npcs.count) NPCs and saved to NPCs.json", category: "NPC")
     }
 }
 

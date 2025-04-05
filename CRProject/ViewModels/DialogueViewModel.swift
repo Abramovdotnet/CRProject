@@ -20,20 +20,20 @@ class DialogueViewModel: ObservableObject {
             npc: npc
         )
         
-        print("Initializing dialogue for NPC: \(npc.name), profession: \(npc.profession)")
+        DebugLogService.shared.log("Initializing dialogue for NPC: \(npc.name), profession: \(npc.profession)", category: "Dialogue")
         loadInitialDialogue()
     }
     
     private func loadInitialDialogue() {
-        print("Attempting to load dialogue for NPC: \(npc.name), profession: \(npc.profession.rawValue)")
+        DebugLogService.shared.log("Attempting to load dialogue for NPC: \(npc.name), profession: \(npc.profession.rawValue)", category: "Dialogue")
         
         // Try profession-specific dialogue first
         if let dialogue = dialogueProcessor.loadDialogue(profession: npc.profession) {
-            print("Successfully loaded dialogue for \(npc.profession.rawValue)")
+            DebugLogService.shared.log("Successfully loaded dialogue for \(npc.profession.rawValue)", category: "Dialogue")
             updateDialogue(text: dialogue.text, options: dialogue.options)
         } else {
             // If we reach here, both profession-specific and general dialogue failed
-            print("Failed to load any dialogue for \(npc.profession.rawValue)")
+            DebugLogService.shared.log("Failed to load any dialogue for \(npc.profession.rawValue)", category: "Error")
             currentDialogueText = "..."
             options = [
                 DialogueOption(
@@ -46,7 +46,7 @@ class DialogueViewModel: ObservableObject {
     }
     
     private func updateDialogue(text: String, options: [DialogueNodeOption]) {
-        print("Updating dialogue - Text: \(text), Options count: \(options.count)")
+        DebugLogService.shared.log("Updating dialogue - Text: \(text), Options count: \(options.count)", category: "Dialogue")
         currentDialogueText = text
         self.options = options.map { option in
             DialogueOption(

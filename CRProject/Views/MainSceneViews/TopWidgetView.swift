@@ -55,7 +55,15 @@ struct TopWidgetView: View {
                     .font(Theme.bodyFont)
                     .foregroundColor(.yellow)
                     .cornerRadius(12)
-                
+            }
+            
+            Button(action: {
+                viewModel.toggleDebugOverlay()
+            }) {
+                Image(systemName: "hammer.fill")
+                    .font(Theme.bodyFont)
+                    .foregroundColor(.orange)
+                    .cornerRadius(12)
             }
         }
         .padding(.top, 5)
