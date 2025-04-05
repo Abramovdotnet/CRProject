@@ -13,6 +13,7 @@ class LocationReader : GameService {
         if locations == nil {
             print("Loading locations from JSON files...")
             var allLocations: [[String: Any]] = []
+            var seenIDs = Set<String>()
             
             // List of kingdom files to load
             let kingdomFiles = [
@@ -28,7 +29,21 @@ class LocationReader : GameService {
                 if let url = Bundle.main.url(forResource: kingdomFile, withExtension: "json"),
                    let data = try? Data(contentsOf: url),
                    let kingdomLocations = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
-                    allLocations.append(contentsOf: kingdomLocations)
+                    
+                    // Check for duplicate IDs in this kingdom file
+                    for location in kingdomLocations {
+                        if let id = location["id"] as? String {
+                            if seenIDs.contains(id) {
+                                print("⚠️ WARNING: Duplicate ID found in \(kingdomFile).json: \(id)")
+                                print("Location name: \(location["name"] as? String ?? "Unknown")")
+                                // Skip this location to prevent overwriting
+                                continue
+                            }
+                            seenIDs.insert(id)
+                            allLocations.append(location)
+                        }
+                    }
+                    
                     print("Successfully loaded \(kingdomLocations.count) locations from \(kingdomFile)")
                 } else {
                     print("Could not find or load \(kingdomFile).json")
@@ -147,10 +162,24 @@ class LocationReader : GameService {
     static func getParentLocation(for locationId: UUID) -> Scene? {
         loadLocations()
         
-        guard let location = locations?.first(where: { ($0["id"] as? String) == locationId.uuidString }),
-              let parentId = location["parentSceneId"] as? String,
-              !parentId.isEmpty,
-              let parentData = locations?.first(where: { ($0["id"] as? String) == parentId }) else {
+        // First find the current location
+        guard let location = locations?.first(where: { 
+            if let idString = $0["id"] as? String,
+               let id = UUID(uuidString: idString) {
+                return id == locationId
+            }
+            return false
+        }),
+        let parentIdString = location["parentSceneId"] as? String,
+        !parentIdString.isEmpty,
+        let parentId = UUID(uuidString: parentIdString),
+        let parentData = locations?.first(where: {
+            if let idString = $0["id"] as? String,
+               let id = UUID(uuidString: idString) {
+                return id == parentId
+            }
+            return false
+        }) else {
             return nil
         }
         
@@ -166,61 +195,41 @@ class LocationReader : GameService {
             throw LocationError.invalidData
         }
         
-        // Convert invalid UUID characters to valid hexadecimal
-        let validIdString = idString
-            .replacingOccurrences(of: "G", with: "a")
-            .replacingOccurrences(of: "H", with: "b")
-            .replacingOccurrences(of: "I", with: "c")
-            .replacingOccurrences(of: "J", with: "d")
-            .replacingOccurrences(of: "K", with: "e")
-            .replacingOccurrences(of: "L", with: "f")
-            .replacingOccurrences(of: "M", with: "0")
-            .replacingOccurrences(of: "N", with: "1")
-            .replacingOccurrences(of: "O", with: "2")
-            .replacingOccurrences(of: "P", with: "3")
-            .replacingOccurrences(of: "Q", with: "4")
-            .replacingOccurrences(of: "R", with: "5")
-            .replacingOccurrences(of: "S", with: "6")
-            .replacingOccurrences(of: "T", with: "7")
-            .replacingOccurrences(of: "U", with: "8")
-            .replacingOccurrences(of: "V", with: "9")
-            .replacingOccurrences(of: "W", with: "a")
-            .replacingOccurrences(of: "X", with: "b")
-            .replacingOccurrences(of: "Y", with: "c")
-            .replacingOccurrences(of: "Z", with: "d")
+        // Validate and normalize UUID string
+        func normalizeUUID(_ uuidString: String) -> String? {
+            // Remove any non-hex characters and ensure proper length
+            let hexOnly = uuidString.filter { "0123456789abcdefABCDEF".contains($0) }
+            guard hexOnly.count == 32 else {
+                print("Invalid UUID length: \(hexOnly.count) for string: \(uuidString)")
+                return nil
+            }
+            
+            // Format as proper UUID string (8-4-4-4-12)
+            let parts = [
+                String(hexOnly.prefix(8)),
+                String(hexOnly.dropFirst(8).prefix(4)),
+                String(hexOnly.dropFirst(12).prefix(4)),
+                String(hexOnly.dropFirst(16).prefix(4)),
+                String(hexOnly.dropFirst(20))
+            ]
+            return parts.joined(separator: "-")
+        }
         
-        guard let id = UUID(uuidString: validIdString) else {
-            print("Failed to create UUID from string: \(validIdString)")
+        // Parse scene ID
+        guard let normalizedId = normalizeUUID(idString),
+              let id = UUID(uuidString: normalizedId) else {
+            print("Failed to create valid UUID from string: \(idString)")
             throw LocationError.invalidData
         }
         
-        // Handle null or empty parentSceneId for root locations
+        // Handle parent scene ID
         let parentSceneId: UUID?
         if let parentSceneIdString = data["parentSceneId"] as? String,
            !parentSceneIdString.isEmpty,
-           parentSceneIdString.lowercased() != "null" {
-            let validParentIdString = parentSceneIdString
-                .replacingOccurrences(of: "G", with: "a")
-                .replacingOccurrences(of: "H", with: "b")
-                .replacingOccurrences(of: "I", with: "c")
-                .replacingOccurrences(of: "J", with: "d")
-                .replacingOccurrences(of: "K", with: "e")
-                .replacingOccurrences(of: "L", with: "f")
-                .replacingOccurrences(of: "M", with: "0")
-                .replacingOccurrences(of: "N", with: "1")
-                .replacingOccurrences(of: "O", with: "2")
-                .replacingOccurrences(of: "P", with: "3")
-                .replacingOccurrences(of: "Q", with: "4")
-                .replacingOccurrences(of: "R", with: "5")
-                .replacingOccurrences(of: "S", with: "6")
-                .replacingOccurrences(of: "T", with: "7")
-                .replacingOccurrences(of: "U", with: "8")
-                .replacingOccurrences(of: "V", with: "9")
-                .replacingOccurrences(of: "W", with: "a")
-                .replacingOccurrences(of: "X", with: "b")
-                .replacingOccurrences(of: "Y", with: "c")
-                .replacingOccurrences(of: "Z", with: "d")
-            parentSceneId = UUID(uuidString: validParentIdString)
+           parentSceneIdString.lowercased() != "null",
+           let normalizedParentId = normalizeUUID(parentSceneIdString),
+           let parentId = UUID(uuidString: normalizedParentId) {
+            parentSceneId = parentId
         } else {
             parentSceneId = nil
         }
@@ -244,7 +253,7 @@ class LocationReader : GameService {
         case "farm": sceneType = .farm
         case "bridge": sceneType = .bridge
         case "cemetery": sceneType = .cemetery
-        case "guardPost": sceneType = .guardPost
+        case "guardPost": sceneType = .guard_post
         case "wizardTower": sceneType = .wizardTower
         case "mountainFortress": sceneType = .mountainFortress
         case "battlefield": sceneType = .battlefield
@@ -259,6 +268,32 @@ class LocationReader : GameService {
         case "royalPalace": sceneType = .royalPalace
         case "greatCathedral": sceneType = .greatCathedral
         case "crossroads": sceneType = .crossroads
+        case "mages_guild": sceneType = .mages_guild
+        case "thieves_guild": sceneType = .thieves_guild
+        case "fighters_guild": sceneType = .fighters_guild
+        case "mine": sceneType = .mine
+        case "mountain_pass": sceneType = .mountain_pass
+        case "museum": sceneType = .museum
+        case "observatory": sceneType = .observatory
+        case "port": sceneType = .port
+        case "road": sceneType = .road
+        case "ruins": sceneType = .ruins
+        case "shipyard": sceneType = .shipyard
+        case "tower": sceneType = .tower
+        case "village": sceneType = .village
+        case "wilderness": sceneType = .wilderness
+        case "garden": sceneType = .garden
+        case "gallery": sceneType = .gallery
+        case "concert_hall": sceneType = .concert_hall
+        case "garrison": sceneType = .garrison
+        case "city_gate": sceneType = .city_gate
+        case "docks": sceneType = .docks
+        case "cave": sceneType = .cave
+        case "guard_post": sceneType = .guard_post
+        case "district": sceneType = .district
+        case "archive": sceneType = .archive
+        case "forge": sceneType = .forge
+        case "fishery": sceneType = .fishery
         default: 
             print("Unknown scene type: \(sceneTypeString), defaulting to castle")
             sceneType = .castle

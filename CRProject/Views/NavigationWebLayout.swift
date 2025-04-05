@@ -193,9 +193,10 @@ struct StraightConnectionLine: View {
             }
         }
         .stroke(
-            Theme.primaryColor.opacity(Double(connection.awareness)),
+            connection.isParentConnection ? Color.blue.opacity(Double(connection.awareness))
+            : Theme.primaryColor.opacity(Double(connection.awareness)),
             style: StrokeStyle(
-                lineWidth: connection.isParentConnection ? 3 : 1,
+                lineWidth: connection.isParentConnection ? 1 : 1,
                 lineCap: .round,
                 lineJoin: .round
             )

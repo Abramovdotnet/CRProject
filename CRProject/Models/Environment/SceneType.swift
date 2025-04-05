@@ -14,11 +14,21 @@ enum SceneType: String, CaseIterable {
     case desert
     case oasis
     case lake
+    case mountain_pass
+    case wilderness
+    case ruins
+    case observatory
 
-    // Capitals
+    // Capitals and major settlements
     case town
     case city
     case kingdom
+    case village
+    
+    // Districts and areas
+    case district
+    case docks
+    case city_gate
     
     // Medium locations
     case tavern
@@ -40,12 +50,11 @@ enum SceneType: String, CaseIterable {
     case outskirts
     case valley
     case mill
-    case guardPost
+    case guard_post
     case herbalistHut
     case arena
     case port
     case lighthouse
-    case district
     case shipyard
     case fishery
     case club
@@ -68,13 +77,17 @@ enum SceneType: String, CaseIterable {
     case mages_guild
     case thieves_guild
     case fighters_guild
+    case garden
+    case cave
+    case road
     
     var isHuge: Bool {
         switch self {
         case .castle, .royalPalace, .greatCathedral, .wizardTower,
-                .mountainFortress, .harborCity, .ancientRuins, .forest,
+             .mountainFortress, .harborCity, .ancientRuins, .forest,
              .enchantedForest, .battlefield, .palace, .fortress, .desert,
-             .oasis, .lake:
+             .oasis, .lake, .mountain_pass, .wilderness, .ruins,
+             .observatory:
             return true
         default:
             return false
@@ -83,7 +96,7 @@ enum SceneType: String, CaseIterable {
 
     var isCapital: Bool {
         switch self {
-        case .town, .city, .kingdom:
+        case .town, .city, .kingdom, .village:
             return true
         default:
             return false
@@ -92,6 +105,7 @@ enum SceneType: String, CaseIterable {
     
     var displayName: String {
         let string = self.rawValue
+            .replacingOccurrences(of: "_", with: " ")
             .map { $0.isUppercase ? " \($0)" : String($0) }
             .joined()
             .capitalized
@@ -108,28 +122,28 @@ enum SceneType: String, CaseIterable {
         case .blacksmith, .forge: return "hammer.fill"
         case .alchemistShop: return "flask.fill"
         case .temple, .greatCathedral, .shrine, .monastery: return "building.columns.fill"
-        case .dungeon: return "exclamationmark.triangle.fill"
+        case .dungeon, .cave: return "exclamationmark.triangle.fill"
         case .forest, .enchantedForest: return "leaf.fill"
-        case .mountainFortress, .fortress: return "mountain.2.fill"
-        case .crossroads: return "arrow.triangle.branch"
-        case .harborCity, .port: return "ferry.fill"
+        case .mountainFortress, .fortress, .mountain_pass: return "mountain.2.fill"
+        case .crossroads, .road: return "arrow.triangle.branch"
+        case .harborCity, .port, .docks: return "ferry.fill"
         case .cemetery: return "moon.stars.fill"
         case .market: return "cart.fill"
         case .farm: return "leaf.arrow.circlepath"
         case .bridge: return "arrow.left.and.right"
-        case .secretGrove: return "sparkles"
-        case .wizardTower, .tower: return "building.2.fill"
+        case .secretGrove, .garden: return "sparkles"
+        case .wizardTower, .tower, .observatory: return "building.2.fill"
         case .hospital: return "cross.case.fill"
         case .outskirts: return "arrow.forward"
         case .valley: return "hills"
         case .mill: return "rotate.3d"
-        case .guardPost, .garrison: return "shield.fill"
+        case .guard_post, .garrison, .city_gate: return "shield.fill"
         case .library, .archive: return "books.vertical.fill"
         case .herbalistHut: return "leaf.fill"
         case .battlefield: return "shield.lefthalf.filled"
-        case .ancientRuins: return "building.columns"
+        case .ancientRuins, .ruins: return "building.columns"
         case .villageSquare: return "person.3.fill"
-        case .town: return "building.2"
+        case .town, .village: return "building.2"
         case .city: return "building.2.crop.circle"
         case .kingdom: return "crown.fill"
         case .arena: return "figure.boxing"
@@ -154,6 +168,7 @@ enum SceneType: String, CaseIterable {
         case .mages_guild: return "wand.and.stars"
         case .thieves_guild: return "person.crop.circle"
         case .fighters_guild: return "shield.fill"
+        case .wilderness: return "leaf.fill"
         default: return "questionmark.circle.fill"
         }
     }

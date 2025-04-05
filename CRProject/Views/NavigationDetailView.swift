@@ -170,8 +170,8 @@ struct NavigationWebView: View {
         // Parent in right column center
         if let parent = viewModel.parentScene, location.id == parent.id {
             let rightCenter = CGPoint(
-                x: currentPosition.x + (geometry.size.width * 0.3), // 30% into right column
-                y: currentPosition.y
+                x: currentPosition.x + (geometry.size.width * 0.5), // 30% into right column
+                y: currentPosition.y + (geometry.size.width * -0.18)
             )
             return rightCenter
         }
