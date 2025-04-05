@@ -69,7 +69,6 @@ struct NavigationWebView: View {
     // Layout constants
     private let maxChildNodes = 10
     private let maxSiblingNodes = 10
-    private let maxParentSiblingNodes = 10
     private let margin: CGFloat = 50
     
     // Current position always at center
@@ -141,14 +140,13 @@ struct NavigationWebView: View {
         
         let hasParent = viewModel.parentScene != nil
         let availableWidth = geometry.size.width - margin * 2
-        let leftColumnWidth = hasParent ? availableWidth * 0.6 : availableWidth
         
         // Siblings in inner circle
         if viewModel.siblingScenes.contains(where: { $0.id == location.id }) {
             let siblings = Array(viewModel.siblingScenes.prefix(maxSiblingNodes))
             guard let index = siblings.firstIndex(where: { $0.id == location.id }) else { return nil }
             let angle = 2 * .pi / CGFloat(siblings.count) * CGFloat(index)
-            let radius = min(leftColumnWidth, geometry.size.height) * 0.3
+            let radius = geometry.size.height * 0.3
             return CGPoint(
                 x: currentPosition.x + cos(angle) * radius * 1.6,
                 y: currentPosition.y + sin(angle) * radius * 1.3
@@ -160,7 +158,7 @@ struct NavigationWebView: View {
             let children = Array(viewModel.childScenes.prefix(maxChildNodes))
             guard let index = children.firstIndex(where: { $0.id == location.id }) else { return nil }
             let angle = 2 * .pi / CGFloat(children.count) * CGFloat(index)
-            let radius = min(leftColumnWidth, geometry.size.height) * 0.42
+            let radius = geometry.size.height * 0.42
             return CGPoint(
                 x: currentPosition.x + cos(angle) * radius * 2,
                 y: currentPosition.y + sin(angle) * radius * 0.95
@@ -174,23 +172,6 @@ struct NavigationWebView: View {
                 y: currentPosition.y + (geometry.size.width * -0.18)
             )
             return rightCenter
-        }
-        
-        // Parent siblings in right column circle
-        if let parent = viewModel.parentScene,
-           LocationReader.getSiblingLocations(for: parent.id).contains(where: { $0.id == location.id }) {
-            let parentSiblings = Array(LocationReader.getSiblingLocations(for: parent.id).prefix(maxParentSiblingNodes))
-            guard let index = parentSiblings.firstIndex(where: { $0.id == location.id }) else { return nil }
-            let rightCenter = CGPoint(
-                x: currentPosition.x + (geometry.size.width * 0.3),
-                y: currentPosition.y
-            )
-            let angle = 2 * .pi / CGFloat(parentSiblings.count) * CGFloat(index)
-            let radius = min(geometry.size.width * 0.2, geometry.size.height) * 0.35
-            return CGPoint(
-                x: rightCenter.x + cos(angle) * radius,
-                y: rightCenter.y + sin(angle) * radius
-            )
         }
         
         return nil
@@ -504,10 +485,6 @@ extension MainSceneViewModel {
         // Add parent
         if let parent = parentScene {
             locations.append(parent)
-            
-            // Add parent's siblings (limit to 4)
-            let parentSiblings = LocationReader.getSiblingLocations(for: parent.id)
-            locations.append(contentsOf: Array(parentSiblings.prefix(4)))
         }
         
         // Add immediate siblings (limit to 6)
@@ -533,18 +510,6 @@ extension MainSceneViewModel {
                 to: parentPos,
                 awareness: 1.0
             ))
-            
-            // Add connections between parent and its siblings
-            let parentSiblings = LocationReader.getSiblingLocations(for: parent.id).prefix(4)  // Increased from 2 to 4
-            for sibling in parentSiblings {
-                if let siblingPos = positions[sibling.id] {
-                    connections.append(Connection(
-                        from: parentPos,
-                        to: siblingPos,
-                        awareness: 0.7
-                    ))
-                }
-            }
         }
         
         // Add connections to siblings
