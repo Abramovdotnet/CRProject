@@ -8,9 +8,16 @@ struct SelectedNPCView: View {
         HStack(spacing: 12) {
             // NPC Icon and Status
             VStack(spacing: 4) {
-                Image(systemName: npc.profession.icon)
-                    .font(.system(size: 16))
-                    .foregroundColor(npc.profession.color)
+                HStack {
+                    if !npc.isUnknown {
+                        Text("\(npc.sex.rawValue.capitalized), \(npc.profession)")
+                            .font(Theme.smallFont)
+                            .foregroundColor(npc.profession.color)
+                        Image(systemName: npc.profession.icon)
+                            .font(Theme.smallFont)
+                            .foregroundColor(npc.profession.color)
+                    }
+                }
                 
                 if npc.isSleeping {
                     Image(systemName: "moon.fill")
@@ -42,14 +49,16 @@ struct SelectedNPCView: View {
                             .font(Theme.bodyFont)
                             .foregroundColor(npc.isAlive ? .green : Theme.primaryColor)
                     }
+                    
+                    if !npc.isUnknown {
+                        HStack {
+                            Text(npc.isVampire ? "Vampire" : "Mortal")
+                                .font(Theme.bodyFont)
+                                .foregroundColor(npc.isVampire ? Theme.primaryColor : .green)
+                        }
+                    }
+                }
 
-                }
-                
-                if !npc.isUnknown {
-                    Text("\(npc.sex.rawValue.capitalized), \(npc.profession)")
-                        .font(Theme.smallFont)
-                        .foregroundColor(npc.profession.color)
-                }
             }
             
             Spacer()
@@ -61,6 +70,7 @@ struct SelectedNPCView: View {
                         icon: "magnifyingglass",
                         action: {
                             onAction(.investigate(npc))
+                            VibrationService.shared.lightTap()
                         },
                         color: Theme.primaryColor)
                 }
@@ -70,6 +80,7 @@ struct SelectedNPCView: View {
                         icon: "bubble.left",
                         action: {
                             onAction(.startConversation(npc))
+                            VibrationService.shared.lightTap()
                         },
                         color: Theme.textColor)
                     
@@ -78,6 +89,7 @@ struct SelectedNPCView: View {
                             icon: "drop.halffull",
                             action: {
                                 onAction(.feed(npc))
+                                VibrationService.shared.regularTap()
                             },
                             color: Theme.primaryColor)
                     }
@@ -87,6 +99,7 @@ struct SelectedNPCView: View {
                             icon: "drop.fill",
                             action: {
                                 onAction(.drain(npc))
+                                VibrationService.shared.successVibration()
                             },
                             color: Theme.primaryColor)
                     }

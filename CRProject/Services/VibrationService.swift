@@ -63,4 +63,8 @@ final class VibrationService {
     func lightTap() {
         vibrate(intensity: 0.3, sharpness: 0.3, duration: 0.1)
     }
+    
+    func regularTap() {
+        vibrate(intensity: 0.1, sharpness: 0.6, duration: 0.1)
+    }
 }

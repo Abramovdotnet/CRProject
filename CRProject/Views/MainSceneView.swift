@@ -6,6 +6,7 @@ struct MainSceneView: View {
     @State private var showingNavigation = false
     @State private var compassScale: CGFloat = 1.0
     @State private var watchScale: CGFloat = 1.0
+    @State private var spentTimeWatchScale: CGFloat = 1.0
     
     var body: some View {
         if viewModel.isGameEnd {
@@ -70,6 +71,57 @@ struct MainSceneView: View {
                                 VStack(alignment: .leading, spacing: 10) {
                                     HStack(alignment: .top, spacing: 10) {
                                         
+                                        if viewModel.canSkipTimeSafe() {
+                                            VStack {
+                                                ZStack {
+                                                    Button(action: {
+                                                        withAnimation(.easeInOut(duration: 0.1)) {
+                                                            spentTimeWatchScale = 0.9
+                                                        }
+                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                            withAnimation(.spring()) {
+                                                                spentTimeWatchScale = 1.0
+                                                                viewModel.skipTimeToNight()
+                                                                VibrationService.shared.lightTap()
+                                                            }
+                                                        }
+                                                    }) {
+                                                        ZStack {
+                                                            // 1. Frame (bottom layer)
+                                                            Image("iconFrame")
+                                                                .resizable()
+                                                                .aspectRatio(contentMode: .fit)
+                                                                .frame(width: 50 * 1.1, height: 50 * 1.1)
+                                                            
+                                                            // 2. Background circle (middle layer)
+                                                            Circle()
+                                                                .fill(Color.black.opacity(0.7))
+                                                                .frame(width: 50 * 0.85, height: 50 * 0.85)
+                                                                .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                                                                .overlay(
+                                                                    Circle()
+                                                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                                                )
+                                                        
+                                                            Image("clockWatchBlue")
+                                                                .resizable()
+                                                                .aspectRatio(contentMode: .fit)
+                                                                .frame(width: 50 * 0.8, height: 50 * 0.8)
+                                                        }
+                                                        .scaleEffect(spentTimeWatchScale)
+                                                    }
+                                                    .buttonStyle(PlainButtonStyle())
+                                                    .contentShape(Circle())
+                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                }
+                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                
+                                                Image(systemName: "forward.fill")
+                                                    .font(Theme.headingFont)
+                                                    .foregroundColor(Theme.textColor)
+                                                    .padding(.top, 3)
+                                            }
+                                        }
                                         VStack {
                                             ZStack {
                                                 Button(action: {
@@ -80,6 +132,7 @@ struct MainSceneView: View {
                                                         withAnimation(.spring()) {
                                                             watchScale = 1.0
                                                             viewModel.advanceTime()
+                                                            VibrationService.shared.lightTap()
                                                         }
                                                     }
                                                 }) {
@@ -113,9 +166,10 @@ struct MainSceneView: View {
                                             }
                                             .shadow(color: .black, radius: 3, x: 0, y: 2)
                                             
-                                            Text("Wait")
-                                                .font(Theme.captionFont)
+                                            Image(systemName: "hourglass.bottomhalf.fill")
+                                                .font(Theme.headingFont)
                                                 .foregroundColor(Theme.textColor)
+                                                .padding(.top, 3)
                                         }
                                         
                                         VStack {
@@ -128,6 +182,7 @@ struct MainSceneView: View {
                                                         withAnimation(.spring()) {
                                                             compassScale = 1.0
                                                             showingNavigation = true
+                                                            VibrationService.shared.lightTap()
                                                         }
                                                     }
                                                 }) {
@@ -162,9 +217,10 @@ struct MainSceneView: View {
                                             }
                                             .shadow(color: .black, radius: 3, x: 0, y: 2)
                                             
-                                            Text("Map")
-                                                .font(Theme.captionFont)
+                                            Image(systemName: "map.fill")
+                                                .font(Theme.headingFont)
                                                 .foregroundColor(Theme.textColor)
+                                                .padding(.top, 3)
                                         }
                                     }
                                 }

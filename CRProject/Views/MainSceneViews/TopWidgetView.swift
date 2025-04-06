@@ -23,16 +23,6 @@ struct TopWidgetView: View {
             
             Spacer()
             
-            if viewModel.canSkipTimeSafe() {
-                Button(action: {
-                    viewModel.skipTimeToNight()
-                }) {
-                    Image(systemName: "moon.fill")
-                        .font(Theme.bodyFont)
-                        .foregroundColor(.white)
-                        .cornerRadius(12)
-                }
-            }
             Button(action: {
                 viewModel.respawnNPCs()
             }) {

@@ -46,10 +46,16 @@ struct NPCGridButton: View {
                     .foregroundColor(iconColor())
                 
                 if !npc.isUnknown {
-                    Image(systemName: npc.sex == .female ? "igure.stand.dress" : "igure.stand.dress")
-                        .font(Theme.smallFont)
-                        .foregroundColor(Theme.textColor)
-                        .lineLimit(1)
+                    HStack {
+                        Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.stand.dress")
+                            .font(Theme.smallFont)
+                            .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                            .lineLimit(1)
+                        Image(systemName: npc.profession.icon)
+                            .font(Theme.smallFont)
+                            .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                            .lineLimit(1)
+                    }
                 }
             }
             .frame(width: 50, height: 50)
@@ -66,7 +72,7 @@ struct NPCGridButton: View {
             if isSelected {
                 return Theme.textColor
             } else {
-                return npc.isUnknown ? .white : .green
+                return npc.isUnknown ? .white : npc.isVampire ? Theme.primaryColor : .green
             }
         } else {
             return Theme.primaryColor
