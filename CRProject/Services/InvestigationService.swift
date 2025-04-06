@@ -42,7 +42,7 @@ class InvestigationService: GameService {
         // Update statistics
         statisticsService.incrementInvestigations()
         
-        gameEventsBus.addSystemMessage("\(investigationObject.name). " +
+        gameEventsBus.addCommonMessage(message: "\(investigationObject.name). " +
                                         "It's \(investigationObject.sex) " +
                                        "\(investigationObject.profession).")
     }

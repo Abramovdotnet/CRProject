@@ -241,6 +241,8 @@ class MainSceneViewModel: ObservableObject {
         updateSceneAwareness()
     }
     
+    
+    
     // MARK: - Blood Management
     func feedOnCharacter(_ npc: NPC) {
         guard let player = gameStateService.getPlayer(),
@@ -325,6 +327,11 @@ class MainSceneViewModel: ObservableObject {
         while !gameTime.isNightTime {
             gameTime.advanceTimeSafe()
         }
+    }
+    
+    func advanceTime() {
+        gameStateService.handleTimeAdvanced()
+        updatePlayerBloodPercentage()
     }
     
     func updateLocationPositions(in geometry: GeometryProxy) {

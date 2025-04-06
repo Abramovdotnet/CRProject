@@ -14,10 +14,6 @@ struct TopWidgetView: View {
                 .font(Theme.headingFont)
             Text("Day \(viewModel.currentDay)")
                 .font(Theme.bodyFont)
-            if let isIndoors = viewModel.currentScene?.isIndoor {
-                Text("Is indoors: " + ( isIndoors ? " Yes" : " No"))
-                    .font(Theme.bodyFont)
-            }
             
             Spacer()
             

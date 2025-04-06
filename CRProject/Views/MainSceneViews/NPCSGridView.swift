@@ -1,38 +1,31 @@
 import SwiftUICore
 import SwiftUI
 
-class NPCSelection {
-    var id: UUID?
-}
-
 struct NPCSGridView: View {
     let npcs: [NPC]
-    let selectedNPC: NPCSelection = NPCSelection()
-    
+    @StateObject private var npcManager = NPCInteractionManager.shared
     var onAction: (NPCAction) -> Void
-    // Конфигурация сетки
-    private let columns = [
-        GridItem(.adaptive(minimum: 50, maximum: 80), spacing: 10),
-        GridItem(.adaptive(minimum: 50, maximum: 80), spacing: 10)
-    ]
+    
+    // Fixed 6-column grid configuration
+    private let columns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 24), count: 6)
     
     var body: some View {
         ScrollView {
-            LazyVGrid(columns: columns, spacing: 10) {
+            LazyVGrid(columns: columns, spacing: 8) {
                 ForEach(npcs.prefix(20)) { npc in
                     NPCGridButton(
                         npc: npc,
-                        isSelected: selectedNPC.id == npc.id
+                        isSelected: npcManager.currentNPC?.id == npc.id
                     ) {
-                        if selectedNPC.id == npc.id {
-                             onAction(.startConversation(npc))
+                        if npcManager.currentNPC?.id == npc.id {
+                            onAction(.startConversation(npc))
                         } else {
-                            selectedNPC.id = npc.id
+                            npcManager.select(with: npc)
                         }
                     }
                 }
             }
-            .padding()
+            .padding(8)
         }
     }
 }
@@ -46,18 +39,18 @@ struct NPCGridButton: View {
         Button(action: onTap) {
             VStack(spacing: 4) {
                 Image(systemName: npc.isUnknown ? "questionmark.circle" : npc.profession.icon)
-                    .font(.system(size: 24))
+                    .font(.system(size: 16))
                     .foregroundColor(.white)
                 
                 if !npc.isUnknown {
                     Text(npc.name)
-                        .font(Theme.bodyFont)
+                        .font(Theme.smallFont)
                         .foregroundColor(.white)
                         .lineLimit(1)
                 }
             }
-            .frame(width: 40, height: 40)
-            .padding(8)
+            .frame(width: 50, height: 50)
+            .padding(0)
             .background(isSelected ? Theme.accentColor.opacity(0.5) : Color.black.opacity(0.5))
             .cornerRadius(8)
         }

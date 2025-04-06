@@ -113,7 +113,7 @@ class GameStateService : ObservableObject, GameService{
         }
     }
     
-    private func handleTimeAdvanced() {
+    func handleTimeAdvanced() {
         guard let scene = currentScene else { return }
         
         // Update npcs

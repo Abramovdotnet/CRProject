@@ -52,10 +52,10 @@ struct ChatMessageView: View {
     var body: some View {
         HStack(alignment: .top) {
             Text(message.timestampHourString)
-                .font(Theme.bodyFont)
+                .font(Theme.smallFont)
             
             Text(message.message)
-                .font(Theme.bodyFont)
+                .font(Theme.smallFont)
                 .foregroundColor(typeColor.opacity(0.9))
         }
         .opacity(isAppearing ? 1 : 0)
@@ -76,10 +76,10 @@ struct ChatHistoryView: View {
             // Header with clear button
             HStack {
                 Text("History")
-                    .font(Theme.captionFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(Theme.textColor)
             }
-            .padding(.top, 8)
+            .padding(.top, 4)
             .padding(.horizontal, 8)
             
             // Messages List
@@ -110,8 +110,8 @@ struct ChatHistoryView: View {
                 }
             }
         }
-        .padding(.bottom, 8)
-        .padding(.top, 8)
+        .padding(.bottom, 4)
+        .padding(.top, 4)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.black.opacity(0.5))

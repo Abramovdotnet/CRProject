@@ -23,21 +23,24 @@ struct SelectedNPCView: View {
             // NPC Info
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
-                    Text(npc.name)
-                        .font(Theme.bodyFont)
-                        .foregroundColor(.white)
+                    
+                    if !npc.isUnknown {
+                        Text(npc.name)
+                            .font(Theme.smallFont)
+                            .foregroundColor(.white)
+                    }
                     
                     Text("•")
                         .foregroundColor(.gray)
                     
                     Text(npc.isVampire ? "Vampire" : "Mortal")
-                        .font(Theme.bodyFont)
+                        .font(Theme.smallFont)
                         .foregroundColor(npc.isVampire ? .red : .white)
                 }
                 
                 if !npc.isUnknown {
                     Text("\(npc.sex), \(npc.profession)")
-                        .font(Theme.captionFont)
+                        .font(Theme.smallFont)
                         .foregroundColor(.gray)
                 }
             }
@@ -72,8 +75,13 @@ struct SelectedNPCView: View {
             }
         }
         .padding(.horizontal)
-        .frame(height: 50)
-        .background(Theme.backgroundColor)
+        .frame(height: 55)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.5))
+                .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
+                .opacity(0.9)
+        )
     }
 }
 
