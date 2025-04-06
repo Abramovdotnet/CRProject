@@ -117,9 +117,9 @@ struct MainSceneView: View {
                                                 .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                 
                                                 Image(systemName: "forward.fill")
-                                                    .font(Theme.headingFont)
+                                                    .font(Theme.bodyFont)
                                                     .foregroundColor(Theme.textColor)
-                                                    .padding(.top, 3)
+                                                    .padding(.top, 1)
                                             }
                                         }
                                         VStack {
@@ -167,9 +167,9 @@ struct MainSceneView: View {
                                             .shadow(color: .black, radius: 3, x: 0, y: 2)
                                             
                                             Image(systemName: "hourglass.bottomhalf.fill")
-                                                .font(Theme.headingFont)
+                                                .font(Theme.bodyFont)
                                                 .foregroundColor(Theme.textColor)
-                                                .padding(.top, 3)
+                                                .padding(.top, 1)
                                         }
                                         
                                         VStack {
@@ -218,9 +218,9 @@ struct MainSceneView: View {
                                             .shadow(color: .black, radius: 3, x: 0, y: 2)
                                             
                                             Image(systemName: "map.fill")
-                                                .font(Theme.headingFont)
+                                                .font(Theme.bodyFont)
                                                 .foregroundColor(Theme.textColor)
-                                                .padding(.top, 3)
+                                                .padding(.top, 1)
                                         }
                                     }
                                 }

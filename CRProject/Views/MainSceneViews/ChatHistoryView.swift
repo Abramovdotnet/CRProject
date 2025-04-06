@@ -79,7 +79,6 @@ struct ChatHistoryView: View {
                     .font(Theme.bodyFont)
                     .foregroundColor(Theme.textColor)
             }
-            .padding(.top, 4)
             .padding(.horizontal, 8)
             
             // Messages List

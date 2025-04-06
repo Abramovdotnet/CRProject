@@ -5,66 +5,67 @@ struct SelectedNPCView: View {
     var onAction: (NPCAction) -> Void
     
     var body: some View {
-        HStack(spacing: 12) {
-            // NPC Icon and Status
-            VStack(spacing: 4) {
+        HStack(spacing: 16) {
+            // Left Section: NPC Status
+            VStack(alignment: .center, spacing: 4) {
                 HStack {
                     if !npc.isUnknown {
-                        Text("\(npc.sex.rawValue.capitalized), \(npc.profession)")
-                            .font(Theme.smallFont)
-                            .foregroundColor(npc.profession.color)
-                        Image(systemName: npc.profession.icon)
-                            .font(Theme.smallFont)
-                            .foregroundColor(npc.profession.color)
+                        HStack(spacing: 4) {
+                            Image(systemName: npc.sex == .female ? "figure.dress" : "figure.wave")
+                                .font(Theme.bodyFont)
+                                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                            
+                            Image(systemName: npc.profession.icon)
+                                .font(Theme.bodyFont)
+                                .foregroundColor(npc.profession.color)
+                        }
                     }
-                }
-                
-                if npc.isSleeping {
-                    Image(systemName: "moon.fill")
-                        .foregroundColor(.blue)
-                        .font(.system(size: 12))
+                    if npc.isSleeping {
+                        Image(systemName: "moon.zzz.fill")
+                            .foregroundColor(.blue)
+                            .font(Theme.bodyFont)
+                    }
                 }
             }
-            .frame(width: 40)
+            .frame(width: 50)
             
-            // NPC Info
+            // Middle Section: NPC Info
             VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    
+                if !npc.isUnknown {
+                    Text(npc.name)
+                        .font(Theme.bodyFont)
+                        .foregroundColor(.white)
+                        .lineLimit(1)
+                }
+                
+                HStack(spacing: 6) {
                     if !npc.isUnknown {
-                        Text(npc.name)
+                        Text("\(npc.profession.rawValue)")
                             .font(Theme.bodyFont)
-                            .foregroundColor(.white)
+                            .foregroundColor(npc.profession.color)
+                            .lineLimit(1)
                     }
                     
-                    Text("•")
-                        .foregroundColor(.gray)
-                                    
-                    HStack {
-                        Text("Status:")
-                            .font(Theme.bodyFont)
-                            .foregroundColor(Theme.textColor)
-
+                    Circle()
+                        .fill(Color.gray.opacity(0.5))
+                        .frame(width: 4, height: 4)
+                    
+                    HStack(spacing: 4) {
                         Image(systemName: "waveform.path.ecg")
                             .font(Theme.bodyFont)
                             .foregroundColor(npc.isAlive ? .green : Theme.primaryColor)
-                    }
-                    
-                    if !npc.isUnknown {
-                        HStack {
-                            Text(npc.isVampire ? "Vampire" : "Mortal")
-                                .font(Theme.bodyFont)
-                                .foregroundColor(npc.isVampire ? Theme.primaryColor : .green)
-                        }
+                        
+                        Text(npc.isVampire ? "Vampire" : "Mortal")
+                            .font(Theme.bodyFont)
+                            .foregroundColor(npc.isVampire ? Theme.primaryColor : .green)
                     }
                 }
-
             }
             
             Spacer()
             
-            // Action Buttons
-            HStack(spacing: 16) {
+            // Right Section: Action Buttons
+            HStack(spacing: 20) {
                 if npc.isUnknown {
                     ActionButton(
                         icon: "magnifyingglass",
@@ -77,7 +78,7 @@ struct SelectedNPCView: View {
                 
                 if npc.isAlive {
                     ActionButton(
-                        icon: "bubble.left",
+                        icon: "bubble.left.fill",
                         action: {
                             onAction(.startConversation(npc))
                             VibrationService.shared.lightTap()
@@ -92,9 +93,7 @@ struct SelectedNPCView: View {
                                 VibrationService.shared.regularTap()
                             },
                             color: Theme.primaryColor)
-                    }
-                    
-                    if !npc.isVampire {
+                        
                         ActionButton(
                             icon: "drop.fill",
                             action: {
@@ -106,13 +105,12 @@ struct SelectedNPCView: View {
                 }
             }
         }
-        .padding(.horizontal)
-        .frame(height: 55)
+        .padding(.horizontal, 16)
+        .frame(height: 60)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.black.opacity(0.5))
                 .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
-                .opacity(0.9)
         )
     }
 }
@@ -125,7 +123,7 @@ private struct ActionButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: icon)
-                .font(.system(size: 18))
+                .font(Theme.bodyFont)
                 .foregroundColor(color)
         }
     }
