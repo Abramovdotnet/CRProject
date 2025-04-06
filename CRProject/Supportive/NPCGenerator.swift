@@ -90,8 +90,8 @@ class NPCGenerator {
         
         for _ in 0..<count {
             let sex = Bool.random() ? "male" : "female"
-            let firstName = "Saren"
-            let lastName = "Crowd"
+            let firstName = sex == "male" ? maleFirstNames.randomElement()! : femaleFirstNames.randomElement()!
+            let lastName = lastNames.randomElement()!
             let profession = professions.randomElement()!
             
             // Determine if this NPC should be a vampire
@@ -138,3 +138,25 @@ class NPCGenerator {
 
 // Call saveToFile when the script is run
 //NPCGenerator.saveToFile()
+
+#if DEBUG
+// Only run this in debug builds
+func generateNPCs() {
+    let npcs = NPCGenerator.generateNPCs(count: 500)
+    let jsonData = try! JSONSerialization.data(withJSONObject: npcs, options: .prettyPrinted)
+    
+    // Create Data directory if it doesn't exist
+    let fileManager = FileManager.default
+    let dataDirectory = "CRProject/Data"
+    if !fileManager.fileExists(atPath: dataDirectory) {
+        try! fileManager.createDirectory(atPath: dataDirectory, withIntermediateDirectories: true)
+    }
+    
+    let fileURL = URL(fileURLWithPath: "CRProject/Data/NPCs.json")
+    try! jsonData.write(to: fileURL)
+    DebugLogService.shared.log("Generated \(npcs.count) NPCs and saved to NPCs.json", category: "NPC")
+}
+
+// Uncomment to generate NPCs
+// generateNPCs()
+#endif

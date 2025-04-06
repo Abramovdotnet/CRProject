@@ -105,7 +105,7 @@ class MainSceneViewModel: ObservableObject {
         
         // Create initial scene using LocationReader
         do {
-            guard let initialSceneId = UUID(uuidString: "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a") else {
+            guard let initialSceneId = UUID(uuidString: "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d") else {
                 DebugLogService.shared.log("Error: Invalid initial scene ID", category: "Error")
                 return
             }

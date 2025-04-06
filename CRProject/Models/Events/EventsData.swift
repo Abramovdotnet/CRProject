@@ -85,7 +85,7 @@ public struct EventsData: Codable {
     public let events: [EventTemplate]
     
     public static func load() -> EventsData? {
-        if let url = Bundle.main.url(forResource: "GeneralEvents", withExtension: "json"),
+        if let url = Bundle.main.url(forResource: "Events", withExtension: "json"),
            let data = try? Data(contentsOf: url) {
             do {
                 let eventsData = try JSONDecoder().decode(EventsData.self, from: data)

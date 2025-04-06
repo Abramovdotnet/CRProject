@@ -78,8 +78,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
+            startingLineNumber = "26"
+            endingLineNumber = "26"
             landmarkName = "init(gameTime:vampireNatureRevealService:gameEventsBus:locationReader:vampireReader:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -302,8 +302,8 @@
             filePath = "CRProject/Supportive/NPCReader.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "39"
-            endingLineNumber = "39"
+            startingLineNumber = "52"
+            endingLineNumber = "52"
             landmarkName = "createNPC(from:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -524,8 +524,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "104"
-            endingLineNumber = "104"
+            startingLineNumber = "99"
+            endingLineNumber = "99"
             landmarkName = "updateRelatedLocations(for:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -588,41 +588,9 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "123"
-            endingLineNumber = "123"
+            startingLineNumber = "118"
+            endingLineNumber = "118"
             landmarkName = "handleTimeAdvanced()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "708D570A-FE62-484A-82FE-5D4A3DA56C95"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/Services/LocationEventsService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "39"
-            endingLineNumber = "39"
-            landmarkName = "loadEvents()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "17B64396-8CF8-4546-A90B-16D9EDB57787"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/Services/LocationEventsService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "24"
-            endingLineNumber = "24"
-            landmarkName = "loadEvents()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -645,70 +613,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A33199B2-9C16-48C5-B795-C3EF4177B450"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/Services/LocationEventsService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "23"
-            endingLineNumber = "23"
-            landmarkName = "loadEvents()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "DC2B47F8-1EEE-4EBB-9B6D-BCC8D097D1DD"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/Services/LocationEventsService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "40"
-            endingLineNumber = "40"
-            landmarkName = "loadEvents()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "1E373276-5532-4CB0-B7DD-A480A4C92476"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/Services/LocationEventsService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "32"
-            endingLineNumber = "32"
-            landmarkName = "loadEvents()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "52C59F00-DB37-4136-A8F3-547CDD721A2B"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/Services/LocationEventsService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "48"
-            endingLineNumber = "48"
-            landmarkName = "loadEvents()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "512BF81A-9746-43FC-8012-2F79491900D5"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -716,8 +620,8 @@
             filePath = "CRProject/Services/LocationEventsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "58"
-            endingLineNumber = "58"
+            startingLineNumber = "30"
+            endingLineNumber = "30"
             landmarkName = "LocationEventsService"
             landmarkType = "3">
          </BreakpointContent>
@@ -732,8 +636,8 @@
             filePath = "CRProject/Services/LocationEventsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "62"
-            endingLineNumber = "62"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
             landmarkName = "hasNPCsChanged(scene:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -748,8 +652,8 @@
             filePath = "CRProject/Services/LocationEventsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "111"
-            endingLineNumber = "111"
+            startingLineNumber = "70"
+            endingLineNumber = "70"
             landmarkName = "getMatchingEvents(scene:isNight:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -764,8 +668,8 @@
             filePath = "CRProject/Services/LocationEventsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "114"
-            endingLineNumber = "114"
+            startingLineNumber = "73"
+            endingLineNumber = "73"
             landmarkName = "getMatchingEvents(scene:isNight:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -828,8 +732,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "105"
-            endingLineNumber = "105"
+            startingLineNumber = "100"
+            endingLineNumber = "100"
             landmarkName = "updateRelatedLocations(for:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1004,8 +908,8 @@
             filePath = "CRProject/Services/LocationEventsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "56"
-            endingLineNumber = "56"
+            startingLineNumber = "28"
+            endingLineNumber = "28"
             landmarkName = "loadEvents()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1020,8 +924,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "135"
-            endingLineNumber = "135"
+            startingLineNumber = "130"
+            endingLineNumber = "130"
             landmarkName = "handleTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1052,8 +956,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "69"
-            endingLineNumber = "69"
+            startingLineNumber = "64"
+            endingLineNumber = "64"
             landmarkName = "init(gameTime:vampireNatureRevealService:gameEventsBus:locationReader:vampireReader:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1068,8 +972,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "73"
-            endingLineNumber = "73"
+            startingLineNumber = "68"
+            endingLineNumber = "68"
             landmarkName = "setPlayer(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1100,8 +1004,8 @@
             filePath = "CRProject/Services/LocationEventsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "57"
-            endingLineNumber = "57"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
             landmarkName = "loadEvents()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1116,8 +1020,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "138"
-            endingLineNumber = "138"
+            startingLineNumber = "133"
+            endingLineNumber = "133"
             landmarkName = "handleTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1132,8 +1036,8 @@
             filePath = "CRProject/Services/LocationEventsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "69"
-            endingLineNumber = "69"
+            startingLineNumber = "41"
+            endingLineNumber = "41"
             landmarkName = "hasNPCsChanged(scene:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1148,8 +1052,8 @@
             filePath = "CRProject/Services/LocationEventsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "72"
-            endingLineNumber = "72"
+            startingLineNumber = "44"
+            endingLineNumber = "44"
             landmarkName = "hasNPCsChanged(scene:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1164,8 +1068,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "125"
-            endingLineNumber = "125"
+            startingLineNumber = "120"
+            endingLineNumber = "120"
             landmarkName = "handleTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1180,8 +1084,8 @@
             filePath = "CRProject/Services/NPCPopulationService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "41"
-            endingLineNumber = "41"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
             landmarkName = "sceneProfessionPriorities"
             landmarkType = "24">
          </BreakpointContent>
@@ -1196,8 +1100,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
+            startingLineNumber = "121"
+            endingLineNumber = "121"
             landmarkName = "handleTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1205,15 +1109,79 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "AEA8F904-3F6A-4EAC-853B-651C8692A335"
+            uuid = "9AF2447E-EFA7-4589-8170-9890E02FAA04"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/LocationEventsService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "203"
+            endingLineNumber = "203"
+            landmarkName = "generateEvent(scene:isNight:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "5DF19585-3F8E-417B-9CE0-24889CB104BB"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/LocationEventsService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "54"
+            endingLineNumber = "54"
+            landmarkName = "getMatchingEvents(scene:isNight:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "22FEF058-9D5F-4227-9D95-0CF9C0D956DC"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Models/Events/EventsData.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
+            landmarkName = "load()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "83C2F325-5929-4068-A793-9BF371DB23BA"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/LocationEventsService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "20"
+            endingLineNumber = "20"
+            landmarkName = "loadEvents()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "71369E2A-5AD6-46D5-96E3-DBA16DDDA868"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CRProject/Services/NPCPopulationService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "87"
-            endingLineNumber = "87"
+            startingLineNumber = "75"
+            endingLineNumber = "75"
             landmarkName = "updatePopulation(for:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1221,32 +1189,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "1E84B158-379E-4644-9F1A-D8CA024977CF"
+            uuid = "49D844DD-7B49-4892-B6D7-5121F7FF7295"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CRProject/Services/NPCPopulationService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "88"
-            endingLineNumber = "88"
-            landmarkName = "updatePopulation(for:)"
+            startingLineNumber = "217"
+            endingLineNumber = "217"
+            landmarkName = "isNPCAppropriateForScene(_:sceneType:priorities:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "A83834F6-0F1C-4D14-8DA4-F035913CABB4"
+            uuid = "19AED277-7643-42DD-80C8-1D49B2044DB4"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CRProject/Services/NPCPopulationService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "98"
-            endingLineNumber = "98"
-            landmarkName = "updatePopulation(for:)"
+            startingLineNumber = "202"
+            endingLineNumber = "202"
+            landmarkName = "adjustPopulationForScene(_:sceneType:priorities:availableNPCs:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

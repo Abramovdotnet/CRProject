@@ -17,39 +17,11 @@ class LocationEventsService : GameService {
     
     private func loadEvents() {
         do {
-            // First try to load from main bundle
-            if let url = Bundle.main.url(forResource: "GeneralEvents", withExtension: "json") {
-                let data = try Data(contentsOf: url)
-                let decoder = JSONDecoder()
-                let json = try decoder.decode(EventsData.self, from: data)
-                events = json.events
+            var eventsData = EventsData.load()?.events
+            if let eventsData = eventsData {
+                events = eventsData
                 return
             }
-            
-            // If not found in main bundle, try to load from the Resources directory
-            let fileManager = FileManager.default
-            let currentDirectory = fileManager.currentDirectoryPath
-            let resourcesPath = (currentDirectory as NSString).appendingPathComponent("CRProject/Resources/GeneralEvents.json")
-            
-            if fileManager.fileExists(atPath: resourcesPath) {
-                let data = try Data(contentsOf: URL(fileURLWithPath: resourcesPath))
-                let decoder = JSONDecoder()
-                let json = try decoder.decode(EventsData.self, from: data)
-                events = json.events
-                return
-            }
-            
-            // If still not found, try to load from the project directory
-            let projectPath = (currentDirectory as NSString).appendingPathComponent("GeneralEvents.json")
-            if fileManager.fileExists(atPath: projectPath) {
-                let data = try Data(contentsOf: URL(fileURLWithPath: projectPath))
-                let decoder = JSONDecoder()
-                let json = try decoder.decode(EventsData.self, from: data)
-                events = json.events
-                return
-            }
-            
-            DebugLogService.shared.log("Could not find GeneralEvents.json in any location", category: "Error")
         } catch {
             DebugLogService.shared.log("Error loading events: \(error.localizedDescription)", category: "Error")
             DebugLogService.shared.log("Error details: \(error)", category: "Error")
@@ -78,31 +50,18 @@ class LocationEventsService : GameService {
         return scene.getCharacters().contains { $0.isVampire }
     }
     
-    private func getLocationType(scene: Scene) -> String {
-        // This is a simplified version. You should implement proper location type detection
-        if scene.name.lowercased().contains("tavern") {
-            return "tavern"
-        } else if scene.name.lowercased().contains("castle") {
-            return "castle"
-        } else if scene.name.lowercased().contains("market") {
-            return "market"
-        } else if scene.name.lowercased().contains("blacksmith") {
-            return "blacksmith"
-        } else {
-            return "street"
-        }
-    }
-    
     private func getMatchingEvents(scene: Scene, isNight: Bool) -> [EventTemplate] {
         let awarenessLevel = vampireNatureRevealService?.getAwareness(for: scene.id) ?? 0
+        
+        print(events.count)
         
         // If there are dead NPCs, prioritize death-related events
         if !deadNPCs.isEmpty {
             return events.filter { event in
                 // Basic conditions
                 guard event.time == (isNight ? "night" : "day") &&
-                        event.locationType == scene.sceneType.rawValue &&
-                        event.sceneType == scene.sceneType.rawValue &&
+                        event.locationType.lowercased() == scene.sceneType.rawValue.lowercased() &&
+                        event.sceneType.lowercased() == scene.sceneType.rawValue.lowercased() &&
                       event.isIndoors == scene.isIndoor else {
                     return false
                 }
@@ -196,8 +155,8 @@ class LocationEventsService : GameService {
             }
             
             // Check location type
-            let currentLocationType = getLocationType(scene: scene)
-            guard event.locationType == currentLocationType else {
+            let currentLocationType = scene.sceneType.rawValue.lowercased()
+            guard event.locationType.lowercased() == currentLocationType else {
                 DebugLogService.shared.log("Location type mismatch: Event requires \(event.locationType), current type is \(currentLocationType)", category: "Event")
                 return false
             }
@@ -257,7 +216,7 @@ class LocationEventsService : GameService {
         // Replace NPC placeholders with actual names
         for i in 1...3 {
             if i <= npcs.count {
-                eventText = eventText.replacingOccurrences(of: "{NPC\(i)}", with: npcs[i-1].name)
+                eventText = eventText.replacingOccurrences(of: "{NPC\(i)}", with: npcs[i-1].isUnknown ? npcs[i-1].profession.rawValue.lowercased() : npcs[i-1].name)
             }
         }
         

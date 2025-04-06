@@ -4,6 +4,7 @@ import Combine
 class NPCPopulationService: GameService {
     private let gameStateService: GameStateService
     private let gameEventsBus: GameEventsBusService
+    private var locationEventsService: LocationEventsService = DependencyManager.shared.resolve()
     private var cancellables = Set<AnyCancellable>()
     private var eventsData: EventsData?
     
@@ -70,19 +71,6 @@ class NPCPopulationService: GameService {
         }
     }
     
-    private func updatePopulationForEvent(_ event: EventTemplate, in scene: Scene) {
-        let priorities = sceneProfessionPriorities[scene.sceneType] ?? []
-        let requiredCount = Int.random(in: event.minNPCs...event.maxNPCs)
-        let availableNPCs = NPCReader.getRandomNPCs(count: maxPopulation)
-            .filter { npc in
-                event.requiredProfessions.contains(npc.profession.rawValue) &&
-                event.requiredAges[0]...event.requiredAges[1] ~= npc.age
-            }
-        
-        let newPopulation = Array(availableNPCs.prefix(requiredCount))
-        scene.setCharacters(newPopulation)
-    }
-    
     func updatePopulation(for scene: Scene) {
         let isNewScene = lastSceneId != scene.id
         
@@ -91,29 +79,29 @@ class NPCPopulationService: GameService {
         // Store old population for comparison
         let oldPopulation = scene.getCharacters()
         
-        // Get relevant events for the current time and scene
-        let timeOfDay = gameStateService.isNightTime ? "night" : "day"
-        let relevantEvents = getRelevantEvents(for: scene, time: timeOfDay)
-        
         let priorities = sceneProfessionPriorities[scene.sceneType] ?? []
-        let availableNPCs = NPCReader.getRandomNPCs(count: maxPopulation)
+        let availableNPCs = NPCReader.getNPCs()
         let adjustedPopulation = adjustPopulationForScene(oldPopulation, sceneType: scene.sceneType, priorities: priorities, availableNPCs: availableNPCs)
         scene.setCharacters(adjustedPopulation)
         
         // Compare populations and generate movement events
         let newPopulation = scene.getCharacters()
-        handlePopulationChanges(isNewScene: isNewScene, oldPopulation: oldPopulation, newPopulation: newPopulation, scene: scene, relevantEvents: relevantEvents)
+        handlePopulationChanges(isNewScene: isNewScene, oldPopulation: oldPopulation, newPopulation: newPopulation, scene: scene)
         
         // Update tracking state
         lastSceneId = scene.id
         
-        DebugLogService.shared.log("Population updated for scene: \(scene.name)", category: "NPC")
+        DebugLogService.shared.log("Population updated for scene: \(scene.name). Current count: \(newPopulation.count)", category: "NPC")
         
-        // Generate and broadcast a location event
-        gameStateService.generateLocationEvent()
+        // Check for location events
+        let event = locationEventsService.generateEvent(scene: scene, isNight: gameStateService.isNightTime)
+        
+        if let event = event {
+            locationEventsService.broadcastEvent(event)
+        }
     }
     
-    private func handlePopulationChanges(isNewScene: Bool, oldPopulation: [any Character], newPopulation: [any Character], scene: Scene, relevantEvents: [EventTemplate]) {
+    private func handlePopulationChanges(isNewScene: Bool, oldPopulation: [any Character], newPopulation: [any Character], scene: Scene) {
         let oldNPCs = Set(oldPopulation.compactMap { $0 as? NPC }.map { $0.id })
         let newNPCs = Set(newPopulation.compactMap { $0 as? NPC }.map { $0.id })
         
@@ -122,8 +110,12 @@ class NPCPopulationService: GameService {
             let leftNPCs = oldNPCs.subtracting(newNPCs)
             for npcId in leftNPCs {
                 if let npc = oldPopulation.first(where: { ($0 as? NPC)?.id == npcId }) as? NPC {
-                    let eventText = generateDepartureEvent(npc: npc, scene: scene, event: relevantEvents.first)
-                    gameEventsBus.addSystemMessage(eventText)
+                    
+                    if !npc.isUnknown {
+                        let eventText = generateProfessionDeparture(npc: npc, scene: scene)
+                        let icon = "←🚶‍♂️ " // Walk-out icon
+                        gameEventsBus.addCommonMessage(message: "\(icon)\(eventText)")
+                    }
                 }
             }
             
@@ -131,17 +123,19 @@ class NPCPopulationService: GameService {
             let arrivedNPCs = newNPCs.subtracting(oldNPCs)
             for npcId in arrivedNPCs {
                 if let npc = newPopulation.first(where: { ($0 as? NPC)?.id == npcId }) as? NPC {
-                    let eventText = generateArrivalEvent(npc: npc, scene: scene, event: relevantEvents.first)
-                    gameEventsBus.addCommonMessage(message: eventText)
+                    
+                    if !npc.isUnknown {
+                        let eventText = generateProfessionArrival(npc: npc, scene: scene)
+                        let icon = "🚶‍♂️→ " // Walk-in icon
+                        gameEventsBus.addCommonMessage(message: "\(icon)\(eventText)")
+                    }
                 }
             }
         }
     }
     
-    private func generateArrivalEvent(npc: NPC, scene: Scene, event: EventTemplate?) -> String {
-        if let event = event, event.npcChangeRequired {
-            // Use event-based contextual messages
-            switch npc.profession {
+    private func generateProfessionArrival(npc: NPC, scene: Scene) -> String {
+        switch npc.profession {
             case .merchant:
                 return "\(npc.name) arrives at \(scene.name) to set up their trade."
             case .guardman:
@@ -152,17 +146,11 @@ class NPCPopulationService: GameService {
                 return "\(npc.name) arrives to work at \(scene.name)."
             default:
                 return "\(npc.name) has entered \(scene.name)."
-            }
-        } else {
-            // Use simple arrival message
-            return "\(npc.name) has entered \(scene.name)."
         }
     }
     
-    private func generateDepartureEvent(npc: NPC, scene: Scene, event: EventTemplate?) -> String {
-        if let event = event, event.npcChangeRequired {
-            // Use event-based contextual messages
-            switch npc.profession {
+    private func generateProfessionDeparture(npc: NPC, scene: Scene) -> String {
+        switch npc.profession {
             case .merchant:
                 return "\(npc.name) packs up their goods and leaves \(scene.name)."
             case .guardman:
@@ -173,10 +161,6 @@ class NPCPopulationService: GameService {
                 return "\(npc.name) finishes their shift at \(scene.name)."
             default:
                 return "\(npc.name) has left \(scene.name)."
-            }
-        } else {
-            // Use simple departure message
-            return "\(npc.name) has left \(scene.name)."
         }
     }
     
@@ -199,8 +183,7 @@ class NPCPopulationService: GameService {
         
         // 2. Calculate how many new NPCs we can add
         let currentCount = newPopulation.count
-        let targetCount = max(minPopulation, min(maxPopulation, 
-            isNightTime ? Int(Float(maxPopulation) * 0.6) : maxPopulation))
+        let targetCount =  isNightTime ? Int(Float(minPopulation) * 2) : Int(Float(minPopulation) * 3)
         let spaceForNew = targetCount - currentCount
         
         // 3. Add new NPCs that match the scene type
@@ -215,7 +198,7 @@ class NPCPopulationService: GameService {
             
             // Add priority NPCs first, then others
             var newNPCs: [NPC] = []
-            newNPCs += Array(priorityNPCs.prefix(max(1, spaceForNew / 2)))
+            newNPCs += Array(priorityNPCs.prefix(max(1, spaceForNew)))
             newNPCs += Array(otherNPCs.prefix(spaceForNew - newNPCs.count))
             
             // Randomly decide which new NPCs actually enter (simulating natural flow)

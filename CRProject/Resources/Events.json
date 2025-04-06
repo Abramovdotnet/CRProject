@@ -241,7 +241,7 @@
             "template": "The forge glows late into the night as {NPC1} works on an urgent order while {NPC2} assists."
         },
         {
-            "id": "day_street_merchant",
+            "id": "day_district_merchant",
             "time": "day",
             "minNPCs": 6,
             "maxNPCs": 20,
@@ -254,14 +254,14 @@
             "isIndoors": false,
             "minAwareness": 0,
             "maxAwareness": 100,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": false,
             "vampirePresence": "optional",
             "template": "A traveling merchant has set up shop. {NPC1} displays their wares while {NPC2} and {NPC3} browse curiously."
         },
         {
-            "id": "night_street_patrol",
+            "id": "night_district_patrol",
             "time": "night",
             "minNPCs": 3,
             "maxNPCs": 10,
@@ -274,8 +274,8 @@
             "isIndoors": false,
             "minAwareness": 0,
             "maxAwareness": 100,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": false,
             "vampirePresence": "optional",
             "template": "The night watch makes their rounds. {NPC1} leads the patrol while {NPC2} checks the shadows."
@@ -581,7 +581,7 @@
             "template": "{NPC1} works on a mysterious weapon in secret, while {NPC2} ensures no one is watching."
         },
         {
-            "id": "day_street_performer",
+            "id": "day_district_performer",
             "time": "day",
             "minNPCs": 8,
             "maxNPCs": 20,
@@ -594,14 +594,14 @@
             "isIndoors": false,
             "minAwareness": 0,
             "maxAwareness": 100,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": true,
             "vampirePresence": "optional",
-            "template": "{NPC1} performs street magic while {NPC2} and {NPC3} gather a crowd of onlookers."
+            "template": "{NPC1} performs district magic while {NPC2} and {NPC3} gather a crowd of onlookers."
         },
         {
-            "id": "night_street_chase",
+            "id": "night_district_chase",
             "time": "night",
             "minNPCs": 4,
             "maxNPCs": 10,
@@ -614,11 +614,11 @@
             "isIndoors": false,
             "minAwareness": 40,
             "maxAwareness": 80,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": true,
             "vampirePresence": "optional",
-            "template": "{NPC1} chases a suspicious figure through the streets while {NPC2} and {NPC3} try to cut them off."
+            "template": "{NPC1} chases a suspicious figure through the districts while {NPC2} and {NPC3} try to cut them off."
         },
         {
             "id": "day_tavern_dispute",
@@ -781,7 +781,7 @@
             "template": "{NPC1} repairs damaged guard equipment while {NPC2} waits impatiently for their sword."
         },
         {
-            "id": "day_street_protest",
+            "id": "day_district_protest",
             "time": "day",
             "minNPCs": 10,
             "maxNPCs": 25,
@@ -794,14 +794,14 @@
             "isIndoors": false,
             "minAwareness": 40,
             "maxAwareness": 80,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": true,
             "vampirePresence": "optional",
             "template": "{NPC1} leads a crowd protesting high taxes, while {NPC2} and {NPC3} maintain order."
         },
         {
-            "id": "night_street_cult",
+            "id": "night_district_cult",
             "time": "night",
             "minNPCs": 5,
             "maxNPCs": 12,
@@ -814,8 +814,8 @@
             "isIndoors": false,
             "minAwareness": 70,
             "maxAwareness": 100,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": false,
             "vampirePresence": "required",
             "template": "Hooded figures ({NPC1} and {NPC2}) conduct a secret meeting, while {NPC3} distributes mysterious pamphlets."
@@ -1001,7 +1001,7 @@
             "template": "A mysterious client ({NPC1}) commissions silver weapons while {NPC2} works nervously under their gaze."
         },
         {
-            "id": "day_street_execution",
+            "id": "day_district_execution",
             "time": "day",
             "minNPCs": 12,
             "maxNPCs": 30,
@@ -1014,14 +1014,14 @@
             "isIndoors": false,
             "minAwareness": 40,
             "maxAwareness": 80,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": true,
             "vampirePresence": "optional",
             "template": "A public execution is prepared. {NPC1} reads the charges while {NPC2} and {NPC3} maintain crowd control."
         },
         {
-            "id": "night_street_vampire",
+            "id": "night_district_vampire",
             "time": "night",
             "minNPCs": 4,
             "maxNPCs": 8,
@@ -1034,8 +1034,8 @@
             "isIndoors": false,
             "minAwareness": 70,
             "maxAwareness": 100,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": false,
             "vampirePresence": "required",
             "template": "A vampire ({NPC1}) stalks their prey while {NPC2} and {NPC3} remain oblivious to the danger."
@@ -1085,7 +1085,7 @@
             "awarenessIncrease": 30
         },
         {
-            "id": "night_street_hunt",
+            "id": "night_district_hunt",
             "time": "night",
             "minNPCs": 5,
             "maxNPCs": 15,
@@ -1097,10 +1097,10 @@
             "sleepingRequired": false,
             "minAwareness": 60,
             "maxAwareness": 100,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "isIndoors": false,
-            "template": "{NPC1}, a seasoned hunter, leads a group of guards through the streets. They carry silver weapons and holy symbols, determined to find the vampire responsible for recent deaths.",
+            "template": "{NPC1}, a seasoned hunter, leads a group of guards through the districts. They carry silver weapons and holy symbols, determined to find the vampire responsible for recent deaths.",
             "vampirePresence": "forbidden",
             "npcChangeRequired": false,
             "isDeathEvent": true,
@@ -1151,7 +1151,7 @@
             "awarenessIncrease": 15
         },
         {
-            "id": "day_street_funeral",
+            "id": "day_district_funeral",
             "time": "day",
             "minNPCs": 10,
             "maxNPCs": 25,
@@ -1164,11 +1164,11 @@
             "isIndoors": false,
             "minAwareness": 50,
             "maxAwareness": 90,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": true,
             "vampirePresence": "optional",
-            "template": "A funeral procession moves through the streets. {NPC1} leads prayers while {NPC2} and {NPC3} comfort the mourners."
+            "template": "A funeral procession moves through the districts. {NPC1} leads prayers while {NPC2} and {NPC3} comfort the mourners."
         },
         {
             "id": "night_tavern_warning",
@@ -1251,7 +1251,7 @@
             "template": "{NPC1} crafts silver crosses while {NPC2} discusses protection methods with {NPC3}."
         },
         {
-            "id": "night_street_sighting",
+            "id": "night_district_sighting",
             "time": "night",
             "minNPCs": 5,
             "maxNPCs": 12,
@@ -1264,8 +1264,8 @@
             "isIndoors": false,
             "minAwareness": 60,
             "maxAwareness": 100,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": true,
             "vampirePresence": "required",
             "template": "Panic erupts as {NPC1} points at a figure with inhuman speed disappearing over the rooftops. {NPC2} rallies the guards while {NPC3} hurries civilians indoors.",
@@ -1339,7 +1339,7 @@
             "awarenessIncrease": 20
         },
         {
-            "id": "night_street_militia",
+            "id": "night_district_militia",
             "time": "night",
             "minNPCs": 10,
             "maxNPCs": 25,
@@ -1352,8 +1352,8 @@
             "isIndoors": false,
             "minAwareness": 90,
             "maxAwareness": 100,
-            "locationType": "street",
-            "sceneType": "street",
+            "locationType": "district",
+            "sceneType": "district",
             "npcChangeRequired": true,
             "vampirePresence": "optional",
             "template": "A citizen militia forms after multiple vampire attacks. {NPC1} distributes silver weapons while {NPC2} and {NPC3} organize patrol routes.",

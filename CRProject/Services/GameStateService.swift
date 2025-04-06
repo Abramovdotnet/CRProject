@@ -20,7 +20,6 @@ class GameStateService : ObservableObject, GameService{
     private var cancellables = Set<AnyCancellable>()
     private let locationReader: LocationReader
     private let vampireReader: NPCReader
-    private var locationEventsService: LocationEventsService!
     private var npcPopulationService: NPCPopulationService!
     
     init(gameTime: GameTimeService, 
@@ -34,12 +33,8 @@ class GameStateService : ObservableObject, GameService{
         self.locationReader = locationReader
         self.vampireReader = vampireReader
         
-        // Initialize locationEventsService first
-        self.locationEventsService = LocationEventsService(
-            gameEventsBus: gameEventsBus,
-            vampireNatureRevealService: vampireNatureRevealService,
-            gameStateService: self
-        )
+        // Initialize LocationEventsService using DependencyManager
+        DependencyManager.shared.register(LocationEventsService(gameEventsBus: gameEventsBus, vampireNatureRevealService: vampireNatureRevealService, gameStateService: self))
         
         // Initialize NPCPopulationService using DependencyManager
         DependencyManager.shared.register(NPCPopulationService(gameStateService: self, gameEventsBus: gameEventsBus))
@@ -121,7 +116,7 @@ class GameStateService : ObservableObject, GameService{
     private func handleTimeAdvanced() {
         guard let scene = currentScene else { return }
         
-        // Load npcs
+        // Update npcs
         if let scene = currentScene {
             npcPopulationService.updatePopulation(for: scene )
         }
@@ -152,16 +147,12 @@ class GameStateService : ObservableObject, GameService{
         
         // Update NPC sleeping states
         updateNPCSleepingState(isNight: gameTime.isNightTime)
-        
-        // Generate and broadcast a location event
-        generateLocationEvent()
     }
     
     private func handleSafeTimeAdvanced() {
         guard let currentScene = currentScene else { return }
         
-        // Load npcs
-        npcPopulationService.start()
+        npcPopulationService.updatePopulation(for: currentScene )
         
         // Reduce awareness for nearest scenes by 5
         for scene in siblingScenes {
@@ -170,11 +161,6 @@ class GameStateService : ObservableObject, GameService{
         
         // Update NPC sleeping states
         updateNPCSleepingState(isNight: gameTime.isNightTime)
-        
-        // Generate and broadcast a location event
-        if let eventText = locationEventsService.generateEvent(scene: currentScene, isNight: gameTime.isNightTime) {
-            locationEventsService.broadcastEvent(eventText)
-        }
     }
     
     func updateNPCSleepingState(isNight: Bool) {
@@ -187,14 +173,6 @@ class GameStateService : ObservableObject, GameService{
                 npc.isSleeping = shouldSleep
                 DebugLogService.shared.log("\(npc.name) is sleeping: \(shouldSleep)", category: "NPC")
             }
-        }
-    }
-    
-    func generateLocationEvent() {
-        guard let currentScene = currentScene else { return }
-        
-        if let eventText = locationEventsService.generateEvent(scene: currentScene, isNight: gameTime.isNightTime) {
-            locationEventsService.broadcastEvent(eventText)
         }
     }
     

@@ -56,15 +56,15 @@ class EventValidationService {
     }
     
     private func isValidProfession(_ profession: String) -> Bool {
-        return Profession.allCases.map { $0.rawValue }.contains(profession)
+        return Profession.allCases.map { $0.rawValue.lowercased() }.contains(profession.lowercased())
     }
     
     private func isValidLocationType(_ locationType: String) -> Bool {
-        return SceneType.allCases.map { $0.rawValue }.contains(locationType)
+        return SceneType.allCases.map { $0.rawValue.lowercased() }.contains(locationType.lowercased())
     }
     
     private func isValidSceneType(_ sceneType: String) -> Bool {
-        return SceneType.allCases.map { $0.rawValue }.contains(sceneType)
+        return SceneType.allCases.map { $0.rawValue.lowercased() }.contains(sceneType.lowercased())
     }
     
     private func isValidTime(_ time: String) -> Bool {
