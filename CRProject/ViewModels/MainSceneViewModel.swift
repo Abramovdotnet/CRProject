@@ -318,6 +318,15 @@ class MainSceneViewModel: ObservableObject {
         return vampireNatureRevealService.getAwareness(for: scene.id)
     }
     
+    func canSkipTimeSafe() -> Bool {
+        let canSkipToNight = [.tavern, .inn, .cave, .forest, .house, .ruins]
+            .contains(currentScene?.sceneType)
+            && !isNight
+        && isAwarenessSafe
+        
+        return canSkipToNight
+    }
+    
     var isAwarenessSafe: Bool {
         guard let currentSceneId = currentScene?.id else { return true }
         return vampireNatureRevealService.getAwareness(for: currentSceneId) < 100

@@ -22,6 +22,8 @@ struct CRProjectApp: App {
             gameTime: dependencyManager.resolve(),
             vampireNatureRevealService: dependencyManager.resolve()
         ))
+        
+        VibrationService.shared.successVibration()
     }
     
     var body: some SwiftUI.Scene {

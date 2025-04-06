@@ -9,8 +9,8 @@ struct SelectedNPCView: View {
             // NPC Icon and Status
             VStack(spacing: 4) {
                 Image(systemName: npc.profession.icon)
-                    .font(.system(size: 24))
-                    .foregroundColor(.white)
+                    .font(.system(size: 16))
+                    .foregroundColor(npc.profession.color)
                 
                 if npc.isSleeping {
                     Image(systemName: "moon.fill")
@@ -26,22 +26,29 @@ struct SelectedNPCView: View {
                     
                     if !npc.isUnknown {
                         Text(npc.name)
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(.white)
                     }
                     
                     Text("•")
                         .foregroundColor(.gray)
-                    
-                    Text(npc.isVampire ? "Vampire" : "Mortal")
-                        .font(Theme.smallFont)
-                        .foregroundColor(npc.isVampire ? .red : .white)
+                                    
+                    HStack {
+                        Text("Status:")
+                            .font(Theme.bodyFont)
+                            .foregroundColor(Theme.textColor)
+
+                        Image(systemName: "waveform.path.ecg")
+                            .font(Theme.bodyFont)
+                            .foregroundColor(npc.isAlive ? .green : Theme.primaryColor)
+                    }
+
                 }
                 
                 if !npc.isUnknown {
-                    Text("\(npc.sex), \(npc.profession)")
+                    Text("\(npc.sex.rawValue.capitalized), \(npc.profession)")
                         .font(Theme.smallFont)
-                        .foregroundColor(.gray)
+                        .foregroundColor(npc.profession.color)
                 }
             }
             
@@ -50,26 +57,38 @@ struct SelectedNPCView: View {
             // Action Buttons
             HStack(spacing: 16) {
                 if npc.isUnknown {
-                    ActionButton(icon: "magnifyingglass") {
-                        onAction(.investigate(npc))
-                    }
+                    ActionButton(
+                        icon: "magnifyingglass",
+                        action: {
+                            onAction(.investigate(npc))
+                        },
+                        color: Theme.primaryColor)
                 }
                 
                 if npc.isAlive {
-                    ActionButton(icon: "bubble.left") {
-                        onAction(.startConversation(npc))
-                    }
+                    ActionButton(
+                        icon: "bubble.left",
+                        action: {
+                            onAction(.startConversation(npc))
+                        },
+                        color: Theme.textColor)
                     
                     if !npc.isUnknown && !npc.isVampire {
-                        ActionButton(icon: "drop.fill") {
-                            onAction(.feed(npc))
-                        }
+                        ActionButton(
+                            icon: "drop.halffull",
+                            action: {
+                                onAction(.feed(npc))
+                            },
+                            color: Theme.primaryColor)
                     }
                     
                     if !npc.isVampire {
-                        ActionButton(icon: "bolt.fill") {
-                            onAction(.drain(npc))
-                        }
+                        ActionButton(
+                            icon: "drop.fill",
+                            action: {
+                                onAction(.drain(npc))
+                            },
+                            color: Theme.primaryColor)
                     }
                 }
             }
@@ -88,12 +107,13 @@ struct SelectedNPCView: View {
 private struct ActionButton: View {
     let icon: String
     let action: () -> Void
+    let color: Color
     
     var body: some View {
         Button(action: action) {
             Image(systemName: icon)
                 .font(.system(size: 18))
-                .foregroundColor(.white)
+                .foregroundColor(color)
         }
     }
 } 

@@ -37,10 +37,10 @@ class FeedingService: GameService {
         // Increase awareness in the scene where feeding occurred
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: prey.isSleeping ? 10.0 : 40.0)
         
-        gameEventsBus.addEventMessage("Player consumed \(prey.name) blood.")
+        gameEventsBus.addDangerMessage(message: "Player consumed \(prey.name) blood.")
         
         if !prey.isAlive {
-            gameEventsBus.addWarningMessage("* I just killed \(prey.name)! Feel satisfied... *")
+            gameEventsBus.addDangerMessage(message: "* I just killed \(prey.name)! Feel satisfied... *")
         }
     }
     
@@ -56,7 +56,7 @@ class FeedingService: GameService {
         // Increase awareness more significantly when emptying blood
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: prey.isSleeping ? 20.0 : 50.0)
         
-        gameEventsBus.addEventMessage("Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
+        gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
     }
 }
 

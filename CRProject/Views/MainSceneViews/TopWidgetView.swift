@@ -23,10 +23,7 @@ struct TopWidgetView: View {
             
             Spacer()
             
-            if let scene = viewModel.currentScene,
-               scene.name.lowercased().contains("tavern"),
-               !viewModel.isNight,
-               viewModel.isAwarenessSafe {
+            if viewModel.canSkipTimeSafe() {
                 Button(action: {
                     viewModel.skipTimeToNight()
                 }) {

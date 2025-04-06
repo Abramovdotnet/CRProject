@@ -36,16 +36,19 @@ struct NPCGridButton: View {
     let onTap: () -> Void
     
     var body: some View {
-        Button(action: onTap) {
+        Button(action: {
+            VibrationService.shared.lightTap()
+            onTap()
+        }) {
             VStack(spacing: 4) {
-                Image(systemName: npc.isUnknown ? "questionmark.circle" : npc.profession.icon)
+                Image(systemName: npc.isUnknown ? "questionmark.circle" : "waveform.path.ecg")
                     .font(.system(size: 16))
-                    .foregroundColor(.white)
+                    .foregroundColor(iconColor())
                 
                 if !npc.isUnknown {
-                    Text(npc.name)
+                    Image(systemName: npc.sex == .female ? "igure.stand.dress" : "igure.stand.dress")
                         .font(Theme.smallFont)
-                        .foregroundColor(.white)
+                        .foregroundColor(Theme.textColor)
                         .lineLimit(1)
                 }
             }
@@ -55,5 +58,18 @@ struct NPCGridButton: View {
             .cornerRadius(8)
         }
         .buttonStyle(PlainButtonStyle())
+        .opacity(npc.isAlive ? 1 : 0.7)
+    }
+    
+    func iconColor() -> Color {
+        if npc.isAlive {
+            if isSelected {
+                return Theme.textColor
+            } else {
+                return npc.isUnknown ? .white : .green
+            }
+        } else {
+            return Theme.primaryColor
+        }
     }
 }

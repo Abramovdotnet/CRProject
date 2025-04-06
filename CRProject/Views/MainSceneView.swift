@@ -72,9 +72,6 @@ struct MainSceneView: View {
                                         
                                         VStack {
                                             ZStack {
-                                                Text("Spent time")
-                                                    .font(Theme.captionFont)
-                                                    .foregroundColor(Theme.textColor)
                                                 Button(action: {
                                                     withAnimation(.easeInOut(duration: 0.1)) {
                                                         watchScale = 0.9
@@ -91,12 +88,12 @@ struct MainSceneView: View {
                                                         Image("iconFrame")
                                                             .resizable()
                                                             .aspectRatio(contentMode: .fit)
-                                                            .frame(width: 60 * 1.1, height: 60 * 1.1)
+                                                            .frame(width: 50 * 1.1, height: 50 * 1.1)
                                                         
                                                         // 2. Background circle (middle layer)
                                                         Circle()
                                                             .fill(Color.black.opacity(0.7))
-                                                            .frame(width: 60 * 0.85, height: 60 * 0.85)
+                                                            .frame(width: 50 * 0.85, height: 50 * 0.85)
                                                             .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
                                                             .overlay(
                                                                 Circle()
@@ -115,13 +112,14 @@ struct MainSceneView: View {
                                                 .shadow(color: .black, radius: 3, x: 0, y: 2)
                                             }
                                             .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                            
+                                            Text("Wait")
+                                                .font(Theme.captionFont)
+                                                .foregroundColor(Theme.textColor)
                                         }
                                         
                                         VStack {
                                             ZStack {
-                                                Text("Spent time")
-                                                    .font(Theme.captionFont)
-                                                    .foregroundColor(Theme.textColor)
                                                 Button(action: {
                                                     withAnimation(.easeInOut(duration: 0.1)) {
                                                         compassScale = 0.9
@@ -138,12 +136,12 @@ struct MainSceneView: View {
                                                         Image("iconFrame")
                                                             .resizable()
                                                             .aspectRatio(contentMode: .fit)
-                                                            .frame(width: 60 * 1.1, height: 60 * 1.1)
+                                                            .frame(width: 50 * 1.1, height: 50 * 1.1)
                                                         
                                                         // 2. Background circle (middle layer)
                                                         Circle()
                                                             .fill(Color.black.opacity(0.7))
-                                                            .frame(width: 60 * 0.85, height: 60 * 0.85)
+                                                            .frame(width: 50 * 0.85, height: 50 * 0.85)
                                                             .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
                                                             .overlay(
                                                                 Circle()
@@ -163,6 +161,10 @@ struct MainSceneView: View {
                                                 .shadow(color: .black, radius: 3, x: 0, y: 2)
                                             }
                                             .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                            
+                                            Text("Map")
+                                                .font(Theme.captionFont)
+                                                .foregroundColor(Theme.textColor)
                                         }
                                     }
                                 }
