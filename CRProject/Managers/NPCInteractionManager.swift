@@ -13,4 +13,8 @@ class NPCInteractionManager: ObservableObject {
         currentNPC = npc
         isShowingDialogue = true
     }
-} 
+    
+    func select(with npc: NPC){
+        currentNPC = npc
+    }
+}

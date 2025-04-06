@@ -172,8 +172,11 @@ class NPCPopulationService: GameService {
         newPopulation = newPopulation.filter { character in
             guard let npc = character as? NPC else { return true }
             
+            // Dead NPCs never leave (automatically kept)
+            guard npc.isAlive else { return true }
+            
             // NPCs are more likely to leave at night
-            let baseLeaveChance = isNightTime ? 0.3 : 0.15
+            let baseLeaveChance = isNightTime ? 0.07 : 0.03
             // Priority NPCs are less likely to leave their posts
             let priorityMultiplier = priorities.contains(npc.profession) ? 0.5 : 1.0
             let finalLeaveChance = baseLeaveChance * priorityMultiplier
@@ -183,7 +186,7 @@ class NPCPopulationService: GameService {
         
         // 2. Calculate how many new NPCs we can add
         let currentCount = newPopulation.count
-        let targetCount =  isNightTime ? Int(Float(minPopulation) * 2) : Int(Float(minPopulation) * 3)
+        let targetCount =  isNightTime ? Int(Float(getTargetPopulationCount(for: sceneType)) * 2) : Int(Float(getTargetPopulationCount(for: sceneType)) * 3)
         let spaceForNew = targetCount - currentCount
         
         // 3. Add new NPCs that match the scene type
@@ -203,7 +206,7 @@ class NPCPopulationService: GameService {
             
             // Randomly decide which new NPCs actually enter (simulating natural flow)
             newNPCs = newNPCs.filter { _ in
-                let arrivalChance = isNightTime ? 0.4 : 0.7
+                let arrivalChance = isNightTime ? 0.1 : 0.05
                 return Double.random(in: 0...1) < arrivalChance
             }
             
@@ -248,9 +251,9 @@ class NPCPopulationService: GameService {
     private func getTargetPopulationCount(for sceneType: SceneType) -> Int {
         switch sceneType {
         case .tavern, .inn, .market, .district:
-            return Int.random(in: 5...maxPopulation)
+            return Int.random(in: 5...10)
         case .temple, .shrine, .monastery, .greatCathedral, .garrison, .guard_post, .blacksmith, .forge, .alchemistShop, .library, .archive:
-            return Int.random(in: 2...5)
+            return Int.random(in: 2...15)
         case .farm, .mill:
             return Int.random(in: 1...3)
         case .guild, .mages_guild, .thieves_guild, .fighters_guild:
@@ -258,7 +261,7 @@ class NPCPopulationService: GameService {
         case .residential, .house, .estate:
             return Int.random(in: 1...4)
         default:
-            return Int.random(in: 2...maxPopulation)
+            return Int.random(in: 2...10)
         }
     }
     

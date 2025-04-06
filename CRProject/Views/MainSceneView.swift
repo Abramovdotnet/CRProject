@@ -16,7 +16,7 @@ struct MainSceneView: View {
                     .ignoresSafeArea()
                     .onAppear {
                         let imageName = UIImage(named: viewModel.currentScene!.sceneType.rawValue) != nil ? 
-                            viewModel.currentScene!.sceneType.rawValue : "MainSceneBackground"
+                        viewModel.currentScene!.sceneType.rawValue : "MainSceneBackground"
                         DebugLogService.shared.log("Loading background: \(imageName)", category: "Scene")
                     }
                 
@@ -28,7 +28,7 @@ struct MainSceneView: View {
                     GeometryReader { geometry in
                         HStack(spacing: 20) {
                             // Left section: NPC Wheel (40%)
-                            CircularNPCView(
+                            NPCSGridView(
                                 npcs: viewModel.npcs,
                                 onAction: handleNPCAction
                             )
@@ -91,6 +91,10 @@ struct MainSceneView: View {
                                     }
                                 }
                                 .frame(maxWidth: .infinity, alignment: .trailing)
+                                
+                                if npcManager.currentNPC != nil {
+                                    SelectedNPCView(npc: npcManager.currentNPC!, onAction: handleNPCAction)
+                                }
                                 
                                 // Chat History
                                 ChatHistoryView(eventsBus: DependencyManager.shared.resolve())

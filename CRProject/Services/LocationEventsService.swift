@@ -29,21 +29,37 @@ class LocationEventsService : GameService {
     }
     
     private func hasNPCsChanged(scene: Scene) -> Bool {
-        let currentNPCs = scene.getCharacters().reduce(into: [UUID: any Character]()) { $0[$1.id] = $1 }
+        let currentNPCs = scene.getCharacters()
+            .compactMap { $0 as? NPC }
+            .reduce(into: [UUID: NPC]()) { $0[$1.id] = $1 }
         
-        // Check for newly dead NPCs
-        for (id, npc) in lastNPCs {
-            if let currentNPC = currentNPCs[id], !currentNPC.isAlive && npc.isAlive {
-                deadNPCs[id] = npc
-                DebugLogService.shared.log("NPC \(npc.name) has died!", category: "Event")
-                // Increase awareness when an NPC dies
-                vampireNatureRevealService?.increaseAwareness(for: scene.id, amount: 30)
+        var changesDetected = false
+        
+        // Check for: (1) New deaths, (2) Previously dead NPCs not yet processed
+        for (id, lastNPC) in lastNPCs {
+            guard let currentNPC = currentNPCs[id] else { continue }
+            
+            if !currentNPC.isAlive {
+                if lastNPC.isAlive {
+                    // New death (alive → dead)
+                    deadNPCs[id] = lastNPC
+                    DebugLogService.shared.log("NPC \(lastNPC.name) just died!", category: "Event")
+                    vampireNatureRevealService?.increaseAwareness(for: scene.id, amount: 30)
+                    changesDetected = true
+                } else if deadNPCs[id] == nil {
+                    // Persistent dead state (not yet recorded)
+                    deadNPCs[id] = lastNPC
+                    DebugLogService.shared.log("NPC \(lastNPC.name) was already dead", category: "Event")
+                    changesDetected = true
+                }
             }
         }
         
-        let hasChanged = !currentNPCs.keys.elementsEqual(lastNPCs.keys)
+        // Check for added/removed NPCs
+        changesDetected = changesDetected || !currentNPCs.keys.elementsEqual(lastNPCs.keys)
         lastNPCs = currentNPCs
-        return hasChanged || !deadNPCs.isEmpty
+        
+        return changesDetected
     }
     
     private func hasVampire(scene: Scene) -> Bool {
@@ -62,7 +78,7 @@ class LocationEventsService : GameService {
                 guard event.time == (isNight ? "night" : "day") &&
                         event.locationType.lowercased() == scene.sceneType.rawValue.lowercased() &&
                         event.sceneType.lowercased() == scene.sceneType.rawValue.lowercased() &&
-                      event.isIndoors == scene.isIndoor else {
+                        event.isIndoors == scene.isIndoor && event.isDeathEvent else {
                     return false
                 }
                 
@@ -216,7 +232,7 @@ class LocationEventsService : GameService {
         // Replace NPC placeholders with actual names
         for i in 1...3 {
             if i <= npcs.count {
-                eventText = eventText.replacingOccurrences(of: "{NPC\(i)}", with: npcs[i-1].isUnknown ? npcs[i-1].profession.rawValue.lowercased() : npcs[i-1].name)
+                eventText = eventText.replacingOccurrences(of: "{NPC\(i)}", with: npcs[i-1].isUnknown ? npcs[i-1].profession.rawValue : npcs[i-1].name)
             }
         }
         

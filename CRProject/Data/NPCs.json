@@ -43,7 +43,7 @@
     "isVampire" : false,
     "id" : "B32A8289-C7A5-42A3-B4E6-C6E9B0EA6A44",
     "age" : 39,
-    "profession" : "Chandler (Candle Maker)",
+    "profession" : "Chandler",
     "name" : "Adriana Jorgensen",
     "sex" : "female"
   },
@@ -85,12 +85,12 @@
     "age" : 23,
     "isVampire" : false,
     "sex" : "male",
-    "profession" : "Thatcher (Roof Maker)"
+    "profession" : "Adventurer"
   },
   {
     "sex" : "male",
     "age" : 30,
-    "profession" : "Chandler (Candle Maker)",
+    "profession" : "Chandler",
     "isVampire" : false,
     "name" : "Egil Andersson",
     "id" : "1B5BEB6D-2E85-4385-A9FD-80EF48EDB17F"
@@ -113,7 +113,7 @@
   },
   {
     "isVampire" : false,
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "name" : "Toril King",
     "sex" : "female",
     "age" : 54,
@@ -202,7 +202,7 @@
   {
     "age" : 72,
     "name" : "Randi Lindberg",
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "id" : "49D4D5C8-F938-4F9A-8612-8410C98C594E",
     "isVampire" : false,
     "sex" : "female"
@@ -218,7 +218,7 @@
   {
     "isVampire" : false,
     "sex" : "male",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "name" : "Rune Schmidt",
     "id" : "123F8160-C57D-4409-9323-8CEBC7CED878",
     "age" : 80
@@ -228,7 +228,7 @@
     "name" : "Asta Axelsson",
     "sex" : "female",
     "isVampire" : false,
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "age" : 33
   },
   {
@@ -256,7 +256,7 @@
     "id" : "C271D164-3CCC-4502-9130-0280D112FFC3"
   },
   {
-    "profession" : "Tanner (Leather Worker)",
+    "profession" : "Guardman",
     "name" : "Erik Huber",
     "id" : "7DBD751B-4BF2-4220-A870-A73CD7D411FF",
     "age" : 39,
@@ -275,7 +275,7 @@
     "id" : "C9B58485-2EB3-4C7D-8336-1690D600B7DE",
     "name" : "Alain Bjorklund",
     "sex" : "male",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "age" : 73,
     "isVampire" : false
   },
@@ -300,7 +300,7 @@
     "id" : "816C4860-5327-4211-BAD5-9D9BF2B5F7F2",
     "age" : 55,
     "name" : "Kristin Schneider",
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "sex" : "female"
   },
   {
@@ -314,7 +314,7 @@
   {
     "id" : "08042F3B-4B75-41B9-A1B3-5FF017210080",
     "sex" : "male",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "isVampire" : true,
     "age" : 47,
     "name" : "Michel Davis"
@@ -417,7 +417,7 @@
   },
   {
     "sex" : "male",
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "isVampire" : false,
     "age" : 48,
     "name" : "Giovanni Dubois",
@@ -467,7 +467,7 @@
     "sex" : "male",
     "name" : "Trygve Mathieu",
     "age" : 41,
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "isVampire" : true,
     "id" : "FEA390FA-B2F8-4194-AD55-45CE1B044B3F"
   },
@@ -475,7 +475,7 @@
     "name" : "Lorenzo Villa",
     "id" : "8574348B-A86C-4921-B4A3-056ECFBAF036",
     "sex" : "male",
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "age" : 18,
     "isVampire" : false
   },
@@ -522,7 +522,7 @@
   {
     "age" : 71,
     "id" : "454FA28D-897B-4B30-ADCF-D4095321F016",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "name" : "Alessandra Davis",
     "isVampire" : false,
     "sex" : "female"
@@ -553,7 +553,7 @@
   },
   {
     "name" : "Finn Laurent",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "sex" : "male",
     "age" : 45,
     "isVampire" : false,
@@ -565,11 +565,11 @@
     "sex" : "male",
     "age" : 68,
     "name" : "Franz Schmidt",
-    "profession" : "Farrier (Horse Shoer)"
+    "profession" : "Adventurer"
   },
   {
     "id" : "2A18FC83-2A24-4EFA-BAAD-973642DD1E72",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "sex" : "female",
     "isVampire" : false,
     "name" : "Abigail Sandberg",
@@ -628,7 +628,7 @@
     "id" : "3DDEF435-4C1A-4F07-8F83-919EB4985D4C",
     "age" : 54,
     "isVampire" : false,
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "name" : "Torbjorn Leone"
   },
   {
@@ -714,7 +714,7 @@
   {
     "sex" : "male",
     "id" : "2A5F8C9C-C41B-4C7C-A102-9BC13BA6F52E",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "age" : 29,
     "name" : "Henrik Rossetti",
     "isVampire" : false
@@ -722,7 +722,7 @@
   {
     "id" : "4165FA7E-0F68-42EB-B473-E7561898B09B",
     "sex" : "female",
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "age" : 43,
     "isVampire" : false,
     "name" : "Beatrice Ahlstrom"
@@ -754,7 +754,7 @@
   {
     "sex" : "male",
     "age" : 71,
-    "profession" : "Chandler (Candle Maker)",
+    "profession" : "Chandler",
     "name" : "Thomas Andreassen",
     "id" : "FB77B3ED-04DC-4E0C-A20D-3E9ABAA7C962",
     "isVampire" : false
@@ -778,7 +778,7 @@
   {
     "id" : "B8112171-B36B-415D-997A-9B6E6D9D8072",
     "isVampire" : false,
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "name" : "Torunn Moore",
     "sex" : "female",
     "age" : 51
@@ -786,7 +786,7 @@
   {
     "id" : "14F19CD3-EA75-4873-A546-A90B9607194C",
     "age" : 73,
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "sex" : "male",
     "isVampire" : false,
     "name" : "David Thompson"
@@ -804,7 +804,7 @@
     "id" : "5D2A161E-F1D2-4FE0-BD01-5DDF599C24B9",
     "name" : "Lars Gunnarsson",
     "sex" : "male",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "age" : 29
   },
   {
@@ -813,7 +813,7 @@
     "id" : "BA43E73A-F199-4D83-9844-DBFA3ABDCCB1",
     "name" : "Dmitri Martin",
     "isVampire" : false,
-    "profession" : "Cooper (Barrel Maker)"
+    "profession" : "Merchant"
   },
   {
     "profession" : "Apothecary",
@@ -850,7 +850,7 @@
   {
     "name" : "Anna Pettersen",
     "age" : 71,
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "isVampire" : false,
     "sex" : "female",
     "id" : "67AD7D62-E265-4274-975E-D17A5CCD30A1"
@@ -866,7 +866,7 @@
   {
     "name" : "Rune Marchetti",
     "id" : "940787C5-193E-4844-A420-FD3A5C691E10",
-    "profession" : "Chandler (Candle Maker)",
+    "profession" : "Chandler",
     "isVampire" : false,
     "sex" : "male",
     "age" : 18
@@ -899,7 +899,7 @@
     "id" : "541ACD00-6DF0-46EE-A003-03B0199EE80B",
     "sex" : "female",
     "age" : 80,
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "name" : "Alfhild Schroder",
     "isVampire" : true
   },
@@ -944,7 +944,7 @@
     "profession" : "Priest"
   },
   {
-    "profession" : "Chandler (Candle Maker)",
+    "profession" : "Chandler",
     "isVampire" : false,
     "name" : "Céline Morel",
     "sex" : "female",
@@ -976,7 +976,7 @@
     "isVampire" : false
   },
   {
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "name" : "Karin Hoffmann",
     "sex" : "female",
     "age" : 55,
@@ -989,7 +989,7 @@
     "age" : 20,
     "isVampire" : false,
     "id" : "920AF5FF-14B6-4E3B-ABCC-E348A1313D64",
-    "profession" : "Thatcher (Roof Maker)"
+    "profession" : "Adventurer"
   },
   {
     "sex" : "female",
@@ -1044,7 +1044,7 @@
     "id" : "96E2CB32-2E64-4D07-834D-349F3028A81B",
     "age" : 48,
     "name" : "Yuri Nilsson",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "isVampire" : false
   },
   {
@@ -1067,13 +1067,13 @@
     "name" : "Bodil Rossetti",
     "age" : 51,
     "sex" : "female",
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "id" : "4F69BA35-B9E4-402A-8F75-F2D1EBA73EA6",
     "isVampire" : false
   },
   {
     "name" : "Rune Harris",
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "isVampire" : false,
     "id" : "94A2FBC3-2B55-4AE4-8DAF-DB330714CDC1",
     "sex" : "male",
@@ -1082,7 +1082,7 @@
   {
     "id" : "A5962D4D-F356-4D26-8CB3-B0806F1B63B8",
     "sex" : "male",
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "isVampire" : true,
     "name" : "Egil Soderstrom",
     "age" : 61
@@ -1116,7 +1116,7 @@
     "name" : "Gertrude Sandberg",
     "age" : 59,
     "id" : "A227D64E-9608-4D7A-9541-533FB1A30B36",
-    "profession" : "Tanner (Leather Worker)",
+    "profession" : "Guardman",
     "isVampire" : true
   },
   {
@@ -1130,7 +1130,7 @@
   {
     "sex" : "male",
     "age" : 43,
-    "profession" : "Chandler (Candle Maker)",
+    "profession" : "Chandler",
     "isVampire" : false,
     "id" : "DC77CB57-055A-4C9D-B354-3D7FCC7224CD",
     "name" : "Alberto Thompson"
@@ -1178,7 +1178,7 @@
   {
     "age" : 40,
     "isVampire" : false,
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "id" : "FE41A43D-E884-46FB-9673-E7D5E94CDA8F",
     "name" : "Solveig Mortensen",
     "sex" : "female"
@@ -1243,7 +1243,7 @@
     "name" : "Bruno Baumgartner",
     "age" : 63,
     "isVampire" : false,
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "id" : "70BB4391-A09E-4797-994B-58F90AD8A561",
     "sex" : "male"
   },
@@ -1284,7 +1284,7 @@
     "name" : "Nils Hedlund",
     "sex" : "male",
     "age" : 42,
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "isVampire" : false
   },
   {
@@ -1293,7 +1293,7 @@
     "sex" : "female",
     "age" : 58,
     "id" : "317010B3-E11C-4C57-A78A-87DA9715F73B",
-    "profession" : "Tanner (Leather Worker)"
+    "profession" : "Guardman"
   },
   {
     "isVampire" : false,
@@ -1315,7 +1315,7 @@
     "sex" : "female",
     "name" : "Astrid Rizzo",
     "age" : 27,
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "isVampire" : true,
     "id" : "247A99F7-1AD5-4C14-8B07-F29670D29872"
   },
@@ -1385,7 +1385,7 @@
   },
   {
     "name" : "Bergljot Iversen",
-    "profession" : "Tanner (Leather Worker)",
+    "profession" : "Guardman",
     "age" : 39,
     "sex" : "female",
     "id" : "0001A1E6-906A-4C05-8EDA-9A62B5086CB3",
@@ -1394,7 +1394,7 @@
   {
     "age" : 70,
     "id" : "CFFE27BF-128A-42E1-992A-6A92A047A332",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "sex" : "male",
     "isVampire" : false,
     "name" : "Eirik Lindberg"
@@ -1517,7 +1517,7 @@
     "isVampire" : false,
     "age" : 47,
     "id" : "8A8E567E-B71B-4A2B-9D4E-C3B5C375222A",
-    "profession" : "Thatcher (Roof Maker)"
+    "profession" : "Adventurer"
   },
   {
     "name" : "Liv Smith",
@@ -1580,7 +1580,7 @@
     "name" : "Hedda Lemaire",
     "age" : 76,
     "sex" : "female",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "isVampire" : false
   },
   {
@@ -1620,7 +1620,7 @@
     "name" : "Lars Garcia",
     "sex" : "male",
     "age" : 75,
-    "profession" : "Chandler (Candle Maker)",
+    "profession" : "Chandler",
     "id" : "655AB548-A835-432A-90E9-4622342621A3"
   },
   {
@@ -1628,11 +1628,11 @@
     "age" : 35,
     "id" : "276632A4-95C8-42B8-B109-CC1F7341F445",
     "name" : "Astrid Steiner",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "isVampire" : false
   },
   {
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "name" : "Henrik Adams",
     "isVampire" : false,
     "age" : 21,
@@ -1690,7 +1690,7 @@
   {
     "age" : 62,
     "isVampire" : false,
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "name" : "Knut Bjorklund",
     "id" : "2E1B0103-8649-4B94-A5EB-5CBD27E99829",
     "sex" : "male"
@@ -1707,7 +1707,7 @@
     "sex" : "female",
     "age" : 54,
     "isVampire" : false,
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "name" : "Vigdis Andersson",
     "id" : "838CEEFF-8B5B-4178-A039-9B006ACDD9C0"
   },
@@ -1794,7 +1794,7 @@
   {
     "id" : "D19BC3E8-016E-4DBC-8B81-F66DCE8925F5",
     "sex" : "male",
-    "profession" : "Chandler (Candle Maker)",
+    "profession" : "Chandler",
     "name" : "Nikolai Lundqvist",
     "age" : 73,
     "isVampire" : false
@@ -1805,7 +1805,7 @@
     "age" : 29,
     "isVampire" : false,
     "name" : "Otto Soderstrom",
-    "profession" : "Bowyer (Bow Maker)"
+    "profession" : "Bowyer"
   },
   {
     "isVampire" : false,
@@ -1816,7 +1816,7 @@
     "sex" : "female"
   },
   {
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "sex" : "female",
     "isVampire" : false,
     "id" : "830F2186-9032-4D31-BB2C-4A13A47563E0",
@@ -1852,7 +1852,7 @@
     "id" : "CB8CD44E-B5E5-405A-8230-5AAAC77250E5",
     "sex" : "male",
     "age" : 26,
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "name" : "Lucas Kristiansen"
   },
   {
@@ -1890,7 +1890,7 @@
   {
     "name" : "Egil Antonsen",
     "sex" : "male",
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "isVampire" : false,
     "age" : 72,
     "id" : "03F870BF-19CA-4B48-AEA3-32CDD7D786E8"
@@ -1899,7 +1899,7 @@
     "name" : "Franco Legrand",
     "sex" : "male",
     "age" : 51,
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "id" : "E2C19FA4-A937-425A-B575-FA6B4E006A44",
     "isVampire" : false
   },
@@ -1988,7 +1988,7 @@
     "id" : "E7066C9D-5088-4F5C-9060-462CC25C1AE1",
     "name" : "Sofia Lindqvist",
     "age" : 77,
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "sex" : "female"
   },
   {
@@ -2011,7 +2011,7 @@
     "age" : 64,
     "sex" : "female",
     "id" : "6E5A23F1-8355-44D3-91BB-D785656392A2",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "name" : "Caterina Lambert",
     "isVampire" : false
   },
@@ -2065,7 +2065,7 @@
   },
   {
     "id" : "000A65B1-F253-45A8-AEF4-88C26EC68623",
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "isVampire" : false,
     "age" : 76,
     "name" : "Marit Thomas",
@@ -2097,7 +2097,7 @@
   },
   {
     "age" : 52,
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "isVampire" : false,
     "name" : "Runa Martinez",
     "sex" : "female",
@@ -2107,7 +2107,7 @@
     "age" : 37,
     "id" : "238F983B-8058-439A-9C7B-BA5163A61E14",
     "name" : "Ivar Lefevre",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "isVampire" : false,
     "sex" : "male"
   },
@@ -2132,7 +2132,7 @@
     "age" : 20,
     "id" : "A5138F5E-F02E-4C6D-9D61-C6C902AC4E4C",
     "sex" : "male",
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "isVampire" : false
   },
   {
@@ -2141,7 +2141,7 @@
     "id" : "22358AAB-918B-4D7E-9407-A6F9073BDA09",
     "sex" : "male",
     "name" : "Benjamin Rossi",
-    "profession" : "Thatcher (Roof Maker)"
+    "profession" : "Adventurer"
   },
   {
     "name" : "Mikhail Nelson",
@@ -2160,7 +2160,7 @@
     "age" : 45
   },
   {
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "name" : "Louis Martinez",
     "id" : "F4E37639-1D65-4A97-AB21-AA21C218CCD3",
     "sex" : "male",
@@ -2282,7 +2282,7 @@
   {
     "id" : "26F4204C-766D-47CB-ABCD-99B82B4EB37A",
     "name" : "Ragnar Berg",
-    "profession" : "Tanner (Leather Worker)",
+    "profession" : "Guardman",
     "isVampire" : false,
     "age" : 74,
     "sex" : "male"
@@ -2368,7 +2368,7 @@
     "name" : "Paolo Marini"
   },
   {
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "name" : "Alexander Sandberg",
     "sex" : "male",
     "id" : "4E362C30-7493-4765-AA57-01C14A82A214",
@@ -2380,7 +2380,7 @@
     "sex" : "male",
     "id" : "0A32F397-9837-48F1-91CA-B6F5E9584EC2",
     "age" : 27,
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "name" : "Bruno Gauthier"
   },
   {
@@ -2469,7 +2469,7 @@
     "sex" : "male",
     "name" : "Otto Schuster",
     "id" : "CD552B8D-35A8-458E-A157-1D07CB0B8EE8",
-    "profession" : "Farrier (Horse Shoer)"
+    "profession" : "Adventurer"
   },
   {
     "age" : 52,
@@ -2477,7 +2477,7 @@
     "name" : "Elisabetta Allen",
     "sex" : "female",
     "id" : "B3023EE7-F788-401B-ABB8-1F04ED301F09",
-    "profession" : "Farrier (Horse Shoer)"
+    "profession" : "Adventurer"
   },
   {
     "age" : 44,
@@ -2546,7 +2546,7 @@
   {
     "age" : 63,
     "id" : "0B6B45EA-E7A7-4717-9A53-8A7760E52D25",
-    "profession" : "Tanner (Leather Worker)",
+    "profession" : "Guardman",
     "sex" : "male",
     "name" : "Nils Lindqvist",
     "isVampire" : false
@@ -2589,11 +2589,11 @@
     "id" : "C48E1C9A-35ED-4EF8-A451-F3671C6E17F5",
     "age" : 35,
     "name" : "Emily Villa",
-    "profession" : "Chandler (Candle Maker)"
+    "profession" : "Chandler"
   },
   {
     "sex" : "female",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "name" : "Bergljot Anderson",
     "age" : 20,
     "id" : "21E94E1A-B3BA-4CCC-9034-09D2D861FB87",
@@ -2620,7 +2620,7 @@
     "isVampire" : false,
     "id" : "E893B4A8-77EF-4D61-A643-1EE8CC1D91F7",
     "name" : "Gjertrud Hellstrom",
-    "profession" : "Tanner (Leather Worker)",
+    "profession" : "Guardman",
     "age" : 41
   },
   {
@@ -2672,7 +2672,7 @@
     "isVampire" : false
   },
   {
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "isVampire" : false,
     "name" : "Eirik Nystrom",
     "id" : "0BF9465D-874E-4272-A813-DA28084FCF69",
@@ -2690,7 +2690,7 @@
   {
     "name" : "Otto Guerin",
     "sex" : "male",
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "age" : 24,
     "isVampire" : false,
     "id" : "184DF4BD-B535-4DDB-8747-B41AF3826015"
@@ -2732,7 +2732,7 @@
     "sex" : "male",
     "age" : 52,
     "id" : "5128AB88-2377-4004-85E8-3270355E1DCD",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "isVampire" : false
   },
   {
@@ -2768,7 +2768,7 @@
     "age" : 23
   },
   {
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "age" : 24,
     "name" : "Kirsten Moller",
     "isVampire" : false,
@@ -2810,7 +2810,7 @@
   {
     "age" : 65,
     "isVampire" : false,
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "sex" : "male",
     "name" : "Torsten Hoffmann",
     "id" : "B959C819-28F5-4DAA-9E06-A7AECCB85475"
@@ -2833,7 +2833,7 @@
   },
   {
     "name" : "Monika Dupont",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "sex" : "female",
     "id" : "483EBA84-3C8C-4B9E-88DE-1626FF8557BB",
     "age" : 31,
@@ -2858,7 +2858,7 @@
   {
     "name" : "Günther Weber",
     "sex" : "male",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "age" : 25,
     "isVampire" : false,
     "id" : "8A476809-DEDE-41AC-A5CF-B5029B47F3B0"
@@ -2891,7 +2891,7 @@
     "id" : "7C7DE3DF-EF58-4638-8252-448840195957",
     "name" : "Sofia Serra",
     "age" : 40,
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "isVampire" : false,
     "sex" : "female"
   },
@@ -3021,7 +3021,7 @@
     "name" : "Sophia Kristoffersen",
     "sex" : "female",
     "age" : 58,
-    "profession" : "Cooper (Barrel Maker)"
+    "profession" : "Merchant"
   },
   {
     "name" : "Torbjorn Kruger",
@@ -3099,12 +3099,12 @@
     "age" : 18,
     "id" : "9D472913-48F1-4E49-A199-FF61EF8910A4",
     "name" : "Giovanna Meyer",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "isVampire" : false,
     "sex" : "female"
   },
   {
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "age" : 19,
     "id" : "BCD18409-7501-4ABE-BA14-70FEE32DF2E3",
     "sex" : "female",
@@ -3235,7 +3235,7 @@
     "id" : "12C8777D-E12B-4E29-ADE6-282CB9B4245B",
     "age" : 70,
     "name" : "Turid Morin",
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "isVampire" : false,
     "sex" : "female"
   },
@@ -3245,7 +3245,7 @@
     "name" : "Aslaug Colombo",
     "id" : "742E5CED-C501-4E59-A19E-06B4F2CD15FF",
     "sex" : "female",
-    "profession" : "Tanner (Leather Worker)"
+    "profession" : "Guardman"
   },
   {
     "id" : "26D1FD10-408C-4295-AB56-5E4FC9A081B2",
@@ -3281,7 +3281,7 @@
   },
   {
     "age" : 52,
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "isVampire" : false,
     "id" : "5666031B-85CA-4D20-8BAD-FC815B58762F",
     "name" : "Claude White",
@@ -3337,7 +3337,7 @@
   },
   {
     "sex" : "male",
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "id" : "C7E7FC43-9802-45F1-88E3-44E2F478945E",
     "name" : "Franco Fransson",
     "isVampire" : false,
@@ -3368,7 +3368,7 @@
     "isVampire" : false
   },
   {
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "sex" : "male",
     "id" : "9E16B795-D087-45CF-A925-80D38E8CE227",
     "isVampire" : false,
@@ -3403,12 +3403,12 @@
     "id" : "4507369E-A477-4FBD-99DE-7337F7D8B8D4",
     "age" : 68,
     "sex" : "female",
-    "profession" : "Thatcher (Roof Maker)",
+    "profession" : "Adventurer",
     "isVampire" : false,
     "name" : "Ingeborg Fischer"
   },
   {
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "isVampire" : false,
     "id" : "C4C189A7-A484-4F3E-A326-D99B29C4124F",
     "name" : "Thor Nilsen",
@@ -3437,7 +3437,7 @@
     "name" : "Ludwig Larsson",
     "sex" : "male",
     "isVampire" : false,
-    "profession" : "Bowyer (Bow Maker)"
+    "profession" : "Bowyer"
   },
   {
     "name" : "Karl Petersen",
@@ -3496,7 +3496,7 @@
     "id" : "45B3F182-63B8-4168-9E49-5FCC2550F78A"
   },
   {
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "isVampire" : false,
     "age" : 28,
     "name" : "Hilda Rossi",
@@ -3528,7 +3528,7 @@
     "name" : "David Ricci"
   },
   {
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "id" : "D8754205-9551-4B87-97BC-7F653E74BC28",
     "name" : "Isabella Jackson",
     "age" : 72,
@@ -3584,7 +3584,7 @@
     "profession" : "Blacksmith"
   },
   {
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "isVampire" : false,
     "name" : "Pietro Fransson",
     "id" : "269BE834-7026-41CA-8133-FD1AC69665CD",
@@ -3626,7 +3626,7 @@
   {
     "isVampire" : false,
     "age" : 30,
-    "profession" : "Bowyer (Bow Maker)",
+    "profession" : "Bowyer",
     "id" : "8CD787D6-FDF8-4729-804C-9A58EE7B7A81",
     "sex" : "male",
     "name" : "Sigurd Steiner"
@@ -3699,7 +3699,7 @@
     "id" : "FB25EE50-81EC-43D3-B750-3D33889A59A3",
     "age" : 51,
     "sex" : "female",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "isVampire" : false,
     "name" : "Ebba Knutsson"
   },
@@ -3753,7 +3753,7 @@
   },
   {
     "age" : 21,
-    "profession" : "Tanner (Leather Worker)",
+    "profession" : "Guardman",
     "sex" : "male",
     "id" : "79141323-FE28-442E-80A5-7D6BD580CB90",
     "name" : "Vittorio Rasmussen",
@@ -3789,10 +3789,10 @@
     "age" : 39,
     "isVampire" : false,
     "name" : "Pietro Karlsson",
-    "profession" : "Tanner (Leather Worker)"
+    "profession" : "Guardman"
   },
   {
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "isVampire" : false,
     "name" : "Svetlana Chevalier",
     "sex" : "female",
@@ -3812,7 +3812,7 @@
     "name" : "Turid Garcia",
     "age" : 79,
     "isVampire" : false,
-    "profession" : "Tanner (Leather Worker)",
+    "profession" : "Guardman",
     "sex" : "female"
   },
   {
@@ -3880,7 +3880,7 @@
     "isVampire" : false
   },
   {
-    "profession" : "Chandler (Candle Maker)",
+    "profession" : "Chandler",
     "id" : "ACA5CE6C-981E-49D6-A178-57575B0AB38B",
     "name" : "Camille Kruger",
     "age" : 77,
@@ -3896,7 +3896,7 @@
     "age" : 47
   },
   {
-    "profession" : "Farrier (Horse Shoer)",
+    "profession" : "Adventurer",
     "age" : 72,
     "isVampire" : false,
     "id" : "5FA91EA0-909F-4C28-BEC5-AA78BF9CD86C",
@@ -3937,7 +3937,7 @@
   },
   {
     "id" : "3A5D5B84-6742-48C6-94DB-91212E087563",
-    "profession" : "Chandler (Candle Maker)",
+    "profession" : "Chandler",
     "age" : 41,
     "isVampire" : false,
     "sex" : "female",
@@ -3949,7 +3949,7 @@
     "name" : "Hermann Schäfer",
     "sex" : "male",
     "age" : 79,
-    "profession" : "Chandler (Candle Maker)"
+    "profession" : "Chandler"
   },
   {
     "profession" : "Scribe",
@@ -3985,7 +3985,7 @@
   },
   {
     "name" : "Victoria Aas",
-    "profession" : "Cooper (Barrel Maker)",
+    "profession" : "Merchant",
     "sex" : "female",
     "isVampire" : false,
     "age" : 68,
