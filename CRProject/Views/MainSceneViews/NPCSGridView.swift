@@ -35,36 +35,72 @@ struct NPCGridButton: View {
     let isSelected: Bool
     let onTap: () -> Void
     
+    @State private var moonOpacity: Double = 0.6
+    
     var body: some View {
         Button(action: {
             VibrationService.shared.lightTap()
             onTap()
         }) {
-            VStack(spacing: 4) {
-                Image(systemName: npc.isUnknown ? "questionmark.circle" : "waveform.path.ecg")
-                    .font(.system(size: 16))
-                    .foregroundColor(iconColor())
+            ZStack {
+                // Background with conditional glow for sleeping NPCs
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(isSelected ? Theme.accentColor.opacity(0.5) : Color.black.opacity(0.5))
+                    .overlay(
+                        Group {
+                            if npc.isSleeping {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(Color.blue.opacity(0.1), lineWidth: 2)
+                            }
+                        }
+                    )
+                    .shadow(color: npc.isSleeping ? Color.blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 0)
                 
-                if !npc.isUnknown {
-                    HStack {
-                        Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.stand.dress")
-                            .font(Theme.smallFont)
-                            .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                            .lineLimit(1)
-                        Image(systemName: npc.profession.icon)
-                            .font(Theme.smallFont)
-                            .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                            .lineLimit(1)
+                // Content
+                VStack(spacing: 4) {
+                    ZStack(alignment: .topLeading) {
+                        Image(systemName: npc.isUnknown ? "questionmark.circle" : "waveform.path.ecg")
+                            .font(.system(size: 16))
+                            .foregroundColor(iconColor())
+                    }
+                    .frame(width: 40, height: 20)
+                    
+                    if !npc.isUnknown {
+                        HStack(spacing: 4) {
+                            Image(systemName: npc.sex == .female ? "figure.dress" : "figure.wave")
+                                .font(Theme.smallFont)
+                                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                                .lineLimit(1)
+                            Image(systemName: npc.profession.icon)
+                                .font(Theme.smallFont)
+                                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                                .lineLimit(1)
+                        }
                     }
                 }
+                .frame(width: 50, height: 50)
+                .padding(0)
+                
+                // Pulsating moon for sleeping NPCs
+                if npc.isSleeping {
+                    Image(systemName: "moon.zzz.fill")
+                        .font(Theme.bodyFont)
+                        .foregroundColor(isSelected ? Theme.textColor : .blue)
+                        .opacity(moonOpacity)
+                        .offset(x: -17, y: -17)
+                }
+
             }
-            .frame(width: 50, height: 50)
-            .padding(0)
-            .background(isSelected ? Theme.accentColor.opacity(0.5) : Color.black.opacity(0.5))
-            .cornerRadius(8)
         }
         .buttonStyle(PlainButtonStyle())
         .opacity(npc.isAlive ? 1 : 0.7)
+        .onAppear {
+            if npc.isSleeping {
+                withAnimation(Animation.easeInOut(duration: 1.5).repeatForever()) {
+                    moonOpacity = 1.0
+                }
+            }
+        }
     }
     
     func iconColor() -> Color {
