@@ -5,6 +5,7 @@ class NPCPopulationService: GameService {
     private let gameStateService: GameStateService
     private let gameEventsBus: GameEventsBusService
     private var locationEventsService: LocationEventsService = DependencyManager.shared.resolve()
+    private var npcManager = NPCInteractionManager.shared
     private var cancellables = Set<AnyCancellable>()
     private var eventsData: EventsData?
     
@@ -94,6 +95,12 @@ class NPCPopulationService: GameService {
         // Compare populations and generate movement events
         let newPopulation = scene.getCharacters()
         handlePopulationChanges(isNewScene: isNewScene, oldPopulation: oldPopulation, newPopulation: newPopulation, scene: scene)
+        
+        // Reset selected npc reference, if exists
+        if let selectedIndex = npcManager.selectedNPC?.index,
+           !adjustedPopulation.contains(where: { $0.index == selectedIndex }) {
+            npcManager.selectedNPC = nil
+        }
         
         // Update tracking state
         lastSceneId = scene.id

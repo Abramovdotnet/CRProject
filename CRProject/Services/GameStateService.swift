@@ -21,6 +21,7 @@ class GameStateService : ObservableObject, GameService{
     private let locationReader: LocationReader
     private let vampireReader: NPCReader
     private var npcPopulationService: NPCPopulationService!
+    private var npcManager = NPCInteractionManager.shared
     
     init(gameTime: GameTimeService, 
          vampireNatureRevealService: VampireNatureRevealService,
@@ -85,6 +86,8 @@ class GameStateService : ObservableObject, GameService{
         
         // Update related locations
         updateRelatedLocations(for: locationId)
+        
+        npcManager.selectedNPC = nil
         
         // Advance time when changing location
         gameTime.advanceTime()

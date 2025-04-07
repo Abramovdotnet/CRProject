@@ -232,9 +232,9 @@ struct MainSceneView: View {
                                         .frame(maxWidth: .infinity)
                                         .frame(maxHeight: .infinity)
                                     
-                                    if npcManager.currentNPC != nil {
-                                        SelectedNPCView(npc: npcManager.currentNPC!, onAction: handleNPCAction)
-                                            .id(npcManager.currentNPC!.id)
+                                    if npcManager.selectedNPC != nil {
+                                        SelectedNPCView(npc: npcManager.selectedNPC!, onAction: handleNPCAction)
+                                            .id(npcManager.selectedNPC!.id)
                                     }
                                 }
                                 .padding(.bottom, 15)
@@ -265,7 +265,7 @@ struct MainSceneView: View {
                 }
             }
             .sheet(isPresented: $npcManager.isShowingDialogue) {
-                if let npc = npcManager.currentNPC,
+                if let npc = npcManager.selectedNPC,
                    let player = viewModel.gameStateService.getPlayer() {
                     DialogueView(viewModel: DialogueViewModel(npc: npc, player: player))
                 }

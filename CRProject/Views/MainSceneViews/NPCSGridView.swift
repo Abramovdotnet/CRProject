@@ -15,9 +15,9 @@ struct NPCSGridView: View {
                 ForEach(npcs.sorted(by: { $0.index > $1.index }).prefix(20), id: \.index) { npc in
                     NPCGridButton(
                         npc: npc,
-                        isSelected: npcManager.currentNPC?.id == npc.id
+                        isSelected: npcManager.selectedNPC?.id == npc.id
                     ) {
-                        if npcManager.currentNPC?.id == npc.id {
+                        if npcManager.selectedNPC?.id == npc.id {
                             onAction(.startConversation(npc))
                         } else {
                             npcManager.select(with: npc)
