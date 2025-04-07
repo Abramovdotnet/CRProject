@@ -16,6 +16,10 @@ class DialogueViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     private var pendingSeductionNode: String?
     
+    private let vampireNatureRevealService: VampireNatureRevealService = DependencyManager.shared.resolve()
+    private let gameStateService: GameStateService = DependencyManager.shared.resolve()
+    private let gameEventBusService: GameEventsBusService = DependencyManager.shared.resolve()
+    
     init(npc: NPC, player: Player) {
         self.npc = npc
         self.dialogueProcessor = DialogueProcessor(
@@ -93,6 +97,8 @@ class DialogueViewModel: ObservableObject {
             VibrationService.shared.lightTap()
             processNextNode(nextNodeId)
         }
+        
+        gameStateService.handleTimeAdvanced()
     }
     
     private func handleSeduction(nextNodeId: String) {
@@ -120,11 +126,17 @@ class DialogueViewModel: ObservableObject {
             if success {
                 npc.isIntimidated = true
                 processNextNode(nodeId)
+                loadInitialDialogue()
             }
         } else {
             showActionResult(success: false, action: "Seduction")
+            
+            if let currentSceneId = gameStateService.currentScene?.id {
+                vampireNatureRevealService.increaseAwareness(for: currentSceneId, amount: 20)
+            }
         }
         
+        gameStateService.handleTimeAdvanced()
         pendingSeductionNode = nil
     }
     

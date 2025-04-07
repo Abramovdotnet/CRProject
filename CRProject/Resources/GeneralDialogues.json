@@ -29,7 +29,7 @@
                 },
                 {
                     "text": "I find you intriguing... [Seduce]",
-                    "type": "seduce",
+                    "type": "normal",
                     "nextNode": "general_seduced",
                     "requirements": {
                         "minCharisma": 2
@@ -278,7 +278,7 @@
                 },
                 {
                     "text": "Perfect...",
-                    "type": "normal",
+                    "type": "seduce",
                     "nextNode": "end"
                 }
             ]

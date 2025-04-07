@@ -20,7 +20,7 @@
                     },
                     {
                         "text": "You have such a charming smile... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "baker_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -66,7 +66,7 @@
                 "options": [
                     {
                         "text": "Lead the way...",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "baker_end"
                     }
                 ]
@@ -137,7 +137,7 @@
                     },
                     {
                         "text": "Perhaps we can negotiate... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "merchant_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -190,7 +190,7 @@
                 "options": [
                     {
                         "text": "How generous of you...",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "merchant_end"
                     }
                 ]
@@ -251,7 +251,7 @@
                     },
                     {
                         "text": "Surely we can work something out... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "guard_seduced",
                         "requirements": {
                             "minCharisma": 4
@@ -289,7 +289,7 @@
                 "options": [
                     {
                         "text": "Do tell...",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "guard_end"
                     }
                 ]
@@ -350,7 +350,7 @@
                     },
                     {
                         "text": "That's quite impressive craftsmanship... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "blacksmith_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -401,7 +401,7 @@
                 "options": [
                     {
                         "text": "I'd love to see them",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "blacksmith_end"
                     }
                 ]
@@ -439,7 +439,7 @@
                     },
                     {
                         "text": "The mill seems... private [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "miller_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -490,7 +490,7 @@
                 "options": [
                     {
                         "text": "Lead the way",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "miller_end"
                     }
                 ]
@@ -528,7 +528,7 @@
                     },
                     {
                         "text": "I seek... private counsel [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "priest_seduced",
                         "requirements": {
                             "minCharisma": 4
@@ -579,7 +579,7 @@
                 "options": [
                     {
                         "text": "Indeed...",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "priest_end"
                     }
                 ]
@@ -617,7 +617,7 @@
                     },
                     {
                         "text": "Such a cozy establishment... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "innkeeper_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -668,7 +668,7 @@
                 "options": [
                     {
                         "text": "Do tell",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "innkeeper_end"
                     }
                 ]
@@ -706,7 +706,7 @@
                     },
                     {
                         "text": "Perhaps we could make a special arrangement... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "alchemist_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -757,7 +757,7 @@
                 "options": [
                     {
                         "text": "I'm intrigued",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "alchemist_end"
                     }
                 ]
@@ -795,7 +795,7 @@
                     },
                     {
                         "text": "I'd love a private performance... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "minstrel_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -846,7 +846,7 @@
                 "options": [
                     {
                         "text": "I'd love to hear it",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "minstrel_end"
                     }
                 ]
@@ -884,7 +884,7 @@
                     },
                     {
                         "text": "Your knowledge intrigues me... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "scribe_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -935,7 +935,7 @@
                 "options": [
                     {
                         "text": "Lead the way",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "scribe_end"
                     }
                 ]
@@ -973,7 +973,7 @@
                     },
                     {
                         "text": "You seem experienced in tracking... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "hunter_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -1024,7 +1024,7 @@
                 "options": [
                     {
                         "text": "Lead the way",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "hunter_end"
                     }
                 ]
@@ -1062,7 +1062,7 @@
                     },
                     {
                         "text": "I need something... personal [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "apothecary_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -1113,7 +1113,7 @@
                 "options": [
                     {
                         "text": "Lead on",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "apothecary_end"
                     }
                 ]
@@ -1151,7 +1151,7 @@
                     },
                     {
                         "text": "Surely you have private news... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "herald_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -1202,7 +1202,7 @@
                 "options": [
                     {
                         "text": "Do tell",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "herald_end"
                     }
                 ]
@@ -1240,7 +1240,7 @@
                     },
                     {
                         "text": "Your craftsmanship is impressive... [Seduce]",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "cooper_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -1291,7 +1291,7 @@
                 "options": [
                     {
                         "text": "Lead the way",
-                        "type": "normal",
+                        "type": "seduce",
                         "nextNode": "cooper_end"
                     }
                 ]

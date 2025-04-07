@@ -20,15 +20,15 @@ struct DialogueView: View {
                             Text("Age: \(viewModel.npc.age)")
                                 .font(Theme.captionFont)
                                 .foregroundColor(Theme.textColor.opacity(0.7))
+                            Text(viewModel.npc.profession.rawValue.capitalized)
+                                .font(Theme.captionFont)
+                                .foregroundColor(Theme.textColor.opacity(0.7))
                         }
                         Spacer()
                     }
                     VStack(alignment: .leading) {
                         Text(viewModel.npc.sex == .male ? "Male" : "Female")
                             .font(Theme.headingFont)
-                        Text(viewModel.npc.profession.rawValue.capitalized)
-                            .font(Theme.captionFont)
-                            .foregroundColor(Theme.textColor.opacity(0.7))
                     }
                     Spacer()
                     Button(action: { dismiss() }) {
