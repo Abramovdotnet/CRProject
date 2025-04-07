@@ -253,7 +253,6 @@ class MainSceneViewModel: ObservableObject {
         do {
             try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30, in: sceneId)
             updatePlayerBloodPercentage()
-            vampireNatureRevealService.increaseAwareness(for: currentScene?.id ?? UUID(), amount: 20)
             updateSceneAwareness()
             DebugLogService.shared.log("\(sceneAwareness)", category: "Debug")
         } catch {

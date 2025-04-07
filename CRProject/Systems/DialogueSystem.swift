@@ -87,4 +87,5 @@ enum DialogueOptionType: String, Codable {
     case normal
     case intimidate
     case seduce
+    case investigate
 }

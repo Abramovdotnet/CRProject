@@ -34,6 +34,14 @@
                     "requirements": {
                         "minCharisma": 2
                     }
+                },
+                {
+                    "text": "May I ask who you are? [Investigate]",
+                    "type": "investigate",
+                    "nextNode": "investigation_intro",
+                    "requirements": {
+                        "minIntelligence": 2
+                    }
                 }
             ]
         },
@@ -46,9 +54,9 @@
                     "nextNode": "general_night_danger"
                 },
                 {
-                    "text": "Leave",
+                    "text": "Let's talk about something else",
                     "type": "normal",
-                    "nextNode": "end"
+                    "nextNode": "general_greeting"
                 }
             ]
         },
@@ -204,9 +212,9 @@
             "text": "*grows pale* I... I've said too much. Please, forget we spoke of this!",
             "options": [
                 {
-                    "text": "You can't hide the truth",
+                    "text": "Let's change the subject",
                     "type": "normal",
-                    "nextNode": "end"
+                    "nextNode": "general_greeting"
                 }
             ]
         },
@@ -229,9 +237,9 @@
             "text": "Some say it started when the old manor was reopened. Strange nobles, never seen by day...",
             "options": [
                 {
-                    "text": "Interesting...",
+                    "text": "Let's talk about something else",
                     "type": "normal",
-                    "nextNode": "end"
+                    "nextNode": "general_greeting"
                 }
             ]
         },
@@ -282,6 +290,34 @@
                     "text": "You're very observant",
                     "type": "normal",
                     "nextNode": "end"
+                }
+            ]
+        },
+        "investigation_intro": {
+            "text": "Oh, just a humble resident of this town. Why do you ask?",
+            "options": [
+                {
+                    "text": "I like to know who I'm talking to",
+                    "type": "normal",
+                    "nextNode": "investigation_success",
+                    "effects": {
+                        "revealNPCInfo": true
+                    }
+                },
+                {
+                    "text": "Never mind",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "investigation_success": {
+            "text": "Well, I suppose there's no harm in introducing myself...",
+            "options": [
+                {
+                    "text": "Let's talk about something else",
+                    "type": "normal",
+                    "nextNode": "general_greeting"
                 }
             ]
         }

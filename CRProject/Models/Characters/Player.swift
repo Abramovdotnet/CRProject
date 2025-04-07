@@ -21,6 +21,8 @@ class Player: Character, Codable {
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isUnknown: Bool = false
     var isSleeping: Bool = false
+    var isIntimidated: Bool = false
+    var intimidationDay: Int = 0
     
     init(name: String, sex: Sex, age: Int, profession: Profession, id: UUID) {
         self.name = name

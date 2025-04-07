@@ -25,6 +25,11 @@
                         "requirements": {
                             "minCharisma": 3
                         }
+                    },
+                    {
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -80,9 +85,32 @@
                 "text": "I should get back to work now...",
                 "options": [
                     {
-                        "text": "Leave",
+                        "text": "Let's talk about something else",
                         "type": "normal",
-                        "nextNode": "end"
+                        "nextNode": "baker_greeting"
+                    }
+                ]
+            },
+            "investigation_intro": {
+                "text": "Oh, of course! I'm the local baker.",
+                "options": [
+                    {
+                        "text": "Nice to meet you",
+                        "type": "normal",
+                        "nextNode": "investigation_success",
+                        "effects": {
+                            "revealNPCInfo": true
+                        }
+                    }
+                ]
+            },
+            "investigation_success": {
+                "text": "Likewise! Now, what can I help you with?",
+                "options": [
+                    {
+                        "text": "Let's talk about something else",
+                        "type": "normal",
+                        "nextNode": "baker_greeting"
                     }
                 ]
             }
@@ -114,6 +142,11 @@
                         "requirements": {
                             "minCharisma": 3
                         }
+                    },
+                    {
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -166,9 +199,32 @@
                 "text": "Come back again soon...",
                 "options": [
                     {
-                        "text": "Leave",
+                        "text": "Let's talk about something else",
                         "type": "normal",
-                        "nextNode": "end"
+                        "nextNode": "merchant_greeting"
+                    }
+                ]
+            },
+            "investigation_intro": {
+                "text": "Ah, a curious customer! I'm the local merchant.",
+                "options": [
+                    {
+                        "text": "Nice to meet you",
+                        "type": "normal",
+                        "nextNode": "investigation_success",
+                        "effects": {
+                            "revealNPCInfo": true
+                        }
+                    }
+                ]
+            },
+            "investigation_success": {
+                "text": "The pleasure is mine! Now, about that trade...",
+                "options": [
+                    {
+                        "text": "Let's discuss something else",
+                        "type": "normal",
+                        "nextNode": "merchant_greeting"
                     }
                 ]
             }
@@ -200,6 +256,11 @@
                         "requirements": {
                             "minCharisma": 4
                         }
+                    },
+                    {
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -237,9 +298,32 @@
                 "text": "Move along now.",
                 "options": [
                     {
-                        "text": "Leave",
+                        "text": "Let's talk about something else",
                         "type": "normal",
-                        "nextNode": "end"
+                        "nextNode": "guard_greeting"
+                    }
+                ]
+            },
+            "investigation_intro": {
+                "text": "*adjusts armor* I'm on duty here.",
+                "options": [
+                    {
+                        "text": "Nice to meet you",
+                        "type": "normal",
+                        "nextNode": "investigation_success",
+                        "effects": {
+                            "revealNPCInfo": true
+                        }
+                    }
+                ]
+            },
+            "investigation_success": {
+                "text": "Now, if there's nothing else...",
+                "options": [
+                    {
+                        "text": "Let's discuss something else",
+                        "type": "normal",
+                        "nextNode": "guard_greeting"
                     }
                 ]
             }

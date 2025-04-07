@@ -25,6 +25,11 @@ struct SelectedNPCView: View {
                             .foregroundColor(.blue)
                             .font(Theme.bodyFont)
                     }
+                    if npc.isIntimidated {
+                        Image(systemName: "heart.fill")
+                            .foregroundColor(Theme.bloodProgressColor)
+                            .font(Theme.bodyFont)
+                    }
                 }
             }
             .frame(width: 50)

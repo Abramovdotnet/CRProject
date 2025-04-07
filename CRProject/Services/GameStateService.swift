@@ -147,6 +147,7 @@ class GameStateService : ObservableObject, GameService{
         
         // Update NPC sleeping states
         updateNPCSleepingState(isNight: gameTime.isNightTime)
+        updateNPCsStatuses()
     }
     
     private func handleSafeTimeAdvanced() {
@@ -161,6 +162,7 @@ class GameStateService : ObservableObject, GameService{
         
         // Update NPC sleeping states
         updateNPCSleepingState(isNight: gameTime.isNightTime)
+        updateNPCsStatuses()
     }
     
     func updateNPCSleepingState(isNight: Bool) {
@@ -182,5 +184,15 @@ class GameStateService : ObservableObject, GameService{
     
     var isNightTime: Bool {
         return gameTime.isNightTime
+    }
+    
+    func updateNPCsStatuses(){
+        for character in currentScene?.getCharacters() ?? [] {
+            if character.isIntimidated {
+                if gameTime.currentDay > character.intimidationDay {
+                    character.isIntimidated = false
+                }
+            }
+        }
     }
 }

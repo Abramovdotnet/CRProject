@@ -16,12 +16,13 @@ class DialogueProcessor {
         self.gameStateService = DependencyManager.shared.resolve()
     }
     
-    func loadDialogue(profession: Profession) -> (text: String, options: [DialogueNodeOption])? {
+    func loadDialogue(npc: NPC) -> (text: String, options: [DialogueNodeOption])? {
         // Try to load profession-specific dialogue first
-        if profession != .general {
-            if let tree = dialogueSystem.getDialogueTree(for: profession.rawValue) {
+        if npc.profession != .general {
+            if let tree = dialogueSystem.getDialogueTree(for: npc.profession.rawValue) {
                 currentTree = tree
-                if let node = tree.nodes[tree.initialNode] {
+                if var node = tree.nodes[tree.initialNode] {
+                    node = filterGeneralOptions(npc: npc, node: node)!
                     currentNode = node
                     return (node.text, filterAvailableOptions(options: node.options))
                 }
@@ -31,13 +32,34 @@ class DialogueProcessor {
         // If no profession dialogue found or if .general was requested, try general dialogue
         if let generalTree = dialogueSystem.getGeneralDialogueTree() {
             currentTree = generalTree
-            if let node = generalTree.nodes[generalTree.initialNode] {
+            if var node = generalTree.nodes[generalTree.initialNode] {
+                node = filterGeneralOptions(npc: npc, node: node)!
                 currentNode = node
                 return (node.text, filterAvailableOptions(options: node.options))
             }
         }
         
         return nil
+    }
+    
+    func filterGeneralOptions(npc: NPC, node: DialogueNode?) -> DialogueNode? {
+        guard let node = node else { return nil }
+        
+        var filteredOptions = node.options
+        
+        if !npc.isUnknown {
+            filteredOptions = filteredOptions.filter { $0.type != .investigate }
+        }
+        
+        if npc.isIntimidated {
+            filteredOptions = filteredOptions.filter { $0.type != .seduce }
+        }
+        
+        return DialogueNode(
+            text: node.text,
+            options: filteredOptions,
+            requirements: node.requirements
+        )
     }
     
     func processNode(_ nodeId: String) -> (text: String, options: [DialogueNodeOption])? {
@@ -55,8 +77,7 @@ class DialogueProcessor {
     }
     
     func attemptSeduction() -> Bool {
-        let finalChance = 70
-        return Int.random(in: 1...100) <= finalChance
+        return true
     }
     
     private func meetsRequirements(_ option: DialogueNodeOption) -> Bool {

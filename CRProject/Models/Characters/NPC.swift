@@ -18,6 +18,8 @@ class NPC: Character {
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isUnknown: Bool = true
     var isSleeping: Bool = false
+    var isIntimidated: Bool = false
+    var intimidationDay: Int = 0
     
     init() {}
     

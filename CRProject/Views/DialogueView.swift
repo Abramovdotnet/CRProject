@@ -12,16 +12,17 @@ struct DialogueView: View {
             
             VStack(spacing: 0) {
                 // Header
-
                 HStack {
-                    VStack(alignment: .leading) {
-                        Text(viewModel.npc.name)
-                            .font(Theme.headingFont)
-                        Text("Age: \(viewModel.npc.age)")
-                            .font(Theme.captionFont)
-                            .foregroundColor(Theme.textColor.opacity(0.7))
+                    if !viewModel.npc.isUnknown {
+                        VStack(alignment: .leading) {
+                            Text(viewModel.npc.name)
+                                .font(Theme.headingFont)
+                            Text("Age: \(viewModel.npc.age)")
+                                .font(Theme.captionFont)
+                                .foregroundColor(Theme.textColor.opacity(0.7))
+                        }
+                        Spacer()
                     }
-                    Spacer()
                     VStack(alignment: .leading) {
                         Text(viewModel.npc.sex == .male ? "Male" : "Female")
                             .font(Theme.headingFont)
@@ -35,7 +36,6 @@ struct DialogueView: View {
                             .foregroundColor(Theme.textColor.opacity(0.7))
                             .font(.title2)
                     }
-     
                 }
                 .padding()
                 .background(Theme.secondaryColor)
@@ -81,8 +81,19 @@ struct DialogueView: View {
                 .transition(.scale.combined(with: .opacity))
                 .animation(.easeInOut, value: viewModel.showActionResult)
             }
+            
+            // Hypnosis Game Overlay
+            if viewModel.showHypnosisGame {
+                HypnosisGameView(onComplete: { score in
+                    viewModel.onHypnosisGameComplete(score: score)
+                }, npc: viewModel.npc)
+                .transition(.opacity.animation(.linear(duration: 0.2)))
+                .zIndex(2)
+                .ignoresSafeArea()
+            }
         }
         .foregroundColor(Theme.textColor)
+        .interactiveDismissDisabled(viewModel.showHypnosisGame)
     }
 }
 

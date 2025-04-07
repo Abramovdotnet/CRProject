@@ -34,8 +34,10 @@ class FeedingService: GameService {
         gameTime.advanceTime(hours: 1)
         statisticsService.incrementFeedings()
         
-        // Increase awareness in the scene where feeding occurred
-        vampireNatureRevealService.increaseAwareness(for: sceneId, amount: prey.isSleeping ? 10.0 : 40.0)
+        if !prey.isIntimidated {
+            // Increase awareness in the scene where feeding occurred
+            vampireNatureRevealService.increaseAwareness(for: sceneId, amount: prey.isSleeping ? 10.0 : 40.0)
+        }
         
         gameEventsBus.addDangerMessage(message: "Player consumed \(prey.name) blood.")
         

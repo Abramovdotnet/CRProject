@@ -36,6 +36,7 @@ struct NPCGridButton: View {
     let onTap: () -> Void
     
     @State private var moonOpacity: Double = 0.6
+    @State private var heartOpacity: Double = 0.6
     
     var body: some View {
         Button(action: {
@@ -81,15 +82,23 @@ struct NPCGridButton: View {
                 .frame(width: 50, height: 50)
                 .padding(0)
                 
-                // Pulsating moon for sleeping NPCs
-                if npc.isSleeping {
-                    Image(systemName: "moon.zzz.fill")
-                        .font(Theme.bodyFont)
-                        .foregroundColor(isSelected ? Theme.textColor : .blue)
-                        .opacity(moonOpacity)
-                        .offset(x: -17, y: -17)
+                HStack {
+                    // Pulsating moon for sleeping NPCs
+                    if npc.isSleeping {
+                        Image(systemName: "moon.zzz.fill")
+                            .font(Theme.bodyFont)
+                            .foregroundColor(isSelected ? Theme.textColor : .blue)
+                            .opacity(moonOpacity)
+                    }
+                    // Pulsating heart for intimidated NPCs
+                    if npc.isIntimidated {
+                        Image(systemName: "heart.fill")
+                            .font(Theme.bodyFont)
+                            .foregroundColor(isSelected ? Theme.textColor : Theme.bloodProgressColor)
+                            .opacity(heartOpacity)
+                    }
                 }
-
+                .offset(x: -17, y: -17)
             }
         }
         .buttonStyle(PlainButtonStyle())
@@ -98,6 +107,11 @@ struct NPCGridButton: View {
             if npc.isSleeping {
                 withAnimation(Animation.easeInOut(duration: 1.5).repeatForever()) {
                     moonOpacity = 1.0
+                }
+            }
+            if npc.isIntimidated {
+                withAnimation(Animation.easeInOut(duration: 1.0).repeatForever()) {
+                    heartOpacity = 1.0
                 }
             }
         }

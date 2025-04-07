@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import SwiftUI
 
 class DialogueViewModel: ObservableObject {
     @Published var currentDialogueText: String = ""
@@ -7,10 +8,13 @@ class DialogueViewModel: ObservableObject {
     @Published var showActionResult: Bool = false
     @Published var actionResultSuccess: Bool = false
     @Published var actionResultMessage: String = ""
+    @Published var showHypnosisGame: Bool = false
+    @Published var hypnosisScore: Int = 0
     
-    let npc: NPC
+    @Published var npc: NPC
     private let dialogueProcessor: DialogueProcessor
     private var cancellables = Set<AnyCancellable>()
+    private var pendingSeductionNode: String?
     
     init(npc: NPC, player: Player) {
         self.npc = npc
@@ -28,7 +32,8 @@ class DialogueViewModel: ObservableObject {
         DebugLogService.shared.log("Attempting to load dialogue for NPC: \(npc.name), profession: \(npc.profession.rawValue)", category: "Dialogue")
         
         // Try profession-specific dialogue first
-        if let dialogue = dialogueProcessor.loadDialogue(profession: npc.profession) {
+        if var dialogue = dialogueProcessor.loadDialogue(npc: npc) {
+            
             DebugLogService.shared.log("Successfully loaded dialogue for \(npc.profession.rawValue)", category: "Dialogue")
             updateDialogue(text: dialogue.text, options: dialogue.options)
         } else {
@@ -48,13 +53,23 @@ class DialogueViewModel: ObservableObject {
     private func updateDialogue(text: String, options: [DialogueNodeOption]) {
         DebugLogService.shared.log("Updating dialogue - Text: \(text), Options count: \(options.count)", category: "Dialogue")
         currentDialogueText = text
-        self.options = options.map { option in
+        
+        // Convert options and reorder if investigate option exists
+        var dialogueOptions = options.map { option in
             DialogueOption(
                 text: option.text,
                 type: option.type,
                 nextNodeId: option.nextNode
             )
         }
+        
+        // If there's an investigate option, move it to the beginning
+        if let investigateIndex = dialogueOptions.firstIndex(where: { $0.type == .investigate }) {
+            let investigateOption = dialogueOptions.remove(at: investigateIndex)
+            dialogueOptions.insert(investigateOption, at: 0)
+        }
+        
+        self.options = dialogueOptions
     }
     
     func selectOption(_ option: DialogueOption) {
@@ -63,6 +78,8 @@ class DialogueViewModel: ObservableObject {
             handleIntimidation(nextNodeId: option.nextNodeId)
         case .seduce:
             handleSeduction(nextNodeId: option.nextNodeId)
+        case .investigate:
+            handleInvestigation(nextNodeId: option.nextNodeId)
         case .normal:
             processNextNode(option.nextNodeId)
         }
@@ -73,24 +90,48 @@ class DialogueViewModel: ObservableObject {
         showActionResult(success: success, action: "Intimidation")
         
         if success {
+            VibrationService.shared.lightTap()
             processNextNode(nextNodeId)
         }
     }
     
     private func handleSeduction(nextNodeId: String) {
-        let success = dialogueProcessor.attemptSeduction()
-        showActionResult(success: success, action: "Seduction")
-        
-        if success {
-            processNextNode(nextNodeId)
+        pendingSeductionNode = nextNodeId
+        VibrationService.shared.lightTap()
+        showHypnosisGame = true
+    }
+    
+    private func handleInvestigation(nextNodeId: String) {
+        npc.isUnknown = false
+        VibrationService.shared.lightTap()
+        processNextNode(nextNodeId)
+    }
+    
+    func onHypnosisGameComplete(score: Int) {
+        hypnosisScore = score
+        withAnimation(.linear(duration: 0.2)) {
+            showHypnosisGame = false
         }
+        
+        if score >= 100, let nodeId = pendingSeductionNode {
+            let success = dialogueProcessor.attemptSeduction()
+            showActionResult(success: success, action: "Seduction")
+            
+            if success {
+                npc.isIntimidated = true
+                processNextNode(nodeId)
+            }
+        } else {
+            showActionResult(success: false, action: "Seduction")
+        }
+        
+        pendingSeductionNode = nil
     }
     
     private func processNextNode(_ nodeId: String) {
         if nodeId == "end" {
-            // Handle end of dialogue
-            currentDialogueText = "The conversation has ended."
-            options = []
+            // Return to initial dialogue instead of ending conversation
+            loadInitialDialogue()
             return
         }
         
