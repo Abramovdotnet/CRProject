@@ -1,5 +1,23 @@
 import SwiftUI
 
+struct PulsingEffect: ViewModifier {
+    @State private var opacity: Double = 0.8
+    
+    func body(content: Content) -> some View {
+        content
+            .opacity(opacity)
+            .onAppear {
+                withAnimation(
+                    Animation
+                        .easeInOut(duration: 1.5)
+                        .repeatForever(autoreverses: true)
+                ) {
+                    opacity = 1.0
+                }
+            }
+    }
+}
+
 struct HypnosisGameView: View {
     enum GameSymbol: String, CaseIterable {
         case bloodPulse = "heart.fill"
@@ -26,7 +44,16 @@ struct HypnosisGameView: View {
     @State private var isProgressBarBlinking = false
     @State private var progressBarOpacity: Double = 1.0
     @State private var heartOpacity: Double = 1.0
+    @State private var watchScale: CGFloat = 1.0
+    @State private var artImage: String
     @Environment(\.dismiss) private var dismiss
+    
+    init(onComplete: @escaping (Int) -> Void, npc: NPC) {
+        self.onComplete = onComplete
+        self.npc = npc
+        let randomNumber = Int.random(in: 1...8)
+        self._artImage = State(initialValue: "deviantArt\(randomNumber)")
+    }
     
     private struct SymbolData: Identifiable {
         let id = UUID()
@@ -37,124 +64,104 @@ struct HypnosisGameView: View {
         var color: Color = Theme.textColor
     }
     
+    private var resultView: some View {
+        GeometryReader { geometry in
+            ZStack {
+                // Static black background
+                Color.black
+                    .ignoresSafeArea()
+                
+                // Animated overlay
+                Color.black
+                    .opacity(0.9)
+                    .ignoresSafeArea()
+                    .transition(.opacity)
+                
+                VStack {
+                    // Black background for image
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8)
+                            .fill(Color.black)
+                            .frame(maxWidth: geometry.size.width)
+                            .aspectRatio(1, contentMode: .fit)
+                        
+                        Image(artImage)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: geometry.size.width * 0.3)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .foregroundColor(.white)
+                            .modifier(PulsingEffect())
+                            .transition(.opacity)
+                    }
+                    completeButton
+                }
+            }
+            .transition(.opacity)
+        }
+    }
+    
+    private var completeButton: some View {
+        Button(action: {
+            withAnimation(.easeInOut(duration: 0.1)) {
+                watchScale = 0.9
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                withAnimation(.spring()) {
+                    watchScale = 1.0
+                    VibrationService.shared.lightTap()
+                    onComplete(score)
+                }
+            }
+        }) {
+            ZStack {
+                // 1. Frame (bottom layer)
+                Image("iconFrame")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 50 * 1.1, height: 50 * 1.1)
+                
+                // 2. Background circle (middle layer)
+                Circle()
+                    .fill(Color.black.opacity(0.7))
+                    .frame(width: 50 * 0.85, height: 50 * 0.85)
+                    .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                    .overlay(
+                        Circle()
+                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                    )
+                
+                Image(systemName: "heart.fill")
+                    .foregroundColor(Theme.bloodProgressColor)
+                    .font(.system(size: 20))
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 50 * 0.8, height: 50 * 0.8)
+            }
+            .scaleEffect(watchScale)
+        }
+        .buttonStyle(PlainButtonStyle())
+        .contentShape(Circle())
+        .shadow(color: .black, radius: 3, x: 0, y: 2)
+    }
+    
     var body: some View {
         GeometryReader { geometry in
-        ZStack {
-                if showResult {
-                    Text("Success")
-                        .font(.system(size: 72, weight: .bold, design: .default))
-                        .foregroundColor(.white)
-                } else {
+            ZStack {
+                if !showResult {
                     Image("MainSceneBackground")
                         .resizable()
                         .aspectRatio(contentMode: .fill)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .clipped()
                         .ignoresSafeArea()
-                    
-                    VStack(spacing: 0) {
-                        // Progress bar at the top
-                        ZStack(alignment: .leading) {
-                            // Background track (inactive part)
-                            Rectangle()
-                                .foregroundColor(.black.opacity(0.5))
-                            
-                            // Progress fill (active part)
-                            Rectangle()
-                                .foregroundColor(Theme.bloodProgressColor)
-                                .frame(width: geometry.size.width * CGFloat(progressValue))
-                                .opacity(progressBarOpacity)
-                        }
-                        .frame(height: 20)
-                        .cornerRadius(4)
-                .overlay(
-                            RoundedRectangle(cornerRadius: 4)
-                                .stroke(Color.black, lineWidth: 1)
-                                .opacity(0.5)
-                        )
-                        .padding(.horizontal)
-                        .padding(.top, 16)
-                        
-                        Spacer()
-                        
-                        // Game content
-                        ZStack {
-                            // Heartbeat line layers
-                            HeartbeatLine(phase: pulsePhase)
-                                .stroke(Theme.bloodProgressColor, lineWidth: 4)
-                                .opacity(0.15)
-                                .frame(height: 100)
-                                .padding(.horizontal)
-                                .blur(radius: 8)
-                            
-                            HeartbeatLine(phase: pulsePhase)
-                                .stroke(Theme.bloodProgressColor, lineWidth: 3)
-                                .opacity(0.2)
-                                .frame(height: 100)
-                                .padding(.horizontal)
-                                .blur(radius: 4)
-                            
-                            HeartbeatLine(phase: pulsePhase)
-                                .stroke(Theme.bloodProgressColor, lineWidth: 2)
-                                .opacity(0.3)
-                                .frame(height: 100)
-                                .padding(.horizontal)
-                                .shadow(color: Theme.bloodProgressColor, radius: 2, x: 0, y: 0)
-                            
-                            HeartbeatLine(phase: pulsePhase)
-                                .stroke(Theme.bloodProgressColor, lineWidth: 1.5)
-                                .frame(height: 100)
-                                .padding(.horizontal)
-                            
-                            // Moving symbols
-                            ForEach(activeSymbols) { symbol in
-                                Image(systemName: symbol.symbol.rawValue)
-                                    .foregroundColor(symbol.color)
-                                    .font(.title)
-                                    .scaleEffect(symbol.scale)
-                                    .opacity(symbol.opacity)
-                                    .position(symbol.position)
-                                    .padding(.top, -28)
-                            }
-                        }
-                        .frame(height: 150)
-
-                        // Control icons
-                        HStack(spacing: 30) {
-                            ForEach(GameSymbol.allCases, id: \.self) { symbol in
-                                Button(action: {
-                                    checkSymbolMatch(symbol)
-                                }) {
-                                    Image(systemName: symbol.rawValue)
-                                        .font(.system(size: 30))
-                                        .foregroundColor(Theme.bloodProgressColor)
-                                        .frame(width: 60, height: 60)
-                                        .background(
-                                            Circle()
-                                                .fill(Color.black.opacity(0.5))
-                                        )
-                                        .overlay(
-            Circle()
-                                                .stroke(Theme.bloodProgressColor, lineWidth: 2)
-                                        )
-                                }
-                            }
-                        }
-                        .padding(.bottom, 130)
-                    }
-                    
-                    // Feedback animations
-                    if showSuccess {
-                        Image(systemName: "checkmark.circle.fill")
-                            .font(.system(size: 100))
-                            .foregroundColor(.green)
-                            .transition(.scale.combined(with: .opacity))
-                    }
-                    
-                    if showFail {
-                        Image(systemName: "xmark.circle.fill")
-                            .font(.system(size: 100))
-                .foregroundColor(.red)
-                            .transition(.scale.combined(with: .opacity))
-                    }
+                }
+                
+                if showResult {
+                    resultView
+                }
+                
+                if !showResult {
+                    gameContent(geometry: geometry)
                 }
             }
         }
@@ -172,12 +179,17 @@ struct HypnosisGameView: View {
             }
             
             if newScore >= 100 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    //onComplete(newScore)
-                    showResult = true
+                withAnimation(.easeInOut(duration: 0.5)) {
+                    if npc.sex == .male {
+                        showSuccess = true
+                        onComplete(score)
+                    } else {
+                        showResult = true
+                    }
                 }
+                VibrationService.shared.successVibration()
             } else if newScore <= 0 {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                withAnimation(.easeInOut(duration: 0.3)) {
                     dismiss()
                 }
             }
@@ -186,6 +198,114 @@ struct HypnosisGameView: View {
             startGame()
             startHeartPulsing()
         }
+    }
+    
+    private func gameContent(geometry: GeometryProxy) -> some View {
+        VStack(spacing: 0) {
+            // Progress bar at the top
+            progressBar(geometry: geometry)
+            
+            Spacer()
+            
+            // Game content
+            ZStack {
+                // Heartbeat line layers
+                heartbeatLayers
+                
+                // Moving symbols
+                ForEach(activeSymbols) { symbol in
+                    Image(systemName: symbol.symbol.rawValue)
+                        .foregroundColor(symbol.color)
+                        .font(.title)
+                        .scaleEffect(symbol.scale)
+                        .opacity(symbol.opacity)
+                        .position(symbol.position)
+                        .padding(.top, -28)
+                }
+            }
+            .frame(height: 150)
+            
+            // Control icons
+            controlButtons
+        }
+        .transition(.opacity)
+    }
+    
+    private var heartbeatLayers: some View {
+        ZStack {
+            HeartbeatLine(phase: pulsePhase)
+                .stroke(Theme.bloodProgressColor, lineWidth: 4)
+                .opacity(0.15)
+                .frame(height: 100)
+                .padding(.horizontal)
+                .blur(radius: 8)
+            
+            HeartbeatLine(phase: pulsePhase)
+                .stroke(Theme.bloodProgressColor, lineWidth: 3)
+                .opacity(0.2)
+                .frame(height: 100)
+                .padding(.horizontal)
+                .blur(radius: 4)
+            
+            HeartbeatLine(phase: pulsePhase)
+                .stroke(Theme.bloodProgressColor, lineWidth: 2)
+                .opacity(0.3)
+                .frame(height: 100)
+                .padding(.horizontal)
+                .shadow(color: Theme.bloodProgressColor, radius: 2, x: 0, y: 0)
+            
+            HeartbeatLine(phase: pulsePhase)
+                .stroke(Theme.bloodProgressColor, lineWidth: 1.5)
+                .frame(height: 100)
+                .padding(.horizontal)
+        }
+    }
+    
+    private func progressBar(geometry: GeometryProxy) -> some View {
+        ZStack(alignment: .leading) {
+            // Background track (inactive part)
+            Rectangle()
+                .foregroundColor(.black.opacity(0.5))
+            
+            // Progress fill (active part)
+            Rectangle()
+                .foregroundColor(Theme.bloodProgressColor)
+                .frame(width: geometry.size.width * CGFloat(progressValue))
+                .opacity(progressBarOpacity)
+        }
+        .frame(height: 20)
+        .cornerRadius(4)
+        .overlay(
+            RoundedRectangle(cornerRadius: 4)
+                .stroke(Color.black, lineWidth: 1)
+                .opacity(0.5)
+        )
+        .padding(.horizontal)
+        .padding(.top, 16)
+    }
+    
+    private var controlButtons: some View {
+        HStack(spacing: 30) {
+            ForEach(GameSymbol.allCases, id: \.self) { symbol in
+                Button(action: {
+                    checkSymbolMatch(symbol)
+                }) {
+                    Image(systemName: symbol.rawValue)
+                        .font(.system(size: 30))
+                        .foregroundColor(Theme.bloodProgressColor)
+                        .frame(width: 60, height: 60)
+                        .background(
+                            Circle()
+                                .fill(Color.black.opacity(0.5))
+                        )
+                        .overlay(
+                            Circle()
+                                .stroke(Theme.bloodProgressColor, lineWidth: 2)
+                        )
+                }
+            }
+        }
+        .padding(.bottom, 130)
     }
     
     private func startGame() {
@@ -261,7 +381,21 @@ struct HypnosisGameView: View {
     private let hitZoneWidth: CGFloat = 50
     
     private func checkSymbolMatch(_ tappedSymbol: GameSymbol) {
+        // Ignore input if game is completed or in transition
+        guard !showResult else { return }
+        
         let centerX = UIScreen.main.bounds.midX
+        
+        // Check if we're about to reach 100 points
+        let potentialScore = score + (tappedSymbol == .vampireBite ? 40 : 30)
+        if potentialScore >= 100 {
+            score = 100
+            withAnimation(.easeInOut(duration: 0.5)) {
+                showResult = true
+            }
+            VibrationService.shared.successVibration()
+            return
+        }
         
         for index in activeSymbols.indices.reversed() {
             let symbol = activeSymbols[index]
@@ -270,7 +404,7 @@ struct HypnosisGameView: View {
             if distance < hitZoneWidth {
                 if symbol.symbol == tappedSymbol {
                     // Successful hit
-                    score += symbol.symbol == .vampireBite ? 40 : 30
+                    score = min(score + (symbol.symbol == .vampireBite ? 40 : 30), 100)
                     
                     withAnimation {
                         activeSymbols[index].scale *= 1.5
@@ -289,7 +423,7 @@ struct HypnosisGameView: View {
                     return
                 } else {
                     // Wrong symbol penalty
-                    score -= 3
+                    score = max(0, score - 20)
                 }
             }
         }

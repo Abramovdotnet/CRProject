@@ -186,7 +186,7 @@ class NPCPopulationService: GameService {
         
         // 2. Calculate how many new NPCs we can add
         let currentCount = newPopulation.count
-        let targetCount =  isNightTime ? Int(Float(getTargetPopulationCount(for: sceneType)) * 2) : Int(Float(getTargetPopulationCount(for: sceneType)) * 3)
+        let targetCount =  Int(Float(getTargetPopulationCount(for: sceneType)))
         let spaceForNew = targetCount - currentCount
         
         // 3. Add new NPCs that match the scene type
@@ -204,9 +204,15 @@ class NPCPopulationService: GameService {
             newNPCs += Array(priorityNPCs.prefix(max(1, spaceForNew)))
             newNPCs += Array(otherNPCs.prefix(spaceForNew - newNPCs.count))
             
+            var arrivalChanceMultiplier = isNightTime ? 0.5 : 1.0
+            // Adjust arrivalChange for fresh location
+            if currentCount == 0 {
+                arrivalChanceMultiplier *= 1.5
+            }
+            
             // Randomly decide which new NPCs actually enter (simulating natural flow)
             newNPCs = newNPCs.filter { _ in
-                let arrivalChance = isNightTime ? 0.1 : 0.05
+                let arrivalChance = arrivalChanceMultiplier
                 return Double.random(in: 0...1) < arrivalChance
             }
             
@@ -250,9 +256,9 @@ class NPCPopulationService: GameService {
     
     private func getTargetPopulationCount(for sceneType: SceneType) -> Int {
         switch sceneType {
-        case .tavern, .inn, .market, .district:
+        case .tavern, .inn, .district:
             return Int.random(in: 5...10)
-        case .temple, .shrine, .monastery, .greatCathedral, .garrison, .guard_post, .blacksmith, .forge, .alchemistShop, .library, .archive:
+        case .temple, .market, .shrine, .monastery, .greatCathedral, .garrison, .guard_post, .blacksmith, .forge, .alchemistShop, .library, .archive:
             return Int.random(in: 2...15)
         case .farm, .mill:
             return Int.random(in: 1...3)

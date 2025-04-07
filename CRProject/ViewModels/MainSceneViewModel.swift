@@ -254,6 +254,7 @@ class MainSceneViewModel: ObservableObject {
             try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30, in: sceneId)
             updatePlayerBloodPercentage()
             updateSceneAwareness()
+
             DebugLogService.shared.log("\(sceneAwareness)", category: "Debug")
         } catch {
             DebugLogService.shared.log("Error feeding on character: \(error)", category: "Error")

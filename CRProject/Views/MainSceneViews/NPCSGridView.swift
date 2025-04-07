@@ -57,6 +57,27 @@ struct NPCGridButton: View {
                     )
                     .shadow(color: npc.isSleeping ? Color.blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 0)
                 
+                // Blood meter for known NPCs
+                if !npc.isUnknown {
+                    VStack {
+                        Spacer()
+                        // Horizontal progress bar container
+                        HStack(spacing: 1) {
+                            ForEach(0..<5) { index in
+                                let segmentValue = Double(npc.bloodMeter.currentBlood) / 100.0
+                                let segmentThreshold = Double(index + 1) / 5.0
+                                
+                                Rectangle()
+                                    .fill(segmentValue >= segmentThreshold ? 
+                                          Theme.bloodProgressColor : Color.black.opacity(0.3))
+                                    .frame(height: 2)
+                            }
+                        }
+                        .frame(width: 30)
+                        .padding(.bottom, 3)
+                    }
+                }
+                
                 // Content
                 VStack(spacing: 4) {
                     ZStack(alignment: .topLeading) {
@@ -68,7 +89,7 @@ struct NPCGridButton: View {
                     
                     if !npc.isUnknown {
                         HStack(spacing: 4) {
-                            Image(systemName: npc.sex == .female ? "figure.dress" : "figure.wave")
+                            Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
                                 .font(Theme.smallFont)
                                 .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
                                 .lineLimit(1)
@@ -77,28 +98,51 @@ struct NPCGridButton: View {
                                 .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
                                 .lineLimit(1)
                         }
+                        .offset(y: -2)
                     }
                 }
                 .frame(width: 50, height: 50)
                 .padding(0)
                 
-                HStack {
-                    // Pulsating moon for sleeping NPCs
-                    if npc.isSleeping {
+                // Status icons container using ZStack for corner alignment
+                ZStack(alignment: .topLeading) { // Default alignment to topLeading
+                    if npc.isSleeping && npc.isIntimidated {
+                        // Both: Moon top-left, Heart top-right
                         Image(systemName: "moon.zzz.fill")
                             .font(Theme.bodyFont)
                             .foregroundColor(isSelected ? Theme.textColor : .blue)
                             .opacity(moonOpacity)
-                    }
-                    // Pulsating heart for intimidated NPCs
-                    if npc.isIntimidated {
+                            .padding(4) // Padding from the edge
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        
                         Image(systemName: "heart.fill")
                             .font(Theme.bodyFont)
                             .foregroundColor(isSelected ? Theme.textColor : Theme.bloodProgressColor)
                             .opacity(heartOpacity)
+                            .padding(4) // Padding from the edge
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                        
+                    } else if npc.isSleeping {
+                        // Only Sleeping: Moon top-left
+                        Image(systemName: "moon.zzz.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(isSelected ? Theme.textColor : .blue)
+                            .opacity(moonOpacity)
+                            .padding(4)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                        
+                    } else if npc.isIntimidated {
+                        // Only Intimidated: Heart top-left
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(isSelected ? Theme.textColor : Theme.bloodProgressColor)
+                            .opacity(heartOpacity)
+                            .padding(4)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
                     }
                 }
-                .offset(x: -17, y: -17)
+                // Make the ZStack cover the whole button area for alignment
+                .frame(width: 50, height: 50) 
             }
         }
         .buttonStyle(PlainButtonStyle())

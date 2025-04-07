@@ -8,18 +8,35 @@ struct SelectedNPCView: View {
         HStack(spacing: 16) {
             // Left Section: NPC Status
             VStack(alignment: .center, spacing: 4) {
-                HStack {
-                    if !npc.isUnknown {
-                        HStack(spacing: 4) {
-                            Image(systemName: npc.sex == .female ? "figure.dress" : "figure.wave")
-                                .font(Theme.bodyFont)
-                                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                if !npc.isUnknown {
+                    HStack(spacing: 4) {
+                        Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                            .font(Theme.bodyFont)
+                            .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                        
+                        Image(systemName: npc.profession.icon)
+                            .font(Theme.bodyFont)
+                            .foregroundColor(npc.profession.color)
+                    }
+                    .offset(y: -2)
+                    
+                    // Blood meter
+                    HStack(spacing: 1) {
+                        ForEach(0..<5) { index in
+                            let segmentValue = Double(npc.bloodMeter.currentBlood) / 100.0
+                            let segmentThreshold = Double(index + 1) / 5.0
                             
-                            Image(systemName: npc.profession.icon)
-                                .font(Theme.bodyFont)
-                                .foregroundColor(npc.profession.color)
+                            Rectangle()
+                                .fill(segmentValue >= segmentThreshold ? 
+                                      Theme.bloodProgressColor : Color.black.opacity(0.3))
+                                .frame(height: 2)
                         }
                     }
+                    .frame(width: 30)
+                }
+                
+                // Status icons
+                HStack(spacing: 4) {
                     if npc.isSleeping {
                         Image(systemName: "moon.zzz.fill")
                             .foregroundColor(.blue)
@@ -60,7 +77,7 @@ struct SelectedNPCView: View {
                             .font(Theme.bodyFont)
                             .foregroundColor(npc.isAlive ? .green : Theme.primaryColor)
                         
-                        Text(npc.isVampire ? "Vampire" : "Mortal")
+                        Text(npc.isUnknown ? "Unknown" : npc.isVampire ? "Vampire" : "Mortal")
                             .font(Theme.bodyFont)
                             .foregroundColor(npc.isVampire ? Theme.primaryColor : .green)
                     }
@@ -90,14 +107,17 @@ struct SelectedNPCView: View {
                         },
                         color: Theme.textColor)
                     
-                    if !npc.isUnknown && !npc.isVampire {
-                        ActionButton(
-                            icon: "drop.halffull",
-                            action: {
-                                onAction(.feed(npc))
-                                VibrationService.shared.regularTap()
-                            },
-                            color: Theme.primaryColor)
+                    if !npc.isVampire {
+                        
+                        if !npc.isUnknown {
+                            ActionButton(
+                                icon: "drop.halffull",
+                                action: {
+                                    onAction(.feed(npc))
+                                    VibrationService.shared.regularTap()
+                                },
+                                color: Theme.primaryColor)
+                        }
                         
                         ActionButton(
                             icon: "drop.fill",
