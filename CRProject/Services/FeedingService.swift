@@ -31,19 +31,29 @@ class FeedingService: GameService {
         }
         
         try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
-        gameTime.advanceTime(hours: 1)
-        statisticsService.incrementFeedings()
         
-        if !prey.isIntimidated {
-            // Increase awareness in the scene where feeding occurred
-            vampireNatureRevealService.increaseAwareness(for: sceneId, amount: prey.isSleeping ? 10.0 : 40.0)
+        var awarenessIncreaseValue: Float = 40.0;
+        
+        if prey.isIntimidated {
             prey.isIntimidated = false
+            awarenessIncreaseValue -= 20
         }
         
+        if prey.isSleeping {
+            awarenessIncreaseValue -= 10
+        }
+        
+        gameTime.advanceTime(hours: 1)
+        
+        // Increase awareness in the scene where feeding occurred
+        vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
+        statisticsService.incrementFeedings()
         gameEventsBus.addDangerMessage(message: "Player consumed \(prey.name) blood.")
         
         if !prey.isAlive {
             gameEventsBus.addDangerMessage(message: "* I just killed \(prey.name)! Feel satisfied... *")
+            // Double awareness increase if killing victim
+            vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
         }
     }
     
@@ -53,17 +63,23 @@ class FeedingService: GameService {
         }
         
         let drainedBlood = try bloodService.emptyBlood(vampire: vampire, prey: prey)
-        gameTime.advanceTime(hours:1)
-        statisticsService.incrementVictimsDrained()
         
-        if !prey.isIntimidated {
-            // Increase awareness in the scene where feeding occurred
-            vampireNatureRevealService.increaseAwareness(for: sceneId, amount: prey.isSleeping ? 30 : 50)
+        var awarenessIncreaseValue: Float = 70;
+        
+        if prey.isIntimidated {
             prey.isIntimidated = false
-        } else {
-            // Increase awareness more significantly when emptying blood
-            vampireNatureRevealService.increaseAwareness(for: sceneId, amount: prey.isSleeping ? 20 : 40)
+            awarenessIncreaseValue -= 25
         }
+        
+        if prey.isSleeping {
+            awarenessIncreaseValue -= 25
+        }
+        
+        gameTime.advanceTime(hours: 1)
+        
+        // Increase awareness in the scene where feeding occurred
+        vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
+        statisticsService.incrementVictimsDrained()
         
         gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
     }
