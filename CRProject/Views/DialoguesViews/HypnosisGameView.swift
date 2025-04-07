@@ -190,7 +190,7 @@ struct HypnosisGameView: View {
                 VibrationService.shared.successVibration()
             } else if newScore <= 0 {
                 withAnimation(.easeInOut(duration: 0.3)) {
-                    dismiss()
+                    onComplete(score)
                 }
             }
         }

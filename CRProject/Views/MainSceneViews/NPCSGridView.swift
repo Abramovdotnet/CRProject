@@ -12,7 +12,7 @@ struct NPCSGridView: View {
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 8) {
-                ForEach(npcs.prefix(20)) { npc in
+                ForEach(npcs.sorted(by: { $0.index > $1.index }).prefix(20), id: \.index) { npc in
                     NPCGridButton(
                         npc: npc,
                         isSelected: npcManager.currentNPC?.id == npc.id

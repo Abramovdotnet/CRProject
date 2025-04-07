@@ -9,6 +9,7 @@ import Foundation
 
 class NPC: Character {
     var id: UUID = UUID()
+    var index : Int = 0
     var name: String = ""
     var sex: Sex = .male
     var age: Int = 0
@@ -20,6 +21,7 @@ class NPC: Character {
     var isSleeping: Bool = false
     var isIntimidated: Bool = false
     var intimidationDay: Int = 0
+
     
     init() {}
     

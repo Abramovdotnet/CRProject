@@ -20,6 +20,7 @@ protocol Character: Identifiable, ObservableObject, Codable {
     var isSleeping: Bool { get set }
     var isIntimidated: Bool { get set }
     var intimidationDay: Int { get set }
+    var index : Int { get set }
     
     func shareBlood(amount: Float, from donor: any Character)
 }

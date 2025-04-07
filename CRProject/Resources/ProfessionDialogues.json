@@ -19,8 +19,8 @@
                         }
                     },
                     {
-                        "text": "You have such a charming smile... [Seduce]",
-                        "type": "normal",
+                        "text": "You have such a charming smile... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "baker_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -136,8 +136,8 @@
                         }
                     },
                     {
-                        "text": "Perhaps we can negotiate... [Seduce]",
-                        "type": "normal",
+                        "text": "Perhaps we can negotiate... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "merchant_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -250,8 +250,8 @@
                         }
                     },
                     {
-                        "text": "Surely we can work something out... [Seduce]",
-                        "type": "normal",
+                        "text": "Surely we can work something out... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "guard_seduced",
                         "requirements": {
                             "minCharisma": 4
@@ -349,8 +349,8 @@
                         }
                     },
                     {
-                        "text": "That's quite impressive craftsmanship... [Seduce]",
-                        "type": "normal",
+                        "text": "That's quite impressive craftsmanship... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "blacksmith_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -438,8 +438,8 @@
                         }
                     },
                     {
-                        "text": "The mill seems... private [Seduce]",
-                        "type": "normal",
+                        "text": "The mill seems... private [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "miller_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -527,8 +527,8 @@
                         }
                     },
                     {
-                        "text": "I seek... private counsel [Seduce]",
-                        "type": "normal",
+                        "text": "I seek... private counsel [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "priest_seduced",
                         "requirements": {
                             "minCharisma": 4
@@ -616,8 +616,8 @@
                         }
                     },
                     {
-                        "text": "Such a cozy establishment... [Seduce]",
-                        "type": "normal",
+                        "text": "Such a cozy establishment... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "innkeeper_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -705,8 +705,8 @@
                         }
                     },
                     {
-                        "text": "Perhaps we could make a special arrangement... [Seduce]",
-                        "type": "normal",
+                        "text": "Perhaps we could make a special arrangement... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "alchemist_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -794,8 +794,8 @@
                         }
                     },
                     {
-                        "text": "I'd love a private performance... [Seduce]",
-                        "type": "normal",
+                        "text": "I'd love a private performance... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "minstrel_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -883,8 +883,8 @@
                         }
                     },
                     {
-                        "text": "Your knowledge intrigues me... [Seduce]",
-                        "type": "normal",
+                        "text": "Your knowledge intrigues me... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "scribe_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -972,8 +972,8 @@
                         }
                     },
                     {
-                        "text": "You seem experienced in tracking... [Seduce]",
-                        "type": "normal",
+                        "text": "You seem experienced in tracking... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "hunter_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -1061,8 +1061,8 @@
                         }
                     },
                     {
-                        "text": "I need something... personal [Seduce]",
-                        "type": "normal",
+                        "text": "I need something... personal [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "apothecary_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -1150,8 +1150,8 @@
                         }
                     },
                     {
-                        "text": "Surely you have private news... [Seduce]",
-                        "type": "normal",
+                        "text": "Surely you have private news... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "herald_seduced",
                         "requirements": {
                             "minCharisma": 3
@@ -1239,8 +1239,8 @@
                         }
                     },
                     {
-                        "text": "Your craftsmanship is impressive... [Seduce]",
-                        "type": "normal",
+                        "text": "Your craftsmanship is impressive... [Intrigue]",
+                        "type": "intrigue",
                         "nextNode": "cooper_seduced",
                         "requirements": {
                             "minCharisma": 3

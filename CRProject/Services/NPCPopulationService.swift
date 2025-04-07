@@ -81,7 +81,14 @@ class NPCPopulationService: GameService {
         
         let priorities = sceneProfessionPriorities[scene.sceneType] ?? []
         let availableNPCs = NPCReader.getNPCs()
-        let adjustedPopulation = adjustPopulationForScene(oldPopulation, sceneType: scene.sceneType, priorities: priorities, availableNPCs: availableNPCs)
+        
+        var adjustedPopulation = adjustPopulationForScene(
+            oldPopulation,
+            sceneType: scene.sceneType,
+            priorities: priorities,
+            availableNPCs: availableNPCs
+        )
+
         scene.setCharacters(adjustedPopulation)
         
         // Compare populations and generate movement events

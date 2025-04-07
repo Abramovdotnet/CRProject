@@ -1,8 +1,9 @@
 // MARK: - Dialogue Processor
+
 class DialogueProcessor {
     private let dialogueSystem: DialogueSystem
     private let player: Player
-    private let npc: NPC
+    private var npc: NPC
     private var currentNode: DialogueNode?
     private var currentTree: DialogueTree?
     private var gameTimeService: GameTimeService
@@ -47,12 +48,19 @@ class DialogueProcessor {
         
         var filteredOptions = node.options
         
+        // Фильтрация для известных NPC
         if !npc.isUnknown {
             filteredOptions = filteredOptions.filter { $0.type != .investigate }
         }
         
+        // Фильтрация для запуганных NPC
         if npc.isIntimidated {
-            filteredOptions = filteredOptions.filter { $0.type != .seduce }
+            filteredOptions = filteredOptions.filter { $0.type != .intrigue }
+        }
+        // Для неизвестных NPC убираем соблазнение и интриги
+        else if npc.isUnknown {
+            filteredOptions = filteredOptions.filter { option in option.type != .intrigue
+            }
         }
         
         return DialogueNode(
@@ -64,9 +72,10 @@ class DialogueProcessor {
     
     func processNode(_ nodeId: String) -> (text: String, options: [DialogueNodeOption])? {
         guard let tree = currentTree,
-              let node = tree.nodes[nodeId] else {
+              var node = tree.nodes[nodeId] else {
             return nil
         }
+        node = filterGeneralOptions(npc: npc, node: node) ?? node
         currentNode = node
         return (node.text, filterAvailableOptions(options: node.options))
     }

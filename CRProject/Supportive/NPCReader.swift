@@ -18,6 +18,12 @@ class NPCReader : GameService {
         
         do {
             let convertedNPCs = npcs.compactMap { createNPC(from: $0) }
+            
+            var index = 0
+            for npc in convertedNPCs {
+                npc.index = index
+                index += 1
+            }
             DebugLogService.shared.log("getNPCs returning \(convertedNPCs.count) NPCs", category: "NPC")
             return convertedNPCs
         } catch {

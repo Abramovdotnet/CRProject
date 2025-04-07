@@ -8,6 +8,7 @@ import Foundation
 
 class Player: Character, Codable {
     var id: UUID = UUID()
+    var index : Int = 0
     var name: String = ""
     var sex: Sex = .male
     var age: Int = 0

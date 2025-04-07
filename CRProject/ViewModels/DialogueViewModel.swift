@@ -19,6 +19,7 @@ class DialogueViewModel: ObservableObject {
     private let vampireNatureRevealService: VampireNatureRevealService = DependencyManager.shared.resolve()
     private let gameStateService: GameStateService = DependencyManager.shared.resolve()
     private let gameEventBusService: GameEventsBusService = DependencyManager.shared.resolve()
+    private let investigationService: InvestigationService = DependencyManager.shared.resolve()
     
     init(npc: NPC, player: Player) {
         self.npc = npc
@@ -86,6 +87,8 @@ class DialogueViewModel: ObservableObject {
             handleInvestigation(nextNodeId: option.nextNodeId)
         case .normal:
             processNextNode(option.nextNodeId)
+        case .intrigue:
+            processNextNode(option.nextNodeId)
         }
     }
     
@@ -95,6 +98,7 @@ class DialogueViewModel: ObservableObject {
         
         if success {
             VibrationService.shared.lightTap()
+            gameStateService.handleTimeAdvanced()
             processNextNode(nextNodeId)
         }
         
@@ -108,9 +112,11 @@ class DialogueViewModel: ObservableObject {
     }
     
     private func handleInvestigation(nextNodeId: String) {
-        npc.isUnknown = false
-        VibrationService.shared.lightTap()
-        processNextNode(nextNodeId)
+        if let player = gameStateService.player {
+            investigationService.investigate(inspector: player, investigationObject: npc)
+            VibrationService.shared.lightTap()
+            processNextNode(nextNodeId)
+        }
     }
     
     func onHypnosisGameComplete(score: Int) {
@@ -121,12 +127,11 @@ class DialogueViewModel: ObservableObject {
         
         if score >= 100, let nodeId = pendingSeductionNode {
             let success = dialogueProcessor.attemptSeduction()
-            showActionResult(success: success, action: "Seduction")
             
             if success {
                 npc.isIntimidated = true
                 processNextNode(nodeId)
-                loadInitialDialogue()
+                showActionResult(success: success, action: "Seduction")
             }
         } else {
             showActionResult(success: false, action: "Seduction")

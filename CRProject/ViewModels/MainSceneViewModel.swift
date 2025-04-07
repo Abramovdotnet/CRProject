@@ -103,6 +103,14 @@ class MainSceneViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
+        // Subscribe to time advancement notifications
+        NotificationCenter.default
+            .publisher(for: .timeAdvanced)
+            .sink { [weak self] _ in
+                self?.updateSceneAwareness()
+            }
+            .store(in: &cancellables)
+        
         // Create initial scene using LocationReader
         do {
             guard let initialSceneId = UUID(uuidString: "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d") else {
@@ -339,7 +347,7 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func advanceTime() {
-        gameStateService.handleTimeAdvanced()
+        gameTime.advanceTime()
         updatePlayerBloodPercentage()
     }
     
