@@ -2,6 +2,7 @@ import Foundation
 
 class NPCReader : GameService {
     private static var npcs: [[String: Any]] = []
+    private static var npcsPool: [NPC] = []
     
     static func loadNPCs() {
         if npcs.isEmpty {
@@ -16,6 +17,9 @@ class NPCReader : GameService {
     static func getNPCs() -> [NPC] {
         loadNPCs()
         
+        if npcsPool.count > 0 {
+            return npcsPool
+        }
         do {
             let convertedNPCs = npcs.compactMap { createNPC(from: $0) }
             
@@ -25,7 +29,9 @@ class NPCReader : GameService {
                 index += 1
             }
             DebugLogService.shared.log("getNPCs returning \(convertedNPCs.count) NPCs", category: "NPC")
-            return convertedNPCs
+            
+            npcsPool = convertedNPCs
+            return npcsPool
         } catch {
             DebugLogService.shared.log("Error reading NPCs.json file: \(error)", category: "NPC")
         }

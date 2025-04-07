@@ -33,6 +33,7 @@ class InvestigationService: GameService {
             return
         }
         
+        print("Is beasy for \(investigationObject.name)")
         investigationObject.isBeasy = true
         
         // Adjust game time

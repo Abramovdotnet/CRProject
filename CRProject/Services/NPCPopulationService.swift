@@ -189,7 +189,13 @@ class NPCPopulationService: GameService {
             let priorityMultiplier = priorities.contains(npc.profession) ? 0.53 : 1.0
             let finalLeaveChance = baseLeaveChance * priorityMultiplier
             
-            return Double.random(in: 0...100) > finalLeaveChance
+            var goingToleft = Double.random(in: 0...100) > finalLeaveChance
+            
+            if goingToleft {
+                print("Left \(npc.name) in IsBeasy: \(npc.isBeasy)")
+            }
+            
+            return goingToleft
         }
         
         // 2. Calculate how many new NPCs we can add

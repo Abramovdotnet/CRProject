@@ -145,6 +145,7 @@ class GameStateService : ObservableObject, GameService{
             gameEventsBus.addDangerMessage(message: "* I feel huge lack of blood!*")
         }
         
+        healNPcs()
         // Update NPC sleeping states
         updateNPCSleepingState(isNight: gameTime.isNightTime)
         updateNPCsStatuses()
@@ -160,9 +161,18 @@ class GameStateService : ObservableObject, GameService{
             vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
         }
         
+        healNPcs()
         // Update NPC sleeping states
         updateNPCSleepingState(isNight: gameTime.isNightTime)
         updateNPCsStatuses()
+    }
+    
+    private func healNPcs() {
+        for npc in NPCReader.getNPCs() {
+            if npc.isAlive && !npc.isBeasy && npc.bloodMeter.currentBlood < 100 {
+                npc.bloodMeter.addBlood(2)
+            }
+        }
     }
     
     func updateNPCSleepingState(isNight: Bool) {
