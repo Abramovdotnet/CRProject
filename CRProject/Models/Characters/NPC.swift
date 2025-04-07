@@ -21,7 +21,7 @@ class NPC: Character {
     var isSleeping: Bool = false
     var isIntimidated: Bool = false
     var intimidationDay: Int = 0
-
+    var isBeasy: Bool = false
     
     init() {}
     

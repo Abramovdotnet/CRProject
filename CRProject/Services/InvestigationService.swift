@@ -33,9 +33,11 @@ class InvestigationService: GameService {
             return
         }
         
+        investigationObject.isBeasy = true
+        
         // Adjust game time
         gameTime.advanceTime(hours: 1)
-        
+    
         // Investigate the object
         investigationObject.isUnknown = false
         

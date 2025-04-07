@@ -178,17 +178,18 @@ class NPCPopulationService: GameService {
         // 1. Natural departure chance (some NPCs might leave)
         newPopulation = newPopulation.filter { character in
             guard let npc = character as? NPC else { return true }
+            guard !npc.isBeasy else { return true }
             
             // Dead NPCs never leave (automatically kept)
             guard npc.isAlive else { return true }
             
             // NPCs are more likely to leave at night
-            let baseLeaveChance = isNightTime ? 0.07 : 0.03
+            let baseLeaveChance = isNightTime ? 2.0 : 6.0
             // Priority NPCs are less likely to leave their posts
-            let priorityMultiplier = priorities.contains(npc.profession) ? 0.5 : 1.0
+            let priorityMultiplier = priorities.contains(npc.profession) ? 0.53 : 1.0
             let finalLeaveChance = baseLeaveChance * priorityMultiplier
             
-            return Double.random(in: 0...1) > finalLeaveChance
+            return Double.random(in: 0...100) > finalLeaveChance
         }
         
         // 2. Calculate how many new NPCs we can add
@@ -224,6 +225,10 @@ class NPCPopulationService: GameService {
             }
             
             newPopulation += newNPCs
+        }
+        
+        for npc in newPopulation {
+            npc.isBeasy = false
         }
         
         return newPopulation

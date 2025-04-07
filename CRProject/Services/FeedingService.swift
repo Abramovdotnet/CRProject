@@ -30,6 +30,7 @@ class FeedingService: GameService {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
         
+        prey.isBeasy = true
         try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
         
         var awarenessIncreaseValue: Float = 40.0;
