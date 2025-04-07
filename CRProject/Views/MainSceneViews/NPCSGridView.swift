@@ -56,6 +56,7 @@ struct NPCGridButton: View {
                         }
                     )
                     .shadow(color: npc.isSleeping ? Color.blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 0)
+                    .animation(.easeInOut(duration: 0.3), value: npc.isSleeping)
                 
                 // Blood meter for known NPCs
                 if !npc.isUnknown {
@@ -75,6 +76,7 @@ struct NPCGridButton: View {
                         }
                         .frame(width: 30)
                         .padding(.bottom, 3)
+                        .animation(.easeInOut(duration: 0.3), value: npc.bloodMeter.currentBlood)
                     }
                 }
                 
@@ -84,6 +86,7 @@ struct NPCGridButton: View {
                         Image(systemName: npc.isUnknown ? "questionmark.circle" : "waveform.path.ecg")
                             .font(.system(size: 16))
                             .foregroundColor(iconColor())
+                            .animation(.easeInOut(duration: 0.3), value: npc.isUnknown)
                     }
                     .frame(width: 40, height: 20)
                     
@@ -99,28 +102,31 @@ struct NPCGridButton: View {
                                 .lineLimit(1)
                         }
                         .offset(y: -2)
+                        .animation(.easeInOut(duration: 0.3), value: npc.isUnknown)
                     }
                 }
                 .frame(width: 50, height: 50)
                 .padding(0)
                 
                 // Status icons container using ZStack for corner alignment
-                ZStack(alignment: .topLeading) { // Default alignment to topLeading
+                ZStack(alignment: .topLeading) {
                     if npc.isSleeping && npc.isIntimidated {
                         // Both: Moon top-left, Heart top-right
                         Image(systemName: "moon.zzz.fill")
                             .font(Theme.bodyFont)
                             .foregroundColor(isSelected ? Theme.textColor : .blue)
                             .opacity(moonOpacity)
-                            .padding(4) // Padding from the edge
+                            .padding(4)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                            .animation(.easeInOut(duration: 0.3), value: npc.isSleeping)
                         
                         Image(systemName: "heart.fill")
                             .font(Theme.bodyFont)
                             .foregroundColor(isSelected ? Theme.textColor : Theme.bloodProgressColor)
                             .opacity(heartOpacity)
-                            .padding(4) // Padding from the edge
+                            .padding(4)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                            .animation(.easeInOut(duration: 0.3), value: npc.isIntimidated)
                         
                     } else if npc.isSleeping {
                         // Only Sleeping: Moon top-left
@@ -130,6 +136,7 @@ struct NPCGridButton: View {
                             .opacity(moonOpacity)
                             .padding(4)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                            .animation(.easeInOut(duration: 0.3), value: npc.isSleeping)
                         
                     } else if npc.isIntimidated {
                         // Only Intimidated: Heart top-left
@@ -139,14 +146,15 @@ struct NPCGridButton: View {
                             .opacity(heartOpacity)
                             .padding(4)
                             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                            .animation(.easeInOut(duration: 0.3), value: npc.isIntimidated)
                     }
                 }
-                // Make the ZStack cover the whole button area for alignment
-                .frame(width: 50, height: 50) 
+                .frame(width: 50, height: 50)
             }
         }
         .buttonStyle(PlainButtonStyle())
         .opacity(npc.isAlive ? 1 : 0.7)
+        .animation(.easeInOut(duration: 0.3), value: npc.isAlive)
         .onAppear {
             if npc.isSleeping {
                 withAnimation(Animation.easeInOut(duration: 1.5).repeatForever()) {

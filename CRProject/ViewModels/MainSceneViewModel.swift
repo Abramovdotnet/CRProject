@@ -27,6 +27,8 @@ class MainSceneViewModel: ObservableObject {
     private let bloodManagementService: BloodManagementService
     private let gameTime: GameTimeService
     
+    @StateObject private var npcManager = NPCInteractionManager.shared
+    
     var playerName: String {
         gameStateService.getPlayer()?.name ?? "Unknown"
     }
@@ -107,7 +109,36 @@ class MainSceneViewModel: ObservableObject {
         NotificationCenter.default
             .publisher(for: .timeAdvanced)
             .sink { [weak self] _ in
-                self?.updateSceneAwareness()
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self?.updateSceneAwareness()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to day changes
+        gameTime.$currentDay
+            .sink { [weak self] day in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self?.currentDay = day
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to hour changes
+        gameTime.$currentHour
+            .sink { [weak self] hour in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self?.currentHour = hour
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to night/day changes
+        gameTime.$isNightTime
+            .sink { [weak self] isNight in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self?.isNight = isNight
+                }
             }
             .store(in: &cancellables)
         
@@ -142,21 +173,6 @@ class MainSceneViewModel: ObservableObject {
         // Initial updates
         updatePlayerBloodPercentage()
         updateSceneAwareness()
-        
-        // Subscribe to day changes
-        gameTime.$currentDay
-            .assign(to: &$currentDay)
-            
-        // Subscribe to hour changes
-        gameTime.$currentHour
-            .assign(to: &$currentHour)
-            
-        // Subscribe to night/day changes
-        gameTime.$isNightTime
-            .sink { [weak self] isNight in
-                self?.isNight = isNight
-            }
-            .store(in: &cancellables)
     }
     
     func navigateToParent() {
@@ -313,13 +329,17 @@ class MainSceneViewModel: ObservableObject {
     }
     
     private func updatePlayerBloodPercentage() {
-        guard let player = gameStateService.getPlayer() else { return }
-        self.playerBloodPercentage = bloodManagementService.getBloodPercentage(of: player)
+        withAnimation(.easeInOut(duration: 0.3)) {
+            guard let player = gameStateService.getPlayer() else { return }
+            self.playerBloodPercentage = bloodManagementService.getBloodPercentage(of: player)
+        }
     }
     
     private func updateSceneAwareness() {
-        guard let currentSceneId = currentScene?.id else { return }
-        sceneAwareness = vampireNatureRevealService.getAwareness(for: currentSceneId)
+        withAnimation(.easeInOut(duration: 0.3)) {
+            guard let currentSceneId = currentScene?.id else { return }
+            sceneAwareness = vampireNatureRevealService.getAwareness(for: currentSceneId)
+        }
     }
     
     func getLocationAwareness(_ scene: Scene) -> Float {
@@ -341,14 +361,18 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func skipTimeToNight() {
-        while !gameTime.isNightTime {
-            gameTime.advanceTimeSafe()
+        withAnimation(.easeInOut(duration: 0.3)) {
+            while !gameTime.isNightTime {
+                gameTime.advanceTimeSafe()
+            }
         }
     }
     
     func advanceTime() {
-        gameTime.advanceTime()
-        updatePlayerBloodPercentage()
+        withAnimation(.easeInOut(duration: 0.3)) {
+            gameTime.advanceTime()
+            updatePlayerBloodPercentage()
+        }
     }
     
     func updateLocationPositions(in geometry: GeometryProxy) {
@@ -498,6 +522,34 @@ class MainSceneViewModel: ObservableObject {
     func toggleDebugOverlay() {
         isDebugOverlayVisible.toggle()
         DebugLogService.shared.log("Debug overlay \(isDebugOverlayVisible ? "shown" : "hidden")", category: "Debug")
+    }
+    
+    func handleNPCAction(_ action: NPCAction) {
+        withAnimation(.easeInOut(duration: 0.3)) {
+            switch action {
+            case .feed(let npc):
+                if let sceneId = currentScene?.id {
+                    if let player = gameStateService.getPlayer() {
+                        try? feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30, in: sceneId)
+                    }
+                }
+            case .drain(let npc):
+                if let sceneId = currentScene?.id {
+                    if let player = gameStateService.getPlayer() {
+                        try? feedingService.emptyBlood(vampire: player, prey: npc, in: sceneId)
+                    }
+                }
+                updatePlayerBloodPercentage()
+                
+            case .investigate(let npc):
+                if let player = gameStateService.getPlayer() {
+                    investigationService.investigate(inspector: player, investigationObject: npc)
+                }
+                
+            case .startConversation(let npc):
+                npcManager.startConversation(with: npc)
+            }
+        }
     }
 }
 

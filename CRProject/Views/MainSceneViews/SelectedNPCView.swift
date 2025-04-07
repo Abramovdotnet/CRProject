@@ -148,7 +148,7 @@ private struct ActionButton: View {
     var body: some View {
         Button(action: action) {
             Image(systemName: icon)
-                .font(Theme.bodyFont)
+                .font(Theme.titleFont)
                 .foregroundColor(color)
         }
     }

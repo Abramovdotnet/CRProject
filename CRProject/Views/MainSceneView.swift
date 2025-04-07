@@ -33,7 +33,7 @@ struct MainSceneView: View {
                                 VStack(alignment: .leading, spacing: 4) {
                                     HStack {
                                         Image(systemName: viewModel.currentScene?.sceneType.iconName ?? "")
-                                            .font(Theme.smallFont) // Slightly smaller for better fit
+                                            .font(Theme.titleFont) // Slightly smaller for better fit
                                             .foregroundColor(Theme.textColor)
                                         Text(viewModel.currentScene?.name ?? "Unknown")
                                             .font(Theme.captionFont)

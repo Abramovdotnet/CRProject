@@ -16,8 +16,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "61"
             endingLineNumber = "61"
-            landmarkName = "FeedingService"
-            landmarkType = "3">
+            landmarkName = "emptyBlood(vampire:prey:in:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -558,10 +558,10 @@
             filePath = "CRProject/ViewModels/MainSceneViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "197"
-            endingLineNumber = "197"
-            landmarkName = "MainSceneViewModel"
-            landmarkType = "3">
+            startingLineNumber = "199"
+            endingLineNumber = "199"
+            landmarkName = "navigateToChild(_:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -910,9 +910,9 @@
             filePath = "CRProject/ViewModels/MainSceneViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "202"
-            endingLineNumber = "202"
-            landmarkName = "navigateToSibling(_:)"
+            startingLineNumber = "204"
+            endingLineNumber = "204"
+            landmarkName = "navigateToChild(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -958,8 +958,8 @@
             filePath = "CRProject/ViewModels/MainSceneViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "213"
-            endingLineNumber = "213"
+            startingLineNumber = "215"
+            endingLineNumber = "215"
             landmarkName = "navigateToSibling(_:)"
             landmarkType = "7">
          </BreakpointContent>
