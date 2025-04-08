@@ -1,0 +1,159 @@
+# NPC Distribution Rules for Northern Realm
+
+## General Rules
+- Maximum 30 NPCs per location
+- NPCs can move between work and living spaces
+- Time of day affects NPC presence
+- Some NPCs are unique, others are generic
+- Social hierarchy must be maintained
+- NPCs have both work and living locations
+
+## Location-Based Distribution
+
+### 1. Kingdom Level (The Obsidian Dominion)
+- 1 king (Castle)
+- 1 queen (Castle)
+- 5-7 nobles (Castle/Noble Estates)
+- 2-3 generals (Castle)
+- 5-7 knights (Castle)
+- 2-3 heralds (Castle)
+- 3-5 guardmen (Castle)
+Total: 18-28 NPCs
+
+### 2. City Level (Ravenspire)
+- 3-5 nobles (Noble Estates)
+- 5-7 knights (Castle)
+- 8-10 guardmen (Castle)
+- 2-3 heralds (Castle)
+- 5-7 merchants (Market District)
+- 5-7 citizens (Residential District)
+- 2-3 scribes (Castle)
+Total: 28-42 NPCs
+
+### 3. Districts
+
+#### a) The Market District
+- 8-10 merchants (shops and homes)
+- 3-5 tailors (shops and homes)
+- 3-5 weavers (shops and homes)
+- 2-3 bakers (shops and homes)
+- 2-3 butchers (shops and homes)
+- 5-7 citizens (homes)
+- 3-5 guardmen (Castle)
+Total: 26-38 NPCs
+
+#### b) The Temple District
+- 3-5 priests (Temple)
+- 3-5 scribes (Castle)
+- 5-7 citizens (homes)
+- 3-5 guardmen (Castle)
+Total: 14-22 NPCs
+
+#### c) The Tavern District
+- 3-5 innkeepers (taverns and homes)
+- 3-5 bakers (shops and homes)
+- 3-5 butchers (shops and homes)
+- 3-5 brewers (taverns and homes)
+- 5-7 wenches (taverns and homes)
+- 5-7 citizens (homes)
+- 3-5 guardmen (Castle)
+Total: 25-38 NPCs
+
+#### d) The Castle District
+- 5-7 nobles (Castle/Noble Estates)
+- 5-7 knights (Castle)
+- 5-7 guardmen (Castle)
+- 2-3 heralds (Castle)
+- 3-5 citizens (homes)
+Total: 20-29 NPCs
+
+#### e) The Training District
+- 3-5 trainers (training grounds and homes)
+- 5-7 fighters (training grounds and homes)
+- 5-7 citizens (homes)
+- 3-5 merchants (shops and homes)
+- 3-5 guardmen (Castle)
+Total: 19-29 NPCs
+
+### 4. Specific Locations
+
+#### a) Markets and Commercial Areas
+- The Black Market: 15-20 NPCs (merchants, craftsmen, citizens)
+- The Forge: 5-7 NPCs (blacksmiths, apprentices)
+- The Bloody Tankard: 8-12 NPCs (innkeeper, wenches, patrons)
+
+#### b) Religious Areas
+- The Cathedral: 8-12 NPCs (priests, worshippers)
+- The Shrine: 5-8 NPCs (priests, worshippers)
+
+#### c) Royal and Military Areas
+- The Throne Room: 12-15 NPCs (nobles, guardmen, officials)
+- The Castle: 10-12 NPCs (knights, guardmen, servants)
+
+#### d) Cultural Areas
+- The Archive: 5-8 NPCs (scribes, researchers)
+- The Hall of Echoes: 8-12 NPCs (musicians, audience)
+- The Museum: 5-8 NPCs (curators, visitors)
+
+#### e) Training Areas
+- The Training Grounds: 10-15 NPCs (fighters, trainers, spectators)
+- The Arena: 8-12 NPCs (fighters, spectators, merchants)
+- The Gardens: 5-8 NPCs (nobles, citizens)
+
+### 5. Living Spaces
+
+#### a) Castle and Noble Estates
+- Castle: 30-40 NPCs (royal family, nobles, knights, guardmen, servants)
+- Noble Estates: 15-20 NPCs per estate (nobles, servants)
+
+#### b) Common Houses
+- Residential Houses: 20-30 NPCs per house
+  - Each house typically contains 4-6 families
+  - Families include: blacksmiths, merchants, innkeepers, bakers, butchers, brewers, wenches, heralds, scribes, trainers, fighters, citizens
+- Servants Houses: 10-15 NPCs (servants)
+
+## Total NPC Count
+- Kingdom Level: 18-28 NPCs
+- City Level: 28-42 NPCs
+- Districts: 104-156 NPCs
+- Specific Locations: ~100-150 NPCs
+- Living Spaces: ~200-300 NPCs
+Grand Total: 450-676 NPCs
+
+## NPC Categories
+
+### Unique Characters (60-90)
+- Royal family and high nobility
+- Important military commanders
+- Religious leaders
+- Famous merchants and artisans
+- Key quest givers
+- Master craftsmen
+
+### Generic Characters (390-586)
+- Citizens: 120-180
+- Guardmen: 60-90
+- Merchants: 45-70
+- Craftsmen: 120-180
+- Servants: 30-45
+- Fighters: 15-25
+- Religious figures: 20-25
+- Service workers: 30-45
+- Laborers: 20-30
+
+## Implementation Notes
+1. NPCs should have appropriate schedules (day/night)
+2. NPCs move between work and living spaces
+3. Social hierarchy must be maintained
+4. Location types determine NPC types
+5. Consider special events that might temporarily increase NPC counts
+6. Maintain the 30 NPCs per location limit
+7. Ensure proper representation of all professions
+8. Consider seasonal variations in NPC presence
+9. Living spaces have higher NPC density at night
+10. Work spaces have higher NPC density during the day
+11. Common houses are distributed throughout the city
+12. Consider family units in common houses
+13. Account for apprentices and helpers in common houses
+14. Some professions may share workshops but live in common houses
+15. Castle and noble estates are the only specialized living spaces 
