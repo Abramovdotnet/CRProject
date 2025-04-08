@@ -263,22 +263,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "DB518394-17CC-4498-9C6E-11923CC09BEC"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/ViewModels/DialogueViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "34"
-            endingLineNumber = "34"
-            landmarkName = "init(npc:player:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "990EBF80-F5A8-4503-AA2F-8B70F6A3A950"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -433,22 +417,6 @@
             startingLineNumber = "28"
             endingLineNumber = "28"
             landmarkName = "description"
-            landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "8D6BD963-6788-4413-9FD6-FEC7B9F372B6"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/Views/DialogueView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "9"
-            endingLineNumber = "9"
-            landmarkName = "body"
             landmarkType = "24">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1406,9 +1374,9 @@
             filePath = "CRProject/ViewModels/DialogueViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "115"
-            endingLineNumber = "115"
-            landmarkName = "handleInvestigation(nextNodeId:)"
+            startingLineNumber = "108"
+            endingLineNumber = "108"
+            landmarkName = "handleSeduction(nextNodeId:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1633,6 +1601,22 @@
             startingLineNumber = "100"
             endingLineNumber = "100"
             landmarkName = "updatePopulation(for:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "0ADAA96B-D8E5-498B-AA2D-F09F6A4FC071"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/ViewModels/DialogueViewModel.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "149"
+            endingLineNumber = "149"
+            landmarkName = "processNextNode(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

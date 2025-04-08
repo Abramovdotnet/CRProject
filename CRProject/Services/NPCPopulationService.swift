@@ -108,11 +108,11 @@ class NPCPopulationService: GameService {
         DebugLogService.shared.log("Population updated for scene: \(scene.name). Current count: \(newPopulation.count)", category: "NPC")
         
         // Check for location events
-        let event = locationEventsService.generateEvent(scene: scene, isNight: gameStateService.isNightTime)
+        /*let event = locationEventsService.generateEvent(scene: scene, isNight: gameStateService.isNightTime)
         
         if let event = event {
             locationEventsService.broadcastEvent(event)
-        }
+        }*/
     }
     
     private func handlePopulationChanges(isNewScene: Bool, oldPopulation: [any Character], newPopulation: [any Character], scene: Scene) {

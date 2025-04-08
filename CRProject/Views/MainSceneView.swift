@@ -267,7 +267,7 @@ struct MainSceneView: View {
             .sheet(isPresented: $npcManager.isShowingDialogue) {
                 if let npc = npcManager.selectedNPC,
                    let player = viewModel.gameStateService.getPlayer() {
-                    DialogueView(viewModel: DialogueViewModel(npc: npc, player: player))
+                    DialogueView(viewModel: DialogueViewModel(npc: npc, player: player), mainViewModel: viewModel)
                 }
             }
             .withDebugOverlay(viewModel: viewModel)

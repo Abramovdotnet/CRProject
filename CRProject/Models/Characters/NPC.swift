@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Combine
 
 class NPC: Character {
     var id: UUID = UUID()

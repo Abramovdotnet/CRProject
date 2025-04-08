@@ -33,20 +33,23 @@ class InvestigationService: GameService {
             return
         }
         
-        print("Is beasy for \(investigationObject.name)")
-        investigationObject.isBeasy = true
-        
         // Adjust game time
         gameTime.advanceTime(hours: 1)
-    
+        
         // Investigate the object
         investigationObject.isUnknown = false
         
         // Update statistics
         statisticsService.incrementInvestigations()
         
-        gameEventsBus.addCommonMessage(message: "\(investigationObject.name). " +
-                                        "It's \(investigationObject.sex) " +
+        if investigationObject.isVampire {
+            gameEventsBus.addDangerMessage(message:"\(investigationObject.name), Vampire. " +
+                                        "\(investigationObject.sex) " +
                                        "\(investigationObject.profession).")
+        } else {
+            gameEventsBus.addSystemMessage("\(investigationObject.name), " +
+                                        " \(investigationObject.sex) " +
+                                       "\(investigationObject.profession).")
+        }
     }
 } 
