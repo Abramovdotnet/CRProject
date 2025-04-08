@@ -1,2298 +1,254 @@
 [
   {
     "id": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a",
-    "name": "Northern Realm",
+    "name": "The Obsidian Dominion",
     "sceneType": "kingdom",
     "isIndoor": false,
     "parentSceneId": null
   },
   {
     "id": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a",
-    "name": "Frosthaven",
+    "name": "Ravenspire",
     "sceneType": "city",
     "isIndoor": false,
     "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
   },
   {
     "id": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c",
-    "name": "Market District",
+    "name": "The Bazaar Quarter",
     "sceneType": "district",
     "isIndoor": false,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Temple District",
+    "name": "The Sanctum Quarter",
     "sceneType": "district",
     "isIndoor": false,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Residential District",
+    "name": "The Hearth Quarter",
     "sceneType": "district",
     "isIndoor": false,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Palace District",
+    "name": "The Crown Quarter",
     "sceneType": "district",
     "isIndoor": false,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Academy District",
+    "name": "The Scholarium Quarter",
     "sceneType": "district",
     "isIndoor": false,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Arena District",
+    "name": "The Coliseum Quarter",
     "sceneType": "district",
     "isIndoor": false,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Grand Market",
+    "name": "The Black Bazaar",
     "sceneType": "market",
     "isIndoor": false,
     "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
   },
   {
     "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "The Frosty Mug",
+    "name": "The Bloody Tankard",
     "sceneType": "tavern",
     "isIndoor": true,
     "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
   },
   {
     "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Ice Forge",
+    "name": "The Obsidian Forge",
     "sceneType": "blacksmith",
     "isIndoor": true,
     "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
   },
   {
     "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Temple of Frost",
+    "name": "The Cathedral of Shadows",
     "sceneType": "temple",
     "isIndoor": true,
     "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
   },
   {
     "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Northern Lights Shrine",
+    "name": "The Shrine of the Veiled Moon",
     "sceneType": "temple",
     "isIndoor": true,
     "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
   },
   {
     "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Royal Palace",
+    "name": "The Obsidian Throne",
     "sceneType": "royalPalace",
     "isIndoor": true,
     "parentSceneId": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d"
   },
   {
     "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Ice Castle",
+    "name": "The Raven's Keep",
     "sceneType": "castle",
     "isIndoor": true,
     "parentSceneId": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d"
   },
   {
     "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Academy",
+    "name": "The Scholarium",
     "sceneType": "wizardTower",
     "isIndoor": true,
     "parentSceneId": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d"
   },
   {
     "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Library",
+    "name": "The Archive of Shadows",
     "sceneType": "library",
     "isIndoor": true,
     "parentSceneId": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d"
   },
   {
     "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Arena",
+    "name": "The Blood Pit",
     "sceneType": "arena",
     "isIndoor": true,
     "parentSceneId": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d"
   },
   {
     "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Warrior's Training Grounds",
+    "name": "The Iron Yard",
     "sceneType": "arena",
     "isIndoor": false,
     "parentSceneId": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d"
   },
   {
     "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Ice Gardens",
+    "name": "The Moonlit Gardens",
     "sceneType": "garden",
     "isIndoor": false,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Ice Sculpture Gallery",
+    "name": "The Gallery of Whispers",
     "sceneType": "gallery",
     "isIndoor": true,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Mage's Guild",
+    "name": "The Order of the Veil",
     "sceneType": "mages_guild",
     "isIndoor": true,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Ice Forge",
+    "name": "The Obsidian Forge",
     "sceneType": "forge",
     "isIndoor": true,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Arena Training Grounds",
+    "name": "The Blood Sands",
     "sceneType": "arena",
     "isIndoor": false,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Warrior's Guild",
+    "name": "The Iron Brotherhood",
     "sceneType": "fighters_guild",
     "isIndoor": true,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Thieves' Guild",
+    "name": "The Shadow Syndicate",
     "sceneType": "thieves_guild",
     "isIndoor": true,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Concert Hall",
+    "name": "The Hall of Echoes",
     "sceneType": "concert_hall",
     "isIndoor": true,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Museum",
+    "name": "The Hall of Antiquities",
     "sceneType": "museum",
     "isIndoor": true,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Archive",
+    "name": "The Vault of Secrets",
     "sceneType": "archive",
     "isIndoor": true,
     "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
   },
   {
     "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Icepeak Crystal Gardens",
+    "name": "The Moonstone Gardens",
     "sceneType": "garden",
     "isIndoor": false,
     "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
     "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Icepeak Crystal Gallery",
+    "name": "The Obsidian Gallery",
     "sceneType": "gallery",
     "isIndoor": true,
     "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
     "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Icepeak Crystal Mage's Guild",
+    "name": "The Order of the Moonstone",
     "sceneType": "mages_guild",
     "isIndoor": true,
     "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
     "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Icepeak Crystal Forge",
+    "name": "The Moonstone Forge",
     "sceneType": "forge",
     "isIndoor": true,
     "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
     "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Icepeak Crystal Arena Training Grounds",
+    "name": "The Moonstone Arena",
     "sceneType": "arena",
     "isIndoor": false,
     "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
     "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Icepeak Crystal Warrior's Guild",
+    "name": "The Moonstone Brotherhood",
     "sceneType": "fighters_guild",
     "isIndoor": true,
     "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
   },
   {
     "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Icepeak Crystal Thieves' Guild",
+    "name": "The Moonstone Syndicate",
     "sceneType": "thieves_guild",
     "isIndoor": true,
     "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Icepeak Crystal Concert Hall",
-    "sceneType": "concert_hall",
-    "isIndoor": true,
-    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Icepeak Crystal Museum",
-    "sceneType": "museum",
-    "isIndoor": true,
-    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Icepeak Crystal Archive",
-    "sceneType": "archive",
-    "isIndoor": true,
-    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Frozen Wastes",
-    "sceneType": "wilderness",
-    "isIndoor": false,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Glacier Pass",
-    "sceneType": "mountain_pass",
-    "isIndoor": false,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Aurora Observatory",
-    "sceneType": "observatory",
-    "isIndoor": true,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Frost Giant Ruins",
-    "sceneType": "ruins",
-    "isIndoor": false,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Ice Dragon's Lair",
-    "sceneType": "dungeon",
-    "isIndoor": true,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Frozen Lake",
-    "sceneType": "lake",
-    "isIndoor": false,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Snow Elf Village",
-    "sceneType": "village",
-    "isIndoor": false,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Ice Witch's Tower",
-    "sceneType": "tower",
-    "isIndoor": true,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Frost Troll Caves",
-    "sceneType": "cave",
-    "isIndoor": true,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Icepeak",
-    "sceneType": "city",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Icepeak Market District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Icepeak Temple District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Icepeak Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Icepeak Academy District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Icepeak Crystal Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "The Crystal Mug",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Crystal Forge Blacksmith",
-    "sceneType": "blacksmith",
-    "isIndoor": true,
-    "parentSceneId": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Temple of Ice",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Crystal Shrine",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Icepeak Academy",
-    "sceneType": "wizardTower",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Icepeak Library",
-    "sceneType": "library",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Silverpeak",
-    "sceneType": "city",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Silverpeak Market District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Silverpeak Temple District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Silverpeak Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Silverpeak Academy District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Silverpeak Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "The Silver Mug",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Silver Forge Blacksmith",
-    "sceneType": "blacksmith",
-    "isIndoor": true,
-    "parentSceneId": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Temple of Silver",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Silver Shrine",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Silverpeak Academy",
-    "sceneType": "wizardTower",
-    "isIndoor": true,
-    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Silverpeak Library",
-    "sceneType": "library",
-    "isIndoor": true,
-    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Dawnhaven",
-    "sceneType": "city",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Dawnhaven Market District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Dawnhaven Temple District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Dawnhaven Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Dawnhaven Academy District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Dawnhaven Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "The Dawn Mug",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Dawn Forge Blacksmith",
-    "sceneType": "blacksmith",
-    "isIndoor": true,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Temple of Dawn",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Dawn Shrine",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Dawnhaven Academy",
-    "sceneType": "wizardTower",
-    "isIndoor": true,
-    "parentSceneId": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Dawnhaven Library",
-    "sceneType": "library",
-    "isIndoor": true,
-    "parentSceneId": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Frosthaven North Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Frosthaven South Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Frosthaven East Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Frosthaven West Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Frosthaven Central Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Frosthaven Noble District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Frosthaven Merchant District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Frosthaven Artisan District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "The Frozen Rose Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "The Iceberg Tavern",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "The Snowflake Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Frosthaven North Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Frosthaven South Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-d4e5-6f7a-8b9c-0d1e2f3a4b5c"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Temple of the Northern Winds",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Frosthaven North Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Frosthaven South Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Frosthaven East Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Frosthaven West Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Frosthaven North Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Frosthaven South Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Frosthaven East Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Frosthaven West Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Frosthaven Central Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Frosthaven North Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Frosthaven South Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Frosthaven East Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Frosthaven West Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Frosthaven Central Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Frosthaven North Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Frosthaven South Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Frosthaven Mill",
-    "sceneType": "mill",
-    "isIndoor": true,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Frosthaven Ice Mine",
-    "sceneType": "mine",
-    "isIndoor": true,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Icepeak North Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Icepeak South Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Icepeak East Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Icepeak West Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "The Crystal Rose Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Icepeak North Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Icepeak Castle",
-    "sceneType": "castle",
-    "isIndoor": true,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Icepeak North Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Icepeak South Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Icepeak East Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Icepeak West Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Icepeak North Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Icepeak South Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Icepeak East Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Icepeak West Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Icepeak North Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Icepeak South Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Icepeak East Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Icepeak West Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Icepeak North Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Icepeak South Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Icepeak Mill",
-    "sceneType": "mill",
-    "isIndoor": true,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Icepeak Crystal Mine",
-    "sceneType": "mine",
-    "isIndoor": true,
-    "parentSceneId": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Silverpeak North Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Silverpeak South Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Silverpeak East Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Silverpeak West Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "The Silver Rose Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Silverpeak North Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Silverpeak Castle",
-    "sceneType": "castle",
-    "isIndoor": true,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Silverpeak North Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Silverpeak South Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Silverpeak East Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Silverpeak West Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Silverpeak North Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Silverpeak South Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Silverpeak East Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Silverpeak West Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Silverpeak North Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Silverpeak South Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Silverpeak East Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Silverpeak West Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Silverpeak North Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Silverpeak South Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Silverpeak Mill",
-    "sceneType": "mill",
-    "isIndoor": true,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Silverpeak Silver Mine",
-    "sceneType": "mine",
-    "isIndoor": true,
-    "parentSceneId": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Dawnhaven North Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Dawnhaven South Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Dawnhaven East Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Dawnhaven West Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "The Dawn Rose Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Dawnhaven North Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Dawnhaven Castle",
-    "sceneType": "castle",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Dawnhaven North Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Dawnhaven South Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Dawnhaven East Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Dawnhaven West Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Dawnhaven North Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Dawnhaven South Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "5a6b7c8d-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Dawnhaven East Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "6a7b8c9d-f0e1-2a3b-4c5d-6e7f8a9b0c1d",
-    "name": "Dawnhaven West Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d",
-    "name": "Dawnhaven North Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "8a9b0c1d-f2e3-4a5b-6c7d-8e9f0a1b2c3d",
-    "name": "Dawnhaven South Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "9a0b1c2d-e3f4-5a6b-7c8d-9e0f1a2b3c4d",
-    "name": "Dawnhaven East Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d",
-    "name": "Dawnhaven West Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "1a2b3c4d-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Dawnhaven North Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "2a3b4c5d-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Dawnhaven South Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "3a4b5c6d-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Dawnhaven Mill",
-    "sceneType": "mill",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "4a5b6c7d-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Dawnhaven Dawn Mine",
-    "sceneType": "mine",
-    "isIndoor": true,
-    "parentSceneId": "0a1b2c3d-f4e5-6a7b-8c9d-0e1f2a3b4c5d"
-  },
-  {
-    "id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Frosthaven Harbor District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "9a0b1c2d-c3d4-5e6f-7f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "b2c3d4e5-f6e7-8a9b-0c1d-2e3f4a5b6c7d",
-    "name": "Frosthaven Ice Harbor",
-    "sceneType": "port",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "c3d4e5f6-e7f8-9a0b-1c2d-3e4f5a6b7c8d",
-    "name": "Frosthaven Ice Fishery",
-    "sceneType": "fishery",
-    "isIndoor": true,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "d4e5f6g7-f8e9-0a1b-2c3d-4e5f6a7b8c9d",
-    "name": "Frosthaven Ice Shipyard",
-    "sceneType": "shipyard",
-    "isIndoor": true,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "e5f6g7h8-e9f0-1a2b-3c4d-5e6f7a8b9c0d",
-    "name": "Frosthaven Ice Docks",
-    "sceneType": "docks",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u",
-    "name": "Frostwind",
-    "sceneType": "city",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "g2h3i4j5-k6l7-8m9n-0o1p-2q3r4s5t6u7v",
-    "name": "Frostwind Market District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "h3i4j5k6-l7m8-9n0o-1p2q-3r4s5t6u7v8w",
-    "name": "Frostwind Temple District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "i4j5k6l7-m8n9-0o1p-2q3r-4s5t6u7v8w9x",
-    "name": "Frostwind Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "j5k6l7m8-n9o0-1p2q-3r4s-5t6u7v8w9x0y",
-    "name": "Frostwind Academy District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "k6l7m8n9-o0p1-2q3r-4s5t-6u7v8w9x0y1z",
-    "name": "Frostwind Arena District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "l7m8n9o0-p1q2-3r4s-5t6u-7v8w9x0y1z2a",
-    "name": "Frostwind Harbor District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "m8n9o0p1-q2r3-4s5t-6u7v-8w9x0y1z2a3b",
-    "name": "Frostwind North Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "n9o0p1q2-r3s4-5t6u-7v8w-9x0y1z2a3b4c",
-    "name": "Frostwind South Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "o0p1q2r3-s4t5-6u7v-8w9x-0y1z2a3b4c5d",
-    "name": "Frostwind East Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "p1q2r3s4-t5u6-7v8w-9x0y-1z2a3b4c5d6e",
-    "name": "Frostwind West Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "q2r3s4t5-u6v7-8w9x-0y1z-2a3b4c5d6e7f",
-    "name": "Frostwind Central Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "r3s4t5u6-v7w8-9x0y-1z2a-3b4c5d6e7f8g",
-    "name": "Frostwind Noble District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "s4t5u6v7-w8x9-0y1z-2a3b-4c5d6e7f8g9h",
-    "name": "Frostwind Merchant District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "t5u6v7w8-x9y0-1z2a-3b4c-5d6e7f8g9h0i",
-    "name": "Frostwind Artisan District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "u6v7w8x9-y0z1-2a3b-4c5d-6e7f8g9h0i1j",
-    "name": "Frostwind Grand Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "g2h3i4j5-k6l7-8m9n-0o1p-2q3r4s5t6u7v"
-  },
-  {
-    "id": "v7w8x9y0-z1a2-3b4c-5d6e-7f8g9h0i1j2k",
-    "name": "The Windy Rose Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "g2h3i4j5-k6l7-8m9n-0o1p-2q3r4s5t6u7v"
-  },
-  {
-    "id": "w8x9y0z1-a2b3-4c5d-6e7f-8g9h0i1j2k3l",
-    "name": "The Gale Tavern",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "g2h3i4j5-k6l7-8m9n-0o1p-2q3r4s5t6u7v"
-  },
-  {
-    "id": "x9y0z1a2-b3c4-5d6e-7f8g-9h0i1j2k3l4m",
-    "name": "The Breeze Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "g2h3i4j5-k6l7-8m9n-0o1p-2q3r4s5t6u7v"
-  },
-  {
-    "id": "y0z1a2b3-c4d5-6e7f-8g9h-0i1j2k3l4m5n",
-    "name": "Temple of the Northern Winds",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "h3i4j5k6-l7m8-9n0o-1p2q-3r4s5t6u7v8w"
-  },
-  {
-    "id": "z1a2b3c4-d5e6-7f8g-9h0i-1j2k3l4m5n6o",
-    "name": "Temple of the Storm",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "h3i4j5k6-l7m8-9n0o-1p2q-3r4s5t6u7v8w"
-  },
-  {
-    "id": "a2b3c4d5-e6f7-8g9h-0i1j-2k3l4m5n6o7p",
-    "name": "Frostwind Castle",
-    "sceneType": "castle",
-    "isIndoor": true,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "b3c4d5e6-f7g8-9h0i-1j2k-3l4m5n6o7p8q",
-    "name": "Frostwind Academy",
-    "sceneType": "wizardTower",
-    "isIndoor": true,
-    "parentSceneId": "j5k6l7m8-n9o0-1p2q-3r4s-5t6u7v8w9x0y"
-  },
-  {
-    "id": "c4d5e6f7-g8h9-0i1j-2k3l-4m5n6o7p8q9r",
-    "name": "Frostwind Library",
-    "sceneType": "library",
-    "isIndoor": true,
-    "parentSceneId": "j5k6l7m8-n9o0-1p2q-3r4s-5t6u7v8w9x0y"
-  },
-  {
-    "id": "d5e6f7g8-h9i0-1j2k-3l4m-5n6o7p8q9r0s",
-    "name": "Frostwind Arena",
-    "sceneType": "arena",
-    "isIndoor": true,
-    "parentSceneId": "k6l7m8n9-o0p1-2q3r-4s5t-6u7v8w9x0y1z"
-  },
-  {
-    "id": "e6f7g8h9-i0j1-2k3l-4m5n-6o7p8q9r0s1t",
-    "name": "Frostwind Harbor",
-    "sceneType": "port",
-    "isIndoor": false,
-    "parentSceneId": "l7m8n9o0-p1q2-3r4s-5t6u-7v8w9x0y1z2a"
-  },
-  {
-    "id": "f7g8h9i0-j1k2-3l4m-5n6o-7p8q9r0s1t2u",
-    "name": "Frostwind Fishery",
-    "sceneType": "fishery",
-    "isIndoor": true,
-    "parentSceneId": "l7m8n9o0-p1q2-3r4s-5t6u-7v8w9x0y1z2a"
-  },
-  {
-    "id": "g8h9i0j1-k2l3-4m5n-6o7p-8q9r0s1t2u3v",
-    "name": "Frostwind Shipyard",
-    "sceneType": "shipyard",
-    "isIndoor": true,
-    "parentSceneId": "l7m8n9o0-p1q2-3r4s-5t6u-7v8w9x0y1z2a"
-  },
-  {
-    "id": "h9i0j1k2-l3m4-5n6o-7p8q-9r0s1t2u3v4w",
-    "name": "Frostwind Docks",
-    "sceneType": "docks",
-    "isIndoor": false,
-    "parentSceneId": "l7m8n9o0-p1q2-3r4s-5t6u-7v8w9x0y1z2a"
-  },
-  {
-    "id": "i0j1k2l3-m4n5-6o7p-8q9r-0s1t2u3v4w5x",
-    "name": "Frostwind North Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "j1k2l3m4-n5o6-7p8q-9r0s-1t2u3v4w5x6y",
-    "name": "Frostwind South Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "k2l3m4n5-o6p7-8q9r-0s1t-2u3v4w5x6y7z",
-    "name": "Frostwind East Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "l3m4n5o6-p7q8-9r0s-1t2u-3v4w5x6y7z8a",
-    "name": "Frostwind West Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "m4n5o6p7-q8r9-0s1t-2u3v-4w5x6y7z8a9b",
-    "name": "Frostwind North Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "n5o6p7q8-r9s0-1t2u-3v4w-5x6y7z8a9b0c",
-    "name": "Frostwind South Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "o6p7q8r9-s0t1-2u3v-4w5x-6y7z8a9b0c1d",
-    "name": "Frostwind East Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "p7q8r9s0-t1u2-3v4w-5x6y-7z8a9b0c1d2e",
-    "name": "Frostwind West Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "q8r9s0t1-u2v3-4w5x-6y7z-8a9b0c1d2e3f",
-    "name": "Frostwind North Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "r9s0t1u2-v3w4-5x6y-7z8a-9b0c1d2e3f4g",
-    "name": "Frostwind South Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "s0t1u2v3-w4x5-6y7z-8a9b-0c1d2e3f4g5h",
-    "name": "Frostwind East Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "t1u2v3w4-x5y6-7z8a-9b0c-1d2e3f4g5h6i",
-    "name": "Frostwind West Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "u2v3w4x5-y6z7-8a9b-0c1d-2e3f4g5h6i7j",
-    "name": "Frostwind North Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "v3w4x5y6-z7a8-9b0c-1d2e-3f4g5h6i7j8k",
-    "name": "Frostwind South Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "w4x5y6z7-a8b9-0c1d-2e3f-4g5h6i7j8k9l",
-    "name": "Frostwind Mill",
-    "sceneType": "mill",
-    "isIndoor": true,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "x5y6z7a8-b9c0-1d2e-3f4g-5h6i7j8k9l0m",
-    "name": "Frostwind Crystal Mine",
-    "sceneType": "mine",
-    "isIndoor": true,
-    "parentSceneId": "f1g2h3i4-j5k6-7l8m-9n0o-1p2q3r4s5t6u"
-  },
-  {
-    "id": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d",
-    "name": "Frosthaven",
-    "sceneType": "city",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "b2c3d4e5-f6g7-8h9i-0j1k-2l3m4n5o6p7q",
-    "name": "Frosthaven Northeast Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "c3d4e5f6-g7h8-9i0j-1k2l-3m4n5o6p7q8r",
-    "name": "Frosthaven Northwest Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s",
-    "name": "Frosthaven Southeast Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "e5f6g7h8-i9j0-1k2l-3m4n-5o6p7q8r9s0t",
-    "name": "Frosthaven Southwest Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "f6g7h8i9-j0k1-2l3m-4n5o-6p7q8r9s0t1u",
-    "name": "The Frosty Crown Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "g7h8i9j0-k1l2-3m4n-5o6p-7q8r9s0t1u2v",
-    "name": "The Ice Palace Tavern",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "h8i9j0k1-l2m3-4n5o-6p7q-8r9s0t1u2v3w",
-    "name": "Frosthaven North Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "i9j0k1l2-m3n4-5o6p-7q8r-9s0t1u2v3w4x",
-    "name": "Frosthaven South Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b",
-    "name": "Glacier's End",
-    "sceneType": "city",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "n2o3p4q5-r6s7-8t9u-0v1w-2x3y4z5a6b7c",
-    "name": "Glacier's End Market District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "o3p4q5r6-s7t8-9u0v-1w2x-3y4z5a6b7c8d",
-    "name": "Glacier's End Temple District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "p4q5r6s7-t8u9-0v1w-2x3y-4z5a6b7c8d9e",
-    "name": "Glacier's End Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "q5r6s7t8-u9v0-1w2x-3y4z-5a6b7c8d9e0f",
-    "name": "Glacier's End Academy District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "r6s7t8u9-v0w1-2x3y-4z5a-6b7c8d9e0f1g",
-    "name": "Glacier's End Arena District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "s7t8u9v0-w1x2-3y4z-5a6b-7c8d9e0f1g2h",
-    "name": "Glacier's End North Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "t8u9v0w1-x2y3-4z5a-6b7c-8d9e0f1g2h3i",
-    "name": "Glacier's End South Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "u9v0w1x2-y3z4-5a6b-7c8d-9e0f1g2h3i4j",
-    "name": "Glacier's End East Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "v0w1x2y3-z4a5-6b7c-8d9e-0f1g2h3i4j5k",
-    "name": "Glacier's End West Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "w1x2y3z4-a5b6-7c8d-9e0f-1g2h3i4j5k6l",
-    "name": "Glacier's End Central Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "x2y3z4a5-b6c7-8d9e-0f1g-2h3i4j5k6l7m",
-    "name": "Glacier's End Noble District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "y3z4a5b6-c7d8-9e0f-1g2h-3i4j5k6l7m8n",
-    "name": "Glacier's End Merchant District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "z4a5b6c7-d8e9-0f1g-2h3i-4j5k6l7m8n9o",
-    "name": "Artisan District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "a5b6c7d8-e9f0-1g2h-3i4j-5k6l7m8n9o0p",
-    "name": "Grand Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "n2o3p4q5-r6s7-8t9u-0v1w-2x3y4z5a6b7c"
-  },
-  {
-    "id": "b6c7d8e9-f0g1-2h3i-4j5k-6l7m8n9o0p1q",
-    "name": "East Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "n2o3p4q5-r6s7-8t9u-0v1w-2x3y4z5a6b7c"
-  },
-  {
-    "id": "c7d8e9f0-g1h2-3i4j-5k6l-7m8n9o0p1q2r",
-    "name": "The Glacier's End Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "d8e9f0g1-h2i3-4j5k-6l7m-8n9o0p1q2r3s",
-    "name": "The Ice Flow Tavern",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "n2o3p4q5-r6s7-8t9u-0v1w-2x3y4z5a6b7c"
-  },
-  {
-    "id": "e9f0g1h2-i3j4-5k6l-7m8n-9o0p1q2r3s4t",
-    "name": "The Frozen Peak Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "n2o3p4q5-r6s7-8t9u-0v1w-2x3y4z5a6b7c"
-  },
-  {
-    "id": "f0g1h2i3-j4k5-6l7m-8n9o-0p1q2r3s4t5u",
-    "name": "Temple of the Glacier",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "o3p4q5r6-s7t8-9u0v-1w2x-3y4z5a6b7c8d"
-  },
-  {
-    "id": "g1h2i3j4-k5l6-7m8n-9o0p-1q2r3s4t5u6v",
-    "name": "Temple of the Frozen Heart",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "o3p4q5r6-s7t8-9u0v-1w2x-3y4z5a6b7c8d"
-  },
-  {
-    "id": "h2i3j4k5-l6m7-8n9o-0p1q-2r3s4t5u6v7w",
-    "name": "Glacier's End Castle",
-    "sceneType": "castle",
-    "isIndoor": true,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "i3j4k5l6-m7n8-9o0p-1q2r-3s4t5u6v7w8x",
-    "name": "Glacier's End Academy",
-    "sceneType": "wizardTower",
-    "isIndoor": true,
-    "parentSceneId": "q5r6s7t8-u9v0-1w2x-3y4z-5a6b7c8d9e0f"
-  },
-  {
-    "id": "j4k5l6m7-n8o9-0p1q-2r3s-4t5u6v7w8x9y",
-    "name": "Glacier's End Library",
-    "sceneType": "library",
-    "isIndoor": true,
-    "parentSceneId": "q5r6s7t8-u9v0-1w2x-3y4z-5a6b7c8d9e0f"
-  },
-  {
-    "id": "k5l6m7n8-o9p0-1q2r-3s4t-5u6v7w8x9y0z",
-    "name": "Glacier's End Arena",
-    "sceneType": "arena",
-    "isIndoor": true,
-    "parentSceneId": "r6s7t8u9-v0w1-2x3y-4z5a-6b7c8d9e0f1g"
-  },
-  {
-    "id": "l6m7n8o9-p0q1-2r3s-4t5u-6v7w8x9y0z1a",
-    "name": "Glacier's End Merchant Guild",
-    "sceneType": "guild",
-    "isIndoor": true,
-    "parentSceneId": "y3z4a5b6-c7d8-9e0f-1g2h-3i4j5k6l7m8n"
-  },
-  {
-    "id": "m7n8o9p0-q1r2-3s4t-5u6v-7w8x9y0z1a2b",
-    "name": "Glacier's End Artisan Guild",
-    "sceneType": "guild",
-    "isIndoor": true,
-    "parentSceneId": "z4a5b6c7-d8e9-0f1g-2h3i-4j5k6l7m8n9o"
-  },
-  {
-    "id": "n8o9p0q1-r2s3-4t5u-6v7w-8x9y0z1a2b3c",
-    "name": "Glacier's End North Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "o9p0q1r2-s3t4-5u6v-7w8x-9y0z1a2b3c4d",
-    "name": "Glacier's End South Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "p0q1r2s3-t4u5-6v7w-8x9y-0z1a2b3c4d5e",
-    "name": "Glacier's End East Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "q1r2s3t4-u5v6-7w8x-9y0z-1a2b3c4d5e6f",
-    "name": "Glacier's End West Gate",
-    "sceneType": "city_gate",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "r2s3t4u5-v6w7-8x9y-0z1a-2b3c4d5e6f7g",
-    "name": "Glacier's End North Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "s3t4u5v6-w7x8-9y0z-1a2b-3c4d5e6f7g8h",
-    "name": "Glacier's End South Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "t4u5v6w7-x8y9-0z1a-2b3c-4d5e6f7g8h9i",
-    "name": "Glacier's End East Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "u5v6w7x8-y9z0-1a2b-3c4d-5e6f7g8h9i0j",
-    "name": "Glacier's End West Guard Post",
-    "sceneType": "guard_post",
-    "isIndoor": true,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "v6w7x8y9-z0a1-2b3c-4d5e-6f7g8h9i0j1k",
-    "name": "Glacier's End North Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "w7x8y9z0-a1b2-3c4d-5e6f-7g8h9i0j1k2l",
-    "name": "Glacier's End South Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "x8y9z0a1-b2c3-4d5e-6f7g-8h9i0j1k2l3m",
-    "name": "Glacier's End East Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "y9z0a1b2-c3d4-5e6f-7g8h-9i0j1k2l3m4n",
-    "name": "Glacier's End West Road",
-    "sceneType": "road",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "z0a1b2c3-d4e5-6f7g-8h9i-0j1k2l3m4n5o",
-    "name": "Glacier's End North Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "a1b2c3d4-e5f6-7g8h-9i0j-1k2l3m4n5o6p",
-    "name": "Glacier's End South Farm",
-    "sceneType": "farm",
-    "isIndoor": false,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "b2c3d4e5-f6g7-8h9i-0j1k-2l3m4n5o6p7q",
-    "name": "Glacier's End Mill",
-    "sceneType": "mill",
-    "isIndoor": true,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "c3d4e5f6-g7h8-9i0j-1k2l-3m4n5o6p7q8r",
-    "name": "Glacier's End Crystal Mine",
-    "sceneType": "mine",
-    "isIndoor": true,
-    "parentSceneId": "m1n2o3p4-q5r6-7s8t-9u0v-1w2x3y4z5a6b"
-  },
-  {
-    "id": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s",
-    "name": "Frozen Vale",
-    "sceneType": "city",
-    "isIndoor": false,
-    "parentSceneId": "8a9b0c1d-b2c3-4d5e-6f7a-8b9c0d1e2f3a"
-  },
-  {
-    "id": "e5f6g7h8-i9j0-1k2l-3m4n-5o6p7q8r9s0t",
-    "name": "Frozen Vale Market District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "f6g7h8i9-j0k1-2l3m-4n5o-6p7q8r9s0t1u",
-    "name": "Frozen Vale Temple District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "g7h8i9j0-k1l2-3m4n-5o6p-7q8r9s0t1u2v",
-    "name": "Frozen Vale Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "h8i9j0k1-l2m3-4n5o-6p7q-8r9s0t1u2v3w",
-    "name": "Frozen Vale Academy District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "i9j0k1l2-m3n4-5o6p-7q8r-9s0t1u2v3w4x",
-    "name": "Frozen Vale Arena District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "j0k1l2m3-n4o5-6p7q-8r9s-0t1u2v3w4x5y",
-    "name": "Frozen Vale North Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "k1l2m3n4-o5p6-7q8r-9s0t-1u2v3w4x5y6z",
-    "name": "Frozen Vale South Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "l2m3n4o5-p6q7-8r9s-0t1u-2v3w4x5y6z7a",
-    "name": "Frozen Vale East Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "m3n4o5p6-q7r8-9s0t-1u2v-3w4x5y6z7a8b",
-    "name": "Frozen Vale West Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "n4o5p6q7-r8s9-0t1u-2v3w-4x5y6z7a8b9c",
-    "name": "Frozen Vale Central Residential District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "o5p6q7r8-s9t0-1u2v-3w4x-5y6z7a8b9c0d",
-    "name": "Frozen Vale Noble District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "p6q7r8s9-t0u1-2v3w-4x5y-6z7a8b9c0d1e",
-    "name": "Frozen Vale Merchant District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "q7r8s9t0-u1v2-3w4x-5y6z-7a8b9c0d1e2f",
-    "name": "Frozen Vale Artisan District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "r8s9t0u1-v2w3-4x5y-6z7a-8b9c0d1e2f3g",
-    "name": "Frozen Vale Grand Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "e5f6g7h8-i9j0-1k2l-3m4n-5o6p7q8r9s0t"
-  },
-  {
-    "id": "s9t0u1v2-w3x4-5y6z-7a8b-9c0d1e2f3g4h",
-    "name": "Frozen Vale East Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "e5f6g7h8-i9j0-1k2l-3m4n-5o6p7q8r9s0t"
-  },
-  {
-    "id": "t0u1v2w3-x4y5-6z7a-8b9c-0d1e2f3g4h5i",
-    "name": "The Frozen Vale Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "e5f6g7h8-i9j0-1k2l-3m4n-5o6p7q8r9s0t"
-  },
-  {
-    "id": "u1v2w3x4-y5z6-7a8b-9c0d-1e2f3g4h5i6j",
-    "name": "The Ice Vale Tavern",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "e5f6g7h8-i9j0-1k2l-3m4n-5o6p7q8r9s0t"
-  },
-  {
-    "id": "v2w3x4y5-z6a7-8b9c-0d1e-2f3g4h5i6j7k",
-    "name": "The Vale's End Inn",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "e5f6g7h8-i9j0-1k2l-3m4n-5o6p7q8r9s0t"
-  },
-  {
-    "id": "w3x4y5z6-a7b8-9c0d-1e2f-3g4h5i6j7k8l",
-    "name": "Temple of the Frozen Vale",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "f6g7h8i9-j0k1-2l3m-4n5o-6p7q8r9s0t1u"
-  },
-  {
-    "id": "x4y5z6a7-b8c9-0d1e-2f3g-4h5i6j7k8l9m",
-    "name": "Temple of the Eternal Frost",
-    "sceneType": "temple",
-    "isIndoor": true,
-    "parentSceneId": "f6g7h8i9-j0k1-2l3m-4n5o-6p7q8r9s0t1u"
-  },
-  {
-    "id": "y5z6a7b8-c9d0-1e2f-3g4h-5i6j7k8l9m0n",
-    "name": "Castle",
-    "sceneType": "castle",
-    "isIndoor": true,
-    "parentSceneId": "d4e5f6g7-h8i9-0j1k-2l3m-4n5o6p7q8r9s"
-  },
-  {
-    "id": "z6a7b8c9-d0e1-2f3g-4h5i-6j7k8l9m0n1o",
-    "name": "Academy",
-    "sceneType": "wizardTower",
-    "isIndoor": true,
-    "parentSceneId": "h8i9j0k1-l2m3-4n5o-6p7q-8r9s0t1u2v3w"
-  },
-  {
-    "id": "a7b8c9d0-e1f2-3g4h-5i6j-7k8l9m0n1o2p",
-    "name": "Library",
-    "sceneType": "library",
-    "isIndoor": true,
-    "parentSceneId": "h8i9j0k1-l2m3-4n5o-6p7q-8r9s0t1u2v3w"
-  },
-  {
-    "id": "b8c9d0e1-f2g3-4h5i-6j7k-8l9m0n1o2p3q",
-    "name": "Arena",
-    "sceneType": "arena",
-    "isIndoor": true,
-    "parentSceneId": "i9j0k1l2-m3n4-5o6p-7q8r-9s0t1u2v3w4x"
-  },
-  {
-    "id": "c9d0e1f2-g3h4-5i6j-7k8l-9m0n1o2p3q4r",
-    "name": "Merchant Guild",
-    "sceneType": "guild",
-    "isIndoor": true,
-    "parentSceneId": "p6q7r8s9-t0u1-2v3w-4x5y-6z7a8b9c0d1e"
-  },
-  {
-    "id": "d0e1f2g3-h4i5-6j7k-8l9m-0n1o2p3q4r5s",
-    "name": "Artisan Guild",
-    "sceneType": "guild",
-    "isIndoor": true,
-    "parentSceneId": "p6q7r8s9-t0u1-2v3w-4x5y-6z7a8b9c0d1e"
-  },
-  {
-    "id": "u1v2w3x4-y5z6-7a8b-9c0d-1e2f3g4h5i6j",
-    "name": "Northeast District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "v2w3x4y5-z6a7-8b9c-0d1e-2f3g4h5i6j7k",
-    "name": "Northwest District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "w3x4y5z6-a7b8-9c0d-1e2f-3g4h5i6j7k8l",
-    "name": "Southeast District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "x4y5z6a7-b8c9-0d1e-2f3g-4h5i6j7k8l9m",
-    "name": "Southwest District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "y5z6a7b8-c9d0-1e2f-3g4h-5i6j7k8l9m0n",
-    "name": "The Frosty Crown",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "z6a7b8c9-d0e1-2f3g-4h5i-6j7k8l9m0n1o",
-    "name": "The Ice Palace",
-    "sceneType": "tavern",
-    "isIndoor": true,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "a7b8c9d0-e1f2-3g4h-5i6j-7k8l9m0n1o2p",
-    "name": "North Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "b8c9d0e1-f2g3-4h5i-6j7k-8l9m0n1o2p3q",
-    "name": "South Market",
-    "sceneType": "market",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "c9d0e1f2-g3h4-5i6j-7k8l-9m0n1o2p3q4r",
-    "name": "Merchant District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "d0e1f2g3-h4i5-6j7k-8l9m-0n1o2p3q4r5s",
-    "name": "Artisan District",
-    "sceneType": "district",
-    "isIndoor": false,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "e1f2g3h4-i5j6-7k8l-9m0n-1o2p3q4r5s6t",
-    "name": "Merchant Guild",
-    "sceneType": "guild",
-    "isIndoor": true,
-    "parentSceneId": "c9d0e1f2-g3h4-5i6j-7k8l-9m0n1o2p3q4r"
-  },
-  {
-    "id": "f2g3h4i5-j6k7-8l9m-0n1o-2p3q4r5s6t7u",
-    "name": "Artisan Guild",
-    "sceneType": "guild",
-    "isIndoor": true,
-    "parentSceneId": "d0e1f2g3-h4i5-6j7k-8l9m-0n1o2p3q4r5s"
-  },
-  {
-    "id": "g3h4i5j6-k7l8-9m0n-1o2p-3q4r5s6t7u8v",
-    "name": "Grand Library",
-    "sceneType": "library",
-    "isIndoor": true,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
-  },
-  {
-    "id": "h4i5j6k7-l8m9-0n1o-2p3q-4r5s6t7u8v9w",
-    "name": "Grand Arena",
-    "sceneType": "arena",
-    "isIndoor": true,
-    "parentSceneId": "a1b2c3d4-e5f6-7a8b-9c0d-1e2f3a4b5c6d"
   }
 ] 

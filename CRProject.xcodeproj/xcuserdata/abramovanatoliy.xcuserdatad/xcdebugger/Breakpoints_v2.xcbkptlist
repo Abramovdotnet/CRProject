@@ -1634,36 +1634,6 @@
             endingLineNumber = "100"
             landmarkName = "updatePopulation(for:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "75B5B937-36CD-4978-BFFD-1C8A820AEE71 - 2bc3513b5dac2989"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CRProject.NPCPopulationService.updatePopulation(for: CRProject.Scene) -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/Services/NPCPopulationService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "100"
-                  endingLineNumber = "100">
-               </Location>
-               <Location
-                  uuid = "75B5B937-36CD-4978-BFFD-1C8A820AEE71 - 2bc3513b5dac2989"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CRProject.NPCPopulationService.updatePopulation(for: CRProject.Scene) -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/Services/NPCPopulationService.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "100"
-                  endingLineNumber = "100">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
