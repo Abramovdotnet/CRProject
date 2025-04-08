@@ -1,10 +1,20 @@
+// 
+//  DialogueView.swift
+//  CRProject
+//
+//  Created by Abramov Anatoliy on 31.03.2025.
+//
+
 import SwiftUI
 
+// MARK: - DialogueView
 struct DialogueView: View {
+    // MARK: - Properties
     @ObservedObject var viewModel: DialogueViewModel
     @ObservedObject var mainViewModel: MainSceneViewModel
     @Environment(\.dismiss) private var dismiss
     
+    // MARK: - Body
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -17,21 +27,83 @@ struct DialogueView: View {
                     VStack(spacing: 16) {
                         // Current Dialogue Text
                         VStack {
-                            HStack {
-                                VStack(alignment: .center, spacing: 4) {
-                                    if !viewModel.npc.isUnknown {
-                                        HStack(spacing: 4) {
-                                            Image(systemName: viewModel.npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                                .font(Theme.bodyFont)
-                                                .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                            HStack(spacing: 12) {
+                                if !viewModel.currentDialogueText.isEmpty {
+                                    Text(viewModel.currentDialogueText)
+                                        .font(Theme.headingLightFont)
+                                
+                                }
+                                Spacer()
+                                // Character icon and blood meter
+                                if viewModel.npc.isUnknown {
+                                    Text(viewModel.npc.isVampire ? "Vampire" : "Mortal")
+                                        .font(Theme.smallFont)
+                                        .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : .green)
+                                } else {
+                                    /*VStack(alignment: .center, spacing: 4) {
+                                        if !viewModel.npc.isUnknown {
+                                            HStack(spacing: 4) {
+                                                Image(systemName: viewModel.npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                                                    .font(Theme.smallFont)
+                                                    .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                                                
+                                                Image(systemName: viewModel.npc.profession.icon)
+                                                    .font(Theme.smallFont)
+                                                    .foregroundColor(viewModel.npc.profession.color)
+                                            }
+                                            .offset(y: -2)
                                             
-                                            Image(systemName: viewModel.npc.profession.icon)
-                                                .font(Theme.bodyFont)
-                                                .foregroundColor(viewModel.npc.profession.color)
+                                            // Blood meter
+                                            HStack(spacing: 1) {
+                                                ForEach(0..<5) { index in
+                                                    let segmentValue = Double(viewModel.npc.bloodMeter.currentBlood) / 100.0
+                                                    let segmentThreshold = Double(index + 1) / 5.0
+                                                    
+                                                    Rectangle()
+                                                        .fill(segmentValue >= segmentThreshold ?
+                                                              Theme.bloodProgressColor : Color.black.opacity(0.3))
+                                                        .frame(height: 2)
+                                                }
+                                            }
+                                            .frame(width: 30)
                                         }
-                                        .offset(y: -2)
+                                    }
+                                    .frame(width: 50)*/
+                                    
+                                    if !viewModel.npc.isUnknown {
+                                        Image(systemName: viewModel.npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                                            .font(Theme.smallFont)
+                                            .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : Theme.textColor)
                                         
-                                        // Blood meter
+                                        Text(viewModel.npc.name)
+                                            .font(Theme.smallFont)
+                                            .foregroundColor(.white)
+                                            .lineLimit(1)
+                                    }
+
+                                    if !viewModel.npc.isUnknown {
+                                        Text(viewModel.npc.profession.rawValue)
+                                            .font(Theme.smallFont)
+                                            .foregroundColor(viewModel.npc.profession.color)
+                                            .lineLimit(1)
+                                    }
+
+                                    HStack(spacing: 8) {
+                                        if viewModel.npc.isSleeping {
+                                            Image(systemName: "moon.zzz.fill")
+                                                .foregroundColor(.blue)
+                                                .font(Theme.smallFont)
+                                        }
+                                        if viewModel.npc.isIntimidated {
+                                            Image(systemName: "heart.fill")
+                                                .foregroundColor(Theme.bloodProgressColor)
+                                                .font(Theme.smallFont)
+                                        }
+                                        
+                                        Image(systemName: "waveform.path.ecg")
+                                            .font(Theme.smallFont)
+                                            .foregroundColor(viewModel.npc.isAlive ? .green : Theme.primaryColor)
+                                        
                                         HStack(spacing: 1) {
                                             ForEach(0..<5) { index in
                                                 let segmentValue = Double(viewModel.npc.bloodMeter.currentBlood) / 100.0
@@ -44,50 +116,17 @@ struct DialogueView: View {
                                             }
                                         }
                                         .frame(width: 30)
+                                        
+                                        Text(viewModel.npc.isVampire ? "Vampire" : "Mortal")
+                                            .font(Theme.smallFont)
+                                            .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : .green)
                                     }
                                 }
-                                .padding(.top, 10)
-                                .padding(.horizontal, 10)
-                                
-                                if viewModel.npc.isSleeping {
-                                    Image(systemName: "moon.zzz.fill")
-                                        .foregroundColor(.blue)
-                                        .font(Theme.bodyFont)
-                                }
-                                if viewModel.npc.isIntimidated {
-                                    Image(systemName: "heart.fill")
-                                        .foregroundColor(Theme.bloodProgressColor)
-                                        .font(Theme.bodyFont)
-                                }
-                                if !viewModel.npc.isUnknown {
-                                    Text(viewModel.npc.name)
-                                        .font(Theme.bodyFont)
-                                        .foregroundColor(.white)
-                                        .lineLimit(1)
-                                }
-                                if !viewModel.npc.isUnknown {
-                                    Text("\(viewModel.npc.profession.rawValue)")
-                                        .font(Theme.bodyFont)
-                                        .foregroundColor(viewModel.npc.profession.color)
-                                        .lineLimit(1)
-                                }
-                                Image(systemName: "waveform.path.ecg")
-                                    .font(Theme.bodyFont)
-                                    .foregroundColor(viewModel.npc.isAlive ? .green : Theme.primaryColor)
-                                
-                                Text(viewModel.npc.isUnknown ? "Unknown" : viewModel.npc.isVampire ? "Vampire" : "Mortal")
-                                    .font(Theme.bodyFont)
-                                    .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : .green)
                             }
-                            
-                            if !viewModel.currentDialogueText.isEmpty {
-                                Text(viewModel.currentDialogueText)
-                                    .font(Theme.bodyFont)
-                                    .padding(5)
-                            }
+                            .padding()
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Theme.primaryColor.opacity(0.5))
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .background(.black.opacity(0.5))
                         .cornerRadius(8)
                         
                         // Options
@@ -149,7 +188,7 @@ private struct DialogueOptionButton: View {
         Button(action: action) {
             HStack {
                 Text(option.text)
-                    .font(Theme.bodyFont)
+                    .font(Theme.headingLightFont)
                     .multilineTextAlignment(.leading)
                 
                 Spacer()

@@ -12,6 +12,7 @@ enum Theme {
     
     static let titleFont = Font.custom("Optima-Bold", size: 18)
     static let headingFont = Font.custom("Optima-Bold", size: 14)
+    static let headingLightFont = Font.custom("Optima", size: 14)
     static let bodyFont = Font.custom("Optima", size: 12)
     static let smallFont = Font.custom("Optima", size: 10)
     
