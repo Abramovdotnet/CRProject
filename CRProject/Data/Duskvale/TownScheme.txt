@@ -1,0 +1,35 @@
+DUSKVALE (CITY)
+
+                    BACKTOWN (ENTERTAINMENT DISTRICT) 🟡
+                    1. The Dragon's Hearth (Tavern)
+                    2. The Moonlit Chalice (Tavern) [🟢7, 🟣9, 🔴12, 🔵19]
+                    3. The Velvet Veil (Brothel)
+
+THE HALLOWED GROUNDS (RELIGIOUS DISTRICT) 🟢    │    THE HEARTH'S HAVEN (RESIDENTIAL DISTRICT) 🟣
+4. The Black Cathedral                       │    8. The Steam Haven (Bathhouse)
+5. The Shadow Cloister                       │    9. The Verdant Court (Communal Gardens) [🟡2, 🔴12, 🟠15, 🔵20]
+6. The Crypt of Whispers                     │
+7. Fountain of the Ancients [🟡2, 🔴12, 🔵19]      │
+
+                    THE NOBLE'S CREST (ADMINISTRATIVE DISTRICT) 🔴
+                    10. The Ivory Keep (Manor)
+                    11. Guard Barracks [🔵21]
+                    12. The Crest Square (Public Square) [🟡2, 🟢7, 🟣9, 🟠15]
+
+                    MARKET (COMMERCIAL DISTRICT) 🟠
+                    13. The Iron Heart (Blacksmith)
+                    14. The Glass Tower (Alchemist)
+                    15. Trade Warehouses [��9, 🔴12, 🔵20, 🟤22]
+                    16. The Quill & Scroll (Bookstore)
+                    17. The Herbalist's Den (Apothecary)
+                    18. The Golden Scales (Money Lender)
+
+DEFENSIVE STRUCTURES 🔵
+19. Watchtower (North-West) [🟡2, ��7]
+20. Watchtower (South-East) [9, 🟠15]
+21. Armory [🔴11]
+
+                    DOCKS DISTRICT 🟤
+                    22. The Drunken Sailor (Tavern) [🟠15]
+                    23. The Long Pier
+                    24. Docks Guard Barracks

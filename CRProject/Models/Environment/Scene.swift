@@ -10,7 +10,7 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
     var name: String = ""
     var parentSceneId: UUID?
     var isIndoor: Bool = false
-    var sceneType: SceneType = .castle
+    var sceneType: SceneType = .alchemistShop
     var runtimeID: UUID? = UUID()
     
     @Published private var _characters: [UUID: any Character] = [:]

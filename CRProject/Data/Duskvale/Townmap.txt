@@ -1,0 +1,83 @@
+# Duskvale Housing and Population Distribution
+
+## 1. The Hearth's Haven (Residential District)
+- Population: ~1,000 residents
+- Housing Distribution:
+  * Small cottages (1-2 rooms): ~100
+  * Medium houses (3-4 rooms): ~80
+  * Large houses (5+ rooms): ~20
+  * Communal housing (for single workers): ~50 rooms
+- Total housing units: ~200-250 buildings
+
+## 2. The Noble's Crest (Administrative District)
+- Population: ~200 residents
+- Housing Distribution:
+  * The Ivory Keep: 1 large manor (20+ rooms)
+  * Guard barracks: 1 large building (50 rooms)
+  * Administrative buildings: 3 medium buildings (15 rooms each)
+  * Servant quarters: 2 medium buildings (20 rooms each)
+- Total housing units: ~125 rooms
+
+## 3. The Hallowed Grounds (Religious District)
+- Population: ~50 residents
+- Housing Distribution:
+  * The Black Cathedral: 1 large building (30 rooms)
+  * The Shadow Cloister: 1 large building (40 rooms)
+  * Clergy housing: 2 medium buildings (20 rooms each)
+- Total housing units: ~110 rooms
+
+## 4. Defensive Structures
+- Population: ~30 residents
+- Housing Distribution:
+  * Watchtowers: 2 small buildings (5 rooms each)
+  * Armory: 1 medium building (10 rooms)
+- Total housing units: ~20 rooms
+
+## 5. Market (Commercial District)
+- Population: ~88 residents
+- Housing Distribution:
+  * The Iron Heart: 1 large building (15 rooms)
+  * The Glass Tower: 1 medium building (10 rooms)
+  * The Quill & Scroll: 1 medium building (12 rooms)
+  * The Herbalist's Den: 1 small building (8 rooms)
+  * The Golden Scales: 1 medium building (10 rooms)
+  * Trade warehouses: 2 large buildings (20 rooms each)
+  * Market stalls: ~50 small units
+- Total housing units: ~145 rooms
+
+## 6. Backtown (Entertainment District)
+- Population: ~60 residents
+- Housing Distribution:
+  * The Dragon's Hearth: 1 large building (20 rooms)
+  * The Moonlit Chalice: 1 large building (20 rooms)
+  * The Velvet Veil: 1 large building (25 rooms)
+  * Staff housing: 2 medium buildings (15 rooms each)
+- Total housing units: ~95 rooms
+
+## 7. The Docks (Port District)
+- Population: ~45 residents
+- Housing Distribution:
+  * The Drunken Sailor: 1 large building (15 rooms)
+  * The Long Pier: 1 medium building (10 rooms)
+  * Docks Guard Barracks: 1 medium building (12 rooms)
+  * Storage facilities: 2 small buildings (8 rooms each)
+- Total housing units: ~53 rooms
+
+## Total City Summary
+- Permanent Population: ~1,700-1,900 residents
+- Additional Population:
+  * Traveling merchants: ~50-100
+  * Visitors and temporary residents: ~100-200
+  * Adventurers and mercenaries: ~50-100
+  * Sailors and traders: ~30-50
+- Total Housing:
+  * Residential houses: ~200-250 buildings
+  * Commercial buildings: ~10 large buildings
+  * Religious buildings: ~4 large buildings
+  * Administrative buildings: ~6 medium buildings
+  * Military buildings: ~4 small buildings
+  * Entertainment buildings: ~6 buildings
+  * Port buildings: ~5 buildings
+  * Market stalls: ~50 units
+
+This distribution provides adequate housing for all permanent residents, space for workers and staff, room for visitors and temporary residents, proper separation of living and working spaces, and appropriate scale for each district's function. 
