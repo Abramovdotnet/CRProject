@@ -25,7 +25,7 @@ class FeedingService: GameService {
         return prey.bloodMeter.bloodPercentage > 0
     }
     
-    func feedOnCharacter(vampire: any Character, prey: any Character, amount: Float, in sceneId: UUID) throws {
+    func feedOnCharacter(vampire: any Character, prey: any Character, amount: Float, in sceneId: Int) throws {
         guard canFeed(vampire: vampire, prey: prey) else {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
@@ -58,7 +58,7 @@ class FeedingService: GameService {
         }
     }
     
-    func emptyBlood(vampire: any Character, prey: any Character, in sceneId: UUID) throws {
+    func emptyBlood(vampire: any Character, prey: any Character, in sceneId: Int) throws {
         guard canFeed(vampire: vampire, prey: prey) else {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }

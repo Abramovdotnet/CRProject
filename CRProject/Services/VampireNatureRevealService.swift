@@ -6,15 +6,15 @@ extension Notification.Name {
 }
 
 class VampireNatureRevealService: ObservableObject, GameService {
-    private var awarenessLevels: [UUID: Float] = [:]
-    private let awarenessPublisher = PassthroughSubject<UUID, Never>()
+    private var awarenessLevels: [Int: Float] = [:]
+    private let awarenessPublisher = PassthroughSubject<Int, Never>()
     private let gameEventsBus: GameEventsBusService
     
     init(gameEventsBus: GameEventsBusService = DependencyManager.shared.resolve()) {
         self.gameEventsBus = gameEventsBus
     }
     
-    var exposedPublisher: AnyPublisher<UUID, Never> {
+    var exposedPublisher: AnyPublisher<Int, Never> {
         awarenessPublisher
             .filter { [weak self] sceneId in
                 self?.getAwareness(for: sceneId) ?? 0 >= 100
@@ -22,11 +22,11 @@ class VampireNatureRevealService: ObservableObject, GameService {
             .eraseToAnyPublisher()
     }
     
-    func getAwareness(for sceneId: UUID) -> Float {
+    func getAwareness(for sceneId: Int) -> Float {
         return awarenessLevels[sceneId] ?? 0.0 // Default minimum awareness
     }
     
-    func increaseAwareness(for sceneId: UUID, amount: Float) {
+    func increaseAwareness(for sceneId: Int, amount: Float) {
         let currentAwareness = getAwareness(for: sceneId)
         let newAwareness = min(currentAwareness + amount, 100.0)
         awarenessLevels[sceneId] = newAwareness
@@ -41,7 +41,7 @@ class VampireNatureRevealService: ObservableObject, GameService {
         }
     }
     
-    func decreaseAwareness(for sceneId: UUID, amount: Float) {
+    func decreaseAwareness(for sceneId: Int, amount: Float) {
         let currentAwareness = getAwareness(for: sceneId)
         let newAwareness = max(currentAwareness - amount, 0.0)
         awarenessLevels[sceneId] = newAwareness

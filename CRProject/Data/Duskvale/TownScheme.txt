@@ -23,6 +23,9 @@ THE HALLOWED GROUNDS (RELIGIOUS DISTRICT) 🟢    │    THE HEARTH'S HAVEN (RES
                     16. The Quill & Scroll (Bookstore)
                     17. The Herbalist's Den (Apothecary)
                     18. The Golden Scales (Money Lender)
+                    22. The Steel Anvil (Blacksmith)
+                    23. The Crystal Crucible (Alchemist)
+                    24. The Green Thumb (Apothecary)
 
 DEFENSIVE STRUCTURES 🔵
 19. Watchtower (North-West) [🟡2, ��7]

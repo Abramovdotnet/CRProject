@@ -15,8 +15,8 @@ class MainSceneViewModel: ObservableObject {
     @Published var isNight: Bool = false
     @Published var isGameEnd: Bool = false
     @Published var sceneSplit: Int = 0
-    @Published private(set) var locationPositions: [UUID: CGPoint]?
-    @Published private(set) var visibleLocations: Set<UUID> = []
+    @Published private(set) var locationPositions: [Int: CGPoint]?
+    @Published private(set) var visibleLocations: Set<Int> = []
     @Published var isDebugOverlayVisible = false
     
     private var cancellables = Set<AnyCancellable>()
@@ -66,7 +66,7 @@ class MainSceneViewModel: ObservableObject {
         gameStateService.$currentScene
             .sink { [weak self] scene in
                 self?.currentScene = scene
-                self?.updateRelatedLocations(for: scene?.id)
+                self?.updateRelatedLocations(for: scene?.id ?? 0)
                 // Update NPCs when scene changes
                 if let characters = scene?.getCharacters() {
                     self?.npcs = characters.compactMap { $0 as? NPC }
@@ -144,11 +144,8 @@ class MainSceneViewModel: ObservableObject {
         
         // Create initial scene using LocationReader
         do {
-            guard let initialSceneId = UUID(uuidString: "7a8b9c0d-e1f2-3a4b-5c6d-7e8f9a0b1c2d") else {
-                DebugLogService.shared.log("Error: Invalid initial scene ID", category: "Error")
-                return
-            }
-            let initialScene = try LocationReader.getLocation(by: initialSceneId)
+
+            let initialScene = try LocationReader.getLocation(by: 0)
             try gameStateService.changeLocation(to: initialScene.id)
             
             // Set default awareness to 0
@@ -261,7 +258,7 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func resetAwareness() {
-        vampireNatureRevealService.decreaseAwareness(for: currentScene?.id ?? UUID(), amount: 100)
+        vampireNatureRevealService.decreaseAwareness(for: currentScene?.id ?? 0, amount: 100)
         updateSceneAwareness()
     }
     
@@ -273,7 +270,7 @@ class MainSceneViewModel: ObservableObject {
               feedingService.canFeed(vampire: player, prey: npc) else {
             return
         }
-        let sceneId = currentScene?.id ?? UUID()
+        let sceneId = currentScene?.id ?? 0
         do {
             try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30, in: sceneId)
             updatePlayerBloodPercentage()
@@ -291,7 +288,7 @@ class MainSceneViewModel: ObservableObject {
             return
         }
         do {
-            try feedingService.emptyBlood(vampire: player, prey: npc, in: currentScene?.id ?? UUID())
+            try feedingService.emptyBlood(vampire: player, prey: npc, in: currentScene?.id ?? 0)
             updatePlayerBloodPercentage()
             updateSceneAwareness()
             DebugLogService.shared.log("Blood emptied", category: "Debug")
@@ -310,14 +307,12 @@ class MainSceneViewModel: ObservableObject {
     }
     
     // MARK: - Private Methods
-    private func updateRelatedLocations(for locationId: UUID?) {
-        guard let locationId = locationId else { return }
-        
+    private func updateRelatedLocations(for locationId: Int) {
         DebugLogService.shared.log("DEBUG: Starting updateRelatedLocations for ID: \(locationId)", category: "Debug")
         
         // Get parent location
         parentScene = LocationReader.getParentLocation(for: locationId)
-        DebugLogService.shared.log("DEBUG: Parent scene loaded: \(parentScene?.name ?? "None") with ID: \(parentScene?.id.uuidString ?? "No ID")", category: "Debug")
+        DebugLogService.shared.log("DEBUG: Parent scene loaded: \(parentScene?.name ?? "None") with ID: \(parentScene?.id.description ?? "No ID")", category: "Debug")
         
         // Get child locations
         childScenes = LocationReader.getChildLocations(for: locationId)
@@ -347,12 +342,12 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func canSkipTimeSafe() -> Bool {
-        let canSkipToNight = [.tavern, .inn, .cave, .forest, .house, .ruins]
+        let canSkipToNight = [.tavern, .brothel, .cemetery, .house ,.warehouse]
             .contains(currentScene?.sceneType)
             && !isNight
         && isAwarenessSafe
         
-        return canSkipToNight
+        return !isNight
     }
     
     var isAwarenessSafe: Bool {
@@ -401,8 +396,8 @@ class MainSceneViewModel: ObservableObject {
         visibleLocations = Set(positions.keys)
     }
     
-    private func calculateLocationPositions(in geometry: GeometryProxy) -> [UUID: CGPoint] {
-        var positions: [UUID: CGPoint] = [:]
+    private func calculateLocationPositions(in geometry: GeometryProxy) -> [Int: CGPoint] {
+        var positions: [Int: CGPoint] = [:]
         guard let currentScene = currentScene else { return positions }
         
         let margin: CGFloat = 60
@@ -494,7 +489,7 @@ class MainSceneViewModel: ObservableObject {
     }
     
     // Helper to determine if position update is needed
-    private func shouldUpdatePositions(_ newPositions: [UUID: CGPoint]) -> Bool {
+    private func shouldUpdatePositions(_ newPositions: [Int: CGPoint]) -> Bool {
         guard let currentPositions = locationPositions else { return true }
         
         // Check if the number of positions has changed

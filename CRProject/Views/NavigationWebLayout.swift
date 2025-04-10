@@ -48,8 +48,8 @@ struct NavigationWebLayout {
         siblings: [Scene],
         children: [Scene],
         parentSiblings: [Scene]
-    ) -> [UUID: CGPoint] {
-        var positions = [UUID: CGPoint]()
+    ) -> [Int: CGPoint] {
+        var positions = [Int: CGPoint]()
         
         // Position current node
         positions[current.id] = leftCenter
@@ -89,7 +89,7 @@ struct NavigationWebLayout {
         nodes: [Scene],
         around center: CGPoint,
         radius: CGFloat,
-        positions: inout [UUID: CGPoint]
+        positions: inout [Int: CGPoint]
     ) {
         guard !nodes.isEmpty else { return }
         

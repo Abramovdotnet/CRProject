@@ -79,7 +79,7 @@ class NPCGenerator {
     ]
     
     static func createPlayer() -> Player {
-        return Player(name: "Victor", sex: .male, age: 300, profession: .adventurer, id: UUID())
+        return Player(name: "Victor", sex: .male, age: 300, profession: .adventurer, id: 0)
     }
     
     static func generateNPCs(count: Int) -> [[String: Any]] {

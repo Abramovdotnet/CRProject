@@ -8,16 +8,17 @@
 import Foundation
 
 protocol SceneProtocol: Codable, ObservableObject {
-    var id: UUID { get }
+    var id: Int { get }
     var name: String { get set }
-    var parentSceneId: UUID? { get set }
-    var childSceneIds: [UUID] { get }
+    var isParent: Bool { get set }
+    var parentSceneId: Int { get set }
+    var childSceneIds: [Int] { get }
     var isIndoor: Bool { get }
     var sceneType: SceneType { get set }
     
     func getCharacters() -> [any Character]
     func setCharacters(_ characters: [any Character])
-    func getCharacter(by id: UUID) -> (any Character)?
-    func addChildScene(_ childSceneId: UUID)
-    func removeChildScene(_ childSceneId: UUID)
+    func getCharacter(by id: Int) -> (any Character)?
+    func addChildScene(_ childSceneId: Int)
+    func removeChildScene(_ childSceneId: Int)
 }

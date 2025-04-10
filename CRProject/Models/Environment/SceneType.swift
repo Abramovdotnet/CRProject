@@ -24,14 +24,10 @@ enum SceneType: String, CaseIterable {
     
     // Public Spaces
     case square
-    
-    var isHuge: Bool {
-        return false
-    }
+    case docks
 
-    var isCapital: Bool {
-        return false
-    }
+    // Misc
+    case house
     
     var displayName: String {
         let string = self.rawValue
@@ -63,36 +59,5 @@ enum SceneType: String, CaseIterable {
         case .square: return "square.fill"
         default: return "questionmark.circle.fill"
         }
-    }
-}
-
-class SceneInfo {
-    var isHuge: Bool
-    var isCapital: Bool
-    var type: SceneType
-    var npcCapacity: Int
-    
-    init(type: SceneType) {
-        self.type = type
-        self.isHuge = type.isHuge
-        self.isCapital = type.isCapital
-        self.npcCapacity = SceneInfo.calculateNpcCapacity(for: type)
-    }
-    
-    private static func calculateDangerLevel(for type: SceneType) -> Int {
-        return Int.random(in: 1...3)
-    }
-    
-    private static func calculateNpcCapacity(for type: SceneType) -> Int {
-        return Int.random(in: 5...15)
-    }
-    
-    var description: String {
-        return """
-        \(type.displayName)
-        Is Capital: \(isCapital ? "Yes" : "No")
-        Size: \(isHuge ? "Huge" : "Medium")
-        NPCs: \(npcCapacity)
-        """
     }
 }

@@ -55,8 +55,7 @@ class NPCReader : GameService {
     }
     
     private static func createNPC(from data: [String: Any]) -> NPC? {
-        guard let idString = data["id"] as? String,
-              let id = UUID(uuidString: idString),
+        guard let id = data["id"] as? Int,
               let name = data["name"] as? String,
               let age = data["age"] as? Int,
               let sexString = data["sex"] as? String,

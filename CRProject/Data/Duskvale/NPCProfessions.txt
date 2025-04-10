@@ -1,0 +1,90 @@
+# DUSKVALE NPC PROFESSIONS
+
+## ADMINISTRATIVE & MILITARY
+1. Lord/Lady
+2. Administrator
+3. City guard
+4. Watchman
+5. Military officer
+6. Armorer
+7. Messenger
+8. Tax collector
+9. Scribe
+10. Dock guard
+11. Customs official
+
+## RELIGIOUS
+1. Priest
+2. Monk
+3. Gravekeeper
+4. Religious scholar
+5. Acolyte
+6. Pilgrim
+
+## COMMERCIAL
+1. Blacksmith
+2. Alchemist
+3. Bookseller
+4. Herbalist
+5. Money lender
+6. Merchant
+7. Market vendor
+8. Warehouse worker
+9. Dock worker
+10. Ship captain
+11. Sailor
+
+## SERVICE & ENTERTAINMENT
+1. Tavern keeper
+2. Barmaid
+3. Cook
+4. Entertainer
+5. Brothel worker
+6. Security guard
+7. Innkeeper
+8. Servant
+9. Bathhouse attendant
+
+## CRAFTS & TRADES
+1. Carpenter
+2. Mason
+3. Tailor
+4. Stable hand
+5. Animal handler
+6. Fisherman
+7. Brewer
+8. Baker
+9. Butcher
+10. Tanner
+11. Weaver
+12. Jeweler
+13. Cartographer
+14. Lawyer
+
+## SUPPORT STAFF
+1. Gardener
+2. Maintenance worker
+3. Cleaner
+4. Kitchen staff
+5. Laundry worker
+6. Childcare worker
+7. Elderly care worker
+8. General laborer
+9. Street cleaner
+10. Waste collector
+
+## VISITORS
+1. Merchant
+2. Adventurer
+3. Mercenary
+4. Sailor
+5. Pilgrim
+6. Entertainer
+7. Noble
+8. Scholar
+9. Diplomat
+10. Religious figure
+
+## SPECIAL CASES
+1. No profession
+2. Apprentice

@@ -6,26 +6,28 @@ extension Notification.Name {
 }
 
 class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
-    var id: UUID = UUID()
+    var id: Int = 0
     var name: String = ""
-    var parentSceneId: UUID?
+    var isParent: Bool = false
+    var parentSceneId: Int = 0
     var isIndoor: Bool = false
-    var sceneType: SceneType = .alchemistShop
-    var runtimeID: UUID? = UUID()
+    var sceneType: SceneType = .house
+    var runtimeID: Int = 0
     
-    @Published private var _characters: [UUID: any Character] = [:]
-    private var _childSceneIds: Set<UUID> = []
+    @Published private var _characters: [Int: any Character] = [:]
+    private var _childSceneIds: Set<Int> = []
     
-    var childSceneIds: [UUID] {
+    var childSceneIds: [Int] {
         get { Array(_childSceneIds) }
         set { _childSceneIds = Set(newValue) }
     }
     
-    init(id: UUID, name: String, isIndoor: Bool, parentSceneId: UUID?, sceneType: SceneType) {
+    init(id: Int, name: String, isParent: Bool, parentSceneId: Int, isIndoor: Bool, sceneType: SceneType) {
         self.id = id
         self.name = name
-        self.isIndoor = isIndoor
+        self.isParent = isParent
         self.parentSceneId = parentSceneId
+        self.isIndoor = isIndoor
         self.sceneType = sceneType
     }
     
@@ -33,7 +35,7 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
         
     }
     private enum CodingKeys: String, CodingKey {
-        case id, name, parentSceneId, isIndoor
+        case id, name, isParent, parentSceneId, isIndoor
     }
     
     func getCharacters() -> [any Character] {
@@ -46,15 +48,15 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
         NotificationCenter.default.post(name: .sceneCharactersChanged, object: self)
     }
     
-    func getCharacter(by id: UUID) -> (any Character)? {
+    func getCharacter(by id: Int) -> (any Character)? {
         return _characters[id]
     }
     
-    func addChildScene(_ childSceneId: UUID) {
+    func addChildScene(_ childSceneId: Int) {
         _childSceneIds.insert(childSceneId)
     }
     
-    func removeChildScene(_ childSceneId: UUID) {
+    func removeChildScene(_ childSceneId: Int) {
         _childSceneIds.remove(childSceneId)
     }
 }

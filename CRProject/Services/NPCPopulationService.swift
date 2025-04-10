@@ -1,4 +1,4 @@
-import Foundation
+/*import Foundation
 import Combine
 
 class NPCPopulationService: GameService {
@@ -348,4 +348,4 @@ class NPCPopulationService: GameService {
         DebugLogService.shared.log("NPCPopulationService stopped", category: "NPC")
         cancellables.removeAll()
     }
-} 
+} */

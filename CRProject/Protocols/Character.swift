@@ -8,7 +8,7 @@
 import Foundation
 
 protocol Character: Identifiable, ObservableObject, Codable {
-    var id: UUID { get }
+    var id: Int{ get }
     var name: String { get }
     var sex: Sex { get }
     var age: Int { get }

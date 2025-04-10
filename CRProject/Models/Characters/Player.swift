@@ -7,7 +7,7 @@
 import Foundation
 
 class Player: Character, Codable {
-    var id: UUID = UUID()
+    var id: Int = 0
     var index : Int = 0
     var name: String = ""
     var sex: Sex = .male
@@ -26,7 +26,7 @@ class Player: Character, Codable {
     var isBeasy: Bool = false
     var intimidationDay: Int = 0
     
-    init(name: String, sex: Sex, age: Int, profession: Profession, id: UUID) {
+    init(name: String, sex: Sex, age: Int, profession: Profession, id: Int) {
         self.name = name
         self.sex = sex
         self.age = age
@@ -50,7 +50,7 @@ class Player: Character, Codable {
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        id = try container.decode(UUID.self, forKey: .id)
+        id = try container.decode(Int.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         sex = try container.decode(Sex.self, forKey: .sex)
         age = try container.decode(Int.self, forKey: .age)

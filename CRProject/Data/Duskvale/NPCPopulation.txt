@@ -1,106 +1,77 @@
-# DUSKVALE NPC PROFESSIONS DISTRIBUTION
+# DUSKVALE POPULATION DISTRIBUTION
 
-## PERMANENT RESIDENTS (~1,700-1,900)
+## RESIDENTIAL DISTRICT
+[████████████████████] 100% (200/200)
+[██████████████████  ] No profession: 45% (90/200)
+[███                 ] City guard: 5.625% (11/200)
+[██                  ] Carpenter: 5% (10/200)
+[██                  ] Tailor: 5% (10/200)
+[██                  ] Gardener: 5% (10/200)
+[██                  ] Maintenance worker: 5% (10/200)
+[██                  ] Cleaner: 5% (10/200)
+[██                  ] Apprentice: 5% (10/200)
+[██                  ] Lord/Lady: 5% (10/200)
+[██                  ] Administrator: 5% (10/200)
+[██                  ] Stable hand: 5% (10/200)
+[██                  ] Kitchen staff: 5% (10/200)
 
-### Unemployed/Underemployed (~40% = ~680-760)
-- Unemployed adults
-- Underemployed workers
-- Day laborers
-- Beggars
-- Street performers
-- Informal traders
+## NOBLE'S CREST
+[████████████████████] 100% (50/50)
+[██████████████      ] Military officer: 50% (25/50)
+[████                ] Servant: 25% (12/50)
+[██                  ] City guard: 10% (5/50)
+[██                  ] Administrator: 10% (5/50)
+[██                  ] Lord/Lady: 5% (2/50)
 
-### Skilled Workers (~30% = ~510-570)
-1. Administrative & Military (~100)
-   - Lord/Lady and family: 5
-   - Administrators: 10
-   - City guards: 30
-   - Watchmen: 20
-   - Military officers: 5
-   - Armorers: 5
-   - Messengers: 10
-   - Tax collectors: 5
-   - Scribes: 10
+## HALLOWED GROUNDS
+[████████████████████] 100% (37/37)
+[████████████        ] Monk: 40% (15/37)
+[████████            ] Religious scholar: 35% (13/37)
+[██                  ] Priest: 10% (3/37)
+[█                   ] City guard: 7.5% (2/37)
+[█                   ] Cleaner: 7.5% (2/37)
 
-2. Religious (~50)
-   - Priests/Clergy: 15
-   - Monks: 20
-   - Gravekeepers: 5
-   - Religious scholars: 5
-   - Acolytes: 5
+## COMMERCIAL DISTRICT
+[████████████████████] 100% (100/100)
+[██████████████      ] General laborer: 70.25% (70/100)
+[██                  ] Bookseller: 15% (15/100)
+[██                  ] City guard: 8.75% (8/100)
+[█                   ] Blacksmith: 2% (2/100)
+[█                   ] Alchemist: 2% (2/100)
+[█                   ] Herbalist: 2% (2/100)
 
-3. Commercial (~150)
-   - Blacksmiths: 10
-   - Alchemists: 5
-   - Booksellers: 5
-   - Herbalists: 5
-   - Money lenders: 5
-   - Merchants: 20
-   - Market stall vendors: 50
-   - Warehouse workers: 20
-   - Dock workers: 30
+## ENTERTAINMENT DISTRICT
+[████████████████████] 100% (50/50)
+[████████            ] Barmaid: 32% (16/50)
+[████████            ] Entertainer: 32% (16/50)
+[██                  ] Cleaner: 16% (8/50)
+[██                  ] City guard: 10% (5/50)
+[██                  ] Tavern keeper: 8% (4/50)
 
-4. Service & Entertainment (~100)
-   - Tavern keepers: 10
-   - Barmaids: 20
-   - Cooks: 15
-   - Entertainers: 10
-   - Brothel workers: 15
-   - Security personnel: 10
-   - Innkeepers: 10
-   - Servants: 10
+## DOCKS
+[████████████████████] 100% (11/11)
+[██                  ] General laborer: 35% (4/11)
+[██                  ] Dock worker: 20% (2/11)
+[██                  ] Sailor: 20% (2/11)
+[██                  ] City guard: 20% (2/11)
+[█                   ] Ship captain: 5% (0/11)
 
-5. Crafts & Trades (~110)
-   - Carpenters: 15
-   - Masons: 10
-   - Tailors: 10
-   - Stable hands: 10
-   - Animal handlers: 5
-   - Fishermen: 10
-   - Brewers: 5
-   - Bakers: 10
-   - Butchers: 10
-   - Tanners: 5
-   - Weavers: 5
-   - Jewelers: 5
-   - Lamplighters: 5
-   - Water carriers: 5
+## TEMPORARY POPULATION
+[████████████████████] 100% (75/75)
+[████████            ] Adventurer: 40% (30/75)
+[████                ] Pilgrim: 25% (18/75)
+[████                ] No profession: 20% (15/75)
+[██                  ] Merchant: 15% (11/75)
 
-### Support Staff (~20% = ~340-380)
-- Gardeners: 20
-- Maintenance workers: 30
-- Cleaners: 30
-- Kitchen staff: 40
-- Laundry workers: 20
-- Childcare workers: 20
-- Elderly care workers: 20
-- General laborers: 160
-
-### Children & Elderly (~10% = ~170-190)
-- Children (under working age)
-- Elderly (retired)
-- Disabled individuals
-
-## TEMPORARY POPULATION (~230-350)
-
-### Traveling Population
-- Merchants: 20-30
-- Adventurers: 10-20
-- Mercenaries: 10-20
-- Sailors: 15-25
-- Pilgrims: 10-20
-- Entertainers: 5-10
-
-### Visitors
-- Nobles: 5-10
-- Scholars: 5-10
-- Diplomats: 5-10
-- Religious figures: 5-10
-
-### Seasonal Workers
-- Farmers: 20-30
-- Construction workers: 10-20
-- Festival workers: 10-20
+## TOTAL CITY POPULATION
+[████████████████████] 100% (523/523)
+[████████            ] Residential District: 36% (200/523)
+[████                ] Commercial District: 18% (100/523)
+[██                  ] Temporary Population: 14% (75/523)
+[██                  ] Noble's Crest: 9% (50/523)
+[██                  ] Entertainment District: 9% (50/523)
+[██                  ] Hallowed Grounds: 7% (37/523)
+[█                   ] Docks: 2% (11/523)
 
 ## NOTES
 1. Many individuals would have multiple roles or seasonal work

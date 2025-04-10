@@ -5,8 +5,8 @@ class LocationEventsService : GameService {
     private weak var gameEventsBus: GameEventsBusService?
     private weak var vampireNatureRevealService: VampireNatureRevealService?
     private weak var gameStateService: GameStateService?
-    private var lastNPCs: [UUID: any Character] = [:]
-    private var deadNPCs: [UUID: any Character] = [:]  // Track dead NPCs
+    private var lastNPCs: [Int: any Character] = [:]
+    private var deadNPCs: [Int: any Character] = [:]  // Track dead NPCs
     
     init(gameEventsBus: GameEventsBusService, vampireNatureRevealService: VampireNatureRevealService, gameStateService: GameStateService) {
         self.gameEventsBus = gameEventsBus
@@ -31,7 +31,7 @@ class LocationEventsService : GameService {
     private func hasNPCsChanged(scene: Scene) -> Bool {
         let currentNPCs = scene.getCharacters()
             .compactMap { $0 as? NPC }
-            .reduce(into: [UUID: NPC]()) { $0[$1.id] = $1 }
+            .reduce(into: [Int: NPC]()) { $0[$1.id] = $1 }
         
         var changesDetected = false
         

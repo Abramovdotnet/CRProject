@@ -9,7 +9,7 @@ import Foundation
 import Combine
 
 class NPC: Character {
-    var id: UUID = UUID()
+    var id: Int = 0
     var index : Int = 0
     var name: String = ""
     var sex: Sex = .male
@@ -26,7 +26,7 @@ class NPC: Character {
     
     init() {}
     
-    init(name: String, sex: Sex, age: Int, profession: Profession, isVampire: Bool, id: UUID) {
+    init(name: String, sex: Sex, age: Int, profession: Profession, isVampire: Bool, id: Int) {
         self.name = name
         self.sex = sex
         self.age = age

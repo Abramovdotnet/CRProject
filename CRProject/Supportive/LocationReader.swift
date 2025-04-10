@@ -70,7 +70,7 @@ class LocationReader : GameService {
         }
     }
     
-    static func getLocation(by id: UUID) throws -> Scene {
+    static func getLocation(by id: Int) throws -> Scene {
         loadLocations()
         
         guard let locations = locations else {
@@ -80,8 +80,7 @@ class LocationReader : GameService {
         
         DebugLogService.shared.log("Searching for location with ID: \(id)", category: "Location")
         for location in locations {
-            if let locationIdString = location["id"] as? String,
-               let locationId = UUID(uuidString: locationIdString),
+            if let locationId = location["id"] as? Int,
                locationId == id {
                 DebugLogService.shared.log("Found matching location: \(location["name"] as? String ?? "Unknown")", category: "Location")
                 return try createScene(from: location)
@@ -92,14 +91,13 @@ class LocationReader : GameService {
         throw LocationError.locationNotFound
     }
     
-    static func getChildLocations(for parentId: UUID) -> [Scene] {
+    static func getChildLocations(for parentId: Int) -> [Scene] {
         loadLocations()
         
         DebugLogService.shared.log("Searching for child locations of parent ID: \(parentId)", category: "Location")
         let childLocations = locations?
             .filter { 
-                if let parentSceneIdString = $0["parentSceneId"] as? String,
-                   let parentSceneId = UUID(uuidString: parentSceneIdString) {
+                if let parentSceneId = $0["parentSceneId"] as? Int {
                     let isMatch = parentSceneId == parentId
                     if isMatch {
                         DebugLogService.shared.log("Found child location: \($0["name"] as? String ?? "Unknown") with parent ID: \(parentSceneId)", category: "Location")
@@ -115,34 +113,27 @@ class LocationReader : GameService {
         return childLocations
     }
     
-    static func getSiblingLocations(for locationId: UUID) -> [Scene] {
+    static func getSiblingLocations(for locationId: Int) -> [Scene] {
         loadLocations()
         
         DebugLogService.shared.log("Searching for sibling locations of location ID: \(locationId)", category: "Location")
         
         // First find the current location and its parent ID
         guard let location = locations?.first(where: { 
-            if let idString = $0["id"] as? String,
-               let id = UUID(uuidString: idString) {
+            if let id = $0["id"] as? Int {
                 return id == locationId
             }
             return false
         }),
-        let parentIdString = location["parentSceneId"] as? String,
-        let parentId = UUID(uuidString: parentIdString),
-        !parentIdString.isEmpty else {
-            return []
-        }
+        let parentId = location["parentSceneId"] as? Int else { return [] }
         
         DebugLogService.shared.log("Found parent ID: \(parentId)", category: "Location")
         
         // Find all locations with the same parent ID (excluding the current location)
         let siblings = locations?
             .filter { 
-                if let idString = $0["id"] as? String,
-                   let id = UUID(uuidString: idString),
-                   let siblingParentIdString = $0["parentSceneId"] as? String,
-                   let siblingParentId = UUID(uuidString: siblingParentIdString) {
+                if let id = $0["id"] as? Int,
+                   let siblingParentId = $0["parentSceneId"] as? Int {
                     let isSibling = siblingParentId == parentId && id != locationId
                     if isSibling {
                         DebugLogService.shared.log("Found sibling location: \($0["name"] as? String ?? "Unknown")", category: "Location")
@@ -158,23 +149,19 @@ class LocationReader : GameService {
         return siblings
     }
     
-    static func getParentLocation(for locationId: UUID) -> Scene? {
+    static func getParentLocation(for locationId: Int) -> Scene? {
         loadLocations()
         
         // First find the current location
         guard let location = locations?.first(where: { 
-            if let idString = $0["id"] as? String,
-               let id = UUID(uuidString: idString) {
+            if let id = $0["id"] as? Int {
                 return id == locationId
             }
             return false
         }),
-        let parentIdString = location["parentSceneId"] as? String,
-        !parentIdString.isEmpty,
-        let parentId = UUID(uuidString: parentIdString),
+        let parentId = location["parentSceneId"] as? Int,
         let parentData = locations?.first(where: {
-            if let idString = $0["id"] as? String,
-               let id = UUID(uuidString: idString) {
+            if let id = $0["id"] as? Int {
                 return id == parentId
             }
             return false
@@ -186,7 +173,7 @@ class LocationReader : GameService {
     }
     
     private static func createScene(from data: [String: Any]) throws -> Scene {
-        guard let idString = data["id"] as? String,
+        guard let id = data["id"] as? Int,
               let name = data["name"] as? String,
               let isIndoor = data["isIndoor"] as? Bool,
               let sceneTypeString = data["sceneType"] as? String else {
@@ -194,107 +181,36 @@ class LocationReader : GameService {
             throw LocationError.invalidData
         }
         
-        // Validate and normalize UUID string
-        func normalizeUUID(_ uuidString: String) -> String? {
-            // Remove any non-hex characters
-            let hexOnly = uuidString.filter { "0123456789abcdefABCDEF".contains($0) }
-            
-            // If the string is too short, pad it with zeros
-            let paddedHex = hexOnly.padding(toLength: 32, withPad: "0", startingAt: 0)
-            
-            // Format as proper UUID string (8-4-4-4-12)
-            let parts = [
-                String(paddedHex.prefix(8)),
-                String(paddedHex.dropFirst(8).prefix(4)),
-                String(paddedHex.dropFirst(12).prefix(4)),
-                String(paddedHex.dropFirst(16).prefix(4)),
-                String(paddedHex.dropFirst(20))
-            ]
-            return parts.joined(separator: "-")
-        }
-        
-        // Parse scene ID
-        guard let normalizedId = normalizeUUID(idString),
-              let id = UUID(uuidString: normalizedId) else {
-            DebugLogService.shared.log("Failed to create valid UUID from string: \(idString)", category: "Error")
-            throw LocationError.invalidData
-        }
-        
         // Handle parent scene ID
-        let parentSceneId: UUID?
-        if let parentSceneIdString = data["parentSceneId"] as? String,
-           !parentSceneIdString.isEmpty,
-           parentSceneIdString.lowercased() != "null",
-           let normalizedParentId = normalizeUUID(parentSceneIdString),
-           let parentId = UUID(uuidString: normalizedParentId) {
+        var parentSceneId: Int
+        if let parentId = data["parentSceneId"] as? Int {
             parentSceneId = parentId
         } else {
-            parentSceneId = nil
+            parentSceneId = 0
         }
         
         // Convert sceneType string to SceneType enum
         let sceneType: SceneType
         switch sceneTypeString {
-        case "kingdom": sceneType = .kingdom
-        case "city": sceneType = .city
-        case "castle": sceneType = .castle
-        case "tavern": sceneType = .tavern
-        case "inn": sceneType = .inn
-        case "blacksmith": sceneType = .blacksmith
-        case "market": sceneType = .market
-        case "library": sceneType = .library
-        case "temple": sceneType = .temple
-        case "hospital": sceneType = .hospital
         case "alchemistShop": sceneType = .alchemistShop
-        case "herbalistHut": sceneType = .herbalistHut
-        case "mill": sceneType = .mill
-        case "farm": sceneType = .farm
-        case "bridge": sceneType = .bridge
+        case "bathhouse": sceneType = .bathhouse
+        case "blacksmith": sceneType = .blacksmith
+        case "bookstore": sceneType = .bookstore
+        case "brotherl": sceneType = .brothel
+        case "cathedral": sceneType = .cathedral
         case "cemetery": sceneType = .cemetery
-        case "guardPost": sceneType = .guard_post
-        case "wizardTower": sceneType = .wizardTower
-        case "mountainFortress": sceneType = .mountainFortress
-        case "battlefield": sceneType = .battlefield
-        case "ancientRuins": sceneType = .ancientRuins
-        case "valley": sceneType = .valley
-        case "enchantedForest": sceneType = .enchantedForest
-        case "secretGrove": sceneType = .secretGrove
-        case "outskirts": sceneType = .outskirts
-        case "villageSquare": sceneType = .villageSquare
-        case "dungeon": sceneType = .dungeon
-        case "harborCity": sceneType = .harborCity
-        case "royalPalace": sceneType = .royalPalace
-        case "greatCathedral": sceneType = .greatCathedral
-        case "crossroads": sceneType = .crossroads
-        case "mages_guild": sceneType = .mages_guild
-        case "thieves_guild": sceneType = .thieves_guild
-        case "fighters_guild": sceneType = .fighters_guild
-        case "mine": sceneType = .mine
-        case "mountain_pass": sceneType = .mountain_pass
-        case "museum": sceneType = .museum
-        case "observatory": sceneType = .observatory
-        case "port": sceneType = .port
-        case "road": sceneType = .road
-        case "ruins": sceneType = .ruins
-        case "shipyard": sceneType = .shipyard
-        case "tower": sceneType = .tower
-        case "village": sceneType = .village
-        case "wilderness": sceneType = .wilderness
-        case "garden": sceneType = .garden
-        case "gallery": sceneType = .gallery
-        case "concert_hall": sceneType = .concert_hall
-        case "garrison": sceneType = .garrison
-        case "city_gate": sceneType = .city_gate
-        case "docks": sceneType = .docks
-        case "cave": sceneType = .cave
-        case "guard_post": sceneType = .guard_post
+        case "cloister": sceneType = .cloister
         case "district": sceneType = .district
-        case "archive": sceneType = .archive
-        case "forge": sceneType = .forge
-        case "fishery": sceneType = .fishery
+        case "docks": sceneType = .docks
+        case "house": sceneType = .house
+        case "manor": sceneType = .manor
+        case "military": sceneType = .military
+        case "square": sceneType = .square
+        case "tavern": sceneType = .tavern
+        case "warehouse": sceneType = .warehouse
         default: 
             DebugLogService.shared.log("Unknown scene type: \(sceneTypeString), defaulting to castle", category: "Warning")
-            sceneType = .castle
+            sceneType = .house
         }
         
         let scene = Scene()

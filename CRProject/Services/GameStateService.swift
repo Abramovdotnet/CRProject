@@ -20,7 +20,7 @@ class GameStateService : ObservableObject, GameService{
     private var cancellables = Set<AnyCancellable>()
     private let locationReader: LocationReader
     private let vampireReader: NPCReader
-    private var npcPopulationService: NPCPopulationService!
+    //private var npcPopulationService: NPCPopulationService!
     private var npcManager = NPCInteractionManager.shared
     
     init(gameTime: GameTimeService, 
@@ -38,8 +38,8 @@ class GameStateService : ObservableObject, GameService{
         DependencyManager.shared.register(LocationEventsService(gameEventsBus: gameEventsBus, vampireNatureRevealService: vampireNatureRevealService, gameStateService: self))
         
         // Initialize NPCPopulationService using DependencyManager
-        DependencyManager.shared.register(NPCPopulationService(gameStateService: self, gameEventsBus: gameEventsBus))
-        self.npcPopulationService = DependencyManager.shared.resolve()
+        /*DependencyManager.shared.register(NPCPopulationService(gameStateService: self, gameEventsBus: gameEventsBus))
+        self.npcPopulationService = DependencyManager.shared.resolve()*/
         
         // Subscribe to time advancement notifications
         NotificationCenter.default
@@ -73,7 +73,7 @@ class GameStateService : ObservableObject, GameService{
         return player
     }
     
-    func changeLocation(to locationId: UUID) throws {
+    func changeLocation(to locationId: Int) throws {
         DebugLogService.shared.log("Changing location to ID: \(locationId)", category: "Location")
         
         // Try to find and set the new location
@@ -94,7 +94,7 @@ class GameStateService : ObservableObject, GameService{
         gameEventsBus.addSystemMessage("Player entered \(currentScene?.name ?? "").")
     }
     
-    private func updateRelatedLocations(for locationId: UUID) {
+    private func updateRelatedLocations(for locationId: Int) {
         DebugLogService.shared.log("GameStateService updating related locations for ID: \(locationId)", category: "Location")
         
         // Get parent location
@@ -120,9 +120,9 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return }
         
         // Update npcs
-        if let scene = currentScene {
-            npcPopulationService.updatePopulation(for: scene )
-        }
+        //if let scene = currentScene {
+        //    npcPopulationService.updatePopulation(for: scene )
+        //}
         
         // If current scene is indoor and it's not night time, increase awareness
         if scene.isIndoor && !gameTime.isNightTime {
@@ -157,7 +157,7 @@ class GameStateService : ObservableObject, GameService{
     private func handleSafeTimeAdvanced() {
         guard let currentScene = currentScene else { return }
         
-        npcPopulationService.updatePopulation(for: currentScene )
+        //npcPopulationService.updatePopulation(for: currentScene )
         
         // Reduce awareness for nearest scenes by 5
         for scene in siblingScenes {
