@@ -12,7 +12,10 @@ protocol SceneProtocol: Codable, ObservableObject {
     var name: String { get set }
     var isParent: Bool { get set }
     var parentSceneId: Int { get set }
+    var parentSceneName: String { get set }
+    var parentSceneType: SceneType { get set }
     var childSceneIds: [Int] { get }
+    var hubSceneIds: [Int] { get }
     var isIndoor: Bool { get }
     var sceneType: SceneType { get set }
     

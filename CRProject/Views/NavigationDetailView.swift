@@ -119,6 +119,16 @@ struct NavigationWebView: View {
                             .padding(.top, geometry.safeAreaInsets.top)
                             .foregroundColor(Theme.textColor)
                         
+                        HStack {
+                            Image(systemName: viewModel.parentScene?.sceneType.iconName ?? "")
+                                .font(Theme.titleFont) // Slightly smaller for better fit
+                                .foregroundColor(Theme.textColor)
+                            Text(viewModel.parentScene?.name ?? "")
+                                .font(Theme.captionFont)
+                                .foregroundColor(Theme.textColor)
+                            Spacer()
+                    
+                        }
                         Spacer()
                     }
                 }
@@ -138,12 +148,12 @@ struct NavigationWebView: View {
             return currentPosition
         }
         
-        let hasParent = viewModel.parentScene != nil
-        let availableWidth = geometry.size.width - margin * 2
-        
-        // Siblings in inner circle
-        if viewModel.siblingScenes.contains(where: { $0.id == location.id }) {
-            let siblings = Array(viewModel.siblingScenes.prefix(maxSiblingNodes))
+        // Siblings and hub locations in inner circle
+        let allSiblings = viewModel.siblingScenes + (current.hubSceneIds.compactMap { id in
+            try? LocationReader.getLocation(by: id)
+        })
+        if allSiblings.contains(where: { $0.id == location.id }) {
+            let siblings = Array(allSiblings.prefix(maxSiblingNodes))
             guard let index = siblings.firstIndex(where: { $0.id == location.id }) else { return nil }
             let angle = 2 * .pi / CGFloat(siblings.count) * CGFloat(index)
             let radius = geometry.size.height * 0.3
@@ -165,15 +175,6 @@ struct NavigationWebView: View {
             )
         }
         
-        // Parent in right column center
-        if let parent = viewModel.parentScene, location.id == parent.id {
-            let rightCenter = CGPoint(
-                x: currentPosition.x + (geometry.size.width * 0.5), // 30% into right column
-                y: currentPosition.y + (geometry.size.width * -0.18)
-            )
-            return rightCenter
-        }
-        
         return nil
     }
     
@@ -182,17 +183,6 @@ struct NavigationWebView: View {
         guard let current = viewModel.currentScene,
               let currentPos = relativePosition(for: current) else {
             return connections
-        }
-        
-        // Connect to parent (straight horizontal line to right)
-        if let parent = viewModel.parentScene,
-           let parentPos = relativePosition(for: parent) {
-            connections.append(Connection(
-                from: currentPos,
-                to: parentPos,
-                awareness: 1.0,
-                isParentConnection: true
-            ))
         }
         
         // Connect to children (radial lines)
@@ -207,8 +197,11 @@ struct NavigationWebView: View {
             }
         }
         
-        // Connect to sibling (radial lines)
-        for sibling in viewModel.siblingScenes.prefix(maxSiblingNodes) {
+        // Connect to siblings and hub locations (radial lines)
+        let allSiblings = viewModel.siblingScenes + (current.hubSceneIds.compactMap { id in
+            try? LocationReader.getLocation(by: id)
+        })
+        for sibling in allSiblings.prefix(maxSiblingNodes) {
             if let siblingPos = relativePosition(for: sibling) {
                 connections.append(Connection(
                     from: currentPos,
@@ -257,10 +250,10 @@ struct LocationNode: View {
                     Image("iconFrame")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 60 * 1.05, height: 60 * 1.05)
+                        .frame(width: 70 * 1.05, height: 70 * 1.05)
                     Circle()
                         .fill(Color.black.opacity(0.7))
-                        .frame(width: 60 * 0.9, height: 60 * 0.9)
+                        .frame(width: 70 * 0.9, height: 70 * 0.9)
                         .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
                         .overlay(
                             Circle()
@@ -269,41 +262,67 @@ struct LocationNode: View {
                     Image("roundStoneTexture")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 60 * 0.8, height: 60 * 0.8)
+                        .frame(width: 70 * 0.8, height: 70 * 0.8)
                     
                     VStack{
-                        Image(systemName: data.location.sceneType.iconName)
-                            .font(Theme.smallFont) // Slightly smaller for better fit
-                            .foregroundColor(iconColor)
-                            .padding(.top, 33)
-
+                        HStack{
+                            Image(systemName: data.location.sceneType.iconName)
+                                .font(Theme.smallFont) // Slightly smaller for better fit
+                                .foregroundColor(iconColor)
+                            Text(data.location.sceneType.displayName)
+                                .font(Theme.smallFont)
+                                .foregroundColor(Theme.textColor)
+                                .padding(.leading, -5)
+                        }
+                        .padding(.top, needToShowNavigateIcon() ? -7 : 0)
                         Text(data.location.name)
                             .font(Theme.captionFont)
                             .foregroundColor(Theme.textColor)
                         
-                        Text(data.location.sceneType.displayName)
-                            .font(Theme.smallFont)
-                            .foregroundColor(Theme.textColor)
- 
-                        Text("Awareness: \(data.awarenessLevel)%")
-                            .font(Theme.smallFont)
-                            .foregroundColor(Theme.textColor)
-                            .padding(.top, 6)
-                            .padding(.bottom, -5)
-                        
-                        ZStack (alignment: .leading) {
-                            Rectangle()
-                                .foregroundColor(.black.opacity(0.5))
-                                .frame(width: 60, height: 7)
-                                .cornerRadius(4)
+                        HStack {
+                            ZStack{
+                                Rectangle()
+                                    .foregroundColor(.black.opacity(0.8))
+                                    .frame(width: 50, height: 8)
+                                    .cornerRadius(4)
                             
-                            // Progress fill (active part)
-                            Rectangle()
-                                .foregroundColor(Theme.awarenessProgressColor)
-                                .frame(width: 56 * CGFloat(data.awarenessLevel) / 100, height: 6)
-                                .cornerRadius(4)
+                                HStack(spacing:1) {
+                                    ForEach(0..<5) { index in
+                                        let segmentValue = Double(data.awarenessLevel) / 100.0
+                                        let segmentThreshold = Double(index + 1) / 10.0
+                                        
+                                        Rectangle()
+                                            .fill(segmentValue >= segmentThreshold ?
+                                                  Theme.awarenessProgressColor : Theme.textColor.opacity(0.5))
+                                            .frame(height: 5)
+                                    }
+                                }.padding(.horizontal, 2)
+                            }
+    
+                        }
+                        .frame(width: 50)
+                        .padding(.top, -5)
+                        
+                        Text("Awareness")
+                            .font(Theme.smallFont)
+                            .foregroundColor(Theme.textColor)
+                            .padding(.top, -8)
+                            .padding(.bottom, 3)
+ 
+                        if needToShowNavigateIcon() {
+                            HStack {
+                                Image(systemName: "point.bottomleft.forward.to.point.topright.scurvepath")
+                                     .foregroundColor(Theme.accentColor)
+                                     .font(Theme.smallFont)
+                                Text(navigationLabel())
+                                   .font(Theme.smallFont)
+                                   .foregroundColor(Theme.textColor)
+                                   .padding(.leading, -5)
+                            }
+              
                         }
                     }
+                    .padding(.top, needToShowNavigateIcon() ? 35 : 10)
                 }
                 .buttonStyle(PlainButtonStyle())
                 .contentShape(Circle())
@@ -312,6 +331,14 @@ struct LocationNode: View {
         }
         .disabled(!isAccessible)
         .opacity(data.location.id == data.currentLocation?.id ? 1.0 : isAccessible ? 1.0 : 0.4)  // More contrast for inaccessible nodes
+    }
+    
+    func needToShowNavigateIcon() -> Bool {
+        return data.location.hubSceneIds.count > 0 && data.location.id != data.currentLocation?.id
+    }
+    
+    func navigationLabel() -> String {
+        return data.location.parentSceneId == 0 ? "Visit" : data.currentLocation?.parentSceneId == data.location.parentSceneId ? "Back" : "to \(data.location.parentSceneName)"
     }
     
     func relationshipLabel() -> String {
@@ -484,13 +511,11 @@ extension MainSceneViewModel {
         // Add current scene
         locations.append(current)
         
-        // Add parent
-        if let parent = parentScene {
-            locations.append(parent)
-        }
-        
-        // Add immediate siblings (limit to 6)
-        locations.append(contentsOf: Array(siblingScenes.prefix(6)))
+        // Add immediate siblings and hub locations (limit to 6)
+        let allSiblings = siblingScenes + (current.hubSceneIds.compactMap { id in
+            try? LocationReader.getLocation(by: id)
+        })
+        locations.append(contentsOf: Array(allSiblings.prefix(6)))
         
         // Add immediate children (limit to 6)
         locations.append(contentsOf: Array(childScenes.prefix(6)))
@@ -499,23 +524,16 @@ extension MainSceneViewModel {
     }
     
     var allConnections: [Connection] {
-        var connections: [Connection] = []
+        var connections = [Connection]()
         guard let positions = locationPositions,
               let current = currentScene,
               let currentPos = positions[current.id] else { return connections }
         
-        // Add connections to parent
-        if let parent = parentScene,
-           let parentPos = positions[parent.id] {
-            connections.append(Connection(
-                from: currentPos,
-                to: parentPos,
-                awareness: 1.0
-            ))
-        }
-        
-        // Add connections to siblings
-        let siblings = Array(siblingScenes.prefix(6))  // Increased from 3 to 6
+        // Add connections to siblings and hub locations
+        let allSiblings = siblingScenes + (current.hubSceneIds.compactMap { id in
+            try? LocationReader.getLocation(by: id)
+        })
+        let siblings = Array(allSiblings.prefix(6))
         let leftSiblings = Array(siblings[..<min(3, siblings.count)])
         let rightSiblings = Array(siblings[min(3, siblings.count)...])
         
@@ -542,7 +560,7 @@ extension MainSceneViewModel {
         }
         
         // Add connections to children
-        let children = Array(childScenes.prefix(6))  // Increased from 3 to 6
+        let children = Array(childScenes.prefix(6))
         for child in children {
             if let childPos = positions[child.id] {
                 connections.append(Connection(
@@ -562,6 +580,8 @@ extension MainSceneViewModel {
         } else if childScenes.contains(where: { $0.id == location.id }) {
             navigateToChild(location)
         } else if siblingScenes.contains(where: { $0.id == location.id }) {
+            navigateToSibling(location)
+        } else if let current = currentScene, current.hubSceneIds.contains(location.id) {
             navigateToSibling(location)
         }
         objectWillChange.send()

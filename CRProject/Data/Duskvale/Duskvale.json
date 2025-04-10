@@ -1,0 +1,292 @@
+[
+    {
+        "id": 31,
+        "name": "Duskvale",
+        "isParent": true,
+        "parentSceneId": 0,
+        "isIndoor": false,
+        "sceneType": "town"
+    },
+    {
+        "id": 25,
+        "name": "Backtown",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 1,
+        "name": "The Dragon's Hearth",
+        "isParent": false,
+        "parentSceneId": 25,
+        "isIndoor": true,
+        "sceneType": "tavern"
+    },
+    {
+        "id": 2,
+        "name": "The Moonlit Chalice",
+        "isParent": false,
+        "parentSceneId": 25,
+        "hubSceneIds": [7, 9, 12, 19],
+        "isIndoor": true,
+        "sceneType": "tavern"
+    },
+    {
+        "id": 3,
+        "name": "The Velvet Veil",
+        "isParent": false,
+        "parentSceneId": 25,
+        "isIndoor": true,
+        "sceneType": "brothel"
+    },
+    {
+        "id": 26,
+        "name": "The Hallowed Grounds",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 4,
+        "name": "The Black Cathedral",
+        "isParent": false,
+        "parentSceneId": 26,
+        "isIndoor": true,
+        "sceneType": "cathedral"
+    },
+    {
+        "id": 5,
+        "name": "The Shadow Cloister",
+        "isParent": false,
+        "parentSceneId": 26,
+        "isIndoor": true,
+        "sceneType": "monastery"
+    },
+    {
+        "id": 6,
+        "name": "The Crypt of Whispers",
+        "isParent": false,
+        "parentSceneId": 26,
+        "isIndoor": true,
+        "sceneType": "crypt"
+    },
+    {
+        "id": 7,
+        "name": "Fountain of the Ancients",
+        "isParent": false,
+        "parentSceneId": 26,
+        "hubSceneIds": [2, 12, 19],
+        "isIndoor": false,
+        "sceneType": "square"
+    },
+    {
+        "id": 27,
+        "name": "The Hearth's Haven",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 8,
+        "name": "The Steam Haven",
+        "isParent": false,
+        "parentSceneId": 27,
+        "isIndoor": true,
+        "sceneType": "bathhouse"
+    },
+    {
+        "id": 9,
+        "name": "The Verdant Court",
+        "isParent": false,
+        "parentSceneId": 27,
+        "hubSceneIds": [2, 12, 15, 20],
+        "isIndoor": false,
+        "sceneType": "square"
+    },
+    {
+        "id": 28,
+        "name": "The Noble's Crest",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 10,
+        "name": "The Ivory Keep",
+        "isParent": false,
+        "parentSceneId": 28,
+        "isIndoor": true,
+        "sceneType": "manor"
+    },
+    {
+        "id": 11,
+        "name": "Guard Barracks",
+        "isParent": false,
+        "parentSceneId": 28,
+        "hubSceneIds": [21],
+        "isIndoor": true,
+        "sceneType": "military"
+    },
+    {
+        "id": 12,
+        "name": "The Crest Square",
+        "isParent": false,
+        "parentSceneId": 28,
+        "hubSceneIds": [2, 7, 9, 15],
+        "isIndoor": false,
+        "sceneType": "square"
+    },
+    {
+        "id": 29,
+        "name": "Market",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 13,
+        "name": "The Iron Heart",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "blacksmith"
+    },
+    {
+        "id": 14,
+        "name": "The Glass Tower",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "alchemistShop"
+    },
+    {
+        "id": 15,
+        "name": "Trade Warehouses",
+        "isParent": false,
+        "parentSceneId": 29,
+        "hubSceneIds": [9, 12, 20, 22],
+        "isIndoor": true,
+        "sceneType": "warehouse"
+    },
+    {
+        "id": 16,
+        "name": "The Quill & Scroll",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "bookstore"
+    },
+    {
+        "id": 17,
+        "name": "The Herbalist's Den",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "alchemistShop"
+    },
+    {
+        "id": 18,
+        "name": "The Golden Scales",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 22,
+        "name": "The Steel Anvil",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "blacksmith"
+    },
+    {
+        "id": 23,
+        "name": "The Crystal Crucible",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "alchemistShop"
+    },
+    {
+        "id": 24,
+        "name": "The Green Thumb",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "alchemistShop"
+    },
+    {
+        "id": 30,
+        "name": "Defensive Structures",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 19,
+        "name": "Watchtower (North-West)",
+        "isParent": false,
+        "parentSceneId": 30,
+        "hubSceneIds": [2, 7],
+        "isIndoor": true,
+        "sceneType": "military"
+    },
+    {
+        "id": 20,
+        "name": "Watchtower (South-East)",
+        "isParent": false,
+        "parentSceneId": 30,
+        "hubSceneIds": [9, 15],
+        "isIndoor": true,
+        "sceneType": "military"
+    },
+    {
+        "id": 21,
+        "name": "Armory",
+        "isParent": false,
+        "parentSceneId": 30,
+        "hubSceneIds": [11],
+        "isIndoor": true,
+        "sceneType": "military"
+    },
+    {
+        "id": 32,
+        "name": "Docks District",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 33,
+        "name": "The Drunken Sailor",
+        "isParent": false,
+        "parentSceneId": 32,
+        "hubSceneIds": [15],
+        "isIndoor": true,
+        "sceneType": "tavern"
+    },
+    {
+        "id": 34,
+        "name": "The Long Pier",
+        "isParent": false,
+        "parentSceneId": 32,
+        "isIndoor": false,
+        "sceneType": "docks"
+    },
+    {
+        "id": 35,
+        "name": "Docks Guard Barracks",
+        "isParent": false,
+        "parentSceneId": 32,
+        "isIndoor": true,
+        "sceneType": "military"
+    }
+]

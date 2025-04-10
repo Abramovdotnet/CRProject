@@ -13,28 +13,24 @@ class LocationReader : GameService {
         if locations == nil {
             DebugLogService.shared.log("Loading locations from JSON files...", category: "Location")
             var allLocations: [[String: Any]] = []
-            var seenIDs = Set<String>()
+            var seenIDs = Set<Int>()
             
             // List of kingdom files to load
-            let kingdomFiles = [
-                "NorthernRealm",
-                "WesternTerritories",
-                "EasternEmpire",
-                "SouthernIsles",
-                "CentralPlains"
+            let towns = [
+                "Duskvale"
             ]
             
-            for kingdomFile in kingdomFiles {
-                DebugLogService.shared.log("Attempting to load \(kingdomFile).json", category: "Location")
-                if let url = Bundle.main.url(forResource: kingdomFile, withExtension: "json"),
+            for town in towns {
+                DebugLogService.shared.log("Attempting to load \(town).json", category: "Location")
+                if let url = Bundle.main.url(forResource: town, withExtension: "json"),
                    let data = try? Data(contentsOf: url),
                    let kingdomLocations = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
                     
                     // Check for duplicate IDs in this kingdom file
                     for location in kingdomLocations {
-                        if let id = location["id"] as? String {
+                        if let id = location["id"] as? Int {
                             if seenIDs.contains(id) {
-                                DebugLogService.shared.log("⚠️ WARNING: Duplicate ID found in \(kingdomFile).json: \(id)", category: "Warning")
+                                DebugLogService.shared.log("⚠️ WARNING: Duplicate ID found in \(town).json: \(id)", category: "Warning")
                                 DebugLogService.shared.log("Location name: \(location["name"] as? String ?? "Unknown")", category: "Location")
                                 // Skip this location to prevent overwriting
                                 continue
@@ -44,9 +40,9 @@ class LocationReader : GameService {
                         }
                     }
                     
-                    DebugLogService.shared.log("Successfully loaded \(kingdomLocations.count) locations from \(kingdomFile)", category: "Location")
+                    DebugLogService.shared.log("Successfully loaded \(kingdomLocations.count) locations from \(town)", category: "Location")
                 } else {
-                    DebugLogService.shared.log("Could not find or load \(kingdomFile).json", category: "Error")
+                    DebugLogService.shared.log("Could not find or load \(town).json", category: "Error")
                 }
             }
             
@@ -172,6 +168,57 @@ class LocationReader : GameService {
         return try? createScene(from: parentData)
     }
     
+    static func getLocations(by ids: [Int]) throws -> [Scene] {
+        loadLocations()
+        
+        guard let locations = locations else {
+            DebugLogService.shared.log("Locations array is nil", category: "Error")
+            throw LocationError.locationsNotLoaded
+        }
+        
+        var foundScenes: [Scene] = []
+        var notFoundIds: [Int] = []
+        
+        for id in ids {
+            if let location = locations.first(where: { 
+                if let locationId = $0["id"] as? Int {
+                    return locationId == id
+                }
+                return false
+            }) {
+                foundScenes.append(try createScene(from: location))
+            } else {
+                notFoundIds.append(id)
+            }
+        }
+        
+        if !notFoundIds.isEmpty {
+            DebugLogService.shared.log("Some locations not found with IDs: \(notFoundIds)", category: "Warning")
+        }
+        
+        return foundScenes
+    }
+    
+    static func getHubScenes(for sceneId: Int) -> [Scene] {
+        loadLocations()
+        
+        DebugLogService.shared.log("Searching for hub scenes for scene ID: \(sceneId)", category: "Location")
+        
+        // First get the specified scene
+        guard let scene = try? getLocation(by: sceneId) else {
+            DebugLogService.shared.log("Scene not found with ID: \(sceneId)", category: "Error")
+            return []
+        }
+        
+        // Get hub scenes from the scene's hubSceneIds
+        do {
+            return try getLocations(by: scene.hubSceneIds)
+        } catch {
+            DebugLogService.shared.log("Error getting hub scenes: \(error)", category: "Error")
+            return []
+        }
+    }
+    
     private static func createScene(from data: [String: Any]) throws -> Scene {
         guard let id = data["id"] as? Int,
               let name = data["name"] as? String,
@@ -188,6 +235,9 @@ class LocationReader : GameService {
         } else {
             parentSceneId = 0
         }
+        
+        // Handle isParent property
+        let isParent = data["isParent"] as? Bool ?? false
         
         // Convert sceneType string to SceneType enum
         let sceneType: SceneType
@@ -208,8 +258,10 @@ class LocationReader : GameService {
         case "square": sceneType = .square
         case "tavern": sceneType = .tavern
         case "warehouse": sceneType = .warehouse
-        default: 
-            DebugLogService.shared.log("Unknown scene type: \(sceneTypeString), defaulting to castle", category: "Warning")
+        case "town": sceneType = .town
+        case "brothel": sceneType = .brothel
+        default:
+            DebugLogService.shared.log("Unknown scene type: \(sceneTypeString), defaulting to house", category: "Warning")
             sceneType = .house
         }
         
@@ -219,6 +271,29 @@ class LocationReader : GameService {
         scene.isIndoor = isIndoor
         scene.parentSceneId = parentSceneId
         scene.sceneType = sceneType
+        scene.isParent = isParent
+        
+        // Handle hubSceneIds if present
+        if let hubIds = data["hubSceneIds"] as? [Int] {
+            scene.hubSceneIds = hubIds
+        }
+        
+        // Handle childSceneIds if present
+        if let childIds = data["childSceneIds"] as? [Int] {
+            scene.childSceneIds = childIds
+        }
+        
+        // Initialize empty characters dictionary
+        scene.setCharacters([])
+        
+        // Get parent scene info if parentSceneId exists
+        if parentSceneId != 0 {
+            if let parentScene = try? getLocation(by: parentSceneId) {
+                scene.parentSceneName = parentScene.name
+                scene.parentSceneType = parentScene.sceneType
+            }
+        }
+        
         return scene
     }
 } 

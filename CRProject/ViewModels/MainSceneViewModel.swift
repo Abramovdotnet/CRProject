@@ -145,7 +145,7 @@ class MainSceneViewModel: ObservableObject {
         // Create initial scene using LocationReader
         do {
 
-            let initialScene = try LocationReader.getLocation(by: 0)
+            let initialScene = try LocationReader.getLocation(by: 1)
             try gameStateService.changeLocation(to: initialScene.id)
             
             // Set default awareness to 0
@@ -260,6 +260,13 @@ class MainSceneViewModel: ObservableObject {
     func resetAwareness() {
         vampireNatureRevealService.decreaseAwareness(for: currentScene?.id ?? 0, amount: 100)
         updateSceneAwareness()
+    }
+    
+    func resetBloodPool() {
+        guard let player = gameStateService.getPlayer() else { return }
+        
+        player.bloodMeter.currentBlood = 100
+        updatePlayerBloodPercentage()
     }
     
     
@@ -561,6 +568,14 @@ extension MainSceneViewModel {
         
         // Add limited siblings
         scenes.append(contentsOf: siblingScenes.prefix(10))
+        
+        // Add hub locations
+        if let current = currentScene {
+            let hubScenes = current.hubSceneIds.compactMap { id in
+                try? LocationReader.getLocation(by: id)
+            }
+            scenes.append(contentsOf: hubScenes)
+        }
         
         // Add limited children
         scenes.append(contentsOf: childScenes.prefix(10))

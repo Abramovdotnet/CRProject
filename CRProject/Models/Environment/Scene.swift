@@ -10,23 +10,33 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
     var name: String = ""
     var isParent: Bool = false
     var parentSceneId: Int = 0
+    var parentSceneName: String = ""
+    var parentSceneType: SceneType = .house
     var isIndoor: Bool = false
     var sceneType: SceneType = .house
     var runtimeID: Int = 0
     
     @Published private var _characters: [Int: any Character] = [:]
     private var _childSceneIds: Set<Int> = []
+    private var _hubSceneIds: Set<Int> = []
     
     var childSceneIds: [Int] {
         get { Array(_childSceneIds) }
         set { _childSceneIds = Set(newValue) }
     }
     
-    init(id: Int, name: String, isParent: Bool, parentSceneId: Int, isIndoor: Bool, sceneType: SceneType) {
+    var hubSceneIds: [Int] {
+        get { Array(_hubSceneIds) }
+        set { _hubSceneIds = Set(newValue) }
+    }
+    
+    init(id: Int, name: String, isParent: Bool, parentSceneId: Int, parentSceneName: String, parentSceneType: SceneType, isIndoor: Bool, sceneType: SceneType) {
         self.id = id
         self.name = name
         self.isParent = isParent
         self.parentSceneId = parentSceneId
+        self.parentSceneName = parentSceneName
+        self.parentSceneType = parentSceneType
         self.isIndoor = isIndoor
         self.sceneType = sceneType
     }

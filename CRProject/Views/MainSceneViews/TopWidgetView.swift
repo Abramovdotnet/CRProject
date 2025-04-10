@@ -41,11 +41,20 @@ struct TopWidgetView: View {
             }
             
             Button(action: {
+                viewModel.resetBloodPool()
+            }) {
+                Image(systemName: "heart.fill")
+                    .font(Theme.bodyFont)
+                    .foregroundColor(.yellow)
+                    .cornerRadius(12)
+            }
+            
+            Button(action: {
                 viewModel.toggleDebugOverlay()
             }) {
                 Image(systemName: "hammer.fill")
                     .font(Theme.bodyFont)
-                    .foregroundColor(.orange)
+                    .foregroundColor(.yellow)
                     .cornerRadius(12)
             }
         }

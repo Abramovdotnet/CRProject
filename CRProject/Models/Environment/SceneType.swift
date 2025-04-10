@@ -1,4 +1,7 @@
 enum SceneType: String, CaseIterable {
+    // General
+    case town
+    
     // Districts
     case district
     
@@ -28,6 +31,7 @@ enum SceneType: String, CaseIterable {
 
     // Misc
     case house
+
     
     var displayName: String {
         let string = self.rawValue
@@ -54,9 +58,10 @@ enum SceneType: String, CaseIterable {
         case .warehouse: return "building.columns.fill"
         case .bookstore: return "books.vertical.fill"
         case .tavern: return "cup.and.saucer.fill"
-        case .brothel: return "building.2.fill"
+        case .brothel: return "heart.fill"
         case .district: return "building.fill"
         case .square: return "square.fill"
+        case .town: return "house.fill"
         default: return "questionmark.circle.fill"
         }
     }
