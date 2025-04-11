@@ -25,7 +25,8 @@ class Player: Character, Codable {
     var isIntimidated: Bool = false
     var isBeasy: Bool = false
     var intimidationDay: Int = 0
-    
+    var homeLocationId: Int = 0
+
     init(name: String, sex: Sex, age: Int, profession: Profession, id: Int) {
         self.name = name
         self.sex = sex

@@ -1,0 +1,1489 @@
+
+[
+    {
+        "id": 1,
+        "name": "The Dragon's Hearth",
+        "isParent": false,
+        "parentSceneId": 25,
+        "isIndoor": true,
+        "sceneType": "tavern"
+    },
+    {
+        "id": 2,
+        "name": "The Moonlit Chalice",
+        "isParent": false,
+        "parentSceneId": 25,
+        "hubSceneIds": [7, 9, 12, 19],
+        "isIndoor": true,
+        "sceneType": "tavern"
+    },
+    {
+        "id": 3,
+        "name": "The Velvet Veil",
+        "isParent": false,
+        "parentSceneId": 25,
+        "isIndoor": true,
+        "sceneType": "brothel"
+    },
+    {
+        "id": 4,
+        "name": "The Black Cathedral",
+        "isParent": false,
+        "parentSceneId": 26,
+        "isIndoor": true,
+        "sceneType": "cathedral"
+    },
+    {
+        "id": 5,
+        "name": "The Shadow Cloister",
+        "isParent": false,
+        "parentSceneId": 26,
+        "isIndoor": true,
+        "sceneType": "monastery"
+    },
+    {
+        "id": 6,
+        "name": "The Crypt of Whispers",
+        "isParent": false,
+        "parentSceneId": 26,
+        "isIndoor": true,
+        "sceneType": "crypt"
+    },
+    {
+        "id": 7,
+        "name": "Fountain of the Ancients",
+        "isParent": false,
+        "parentSceneId": 26,
+        "hubSceneIds": [2, 12, 19, 124, 146, 168],
+        "isIndoor": false,
+        "sceneType": "square"
+    },
+    {
+        "id": 8,
+        "name": "The Steam Haven",
+        "isParent": false,
+        "parentSceneId": 27,
+        "isIndoor": true,
+        "sceneType": "bathhouse"
+    },
+    {
+        "id": 9,
+        "name": "The Verdant Court",
+        "isParent": false,
+        "parentSceneId": 27,
+        "hubSceneIds": [2, 12, 15, 20, 47, 60, 76],
+        "isIndoor": false,
+        "sceneType": "square"
+    },
+    {
+        "id": 10,
+        "name": "The Ivory Keep",
+        "isParent": false,
+        "parentSceneId": 28,
+        "isIndoor": true,
+        "sceneType": "manor"
+    },
+    {
+        "id": 11,
+        "name": "Guard Barracks",
+        "isParent": false,
+        "parentSceneId": 28,
+        "hubSceneIds": [21],
+        "isIndoor": true,
+        "sceneType": "military"
+    },
+    {
+        "id": 12,
+        "name": "The Crest Square",
+        "isParent": false,
+        "parentSceneId": 28,
+        "hubSceneIds": [2, 7, 9, 15, 92, 109],
+        "isIndoor": false,
+        "sceneType": "square"
+    },
+    {
+        "id": 13,
+        "name": "The Iron Heart",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "blacksmith"
+    },
+    {
+        "id": 14,
+        "name": "The Glass Tower",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "alchemistShop"
+    },
+    {
+        "id": 15,
+        "name": "Trade Warehouses",
+        "isParent": false,
+        "parentSceneId": 29,
+        "hubSceneIds": [9, 12, 20, 22],
+        "isIndoor": true,
+        "sceneType": "warehouse"
+    },
+    {
+        "id": 16,
+        "name": "The Quill & Scroll",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "bookstore"
+    },
+    {
+        "id": 17,
+        "name": "The Herbalist's Den",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "alchemistShop"
+    },
+    {
+        "id": 18,
+        "name": "The Golden Scales",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 19,
+        "name": "The Steel Anvil",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "blacksmith"
+    },
+    {
+        "id": 20,
+        "name": "The Crystal Crucible",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "alchemistShop"
+    },
+    {
+        "id": 21,
+        "name": "The Green Thumb",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "alchemistShop"
+    },
+    {
+        "id": 22,
+        "name": "The Hallowed Grounds",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 23,
+        "name": "The Hearth's Haven",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 24,
+        "name": "The Noble's Crest",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 25,
+        "name": "Backtown",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 26,
+        "name": "The Hallowed Grounds",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 27,
+        "name": "The Hearth's Haven",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 28,
+        "name": "The Noble's Crest",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 29,
+        "name": "Market",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 30,
+        "name": "The Iron Heart",
+        "isParent": false,
+        "parentSceneId": 29,
+        "isIndoor": true,
+        "sceneType": "blacksmith"
+    },
+    {
+        "id": 31,
+        "name": "Duskvale",
+        "isParent": true,
+        "parentSceneId": null,
+        "isIndoor": false,
+        "sceneType": "city"
+    },
+    {
+        "id": 32,
+        "name": "Docks District",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 33,
+        "name": "The Drunken Sailor",
+        "isParent": false,
+        "parentSceneId": 32,
+        "hubSceneIds": [15],
+        "isIndoor": true,
+        "sceneType": "tavern"
+    },
+    {
+        "id": 34,
+        "name": "The Long Pier",
+        "isParent": false,
+        "parentSceneId": 32,
+        "isIndoor": false,
+        "sceneType": "docks"
+    },
+    {
+        "id": 35,
+        "name": "Docks Guard Barracks",
+        "isParent": false,
+        "parentSceneId": 32,
+        "isIndoor": true,
+        "sceneType": "military"
+    },
+    {
+        "id": 36,
+        "name": "Ave 1",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 37,
+        "name": "The Oak House",
+        "isParent": false,
+        "parentSceneId": 36,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 38,
+        "name": "The Willow Cottage",
+        "isParent": false,
+        "parentSceneId": 36,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 39,
+        "name": "The Ivy Residence",
+        "isParent": false,
+        "parentSceneId": 36,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 40,
+        "name": "The Maple Manor",
+        "isParent": false,
+        "parentSceneId": 36,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 41,
+        "name": "The Elm Dwelling",
+        "isParent": false,
+        "parentSceneId": 36,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 42,
+        "name": "The Pine Lodge",
+        "isParent": false,
+        "parentSceneId": 36,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 43,
+        "name": "The Birch Cottage",
+        "isParent": false,
+        "parentSceneId": 36,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 44,
+        "name": "Ave 1, Qrt 1",
+        "isParent": true,
+        "parentSceneId": 36,
+        "hubSceneIds": [9, 44],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 45,
+        "name": "The Cedar House",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 46,
+        "name": "The Ash Residence",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 47,
+        "name": "The Redwood House",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 48,
+        "name": "The Spruce Cottage",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 49,
+        "name": "The Juniper Lodge",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 50,
+        "name": "The Hawthorn Manor",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 51,
+        "name": "The Rowan Residence",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 52,
+        "name": "The Cypress Cottage",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 53,
+        "name": "The Alder House",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 54,
+        "name": "The Chestnut Lodge",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 55,
+        "name": "The Poplar Manor",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 56,
+        "name": "The Hazel Residence",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 57,
+        "name": "The Sycamore Dwelling",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 58,
+        "name": "The Dogwood Manor",
+        "isParent": false,
+        "parentSceneId": 44,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 59,
+        "name": "Ave 2",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 60,
+        "name": "Ave 2, Qrt 1",
+        "isParent": true,
+        "parentSceneId": 59,
+        "hubSceneIds": [61],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 61,
+        "name": "Ave 2, Qrt 2",
+        "isParent": true,
+        "parentSceneId": 59,
+        "hubSceneIds": [60],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 62,
+        "name": "The Old House",
+        "isParent": false,
+        "parentSceneId": 59,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 63,
+        "name": "The Willow Cottage",
+        "isParent": false,
+        "parentSceneId": 59,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 64,
+        "name": "The Ivy Residence",
+        "isParent": false,
+        "parentSceneId": 59,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 65,
+        "name": "The Maple Manor",
+        "isParent": false,
+        "parentSceneId": 59,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 66,
+        "name": "The Elm Dwelling",
+        "isParent": false,
+        "parentSceneId": 59,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 67,
+        "name": "The Pine Lodge",
+        "isParent": false,
+        "parentSceneId": 59,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 68,
+        "name": "The Birch Cottage",
+        "isParent": false,
+        "parentSceneId": 59,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 69,
+        "name": "The Cedar House",
+        "isParent": false,
+        "parentSceneId": 61,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 70,
+        "name": "The Ash Residence",
+        "isParent": false,
+        "parentSceneId": 61,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 71,
+        "name": "The Redwood House",
+        "isParent": false,
+        "parentSceneId": 61,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 72,
+        "name": "The Spruce Cottage",
+        "isParent": false,
+        "parentSceneId": 61,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 73,
+        "name": "The Juniper Lodge",
+        "isParent": false,
+        "parentSceneId": 61,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 74,
+        "name": "The Hawthorn Manor",
+        "isParent": false,
+        "parentSceneId": 61,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 75,
+        "name": "Ave 3",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 76,
+        "name": "Ave 3, Qrt 1",
+        "isParent": true,
+        "parentSceneId": 75,
+        "hubSceneIds": [77],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 77,
+        "name": "Ave 3, Qrt 2",
+        "isParent": true,
+        "parentSceneId": 75,
+        "hubSceneIds": [76],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 78,
+        "name": "The Aspen House",
+        "isParent": false,
+        "parentSceneId": 75,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 79,
+        "name": "The Beech Cottage",
+        "isParent": false,
+        "parentSceneId": 75,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 80,
+        "name": "The Cherry Residence",
+        "isParent": false,
+        "parentSceneId": 75,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 81,
+        "name": "The Dogwood Manor",
+        "isParent": false,
+        "parentSceneId": 75,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 82,
+        "name": "The Fir Dwelling",
+        "isParent": false,
+        "parentSceneId": 75,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 83,
+        "name": "The Gum Lodge",
+        "isParent": false,
+        "parentSceneId": 75,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 84,
+        "name": "The Hickory Cottage",
+        "isParent": false,
+        "parentSceneId": 75,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 85,
+        "name": "The Larch House",
+        "isParent": false,
+        "parentSceneId": 77,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 86,
+        "name": "The Magnolia Residence",
+        "isParent": false,
+        "parentSceneId": 77,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 87,
+        "name": "The Olive Lodge",
+        "isParent": false,
+        "parentSceneId": 77,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 88,
+        "name": "The Palm Manor",
+        "isParent": false,
+        "parentSceneId": 77,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 89,
+        "name": "The Quince Dwelling",
+        "isParent": false,
+        "parentSceneId": 77,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 90,
+        "name": "The Sequoia Cottage",
+        "isParent": false,
+        "parentSceneId": 77,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 91,
+        "name": "Ave 4",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 92,
+        "name": "Ave 4, Qrt 1",
+        "isParent": true,
+        "parentSceneId": 91,
+        "hubSceneIds": [93],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 93,
+        "name": "Ave 4, Qrt 2",
+        "isParent": true,
+        "parentSceneId": 91,
+        "hubSceneIds": [92],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 94,
+        "name": "The Laurel House",
+        "isParent": false,
+        "parentSceneId": 91,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 95,
+        "name": "The Maple Cottage",
+        "isParent": false,
+        "parentSceneId": 91,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 96,
+        "name": "The Oak Residence",
+        "isParent": false,
+        "parentSceneId": 91,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 97,
+        "name": "The Pine Manor",
+        "isParent": false,
+        "parentSceneId": 91,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 98,
+        "name": "The Spruce Dwelling",
+        "isParent": false,
+        "parentSceneId": 91,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 99,
+        "name": "The Willow Lodge",
+        "isParent": false,
+        "parentSceneId": 91,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 100,
+        "name": "The Yew Cottage",
+        "isParent": false,
+        "parentSceneId": 91,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 101,
+        "name": "The Cedar House",
+        "isParent": false,
+        "parentSceneId": 93,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 102,
+        "name": "The Ash Residence",
+        "isParent": false,
+        "parentSceneId": 93,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 103,
+        "name": "The Redwood House",
+        "isParent": false,
+        "parentSceneId": 93,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 104,
+        "name": "The Spruce Cottage",
+        "isParent": false,
+        "parentSceneId": 93,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 105,
+        "name": "The Juniper Lodge",
+        "isParent": false,
+        "parentSceneId": 93,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 106,
+        "name": "The Hawthorn Manor",
+        "isParent": false,
+        "parentSceneId": 93,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 107,
+        "name": "Ave 5",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 108,
+        "name": "Ave 5, Qrt 1",
+        "isParent": true,
+        "parentSceneId": 107,
+        "hubSceneIds": [109],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 109,
+        "name": "Ave 5, Qrt 2",
+        "isParent": true,
+        "parentSceneId": 107,
+        "hubSceneIds": [108],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 110,
+        "name": "The Elm House",
+        "isParent": false,
+        "parentSceneId": 107,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 111,
+        "name": "The Fir Cottage",
+        "isParent": false,
+        "parentSceneId": 107,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 112,
+        "name": "The Maple Residence",
+        "isParent": false,
+        "parentSceneId": 107,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 113,
+        "name": "The Oak Manor",
+        "isParent": false,
+        "parentSceneId": 107,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 114,
+        "name": "The Pine Dwelling",
+        "isParent": false,
+        "parentSceneId": 107,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 115,
+        "name": "The Spruce Lodge",
+        "isParent": false,
+        "parentSceneId": 107,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 116,
+        "name": "The Willow Cottage",
+        "isParent": false,
+        "parentSceneId": 107,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 117,
+        "name": "The Yew House",
+        "isParent": false,
+        "parentSceneId": 109,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 118,
+        "name": "The Cedar Residence",
+        "isParent": false,
+        "parentSceneId": 109,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 119,
+        "name": "The Ash Manor",
+        "isParent": false,
+        "parentSceneId": 109,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 120,
+        "name": "The Redwood Dwelling",
+        "isParent": false,
+        "parentSceneId": 109,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 121,
+        "name": "The Spruce Cottage",
+        "isParent": false,
+        "parentSceneId": 109,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 122,
+        "name": "The Juniper Lodge",
+        "isParent": false,
+        "parentSceneId": 109,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 123,
+        "name": "Ave 6",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 124,
+        "name": "Ave 6, Qrt 1",
+        "isParent": true,
+        "parentSceneId": 123,
+        "hubSceneIds": [125],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 125,
+        "name": "Ave 6, Qrt 2",
+        "isParent": true,
+        "parentSceneId": 123,
+        "hubSceneIds": [124],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 126,
+        "name": "The Birch House",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 127,
+        "name": "The Chestnut Cottage",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 128,
+        "name": "The Dogwood Residence",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 129,
+        "name": "The Elder Manor",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 130,
+        "name": "The Hawthorn Dwelling",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 131,
+        "name": "The Linden Lodge",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 132,
+        "name": "The Magnolia Cottage",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 133,
+        "name": "The Poplar House",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 134,
+        "name": "The Rowan Residence",
+        "isParent": false,
+        "parentSceneId": 125,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 135,
+        "name": "The Sycamore Manor",
+        "isParent": false,
+        "parentSceneId": 125,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 136,
+        "name": "The Walnut Dwelling",
+        "isParent": false,
+        "parentSceneId": 125,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 137,
+        "name": "The Alder Lodge",
+        "isParent": false,
+        "parentSceneId": 125,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 138,
+        "name": "The Beech Cottage",
+        "isParent": false,
+        "parentSceneId": 125,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 139,
+        "name": "The Cypress House",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 140,
+        "name": "The Hazel Residence",
+        "isParent": false,
+        "parentSceneId": 125,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 141,
+        "name": "The Laurel Manor",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 142,
+        "name": "The Myrtle Dwelling",
+        "isParent": false,
+        "parentSceneId": 125,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 143,
+        "name": "The Olive Lodge",
+        "isParent": false,
+        "parentSceneId": 123,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 144,
+        "name": "The Palm Cottage",
+        "isParent": false,
+        "parentSceneId": 125,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 145,
+        "name": "Ave 7",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 146,
+        "name": "Ave 7, Qrt 1",
+        "isParent": true,
+        "parentSceneId": 145,
+        "hubSceneIds": [7, 147],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 147,
+        "name": "Ave 7, Qrt 2",
+        "isParent": true,
+        "parentSceneId": 145,
+        "hubSceneIds": [146],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 148,
+        "name": "The Acacia House",
+        "isParent": false,
+        "parentSceneId": 145,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 149,
+        "name": "The Banyan Cottage",
+        "isParent": false,
+        "parentSceneId": 145,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 150,
+        "name": "The Ebony Residence",
+        "isParent": false,
+        "parentSceneId": 145,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 151,
+        "name": "The Fig Manor",
+        "isParent": false,
+        "parentSceneId": 145,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 152,
+        "name": "The Ginkgo Dwelling",
+        "isParent": false,
+        "parentSceneId": 145,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 153,
+        "name": "The Hemlock Lodge",
+        "isParent": false,
+        "parentSceneId": 145,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 154,
+        "name": "The Ironwood Cottage",
+        "isParent": false,
+        "parentSceneId": 145,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 155,
+        "name": "The Jacaranda House",
+        "isParent": false,
+        "parentSceneId": 147,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 156,
+        "name": "The Koa Residence",
+        "isParent": false,
+        "parentSceneId": 147,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 157,
+        "name": "The Larch Manor",
+        "isParent": false,
+        "parentSceneId": 147,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 158,
+        "name": "The Mahogany Dwelling",
+        "isParent": false,
+        "parentSceneId": 147,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 159,
+        "name": "The Nectarine Lodge",
+        "isParent": false,
+        "parentSceneId": 147,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 160,
+        "name": "The Orchid Cottage",
+        "isParent": false,
+        "parentSceneId": 147,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 161,
+        "name": "The Pecan House",
+        "isParent": false,
+        "parentSceneId": 145,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 162,
+        "name": "The Quince Residence",
+        "isParent": false,
+        "parentSceneId": 147,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 163,
+        "name": "The Rosewood Manor",
+        "isParent": false,
+        "parentSceneId": 145,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 164,
+        "name": "The Sassafras Dwelling",
+        "isParent": false,
+        "parentSceneId": 147,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 165,
+        "name": "The Tamarind Lodge",
+        "isParent": false,
+        "parentSceneId": 145,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 166,
+        "name": "The Umbrella Cottage",
+        "isParent": false,
+        "parentSceneId": 147,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 167,
+        "name": "Ave 8",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 168,
+        "name": "Ave 8, Qrt 1",
+        "isParent": true,
+        "parentSceneId": 167,
+        "hubSceneIds": [7, 169],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 169,
+        "name": "Ave 8, Qrt 2",
+        "isParent": true,
+        "parentSceneId": 167,
+        "hubSceneIds": [168],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 170,
+        "name": "The Vine House",
+        "isParent": false,
+        "parentSceneId": 167,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 171,
+        "name": "The Willow Cottage",
+        "isParent": false,
+        "parentSceneId": 167,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 172,
+        "name": "The Xylocarp Residence",
+        "isParent": false,
+        "parentSceneId": 167,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 173,
+        "name": "The Yew Manor",
+        "isParent": false,
+        "parentSceneId": 167,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 174,
+        "name": "The Zelkova Dwelling",
+        "isParent": false,
+        "parentSceneId": 167,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 175,
+        "name": "The Acacia Lodge",
+        "isParent": false,
+        "parentSceneId": 167,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 176,
+        "name": "The Bonsai Cottage",
+        "isParent": false,
+        "parentSceneId": 167,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 177,
+        "name": "The Cedar House",
+        "isParent": false,
+        "parentSceneId": 169,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 178,
+        "name": "The Dogwood Residence",
+        "isParent": false,
+        "parentSceneId": 169,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 179,
+        "name": "The Elm Manor",
+        "isParent": false,
+        "parentSceneId": 169,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 180,
+        "name": "The Fir Dwelling",
+        "isParent": false,
+        "parentSceneId": 169,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 181,
+        "name": "The Ginkgo Lodge",
+        "isParent": false,
+        "parentSceneId": 169,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 182,
+        "name": "The Hawthorn Cottage",
+        "isParent": false,
+        "parentSceneId": 169,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 183,
+        "name": "The Ironwood House",
+        "isParent": false,
+        "parentSceneId": 169,
+        "isIndoor": true,
+        "sceneType": "house"
+    }
+]

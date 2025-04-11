@@ -10,8 +10,28 @@ DUSKVALE (CITY)
 26.THE HALLOWED GROUNDS (RELIGIOUS DISTRICT) 🟢    │    27. THE HEARTH'S HAVEN (RESIDENTIAL DISTRICT) 🟣
 4. The Black Cathedral                       │    8. The Steam Haven (Bathhouse)
 5. The Shadow Cloister                       │    9. The Verdant Court (Communal Gardens) [🟡2, 🔴12, 🟠15, 🔵20]
-6. The Crypt of Whispers                     │
-7. Fountain of the Ancients [🟡2, 🔴12, 🔵19]      │
+6. The Crypt of Whispers                     │    36. Hearth's Haven Rd. 1
+7. Fountain of the Ancients [🟡2, 🔴12, 🔵19]      │    37. The Oak House
+                                              │    38. The Willow Cottage
+                                              │    39. The Ivy Residence
+                                              │    40. The Maple Manor
+                                              │    41. The Elm Dwelling
+                                              │    42. The Pine Lodge
+                                              │    43. The Birch Cottage
+                                              │    44. The Cedar House
+                                              │    45. The Ash Residence
+                                              │    46. The Yew Manor
+                                              │    48. The Redwood House
+                                              │    49. The Spruce Cottage
+                                              │    50. The Juniper Lodge
+                                              │    51. The Hawthorn Manor
+                                              │    52. The Rowan Residence
+                                              │    53. The Cypress Cottage
+                                              │    54. The Alder House
+                                              │    55. The Chestnut Lodge
+                                              │    56. The Poplar Manor
+                                              │    57. The Hazel Residence
+                                              │    58. The Sycamore Dwelling
 
                     28. THE NOBLE'S CREST (ADMINISTRATIVE DISTRICT) 🔴
                     10. The Ivory Keep (Manor)
@@ -20,17 +40,14 @@ DUSKVALE (CITY)
 
                     29. MARKET (COMMERCIAL DISTRICT) 🟠
                     13. The Iron Heart (Blacksmith)
-                    14. The Glass Tower (Alchemist)
-                    15. Trade Warehouses [��9, 🔴12, 🔵20, 🟤22]
+                    15. Trade Warehouses [🔴12, 🔵20, 🟤22]
                     16. The Quill & Scroll (Bookstore)
                     17. The Herbalist's Den (Apothecary)
                     18. The Golden Scales (Money Lender)
                     22. The Steel Anvil (Blacksmith)
-                    23. The Crystal Crucible (Alchemist)
-                    24. The Green Thumb (Apothecary)
 
-30. DEFENSIVE STRUCTURES 🔵
-19. Watchtower (North-West) [🟡2, ��7]
+ DEFENSIVE STRUCTURES 🔵
+19. Watchtower (North-West) [🟡2, 7]
 20. Watchtower (South-East) [9, 🟠15]
 21. Armory [🔴11]
 

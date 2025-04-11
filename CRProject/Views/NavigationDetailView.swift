@@ -148,31 +148,32 @@ struct NavigationWebView: View {
             return currentPosition
         }
         
-        // Siblings and hub locations in inner circle
         let allSiblings = viewModel.siblingScenes + (current.hubSceneIds.compactMap { id in
             try? LocationReader.getLocation(by: id)
         })
+
         if allSiblings.contains(where: { $0.id == location.id }) {
-            let siblings = Array(allSiblings.prefix(maxSiblingNodes))
-            guard let index = siblings.firstIndex(where: { $0.id == location.id }) else { return nil }
-            let angle = 2 * .pi / CGFloat(siblings.count) * CGFloat(index)
-            let radius = geometry.size.height * 0.3
-            return CGPoint(
-                x: currentPosition.x + cos(angle) * radius * 1.6,
-                y: currentPosition.y + sin(angle) * radius * 1.3
-            )
-        }
-        
-        // Children in outer circle
-        if viewModel.childScenes.contains(where: { $0.id == location.id }) {
-            let children = Array(viewModel.childScenes.prefix(maxChildNodes))
-            guard let index = children.firstIndex(where: { $0.id == location.id }) else { return nil }
-            let angle = 2 * .pi / CGFloat(children.count) * CGFloat(index)
-            let radius = geometry.size.height * 0.42
-            return CGPoint(
-                x: currentPosition.x + cos(angle) * radius * 2,
-                y: currentPosition.y + sin(angle) * radius * 0.95
-            )
+            let innerCircleSiblings = Array(allSiblings.prefix(8)) // First 8 in inner circle
+            let outerCircleSiblings = Array(allSiblings.dropFirst(8)) // Rest in outer circle
+            
+            // Check if location is in inner circle
+            if let index = innerCircleSiblings.firstIndex(where: { $0.id == location.id }) {
+                let angle = 2 * .pi / CGFloat(innerCircleSiblings.count) * CGFloat(index)
+                let radius = geometry.size.height * 0.3
+                return CGPoint(
+                    x: currentPosition.x + cos(angle) * radius * 1.2,
+                    y: currentPosition.y + sin(angle) * radius * 1.3
+                )
+            }
+            // Check if location is in outer circle
+            else if let index = outerCircleSiblings.firstIndex(where: { $0.id == location.id }) {
+                let angle = 2 * .pi / CGFloat(outerCircleSiblings.count) * CGFloat(index)
+                let radius = geometry.size.height * 0.42
+                return CGPoint(
+                    x: currentPosition.x + cos(angle) * radius * 2,
+                    y: currentPosition.y + sin(angle) * radius * 0.95
+                )
+            }
         }
         
         return nil
@@ -338,7 +339,13 @@ struct LocationNode: View {
     }
     
     func navigationLabel() -> String {
-        return data.location.parentSceneId == 0 ? "Visit" : data.currentLocation?.parentSceneId == data.location.parentSceneId ? "Back" : "to \(data.location.parentSceneName)"
+        if data.location.parentSceneId == 0 {
+            return "Visit"
+        } else if data.location.sceneType != .road {
+            return "To \(data.location.parentSceneName)"
+        } else {
+            return data.currentLocation?.parentSceneId == data.location.parentSceneId ? "Back" : "To houses"
+        }
     }
     
     func relationshipLabel() -> String {

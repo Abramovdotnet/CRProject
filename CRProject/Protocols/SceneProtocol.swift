@@ -18,6 +18,7 @@ protocol SceneProtocol: Codable, ObservableObject {
     var hubSceneIds: [Int] { get }
     var isIndoor: Bool { get }
     var sceneType: SceneType { get set }
+    var isLocked: Bool { get set }
     
     func getCharacters() -> [any Character]
     func setCharacters(_ characters: [any Character])

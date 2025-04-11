@@ -28,6 +28,7 @@ enum SceneType: String, CaseIterable {
     // Public Spaces
     case square
     case docks
+    case road
 
     // Misc
     case house
@@ -62,6 +63,8 @@ enum SceneType: String, CaseIterable {
         case .district: return "building.fill"
         case .square: return "square.fill"
         case .town: return "house.fill"
+        case .road: return "road.lane.arrowtriangle.2.inward"
+        case .house: return "house.fill"
         default: return "questionmark.circle.fill"
         }
     }

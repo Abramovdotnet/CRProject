@@ -23,6 +23,7 @@ class NPC: Character {
     var isIntimidated: Bool = false
     var intimidationDay: Int = 0
     var isBeasy: Bool = false
+    var homeLocationId: Int = 0
     
     init() {}
     

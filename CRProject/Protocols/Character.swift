@@ -22,6 +22,7 @@ protocol Character: Identifiable, ObservableObject, Codable {
     var intimidationDay: Int { get set }
     var index : Int { get set }
     var isBeasy: Bool { get set }
+    var homeLocationId: Int { get set }
     
     func shareBlood(amount: Float, from donor: any Character)
 }

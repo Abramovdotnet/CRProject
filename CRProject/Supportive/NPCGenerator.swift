@@ -79,48 +79,105 @@ class NPCGenerator {
     ]
     
     static func createPlayer() -> Player {
-        return Player(name: "Victor", sex: .male, age: 300, profession: .adventurer, id: 0)
-    }
+          return Player(name: "Victor", sex: .male, age: 300, profession: .adventurer, id: 0)
+      }
     
-    static func generateNPCs(count: Int) -> [[String: Any]] {
+    // MARK: - District NPC Distributions
+    
+    private static let residentialDistrictNPCs: [(profession: Profession, count: Int)] = [
+        (.general, 90), // No profession
+        (.guardman, 11), // City guards
+        (.carpenter, 10), // Carpenters
+        (.tailor, 10), // Tailors
+        (.general, 10), // Gardeners (using general for now)
+        (.general, 10), // Maintenance workers
+        (.general, 10), // Cleaners
+        (.general, 10), // Apprentices
+        (.general, 10), // Lords/Ladies
+        (.general, 10), // Administrators
+        (.general, 10), // Stable hands
+        (.general, 10)  // Kitchen staff
+    ]
+    
+    private static let noblesCrestNPCs: [(profession: Profession, count: Int)] = [
+        (.general, 25), // Military officers
+        (.general, 12), // Servants
+        (.guardman, 5), // City guards
+        (.general, 5), // Administrators
+        (.general, 2)   // Lords/Ladies
+    ]
+    
+    private static let hallowedGroundsNPCs: [(profession: Profession, count: Int)] = [
+        (.priest, 15), // Monks
+        (.scribe, 13), // Religious scholars
+        (.priest, 3),  // Priests
+        (.guardman, 2), // City guards
+        (.general, 2)   // Cleaners
+    ]
+    
+    private static let commercialDistrictNPCs: [(profession: Profession, count: Int)] = [
+        (.general, 70), // General laborers
+        (.scribe, 15),  // Booksellers
+        (.guardman, 8), // City guards
+        (.blacksmith, 2), // Blacksmiths
+        (.alchemist, 2), // Alchemists
+        (.apothecary, 2) // Herbalists
+    ]
+    
+    private static let entertainmentDistrictNPCs: [(profession: Profession, count: Int)] = [
+        (.wenche, 17), // Barmaids
+        (.minstrel, 17), // Entertainers
+        (.general, 9), // Cleaners
+        (.guardman, 5), // City guards
+        (.innkeeper, 1) // Tavern keepers
+    ]
+    
+    private static let docksNPCs: [(profession: Profession, count: Int)] = [
+        (.general, 4), // General laborers
+        (.general, 2), // Dock workers
+        (.general, 2), // Sailors
+        (.guardman, 2), // City guards
+        (.general, 0)  // Ship captains
+    ]
+    
+    private static let temporaryPopulationNPCs: [(profession: Profession, count: Int)] = [
+        (.adventurer, 30), // Adventurers
+        (.general, 18),    // Pilgrims
+        (.general, 15),    // No profession
+        (.merchant, 11)    // Merchants
+    ]
+    
+    static func generateNPCs() -> [[String: Any]] {
         var npcs: [[String: Any]] = []
-        let professions = Profession.allCases
-        let maxVampires = Int(Double(count) * 0.03) // 3% of total population
-        var vampireCount = 0
+        var currentId = 1
         
-        for _ in 0..<count {
-            let sex = Bool.random() ? "male" : "female"
-            let firstName = sex == "male" ? maleFirstNames.randomElement()! : femaleFirstNames.randomElement()!
-            let lastName = lastNames.randomElement()!
-            let profession = professions.randomElement()!
-            
-            // Determine if this NPC should be a vampire
-            let canBeVampire = vampireCount < maxVampires
-            let chanceToBeVampire = Double.random(in: 0...1)
-            let isVampire = canBeVampire && chanceToBeVampire < 0.1 // 10% chance if still under the limit
-            
-            if isVampire {
-                vampireCount += 1
+        // Generate 200 NPCs for each profession
+        for profession in Profession.allCases {
+            for _ in 0..<200 {
+                let sex = Bool.random() ? "male" : "female"
+                let firstName = sex == "male" ? maleFirstNames.randomElement()! : femaleFirstNames.randomElement()!
+                let lastName = lastNames.randomElement()!
+                
+                let npc: [String: Any] = [
+                    "id": currentId,
+                    "name": "\(firstName) \(lastName)",
+                    "sex": sex,
+                    "age": Int.random(in: 18...80),
+                    "profession": profession.rawValue,
+                    "homeLocationId": 0, // Will be set later
+                    "isVampire": false
+                ]
+                
+                npcs.append(npc)
+                currentId += 1
             }
-            
-            let npc: [String: Any] = [
-                "id": UUID().uuidString,
-                "name": "\(firstName) \(lastName)",
-                "sex": sex,
-                "age": Int.random(in: 18...80),
-                "profession": profession.rawValue,
-                "isVampire": isVampire
-            ]
-            
-            npcs.append(npc)
         }
         
-        DebugLogService.shared.log("Generated NPCs with \(vampireCount) vampires (\(Double(vampireCount) / Double(count) * 100)% of population)", category: "NPC")
         return npcs
     }
     
     static func saveToFile() {
-        let npcs = generateNPCs(count: 5000)
+        let npcs = generateNPCs()
         let jsonData = try! JSONSerialization.data(withJSONObject: npcs, options: .prettyPrinted)
         
         // Create Data directory if it doesn't exist
@@ -142,7 +199,7 @@ class NPCGenerator {
 #if DEBUG
 // Only run this in debug builds
 func generateNPCs() {
-    let npcs = NPCGenerator.generateNPCs(count: 500)
+    let npcs = NPCGenerator.generateNPCs()
     let jsonData = try! JSONSerialization.data(withJSONObject: npcs, options: .prettyPrinted)
     
     // Create Data directory if it doesn't exist

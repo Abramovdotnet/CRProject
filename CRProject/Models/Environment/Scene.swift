@@ -15,7 +15,8 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
     var isIndoor: Bool = false
     var sceneType: SceneType = .house
     var runtimeID: Int = 0
-    
+    var isLocked: Bool = false
+
     @Published private var _characters: [Int: any Character] = [:]
     private var _childSceneIds: Set<Int> = []
     private var _hubSceneIds: Set<Int> = []
