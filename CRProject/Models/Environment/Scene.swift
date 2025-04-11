@@ -53,8 +53,36 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
         return Array(_characters.values)
     }
     
+    func getNPCs() -> [NPC] {
+        return _characters.values.compactMap { $0 as? NPC }
+    }
+    
+    func removeCharacter(id: Int) {
+        if _characters.contains(where: { $0.key == id }) {
+            _characters.removeValue(forKey: id)
+            
+            NotificationCenter.default.post(name: .sceneCharactersChanged, object: self)
+        }
+    }
+    
+    func addCharacter(_ character: any Character) {
+        _characters[character.id] = character
+        character.currentLocationId = self.id
+        
+        NotificationCenter.default.post(name: .sceneCharactersChanged, object: self)
+    }
+    
+    func hasCharacter(with id: Int) -> Bool {
+        return _characters.contains(where: { $0.key == id })
+    }
+    
     func setCharacters(_ characters: [any Character]) {
         _characters = characters.reduce(into: [:]) { $0[$1.id] = $1 }
+        
+        for character in characters {
+            character.currentLocationId = self.id
+        }
+        
         // Post notification when characters are changed
         NotificationCenter.default.post(name: .sceneCharactersChanged, object: self)
     }

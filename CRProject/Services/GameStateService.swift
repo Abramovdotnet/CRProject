@@ -14,6 +14,8 @@ class GameStateService : ObservableObject, GameService{
     @Published var siblingScenes: [Scene] = []
     @Published var showEndGame: Bool = false
     
+    static let shared: GameStateService = DependencyManager.shared.resolve()
+    
     private let gameTime: GameTimeService
     private let vampireNatureRevealService: VampireNatureRevealService
     private let gameEventsBus: GameEventsBusService
@@ -116,14 +118,24 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func handleTimeAdvanced() {
+        NPCBehaviorService.shared.updateActivity()
+        advanceWorldState()
+        
+        // Reduce player blood pool
+        player?.bloodMeter.useBlood(5)
+        
+        // Reset selection if npc left location
         guard let scene = currentScene else { return }
         
-        // Update npcs
-        //if let scene = currentScene {
-        //    npcPopulationService.updatePopulation(for: scene )
-        //}
-        
-        NPCBehaviorService.shared.updateActivity()
+        if npcManager.selectedNPC != nil {
+            if !scene.hasCharacter(with: npcManager.selectedNPC!.id) {
+                npcManager.selectedNPC = nil
+            }
+        }
+    }
+    
+    func advanceWorldState() {
+        guard let scene = currentScene else { return }
         
         // If current scene is indoor and it's not night time, increase awareness
         if scene.isIndoor && !gameTime.isNightTime {
@@ -142,52 +154,23 @@ class GameStateService : ObservableObject, GameService{
             vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
         }
         
-        // Reduce player blood pool
-        player?.bloodMeter.useBlood(5)
-        
         if player?.bloodMeter.currentBlood ?? 0 <= 30 {
             gameEventsBus.addDangerMessage(message: "* I feel huge lack of blood!*")
         }
-        
-        healNPcs()
-        // Update NPC sleeping states
-        updateNPCSleepingState(isNight: gameTime.isNightTime)
-        updateNPCsStatuses()
     }
     
     private func handleSafeTimeAdvanced() {
-        guard let currentScene = currentScene else { return }
-        
-        //npcPopulationService.updatePopulation(for: currentScene )
-        
         // Reduce awareness for nearest scenes by 5
         for scene in siblingScenes {
             vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
         }
         
-        healNPcs()
-        // Update NPC sleeping states
-        updateNPCSleepingState(isNight: gameTime.isNightTime)
-        updateNPCsStatuses()
-    }
-    
-    private func healNPcs() {
-        for npc in NPCReader.getNPCs() {
-            if npc.isAlive && !npc.isBeasy && npc.bloodMeter.currentBlood < 100 {
-                npc.bloodMeter.addBlood(2)
-            }
-        }
-    }
-    
-    func updateNPCSleepingState(isNight: Bool) {
-        let sleepChance = isNight ? 90 : 10 // 90% chance at night, 10% during day
+        // Reset selection if npc left location
+        guard let scene = currentScene else { return }
         
-        guard let characters = currentScene?.getCharacters() else { return }
-        for npc in characters {
-            if !npc.isVampire && npc.isAlive {
-                let shouldSleep = Int.random(in: 0...100) < sleepChance
-                npc.isSleeping = shouldSleep
-                DebugLogService.shared.log("\(npc.name) is sleeping: \(shouldSleep)", category: "NPC")
+        if npcManager.selectedNPC != nil {
+            if !scene.hasCharacter(with: npcManager.selectedNPC!.id) {
+                npcManager.selectedNPC = nil
             }
         }
     }
@@ -198,15 +181,5 @@ class GameStateService : ObservableObject, GameService{
     
     var isNightTime: Bool {
         return gameTime.isNightTime
-    }
-    
-    func updateNPCsStatuses(){
-        for character in currentScene?.getCharacters() ?? [] {
-            if character.isIntimidated {
-                if gameTime.currentDay > character.intimidationDay {
-                    character.isIntimidated = false
-                }
-            }
-        }
     }
 }

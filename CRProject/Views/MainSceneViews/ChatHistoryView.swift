@@ -18,19 +18,25 @@ struct ChatMessage: Identifiable {
     let timestampDay: Int
     let timestampHourString: String
     let message: String  // Non-optional
+    let icon: String?
+    let iconColor: Color?
     let type: MessageType
     
     // Add this initializer to handle optional strings
     init(timestampHour: Int,
          timestampDay: Int,
          timestampHourString: String,
-         message: String?,  // Optional input
+         message: String?,
+         icon: String? = nil,// Optional input
+         iconColor: Color? = nil,
          type: MessageType) {
         self.timestampHour = timestampHour
         self.timestampDay = timestampDay
         self.timestampHourString = timestampHourString
         self.message = message ?? ""  // Convert to non-optional
         self.type = type
+        self.icon = icon
+        self.iconColor = iconColor
     }
 }
 
@@ -57,6 +63,12 @@ struct ChatMessageView: View {
             Text(message.message)
                 .font(Theme.smallFont)
                 .foregroundColor(typeColor.opacity(0.9))
+            
+            if message.icon != nil {
+                Image(systemName: message.icon!)
+                    .foregroundColor(message.iconColor ?? typeColor)
+                    .font(Theme.smallFont)
+            }
         }
         .opacity(isAppearing ? 1 : 0)
         .offset(y: isAppearing ? 0 : 10)

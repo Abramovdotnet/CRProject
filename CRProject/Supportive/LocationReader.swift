@@ -99,6 +99,14 @@ class LocationReader : GameService {
         throw LocationError.locationNotFound
     }
     
+    static func getLocationById(by id: Int) -> Scene? {
+        if locationsPool.contains(where: { $0.id == id }) {
+            return locationsPool.first(where: { $0.id == id })
+        } else {
+            return nil
+        }
+    }
+    
     static func getChildLocations(for parentId: Int) -> [Scene] {
         loadLocations()
         

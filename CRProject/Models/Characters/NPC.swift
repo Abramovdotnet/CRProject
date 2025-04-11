@@ -19,14 +19,18 @@ class NPC: Character {
     var isVampire: Bool = false
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isUnknown: Bool = true
-    var isSleeping: Bool = false
     var isIntimidated: Bool = false
     var intimidationDay: Int = 0
     var isBeasy: Bool = false
+    var isVampireAttachWitness = false
+    var isCrimeWitness = false
     var homeLocationId: Int = 0
+    var currentLocationId: Int = 0
     var typicalActivities: [NPCActivityType] = []
     var workActivities: [NPCActivityType] = []
     var leisureActivities: [NPCActivityType] = []
+    var currentActivity: NPCActivityType = .idle
+    
     
     init() {}
     

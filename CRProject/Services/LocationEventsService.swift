@@ -155,15 +155,6 @@ class LocationEventsService : GameService {
                 return false
             }
             
-            // Check sleeping state
-            if event.sleepingRequired {
-                let hasSleepingNPC = scene.getCharacters().contains { $0.isSleeping }
-                guard hasSleepingNPC else {
-                    DebugLogService.shared.log("Missing sleeping NPC", category: "Event")
-                    return false
-                }
-            }
-            
             // Check indoor/outdoor
             guard event.isIndoors == scene.isIndoor else {
                 DebugLogService.shared.log("Indoor/outdoor mismatch: Event requires \(event.isIndoors ? "indoors" : "outdoors")", category: "Event")

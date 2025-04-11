@@ -14,7 +14,7 @@
     "name" : "Margot Germain",
     "profession" : "No profession",
     "isVampire" : false,
-    "homeLocationId" : 0,
+    "homeLocationId" : 120,
     "age" : 27
   },
   {
@@ -2161,7 +2161,7 @@
   },
   {
     "name" : "Thor Adams",
-    "homeLocationId" : 0,
+    "homeLocationId" : 11,
     "sex" : "male",
     "isVampire" : false,
     "id" : 241,

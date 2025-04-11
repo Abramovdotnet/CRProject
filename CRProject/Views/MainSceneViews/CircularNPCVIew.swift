@@ -349,13 +349,6 @@ struct CircularNPCView: View {
                     .font(.caption)
                     .foregroundColor(npc.isAlive ? .green : .red)
                 
-                if npc.isSleeping {
-                    Image(systemName: "moon.fill")
-                        .font(.caption)
-                    Text(" Sleeping")
-                        .font(Theme.captionFont)
-                }
-                
                 if !npc.isUnknown {
                     Text("Blood: \(Int(npc.bloodMeter.currentBlood))%")
                         .font(Theme.bodyFont)

@@ -7,7 +7,7 @@ struct NPCSGridView: View {
     var onAction: (NPCAction) -> Void
     
     // Fixed 6-column grid configuration
-    private let columns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 24), count: 6)
+    private let columns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 8), count: 6)
     
     var body: some View {
         ScrollView {
@@ -37,126 +37,156 @@ struct NPCGridButton: View {
     
     @State private var moonOpacity: Double = 0.6
     @State private var heartOpacity: Double = 0.6
+    @State private var activityOpacity: Double = 0.7
     
     var body: some View {
         Button(action: {
             VibrationService.shared.lightTap()
             onTap()
         }) {
-            ZStack {
-                // Background with conditional glow for sleeping NPCs
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(isSelected ? Theme.accentColor.opacity(0.5) : Color.black.opacity(0.5))
-                    .overlay(
-                        Group {
-                            if npc.isSleeping {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.blue.opacity(0.1), lineWidth: 2)
+            VStack {
+                ZStack {
+                    // Background with conditional glow for sleeping NPCs
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(isSelected ? Theme.accentColor.opacity(0.5) : Color.black.opacity(0.5))
+                        .overlay(
+                            Group {
+                                if npc.currentActivity == .sleep {
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.blue.opacity(0.1), lineWidth: 2)
+                                }
                             }
-                        }
-                    )
-                    .shadow(color: npc.isSleeping ? Color.blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 0)
-                    .animation(.easeInOut(duration: 0.3), value: npc.isSleeping)
-                
-                // Blood meter for known NPCs
-                if !npc.isUnknown {
-                    VStack {
-                        Spacer()
-                        // Horizontal progress bar container
-                        HStack(spacing: 1) {
-                            ForEach(0..<5) { index in
-                                let segmentValue = Double(npc.bloodMeter.currentBlood) / 100.0
-                                let segmentThreshold = Double(index + 1) / 5.0
-                                
-                                Rectangle()
-                                    .fill(segmentValue >= segmentThreshold ? 
-                                          Theme.bloodProgressColor : Color.black.opacity(0.3))
-                                    .frame(height: 2)
-                            }
-                        }
-                        .frame(width: 30)
-                        .padding(.bottom, 3)
-                        .animation(.easeInOut(duration: 0.3), value: npc.bloodMeter.currentBlood)
-                    }
-                }
-                
-                // Content
-                VStack(spacing: 4) {
-                    ZStack(alignment: .topLeading) {
-                        Image(systemName: npc.isUnknown ? "questionmark.circle" : "waveform.path.ecg")
-                            .font(.system(size: 16))
-                            .foregroundColor(iconColor())
-                            .animation(.easeInOut(duration: 0.3), value: npc.isUnknown)
-                    }
-                    .frame(width: 40, height: 20)
-                    
+                        )
+                        .shadow(color: npc.currentActivity == .sleep ? Color.blue.opacity(0.3) : .clear, radius: 4, x: 0, y: 0)
+                        .animation(.easeInOut(duration: 0.3), value: npc.currentActivity == .sleep)
+                    // Blood meter for known NPCs
                     if !npc.isUnknown {
-                        HStack(spacing: 4) {
-                            Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                .font(Theme.smallFont)
-                                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                                .lineLimit(1)
-                            Image(systemName: npc.profession.icon)
-                                .font(Theme.smallFont)
-                                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                                .lineLimit(1)
+                        VStack {
+                            Spacer()
+                            // Horizontal progress bar container
+                            HStack(spacing: 1) {
+                                ForEach(0..<5) { index in
+                                    let segmentValue = Double(npc.bloodMeter.currentBlood) / 100.0
+                                    let segmentThreshold = Double(index + 1) / 5.0
+                                    
+                                    Rectangle()
+                                        .fill(segmentValue >= segmentThreshold ?
+                                              Theme.bloodProgressColor : Color.black.opacity(0.3))
+                                        .frame(height: 2)
+                                }
+                            }
+                            .frame(width: 30)
+                            .padding(.bottom, 3)
+                            .animation(.easeInOut(duration: 0.3), value: npc.bloodMeter.currentBlood)
                         }
-                        .offset(y: -2)
-                        .animation(.easeInOut(duration: 0.3), value: npc.isUnknown)
                     }
+                    
+                    // Content
+                    VStack(spacing: 4) {
+                        ZStack(alignment: .topLeading) {
+                            Image(systemName: npc.isUnknown ? "questionmark.circle" : "waveform.path.ecg")
+                                .font(.system(size: 16))
+                                .foregroundColor(iconColor())
+                                .animation(.easeInOut(duration: 0.3), value: npc.isUnknown)
+                        }
+                        .frame(width: 40, height: 20)
+                        
+                        if !npc.isUnknown {
+                            HStack(spacing: 4) {
+                                Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                                    .lineLimit(1)
+                                Image(systemName: npc.profession.icon)
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                                    .lineLimit(1)
+                            }
+                            .offset(y: -2)
+                            .animation(.easeInOut(duration: 0.3), value: npc.isUnknown)
+                        }
+                    }
+                    .frame(width: 50, height: 50)
+                  
+                    
+                    // Status icons container using ZStack for corner alignment
+                    ZStack(alignment: .topLeading) {
+                        if npc.currentActivity == .sleep && npc.isIntimidated {
+                            // Both: Moon top-left, Heart top-right
+                            Image(systemName: "moon.zzz.fill")
+                                .font(Theme.bodyFont)
+                                .foregroundColor(isSelected ? Theme.textColor : .blue)
+                                .opacity(moonOpacity)
+                                .padding(4)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                .animation(.easeInOut(duration: 0.3), value: npc.currentActivity == .sleep)
+                            
+                            Image(systemName: "heart.fill")
+                                .font(Theme.bodyFont)
+                                .foregroundColor(isSelected ? Theme.textColor : Theme.bloodProgressColor)
+                                .opacity(heartOpacity)
+                                .padding(4)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                                .animation(.easeInOut(duration: 0.3), value: npc.isIntimidated)
+                            
+                        } else if npc.currentActivity == .sleep {
+                            // Only Sleeping: Moon top-left
+                            Image(systemName: "moon.zzz.fill")
+                                .font(.system(size: 12))
+                                .foregroundColor(isSelected ? Theme.textColor : .blue)
+                                .opacity(moonOpacity)
+                                .padding(4)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                .animation(.easeInOut(duration: 0.3), value: npc.currentActivity == .sleep)
+                            
+                        } else if npc.isIntimidated {
+                            // Only Intimidated: Heart top-left
+                            Image(systemName: "heart.fill")
+                                .font(.system(size: 12))
+                                .foregroundColor(isSelected ? Theme.textColor : Theme.bloodProgressColor)
+                                .opacity(heartOpacity)
+                                .padding(4)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+                                .animation(.easeInOut(duration: 0.3), value: npc.isIntimidated)
+                        }
+                    }
+                    .frame(width: 50, height: 50)
                 }
-                .frame(width: 50, height: 50)
-                .padding(0)
                 
-                // Status icons container using ZStack for corner alignment
-                ZStack(alignment: .topLeading) {
-                    if npc.isSleeping && npc.isIntimidated {
-                        // Both: Moon top-left, Heart top-right
-                        Image(systemName: "moon.zzz.fill")
-                            .font(Theme.bodyFont)
-                            .foregroundColor(isSelected ? Theme.textColor : .blue)
-                            .opacity(moonOpacity)
-                            .padding(4)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                            .animation(.easeInOut(duration: 0.3), value: npc.isSleeping)
-                        
-                        Image(systemName: "heart.fill")
-                            .font(Theme.bodyFont)
-                            .foregroundColor(isSelected ? Theme.textColor : Theme.bloodProgressColor)
-                            .opacity(heartOpacity)
-                            .padding(4)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                            .animation(.easeInOut(duration: 0.3), value: npc.isIntimidated)
-                        
-                    } else if npc.isSleeping {
-                        // Only Sleeping: Moon top-left
-                        Image(systemName: "moon.zzz.fill")
-                            .font(.system(size: 12))
-                            .foregroundColor(isSelected ? Theme.textColor : .blue)
-                            .opacity(moonOpacity)
-                            .padding(4)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                            .animation(.easeInOut(duration: 0.3), value: npc.isSleeping)
-                        
-                    } else if npc.isIntimidated {
-                        // Only Intimidated: Heart top-left
-                        Image(systemName: "heart.fill")
-                            .font(.system(size: 12))
-                            .foregroundColor(isSelected ? Theme.textColor : Theme.bloodProgressColor)
-                            .opacity(heartOpacity)
-                            .padding(4)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-                            .animation(.easeInOut(duration: 0.3), value: npc.isIntimidated)
+                // Activity display
+                Rectangle()
+                    .fill(Color.clear)
+                    .cornerRadius(4)
+                    .frame(width: 70, height: 20)
+                    .overlay(
+                        HStack {
+                            Image(systemName: npc.currentActivity.icon)
+                                .foregroundColor(npc.currentActivity.color)
+                                .font(Theme.smallFont)
+                            Text(npc.currentActivity.description)
+                                .foregroundColor(Theme.textColor)
+                                .font(Theme.smallFont)
+                                .padding(.leading, -5)
+                        }
+                
+                    )
+                    .opacity(activityOpacity)
+                    .onAppear {
+                        withAnimation(Animation.easeInOut(duration: 0.8).repeatForever()) {
+                            activityOpacity = 1.0
+                        }
                     }
-                }
-                .frame(width: 50, height: 50)
+                    .padding(.top, -5)
+              
             }
+            
+            
         }
         .buttonStyle(PlainButtonStyle())
         .opacity(npc.isAlive ? 1 : 0.7)
         .animation(.easeInOut(duration: 0.3), value: npc.isAlive)
         .onAppear {
-            if npc.isSleeping {
+            if npc.currentActivity == .sleep {
                 withAnimation(Animation.easeInOut(duration: 1.5).repeatForever()) {
                     moonOpacity = 1.0
                 }

@@ -21,11 +21,11 @@ class Player: Character, Codable {
     var isVampire: Bool { true }
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isUnknown: Bool = false
-    var isSleeping: Bool = false
     var isIntimidated: Bool = false
     var isBeasy: Bool = false
     var intimidationDay: Int = 0
     var homeLocationId: Int = 0
+    var currentLocationId: Int = 0
 
     init(name: String, sex: Sex, age: Int, profession: Profession, id: Int) {
         self.name = name
@@ -57,7 +57,6 @@ class Player: Character, Codable {
         age = try container.decode(Int.self, forKey: .age)
         profession = try container.decode(Profession.self, forKey: .profession)
         isUnknown = try container.decode(Bool.self, forKey: .isUnknown)
-        isSleeping = try container.decode(Bool.self, forKey: .isSleeping)
         _bloodMeter = try container.decode(BloodMeter.self, forKey: ._bloodMeter)
     }
     
@@ -69,7 +68,6 @@ class Player: Character, Codable {
         try container.encode(age, forKey: .age)
         try container.encode(profession, forKey: .profession)
         try container.encode(isUnknown, forKey: .isUnknown)
-        try container.encode(isSleeping, forKey: .isSleeping)
         try container.encode(_bloodMeter, forKey: ._bloodMeter)
     }
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUICore
 
 extension Optional where Wrapped == String {
     func orEmpty() -> String {
@@ -52,6 +53,29 @@ class GameEventsBusService: GameService, ObservableObject {
                 timestampDay: gameTimeService.currentDay,
                 timestampHourString: gameTimeService.currentHour.description + ":00  -",
                 message: message,  // Pass the optional, let ChatMessage handle it
+                type: type
+            )
+            
+            // Queue mechanism - remove first if at capacity
+            if self.messages.count >= self.maxMessages {
+                self.messages.removeFirst()
+            }
+            
+            self.messages.append(newMessage)
+        }
+    }
+    
+    func addMessageWithIcon(message: String? = nil, icon: String? = nil, iconColor: Color? = nil,  type: MessageType) {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            
+            let newMessage = ChatMessage(
+                timestampHour: gameTimeService.currentHour,
+                timestampDay: gameTimeService.currentDay,
+                timestampHourString: gameTimeService.currentHour.description + ":00  -",
+                message: message,  // Pass the optional, let ChatMessage handle it
+                icon: icon,
+                iconColor: iconColor,
                 type: type
             )
             

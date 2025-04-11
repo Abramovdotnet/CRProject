@@ -37,7 +37,7 @@ struct SelectedNPCView: View {
                 
                 // Status icons
                 HStack(spacing: 4) {
-                    if npc.isSleeping {
+                    if npc.currentActivity == .sleep {
                         Image(systemName: "moon.zzz.fill")
                             .foregroundColor(.blue)
                             .font(Theme.bodyFont)

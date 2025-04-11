@@ -25,7 +25,7 @@ class FeedingService: GameService {
         return prey.bloodMeter.bloodPercentage > 0
     }
     
-    func feedOnCharacter(vampire: any Character, prey: any Character, amount: Float, in sceneId: Int) throws {
+    func feedOnCharacter(vampire: any Character, prey: NPC, amount: Float, in sceneId: Int) throws {
         guard canFeed(vampire: vampire, prey: prey) else {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
@@ -39,12 +39,15 @@ class FeedingService: GameService {
             prey.isIntimidated = false
             awarenessIncreaseValue -= 20
         }
+        else if prey.currentActivity != .sleep {
+            prey.isVampireAttachWitness = true
+        }
         
-        if prey.isSleeping {
+        if prey.currentActivity == .sleep {
             awarenessIncreaseValue -= 10
         }
         
-        gameTime.advanceTime(hours: 1)
+        GameStateService.shared.advanceWorldState()
         
         // Increase awareness in the scene where feeding occurred
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
@@ -58,7 +61,7 @@ class FeedingService: GameService {
         }
     }
     
-    func emptyBlood(vampire: any Character, prey: any Character, in sceneId: Int) throws {
+    func emptyBlood(vampire: any Character, prey: NPC, in sceneId: Int) throws {
         guard canFeed(vampire: vampire, prey: prey) else {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
@@ -72,11 +75,11 @@ class FeedingService: GameService {
             awarenessIncreaseValue -= 25
         }
         
-        if prey.isSleeping {
+        if prey.currentActivity == .sleep {
             awarenessIncreaseValue -= 25
         }
         
-        gameTime.advanceTime(hours: 1)
+        GameStateService.shared.advanceWorldState()
         
         // Increase awareness in the scene where feeding occurred
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)

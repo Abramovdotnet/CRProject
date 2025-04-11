@@ -1,41 +1,51 @@
 import Foundation
+import SwiftUICore
 
 enum NPCActivityType: String, CaseIterable, Codable {
     // Core Activities
-    case sleep
-    case eat
-    case idle
-    case travel
+    case sleep = "Sleeping"
+    case eat = "Eating"
+    case idle = "Idling"
+    case travel = "Traveling"
     
     // Work-Related
-    case craft
-    case sell
-    case repair
-    case guardPost
-    case patrol
-    case research
-    case train
-    case manage
-    case clean
-    case serve
-    case entertain
-    case harvest
-    case cook
-    case transport
+    case craft = "Crafting"
+    case sell = "Selling"
+    case repair = "Repairing"
+    case guardPost = "Guarding"
+    case patrol = "Patrolling"
+    case research = "Researching"
+    case train = "Training"
+    case manage = "Managing"
+    case clean = "Cleaning"
+    case serve = "Serving"
+    case entertain = "Entertaining"
+    case harvest = "Harvesting"
+    case cook = "Cooking"
+    case transport = "Transporting"
     
     // Social/Leisure
-    case socialize
-    case pray
-    case study
-    case drink
-    case gamble
-    case bathe
-    case explore
+    case socialize = "Socializing"
+    case pray = "Praying"
+    case study = "Studying"
+    case drink = "Drinking"
+    case gamble = "Gambling"
+    case bathe = "Bathing"
+    case explore = "Exploring"
     
     // Special
-    case quest
-    case smuggle
-    case spy
+    case quest = "Questing"
+    case smuggle = "Smuggling"
+    case spy = "Spying"
+    
+    // Action activities
+    case seducted = "Seducted"
+    case duzzled = "Duzzled"
+    case fleeing = "Fleeing"
+    
+    var description: String {
+        return self.rawValue
+    }
 }
 
 extension NPCActivityType {
@@ -52,13 +62,13 @@ extension NPCActivityType {
         case .sell: return ["market", "shop", "tavern", "square"]
         case .repair: return ["blacksmith", "warehouse"]
         case .guardPost: return ["military", "watchtower", "barracks"]
-        case .patrol: return ["district", "quarter", "square"]
+        case .patrol: return ["district", "quarter", "square" , "road"]
         case .research: return ["bookstore", "cathedral", "monastery"]
         case .train: return ["military", "barracks"]
         case .manage: return ["manor", "keep", "market"]
         case .clean: return ["house", "manor", "barracks", "keep"]
         case .serve: return ["tavern", "manor", "keep"]
-        case .entertain: return ["tavern", "brothel", "square"]
+        case .entertain: return ["tavern", "brothel", "square", "road"]
         case .harvest: return ["alchemistShop", "square"] // Gardens/plants
         case .cook: return ["house", "manor", "tavern"]
         case .transport: return ["warehouse", "docks", "market"]
@@ -67,7 +77,7 @@ extension NPCActivityType {
         case .socialize: return ["tavern", "square", "market", "bathhouse"]
         case .pray: return ["cathedral", "monastery", "crypt"]
         case .study: return ["bookstore", "cathedral"]
-        case .drink: return ["tavern", "brothel", "house"]
+        case .drink: return ["tavern", "brothel", "house", "road"]
         case .gamble: return ["tavern", "brothel"]
         case .bathe: return ["bathhouse"]
         case .explore: return ["crypt", "district"] // Exploration sites
@@ -75,7 +85,12 @@ extension NPCActivityType {
         // Special
         case .quest: return ["tavern", "keep"] // Quest givers
         case .smuggle: return ["docks", "warehouse"]
-        case .spy: return ["brothel", "tavern"]
+        case .spy: return ["brothel", "tavern", "road"]
+            
+        // Action
+        case .seducted: return []
+        case .duzzled: return []
+        case .fleeing: return ["military", "watchtower", "barracks"]
         }
     }
     
@@ -105,6 +120,96 @@ extension NPCActivityType {
     }
 }
 
+extension NPCActivityType {
+    var icon: String {
+        switch self {
+        // Core Activities
+        case .sleep: return "moon.zzz.fill"
+        case .eat: return "fork.knife"
+        case .idle: return "person.fill"
+        case .travel: return "figure.walk"
+        
+        // Work-Related
+        case .craft: return "hammer.fill"
+        case .sell: return "bag.fill"
+        case .repair: return "wrench.fill"
+        case .guardPost: return "shield.checkered"
+        case .patrol: return "figure.walk"
+        case .research: return "book.fill"
+        case .train: return "dumbbell.fill"
+        case .manage: return "person.fill.badge.plus"
+        case .clean: return "broom.fill"
+        case .serve: return "tray.fill"
+        case .entertain: return "music.note"
+        case .harvest: return "leaf.fill"
+        case .cook: return "flame.fill"
+        case .transport: return "shippingbox.fill"
+        
+        // Social/Leisure
+        case .socialize: return "person.2.fill"
+        case .pray: return "cross.fill"
+        case .study: return "book.closed.fill"
+        case .drink: return "mug.fill"
+        case .gamble: return "dice.fill"
+        case .bathe: return "shower.fill"
+        case .explore: return "map.fill"
+        
+        // Special
+        case .quest: return "star.fill"
+        case .smuggle: return "briefcase.fill"
+        case .spy: return "eye.fill"
+            
+        // Action
+        case .seducted: return "heart.fill"
+        case .duzzled: return "hand.thumbsup.fill"
+        case .fleeing: return "figure.run"
+        }
+    }
+    
+    var color: Color {
+        switch self {
+        // Core Activities
+        case .sleep: return .blue
+        case .eat: return .orange
+        case .idle: return .gray
+        case .travel: return .brown
+        
+        // Work-Related
+        case .craft: return .orange
+        case .sell: return .blue
+        case .repair: return .brown
+        case .guardPost: return .red
+        case .patrol: return .red
+        case .research: return .purple
+        case .train: return .red
+        case .manage: return .blue
+        case .clean: return .gray
+        case .serve: return .blue
+        case .entertain: return .purple
+        case .harvest: return .green
+        case .cook: return .orange
+        case .transport: return .brown
+        
+        // Social/Leisure
+        case .socialize: return .purple
+        case .pray: return .purple
+        case .study: return .blue
+        case .drink: return .orange
+        case .gamble: return .red
+        case .bathe: return .blue
+        case .explore: return .green
+        
+        // Special
+        case .quest: return .yellow
+        case .smuggle: return .red
+        case .spy: return .purple
+            
+        case .seducted: return .red
+        case .duzzled: return .pink
+        case .fleeing: return .red
+        }
+    }
+}
 
 extension Profession {
     /// Base activities available to all professions
@@ -115,27 +220,109 @@ extension Profession {
     /// Profession-specific work activities
     private var workActivities: [NPCActivityType] {
         switch self {
-        case .blacksmith: return [.craft, .repair, .sell]
-        case .priest: return [.pray, .study, .manage]
-        case .guardman: return [.guardPost, .patrol, .train]
+        // Crafting Professions
+        case .blacksmith: return [.craft, .repair, .sell, .research]
+        case .carpenter: return [.craft, .repair]
+        case .tailor: return [.craft, .sell]
+        case .alchemist: return [.craft, .research, .sell, .research]
+        case .herbalist: return [.harvest, .research, .sell, .research]
+        
+        // Military/Security
+        case .guardman: return [.guardPost, .patrol]
+        case .cityGuard: return [.guardPost, .patrol, .train]
+        case .militaryOfficer: return [.manage, .train, .patrol]
+        
+        // Religious
+        case .priest: return [.pray, .study, .manage, .research]
+        case .monk: return [.pray, .study, .clean]
+        case .religiousScholar: return [.study, .research]
+        case .pilgrim: return [.pray, .study]
+        
+        // Trade/Merchants
         case .merchant: return [.sell, .manage, .transport]
+        case .bookseller: return [.sell, .study]
+        
+        // Food/Entertainment
+        case .tavernKeeper: return [.manage, .serve]
         case .barmaid: return [.serve, .entertain]
-        case .adventurer: return [.explore, .quest, .gamble]
-        case .lordLady: return [.manage, .entertain, .gamble]
-        // ... other professions
-        default: return []
+        case .entertainer: return [.entertain]
+        case .courtesan: return [.entertain]
+        case .kitchenStaff: return [.cook, .clean]
+        
+        // Labor/Transport
+        case .dockWorker: return [.transport, .repair]
+        case .sailor: return [.transport, .repair]
+        case .shipCaptain: return [.manage, .transport]
+        case .stableHand: return [.clean, .transport]
+        case .gardener: return [.harvest, .clean]
+        case .maintenanceWorker: return [.repair, .clean]
+        case .cleaner: return [.clean]
+        case .generalLaborer: return [.transport, .clean, .repair]
+        
+        // Administration/Nobility
+        case .administrator: return [.manage, .study]
+        case .lordLady: return [.manage, .entertain]
+        
+        // Service
+        case .servant: return [.serve, .clean]
+        
+        // Specialized
+        case .adventurer: return [.explore, .quest]
+        
+        // Learning/Unemployed
+        case .apprentice: return [.study, .craft]
+        case .noProfession: return [.explore]
         }
     }
     
     /// Additional leisure activities available
     private var leisureActivities: [NPCActivityType] {
         switch self {
-        case .lordLady, .courtesan, .entertainer:
-            return [.drink, .gamble, .bathe, .entertain]
-        case .guardman, .sailor, .dockWorker:
-            return [.drink, .gamble]
-        case .priest, .monk:
-            return [.pray, .study]
+        // Nobility/High Status
+        case .lordLady: return [.drink, .gamble, .bathe, .entertain, .socialize]
+        case .courtesan: return [.drink, .bathe, .entertain, .socialize]
+        
+        // Entertainment Industry
+        case .entertainer: return [.drink, .socialize, .bathe]
+        case .tavernKeeper: return [.drink, .gamble, .socialize]
+        case .barmaid: return [.drink, .socialize]
+        
+        // Military/Security
+        case .guardman, .cityGuard, .militaryOfficer:
+            return [.drink, .gamble, .socialize]
+        
+        // Maritime Professions
+        case .sailor, .dockWorker, .shipCaptain:
+            return [.drink, .gamble, .socialize]
+        
+        // Religious
+        case .priest, .monk, .religiousScholar, .pilgrim:
+            return [.pray, .study, .socialize]
+        
+        // Craftsmen/Tradespeople
+        case .blacksmith, .carpenter, .tailor, .alchemist, .herbalist:
+            return [.drink, .socialize]
+        case .merchant, .bookseller:
+            return [.drink, .socialize, .gamble]
+        
+        // Laborers
+        case .gardener, .stableHand, .maintenanceWorker, .generalLaborer:
+            return [.drink, .socialize]
+        case .cleaner:
+            return [.drink, .socialize, .bathe]
+        
+        // Domestic/Service
+        case .servant, .kitchenStaff:
+            return [.socialize, .bathe]
+        
+        // Adventurous
+        case .adventurer:
+            return [.drink, .gamble, .explore]
+        
+        // Special Cases
+        case .apprentice: return [.socialize, .study]
+        case .noProfession: return [.idle, .socialize]
+            
         default:
             return [.drink]
         }

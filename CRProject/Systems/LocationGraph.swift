@@ -104,7 +104,7 @@ extension LocationGraph {
     struct PathfindingOptions {
         var prioritizeIndoor: Bool?
         var preferredTypes: [String] = []
-        var maxSteps: Int = 10
+        var maxSteps: Int = 20
     }
     
     func nearestLocation(

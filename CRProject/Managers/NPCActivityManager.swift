@@ -35,7 +35,7 @@ class NPCActivityManager {
         // Could update weights or other time-sensitive data here
     }
     
-    func getActivity(for profession: Profession) -> NPCActivityType {
+    func getActivity(for npc: NPC) -> NPCActivityType {
         let currentHour = gameTime.currentHour
         let phase = gameTime.dayPhase
         let weights = phaseWeights[phase] ?? ActivityWeights(work: 50, leisure: 30, essential: 20)
@@ -44,12 +44,16 @@ class NPCActivityManager {
         let categoryRoll = Int.random(in: 1...100)
         let activityCategory: ActivityCategory
         
-        if categoryRoll <= weights.essential {
-            activityCategory = .essential
-        } else if categoryRoll <= (weights.essential + weights.work) {
-            activityCategory = .work
-        } else {
+        if npc.profession == .noProfession {
             activityCategory = .leisure
+        } else {
+            if categoryRoll <= weights.essential {
+                activityCategory = .essential
+            } else if categoryRoll <= (weights.essential + weights.work) {
+                activityCategory = .work
+            } else {
+                activityCategory = .leisure
+            }
         }
         
         // Get specific activity
@@ -57,9 +61,23 @@ class NPCActivityManager {
         case .essential:
             return getEssentialActivity(currentHour: currentHour)
         case .work:
-            return getWorkActivity(for: profession, phase: phase)
+            return getWorkActivity(for: npc.profession, phase: phase)
         case .leisure:
-            return getLeisureActivity(for: profession, phase: phase)
+            return getLeisureActivity(for: npc.profession, phase: phase)
+        case .action:
+            return getActionActivity(for: npc)
+        }
+    }
+    
+    func getActionActivity(for npc: NPC) -> NPCActivityType{
+        if npc.bloodMeter.currentBlood <= 40 && npc.isIntimidated {
+            return .duzzled
+        } else if npc.bloodMeter.currentBlood > 40 && npc.isIntimidated {
+            return .seducted
+        } else if npc.isVampireAttachWitness {
+            return .fleeing
+        } else {
+            return npc.currentActivity
         }
     }
     
@@ -114,5 +132,6 @@ class NPCActivityManager {
         case essential
         case work
         case leisure
+        case action
     }
 }

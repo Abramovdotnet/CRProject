@@ -33,11 +33,9 @@ class InvestigationService: GameService {
             return
         }
         
-        // Adjust game time
-        gameTime.advanceTime(hours: 1)
-        
         // Investigate the object
         investigationObject.isUnknown = false
+        investigationObject.isBeasy = true
         
         // Update statistics
         statisticsService.incrementInvestigations()

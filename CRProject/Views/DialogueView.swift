@@ -61,7 +61,7 @@ struct DialogueView: View {
                                     }
 
                                     HStack(spacing: 8) {
-                                        if viewModel.npc.isSleeping {
+                                        if viewModel.npc.currentActivity == .sleep {
                                             Image(systemName: "moon.zzz.fill")
                                                 .foregroundColor(.blue)
                                                 .font(Theme.bodyFont)
