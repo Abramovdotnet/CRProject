@@ -258,7 +258,7 @@
         "name": "The Drunken Sailor",
         "isParent": false,
         "parentSceneId": 32,
-        "hubSceneIds": [15, 102],
+        "hubSceneIds": [15, 102, 117, 130],
         "isIndoor": true,
         "sceneType": "tavern"
     },
@@ -905,6 +905,216 @@
         "name": "The Dock Manor",
         "isParent": false,
         "parentSceneId": 103,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 116,
+        "name": "Ave 7",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 117,
+        "name": "Ave 7 Qt. 1",
+        "isParent": true,
+        "parentSceneId": 116,
+        "hubSceneIds": [33, 118],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 118,
+        "name": "Ave 7 Qt. 2",
+        "isParent": true,
+        "parentSceneId": 116,
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 119,
+        "name": "The Anchor House",
+        "isParent": false,
+        "parentSceneId": 116,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 120,
+        "name": "The Compass Cottage",
+        "isParent": false,
+        "parentSceneId": 116,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 121,
+        "name": "The Rudder Manor",
+        "isParent": false,
+        "parentSceneId": 116,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 122,
+        "name": "The Mast House",
+        "isParent": false,
+        "parentSceneId": 116,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 123,
+        "name": "The Sail Cottage",
+        "isParent": false,
+        "parentSceneId": 116,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 124,
+        "name": "The Helm House",
+        "isParent": false,
+        "parentSceneId": 118,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 125,
+        "name": "The Keel Cottage",
+        "isParent": false,
+        "parentSceneId": 118,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 126,
+        "name": "The Bow Manor",
+        "isParent": false,
+        "parentSceneId": 118,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 127,
+        "name": "The Stern House",
+        "isParent": false,
+        "parentSceneId": 118,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 128,
+        "name": "The Hull Cottage",
+        "isParent": false,
+        "parentSceneId": 118,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 129,
+        "name": "Ave 8",
+        "isParent": true,
+        "parentSceneId": 31,
+        "isIndoor": false,
+        "sceneType": "district"
+    },
+    {
+        "id": 130,
+        "name": "Ave 8 Qt. 1",
+        "isParent": true,
+        "parentSceneId": 129,
+        "hubSceneIds": [33, 131],
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 131,
+        "name": "Ave 8 Qt. 2",
+        "isParent": true,
+        "parentSceneId": 129,
+        "isIndoor": false,
+        "sceneType": "quarter"
+    },
+    {
+        "id": 132,
+        "name": "The Rum House",
+        "isParent": false,
+        "parentSceneId": 129,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 133,
+        "name": "The Grog Cottage",
+        "isParent": false,
+        "parentSceneId": 129,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 134,
+        "name": "The Ale Manor",
+        "isParent": false,
+        "parentSceneId": 129,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 135,
+        "name": "The Mead House",
+        "isParent": false,
+        "parentSceneId": 129,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 136,
+        "name": "The Cask Cottage",
+        "isParent": false,
+        "parentSceneId": 129,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 137,
+        "name": "The Barrel House",
+        "isParent": false,
+        "parentSceneId": 131,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 138,
+        "name": "The Keg Cottage",
+        "isParent": false,
+        "parentSceneId": 131,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 139,
+        "name": "The Tun Manor",
+        "isParent": false,
+        "parentSceneId": 131,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 140,
+        "name": "The Flask House",
+        "isParent": false,
+        "parentSceneId": 131,
+        "isIndoor": true,
+        "sceneType": "house"
+    },
+    {
+        "id": 141,
+        "name": "The Stein Cottage",
+        "isParent": false,
+        "parentSceneId": 131,
         "isIndoor": true,
         "sceneType": "house"
     }
