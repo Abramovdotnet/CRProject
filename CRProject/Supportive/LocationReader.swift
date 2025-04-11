@@ -7,11 +7,12 @@ enum LocationError: Error {
 }
 
 class LocationReader : GameService {
-    private static var locations: [[String: Any]]?
+    private static var locations: [[String: Any]] = []
+    private static var locationsPool: [Scene] = []
     
     static func loadLocations() {
-        if locations == nil {
-            DebugLogService.shared.log("Loading locations from JSON files...", category: "Location")
+        if locations.count == 0 {
+            //DebugLogService.shared.log("Loading locations from JSON files...", category: "Location")
             var allLocations: [[String: Any]] = []
             var seenIDs = Set<Int>()
             
@@ -21,7 +22,7 @@ class LocationReader : GameService {
             ]
             
             for town in towns {
-                DebugLogService.shared.log("Attempting to load \(town).json", category: "Location")
+                //DebugLogService.shared.log("Attempting to load \(town).json", category: "Location")
                 if let url = Bundle.main.url(forResource: town, withExtension: "json"),
                    let data = try? Data(contentsOf: url),
                    let kingdomLocations = try? JSONSerialization.jsonObject(with: data) as? [[String: Any]] {
@@ -40,7 +41,7 @@ class LocationReader : GameService {
                         }
                     }
                     
-                    DebugLogService.shared.log("Successfully loaded \(kingdomLocations.count) locations from \(town)", category: "Location")
+                    //DebugLogService.shared.log("Successfully loaded \(kingdomLocations.count) locations from \(town)", category: "Location")
                 } else {
                     DebugLogService.shared.log("Could not find or load \(town).json", category: "Error")
                 }
@@ -50,35 +51,46 @@ class LocationReader : GameService {
                 DebugLogService.shared.log("Warning: No locations were loaded from any path!", category: "Warning")
             } else {
                 locations = allLocations
-                DebugLogService.shared.log("Successfully loaded \(locations?.count ?? 0) total locations", category: "Location")
+                //DebugLogService.shared.log("Successfully loaded \(locations.count) total locations", category: "Location")
                 
                 // Print location details for debugging
                 for location in locations ?? [] {
                     if let name = location["name"] as? String,
                        let id = location["id"] as? String,
                        let parentId = location["parentSceneId"] as? String {
-                        DebugLogService.shared.log("Location: \(name), ID: \(id), Parent ID: \(parentId)", category: "Location")
+                        //DebugLogService.shared.log("Location: \(name), ID: \(id), Parent ID: \(parentId)", category: "Location")
                     }
                 }
             }
         } else {
-            DebugLogService.shared.log("Locations already loaded, count: \(locations?.count ?? 0)", category: "Location")
+            //DebugLogService.shared.log("Locations already loaded, count: \(locations.count ?? 0)", category: "Location")
+        }
+    }
+    
+    static func getLocations() -> [Scene] {
+        loadLocations()
+        
+        if locationsPool.count > 0 {
+            return locationsPool
+        }
+        do {
+            let convertedLocations = locations.compactMap { try? createScene(from: $0) }
+            
+            locationsPool = convertedLocations
+            return locationsPool
+        } catch {
+            DebugLogService.shared.log("Error reading NPCs.json file: \(error)", category: "NPC")
         }
     }
     
     static func getLocation(by id: Int) throws -> Scene {
         loadLocations()
         
-        guard let locations = locations else {
-            DebugLogService.shared.log("Locations array is nil", category: "Error")
-            throw LocationError.locationsNotLoaded
-        }
-        
-        DebugLogService.shared.log("Searching for location with ID: \(id)", category: "Location")
+        //DebugLogService.shared.log("Searching for location with ID: \(id)", category: "Location")
         for location in locations {
             if let locationId = location["id"] as? Int,
                locationId == id {
-                DebugLogService.shared.log("Found matching location: \(location["name"] as? String ?? "Unknown")", category: "Location")
+                //DebugLogService.shared.log("Found matching location: \(location["name"] as? String ?? "Unknown")", category: "Location")
                 return try createScene(from: location)
             }
         }
@@ -90,32 +102,31 @@ class LocationReader : GameService {
     static func getChildLocations(for parentId: Int) -> [Scene] {
         loadLocations()
         
-        DebugLogService.shared.log("Searching for child locations of parent ID: \(parentId)", category: "Location")
-        let childLocations = locations?
+        //DebugLogService.shared.log("Searching for child locations of parent ID: \(parentId)", category: "Location")
+        let childLocations = locations
             .filter { 
                 if let parentSceneId = $0["parentSceneId"] as? Int {
                     let isMatch = parentSceneId == parentId
                     if isMatch {
-                        DebugLogService.shared.log("Found child location: \($0["name"] as? String ?? "Unknown") with parent ID: \(parentSceneId)", category: "Location")
+                        //DebugLogService.shared.log("Found child location: \($0["name"] as? String ?? "Unknown") with parent ID: \(parentSceneId)", category: "Location")
                     }
                     return isMatch
                 }
                 return false
             }
             .compactMap { try? createScene(from: $0) }
-            ?? []
         
-        DebugLogService.shared.log("Found \(childLocations.count) child locations", category: "Location")
+        //DebugLogService.shared.log("Found \(childLocations.count) child locations", category: "Location")
         return childLocations
     }
     
     static func getSiblingLocations(for locationId: Int) -> [Scene] {
         loadLocations()
         
-        DebugLogService.shared.log("Searching for sibling locations of location ID: \(locationId)", category: "Location")
+        //DebugLogService.shared.log("Searching for sibling locations of location ID: \(locationId)", category: "Location")
         
         // First find the current location and its parent ID
-        guard let location = locations?.first(where: { 
+        guard let location = locations.first(where: {
             if let id = $0["id"] as? Int {
                 return id == locationId
             }
@@ -123,25 +134,24 @@ class LocationReader : GameService {
         }),
         let parentId = location["parentSceneId"] as? Int else { return [] }
         
-        DebugLogService.shared.log("Found parent ID: \(parentId)", category: "Location")
+        //DebugLogService.shared.log("Found parent ID: \(parentId)", category: "Location")
         
         // Find all locations with the same parent ID (excluding the current location)
-        let siblings = locations?
+        let siblings = locations
             .filter { 
                 if let id = $0["id"] as? Int,
                    let siblingParentId = $0["parentSceneId"] as? Int {
                     let isSibling = siblingParentId == parentId && id != locationId
                     if isSibling {
-                        DebugLogService.shared.log("Found sibling location: \($0["name"] as? String ?? "Unknown")", category: "Location")
+                        //DebugLogService.shared.log("Found sibling location: \($0["name"] as? String ?? "Unknown")", category: "Location")
                     }
                     return isSibling
                 }
                 return false
             }
             .compactMap { try? createScene(from: $0) }
-            ?? []
         
-        DebugLogService.shared.log("Found \(siblings.count) sibling locations", category: "Location")
+        //ebugLogService.shared.log("Found \(siblings.count) sibling locations", category: "Location")
         return siblings
     }
     
@@ -149,14 +159,14 @@ class LocationReader : GameService {
         loadLocations()
         
         // First find the current location
-        guard let location = locations?.first(where: { 
+        guard let location = locations.first(where: {
             if let id = $0["id"] as? Int {
                 return id == locationId
             }
             return false
         }),
         let parentId = location["parentSceneId"] as? Int,
-        let parentData = locations?.first(where: {
+        let parentData = locations.first(where: {
             if let id = $0["id"] as? Int {
                 return id == parentId
             }
@@ -170,11 +180,6 @@ class LocationReader : GameService {
     
     static func getLocations(by ids: [Int]) throws -> [Scene] {
         loadLocations()
-        
-        guard let locations = locations else {
-            DebugLogService.shared.log("Locations array is nil", category: "Error")
-            throw LocationError.locationsNotLoaded
-        }
         
         var foundScenes: [Scene] = []
         var notFoundIds: [Int] = []
@@ -202,7 +207,7 @@ class LocationReader : GameService {
     static func getHubScenes(for sceneId: Int) -> [Scene] {
         loadLocations()
         
-        DebugLogService.shared.log("Searching for hub scenes for scene ID: \(sceneId)", category: "Location")
+        //DebugLogService.shared.log("Searching for hub scenes for scene ID: \(sceneId)", category: "Location")
         
         // First get the specified scene
         guard let scene = try? getLocation(by: sceneId) else {

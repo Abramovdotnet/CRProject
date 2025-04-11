@@ -13,6 +13,8 @@ class GameTimeService: GameService {
     @Published private(set) var currentHour: Int = 0
     @Published private(set) var currentTime: Date
     @Published private(set) var isNightTime: Bool = false
+    @Published private(set) var dayPhase: DayPhase = .earlyMorning
+    
     
     private let statisticsService: StatisticsService
     
@@ -65,6 +67,28 @@ class GameTimeService: GameService {
             } else {
                 NotificationCenter.default.post(name: .dayAppears, object: nil)
             }
+        }
+        
+        dayPhase = .currentPhase(hour: currentHour)
+    }
+}
+
+enum DayPhase {
+    case earlyMorning   // 5-8
+    case morning        // 8-12
+    case afternoon      // 12-17
+    case evening        // 17-20
+    case night          // 20-24
+    case lateNight      // 0-5
+    
+    static func currentPhase(hour: Int) -> DayPhase {
+        switch hour {
+        case 5..<8: return .earlyMorning
+        case 8..<12: return .morning
+        case 12..<17: return .afternoon
+        case 17..<20: return .evening
+        case 20..<24: return .night
+        default: return .lateNight
         }
     }
 }

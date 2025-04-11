@@ -13,7 +13,7 @@ class Player: Character, Codable {
     var sex: Sex = .male
     var age: Int = 0
     var profession: Profession = .adventurer
-    private var _bloodMeter: BloodMeter = BloodMeter(initialBlood: 30.0)
+    private var _bloodMeter: BloodMeter = BloodMeter(initialBlood: 100.0)
     var bloodMeter: BloodMeter {
         get { _bloodMeter }
         set { _bloodMeter = newValue }

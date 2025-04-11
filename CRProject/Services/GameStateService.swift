@@ -123,6 +123,8 @@ class GameStateService : ObservableObject, GameService{
         //    npcPopulationService.updatePopulation(for: scene )
         //}
         
+        NPCBehaviorService.shared.updateActivity()
+        
         // If current scene is indoor and it's not night time, increase awareness
         if scene.isIndoor && !gameTime.isNightTime {
             vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 10)

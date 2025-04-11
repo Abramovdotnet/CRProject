@@ -58,6 +58,7 @@ class NPCReader : GameService {
         guard let id = data["id"] as? Int,
               let name = data["name"] as? String,
               let age = data["age"] as? Int,
+              let homeLocationId = data["homeLocationId"] as? Int,
               let sexString = data["sex"] as? String,
               let professionString = data["profession"] as? String,
               let isVampire = data["isVampire"] as? Bool else {
@@ -141,6 +142,9 @@ class NPCReader : GameService {
             profession = .noProfession
         }
         
-        return NPC(name: name, sex: sex, age: age, profession: profession, isVampire: isVampire, id: id)
+        var npc = NPC(name: name, sex: sex, age: age, profession: profession, isVampire: isVampire, id: id)
+        npc.homeLocationId = homeLocationId
+        
+        return npc
     }
 } 

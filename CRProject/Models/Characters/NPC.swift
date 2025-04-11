@@ -24,6 +24,9 @@ class NPC: Character {
     var intimidationDay: Int = 0
     var isBeasy: Bool = false
     var homeLocationId: Int = 0
+    var typicalActivities: [NPCActivityType] = []
+    var workActivities: [NPCActivityType] = []
+    var leisureActivities: [NPCActivityType] = []
     
     init() {}
     
@@ -34,6 +37,10 @@ class NPC: Character {
         self.profession = profession
         self.id = id
         self.isVampire = isVampire
+        
+        typicalActivities = self.profession.typicalActivities()
+        workActivities = self.profession.primaryWorkActivities()
+        leisureActivities = self.profession.primaryLeisureActivities()     
     }
     
     func shareBlood(amount: Float, from donor: any Character) {

@@ -1499,7 +1499,7 @@
     "profession" : "Lord\/Lady",
     "isVampire" : false,
     "age" : 20,
-    "homeLocationId" : 0,
+    "homeLocationId" : 10,
     "id" : 167
   },
   {
