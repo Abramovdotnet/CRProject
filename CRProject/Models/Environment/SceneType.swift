@@ -64,6 +64,7 @@ enum SceneType: String, CaseIterable {
         case .square: return "square.fill"
         case .town: return "house.fill"
         case .road: return "road.lane.arrowtriangle.2.inward"
+        case .docks: return "building.columns.fill"
         case .house: return "house.fill"
         default: return "questionmark.circle.fill"
         }

@@ -114,7 +114,7 @@
         "name": "Trade Warehouses",
         "isParent": false,
         "parentSceneId": 29,
-        "hubSceneIds": [12, 115, 22, 89],
+        "hubSceneIds": [12, 115, 33, 89],
         "isIndoor": true,
         "sceneType": "warehouse"
     },
@@ -258,7 +258,7 @@
         "name": "The Drunken Sailor",
         "isParent": false,
         "parentSceneId": 32,
-        "hubSceneIds": [15],
+        "hubSceneIds": [15, 102],
         "isIndoor": true,
         "sceneType": "tavern"
     },
@@ -816,7 +816,7 @@
         "name": "Ave 6 Qt. 1",
         "isParent": true,
         "parentSceneId": 101,
-        "hubSceneIds": [23, 103],
+        "hubSceneIds": [33, 103],
         "isIndoor": false,
         "sceneType": "quarter"
     },
