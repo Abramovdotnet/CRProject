@@ -79,71 +79,72 @@ class NPCGenerator {
     ]
     
     static func createPlayer() -> Player {
-          return Player(name: "Victor", sex: .male, age: 300, profession: .adventurer, id: 0)
+          return Player(name: "Victor", sex: .male, age: 300, profession: .noProfession, id: 0)
       }
     
     // MARK: - District NPC Distributions
     
     private static let residentialDistrictNPCs: [(profession: Profession, count: Int)] = [
-        (.general, 90), // No profession
-        (.guardman, 11), // City guards
+        (.noProfession, 90), // No profession
+        (.cityGuard, 11), // City guards
         (.carpenter, 10), // Carpenters
         (.tailor, 10), // Tailors
-        (.general, 10), // Gardeners (using general for now)
-        (.general, 10), // Maintenance workers
-        (.general, 10), // Cleaners
-        (.general, 10), // Apprentices
-        (.general, 10), // Lords/Ladies
-        (.general, 10), // Administrators
-        (.general, 10), // Stable hands
-        (.general, 10)  // Kitchen staff
+        (.gardener, 10), // Gardeners
+        (.maintenanceWorker, 10), // Maintenance workers
+        (.cleaner, 10), // Cleaners
+        (.apprentice, 10), // Apprentices
+        (.lordLady, 10), // Lords/Ladies
+        (.administrator, 10), // Administrators
+        (.stableHand, 10), // Stable hands
+        (.kitchenStaff, 10)  // Kitchen staff
     ]
     
     private static let noblesCrestNPCs: [(profession: Profession, count: Int)] = [
-        (.general, 25), // Military officers
-        (.general, 12), // Servants
-        (.guardman, 5), // City guards
-        (.general, 5), // Administrators
-        (.general, 2)   // Lords/Ladies
+        (.militaryOfficer, 25), // Military officers
+        (.servant, 12), // Servants
+        (.cityGuard, 5), // City guards
+        (.administrator, 5), // Administrators
+        (.lordLady, 2)   // Lords/Ladies
     ]
     
     private static let hallowedGroundsNPCs: [(profession: Profession, count: Int)] = [
-        (.priest, 15), // Monks
-        (.scribe, 13), // Religious scholars
+        (.monk, 15), // Monks
+        (.religiousScholar, 13), // Religious scholars
         (.priest, 3),  // Priests
-        (.guardman, 2), // City guards
-        (.general, 2)   // Cleaners
+        (.cityGuard, 2), // City guards
+        (.cleaner, 2)   // Cleaners
     ]
     
     private static let commercialDistrictNPCs: [(profession: Profession, count: Int)] = [
-        (.general, 70), // General laborers
-        (.scribe, 15),  // Booksellers
-        (.guardman, 8), // City guards
+        (.generalLaborer, 70), // General laborers
+        (.bookseller, 15),  // Booksellers
+        (.cityGuard, 8), // City guards
         (.blacksmith, 2), // Blacksmiths
         (.alchemist, 2), // Alchemists
-        (.apothecary, 2) // Herbalists
+        (.herbalist, 2) // Herbalists
     ]
     
     private static let entertainmentDistrictNPCs: [(profession: Profession, count: Int)] = [
-        (.wenche, 17), // Barmaids
-        (.minstrel, 17), // Entertainers
-        (.general, 9), // Cleaners
-        (.guardman, 5), // City guards
-        (.innkeeper, 1) // Tavern keepers
+        (.barmaid, 17), // Barmaids
+        (.entertainer, 17), // Entertainers
+        (.cleaner, 9), // Cleaners
+        (.cityGuard, 5), // City guards
+        (.tavernKeeper, 1), // Tavern keepers
+        (.courtesan, 3) // Courtesans
     ]
     
     private static let docksNPCs: [(profession: Profession, count: Int)] = [
-        (.general, 4), // General laborers
-        (.general, 2), // Dock workers
-        (.general, 2), // Sailors
-        (.guardman, 2), // City guards
-        (.general, 0)  // Ship captains
+        (.generalLaborer, 4), // General laborers
+        (.dockWorker, 2), // Dock workers
+        (.sailor, 2), // Sailors
+        (.cityGuard, 2), // City guards
+        (.shipCaptain, 0)  // Ship captains
     ]
     
     private static let temporaryPopulationNPCs: [(profession: Profession, count: Int)] = [
         (.adventurer, 30), // Adventurers
-        (.general, 18),    // Pilgrims
-        (.general, 15),    // No profession
+        (.pilgrim, 18),    // Pilgrims
+        (.noProfession, 15),    // No profession
         (.merchant, 11)    // Merchants
     ]
     
@@ -151,25 +152,37 @@ class NPCGenerator {
         var npcs: [[String: Any]] = []
         var currentId = 1
         
-        // Generate 200 NPCs for each profession
-        for profession in Profession.allCases {
-            for _ in 0..<200 {
-                let sex = Bool.random() ? "male" : "female"
-                let firstName = sex == "male" ? maleFirstNames.randomElement()! : femaleFirstNames.randomElement()!
-                let lastName = lastNames.randomElement()!
-                
-                let npc: [String: Any] = [
-                    "id": currentId,
-                    "name": "\(firstName) \(lastName)",
-                    "sex": sex,
-                    "age": Int.random(in: 18...80),
-                    "profession": profession.rawValue,
-                    "homeLocationId": 0, // Will be set later
-                    "isVampire": false
-                ]
-                
-                npcs.append(npc)
-                currentId += 1
+        // Generate NPCs for each district based on predefined distributions
+        let allDistrictNPCs = [
+            residentialDistrictNPCs,
+            noblesCrestNPCs,
+            hallowedGroundsNPCs,
+            commercialDistrictNPCs,
+            entertainmentDistrictNPCs,
+            docksNPCs,
+            temporaryPopulationNPCs
+        ]
+        
+        for districtNPCs in allDistrictNPCs {
+            for (profession, count) in districtNPCs {
+                for _ in 0..<count {
+                    let sex = Bool.random() ? "male" : "female"
+                    let firstName = sex == "male" ? maleFirstNames.randomElement()! : femaleFirstNames.randomElement()!
+                    let lastName = lastNames.randomElement()!
+                    
+                    let npc: [String: Any] = [
+                        "id": currentId,
+                        "name": "\(firstName) \(lastName)",
+                        "sex": sex,
+                        "age": Int.random(in: 18...80),
+                        "profession": profession.rawValue,
+                        "homeLocationId": 0, // Will be set later
+                        "isVampire": false
+                    ]
+                    
+                    npcs.append(npc)
+                    currentId += 1
+                }
             }
         }
         

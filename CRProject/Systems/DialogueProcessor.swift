@@ -19,7 +19,7 @@ class DialogueProcessor {
     
     func loadDialogue(npc: NPC) -> (text: String, options: [DialogueNodeOption])? {
         // Try to load profession-specific dialogue first
-        if npc.profession != .general {
+        if npc.profession != .noProfession {
             if let tree = dialogueSystem.getDialogueTree(for: npc.profession.rawValue) {
                 currentTree = tree
                 if var node = tree.nodes[tree.initialNode] {

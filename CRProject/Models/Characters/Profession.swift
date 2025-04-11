@@ -3,99 +3,114 @@ import SwiftUI
 
 enum Profession: String, CaseIterable, Codable {
     case blacksmith      = "Blacksmith"
-    case miller          = "Miller"
-    case cooper          = "Cooper"
-    case chandler        = "Chandler"
     case priest          = "Priest"
-    case bowyer          = "Bowyer"
-    case armorer         = "Armorer"
     case merchant        = "Merchant"
     case carpenter       = "Carpenter"
-    case thatcher        = "Thatcher"
-    case tanner          = "Tanner"
-    case weaver          = "Weaver"
-    case hunter          = "Hunter"
     case tailor          = "Tailor"
-    case baker           = "Baker"
-    case butcher         = "Butcher"
-    case brewer          = "Brewer"
-    case apothecary      = "Apothecary"
-    case scribe          = "Scribe"
-    case herald          = "Herald"
-    case minstrel        = "Minstrel"
     case guardman        = "Guardman"
     case alchemist       = "Alchemist"
-    case farrier         = "Farrier"
-    case innkeeper        = "Innkeeper"
     case adventurer      = "Adventurer"
-    case wenche          = "Wenche"
-    case general         = "General"
+    case cityGuard      = "City guard"
+    case gardener        = "Gardener"
+    case maintenanceWorker = "Maintenance worker"
+    case cleaner         = "Cleaner"
+    case apprentice      = "Apprentice"
+    case lordLady       = "Lord/Lady"
+    case administrator   = "Administrator"
+    case stableHand     = "Stable hand"
+    case kitchenStaff   = "Kitchen staff"
+    case militaryOfficer = "Military officer"
+    case servant        = "Servant"
+    case monk           = "Monk"
+    case religiousScholar = "Religious scholar"
+    case generalLaborer = "General laborer"
+    case bookseller     = "Bookseller"
+    case herbalist      = "Herbalist"
+    case barmaid        = "Barmaid"
+    case entertainer    = "Entertainer"
+    case tavernKeeper   = "Tavern keeper"
+    case dockWorker     = "Dock worker"
+    case sailor         = "Sailor"
+    case shipCaptain    = "Ship captain"
+    case pilgrim        = "Pilgrim"
+    case courtesan      = "Courtesan"
+    case noProfession   = "No profession"
     
     // MARK: - Icon and Color Properties
     
     var icon: String {
         switch self {
         case .blacksmith:    return "hammer.fill"
-        case .miller:        return "windmill"
-        case .cooper:        return "barrel.fill"
-        case .chandler:      return "candle.fill"
         case .priest:        return "cross.fill"
-        case .bowyer:        return "arrow.up.right"
-        case .armorer:       return "shield.fill"
         case .merchant:      return "bag.fill"
         case .carpenter:     return "hammer"
-        case .thatcher:      return "house.fill"
-        case .weaver:        return "spool.fill"
-        case .hunter:        return "arrow.up.right.circle.fill"
         case .tailor:        return "scissors"
-        case .tanner:        return "leather"
-        case .baker:         return "oven.fill"
-        case .butcher:       return "knife.fill"
-        case .brewer:        return "mug.fill"
-        case .apothecary:    return "pills.fill"
-        case .scribe:        return "pencil"
-        case .herald:        return "megaphone.fill"
-        case .minstrel:      return "music.note"
         case .guardman:      return "shield.checkered"
         case .alchemist:     return "flask.fill"
-        case .farrier:       return "horseshoe"
-        case .innkeeper:     return "bed.double.fill"
         case .adventurer:    return "map.fill"
-        case .wenche:        return "person.fill"
-        case .general:       return "star.fill"
+        case .cityGuard:     return "shield.checkered"
+        case .gardener:      return "leaf.fill"
+        case .maintenanceWorker: return "wrench.fill"
+        case .cleaner:       return "broom.fill"
+        case .apprentice:    return "book.fill"
+        case .lordLady:     return "crown.fill"
+        case .administrator: return "person.fill.badge.plus"
+        case .stableHand:   return "horseshoe"
+        case .kitchenStaff: return "fork.knife"
+        case .militaryOfficer: return "star.fill"
+        case .servant:      return "person.fill"
+        case .monk:         return "person.fill.checkmark"
+        case .religiousScholar: return "book.closed.fill"
+        case .generalLaborer: return "person.fill"
+        case .bookseller:   return "book.fill"
+        case .herbalist:    return "leaf.fill"
+        case .barmaid:      return "mug.fill"
+        case .entertainer:  return "music.note"
+        case .tavernKeeper: return "bed.double.fill"
+        case .dockWorker:   return "hammer.fill"
+        case .sailor:       return "sailboat.fill"
+        case .shipCaptain:  return "person.fill.badge.plus"
+        case .pilgrim:      return "person.fill.checkmark"
+        case .courtesan:    return "heart.fill"
+        case .noProfession: return "person.fill"
         }
     }
     
     var color: Color {
         switch self {
         case .blacksmith:    return .orange
-        case .miller:        return .brown
-        case .cooper:        return .brown
-        case .chandler:      return .yellow
         case .priest:        return .purple
-        case .bowyer:        return .green
-        case .armorer:       return .gray
         case .merchant:      return .blue
         case .carpenter:     return .brown
-        case .thatcher:      return .brown
-        case .tanner:        return .brown
-        case .weaver:        return .pink
-        case .hunter:        return .green
         case .tailor:        return .pink
-        case .baker:         return .orange
-        case .butcher:       return .red
-        case .brewer:        return .brown
-        case .apothecary:    return .green
-        case .scribe:        return .blue
-        case .herald:        return .purple
-        case .minstrel:      return .purple
         case .guardman:      return .blue
         case .alchemist:     return .purple
-        case .farrier:       return .brown
-        case .innkeeper:     return .blue
         case .adventurer:    return .green
-        case .wenche:        return .pink
-        case .general:       return .red
+        case .cityGuard:     return .blue
+        case .gardener:      return .green
+        case .maintenanceWorker: return .gray
+        case .cleaner:       return .gray
+        case .apprentice:    return .blue
+        case .lordLady:     return .purple
+        case .administrator: return .blue
+        case .stableHand:   return .brown
+        case .kitchenStaff: return .orange
+        case .militaryOfficer: return .red
+        case .servant:      return .gray
+        case .monk:         return .purple
+        case .religiousScholar: return .purple
+        case .generalLaborer: return .gray
+        case .bookseller:   return .blue
+        case .herbalist:    return .green
+        case .barmaid:      return .pink
+        case .entertainer:  return .purple
+        case .tavernKeeper: return .blue
+        case .dockWorker:   return .brown
+        case .sailor:       return .blue
+        case .shipCaptain:  return .blue
+        case .pilgrim:      return .purple
+        case .courtesan:    return .pink
+        case .noProfession: return .gray
         }
     }
 }

@@ -44,7 +44,7 @@ class DialogueSystem {
         }
         
         // If still not found and not already trying general dialogue, return general dialogue
-        if profession != Profession.general.rawValue {
+        if profession != Profession.noProfession.rawValue {
             DebugLogService.shared.log("No specific dialogue found for \(profession), falling back to general dialogue", category: "Dialogue")
             return getGeneralDialogueTree()
         }

@@ -72,63 +72,73 @@ class NPCReader : GameService {
         switch professionString {
         case Profession.blacksmith.rawValue:
             profession = .blacksmith
-        case Profession.miller.rawValue:
-            profession = .miller
-        case Profession.cooper.rawValue:
-            profession = .cooper
-        case Profession.chandler.rawValue:
-            profession = .chandler
         case Profession.priest.rawValue:
             profession = .priest
-        case Profession.bowyer.rawValue:
-            profession = .bowyer
-        case Profession.armorer.rawValue:
-            profession = .armorer
         case Profession.merchant.rawValue:
             profession = .merchant
         case Profession.carpenter.rawValue:
             profession = .carpenter
-        case Profession.thatcher.rawValue:
-            profession = .thatcher
-        case Profession.tanner.rawValue:
-            profession = .tanner
-        case Profession.weaver.rawValue:
-            profession = .weaver
-        case Profession.hunter.rawValue:
-            profession = .hunter
         case Profession.tailor.rawValue:
             profession = .tailor
-        case Profession.baker.rawValue:
-            profession = .baker
-        case Profession.butcher.rawValue:
-            profession = .butcher
-        case Profession.brewer.rawValue:
-            profession = .brewer
-        case Profession.apothecary.rawValue:
-            profession = .apothecary
-        case Profession.scribe.rawValue:
-            profession = .scribe
-        case Profession.herald.rawValue:
-            profession = .herald
-        case Profession.minstrel.rawValue:
-            profession = .minstrel
         case Profession.guardman.rawValue, "Guardman":
             profession = .guardman
         case Profession.alchemist.rawValue:
             profession = .alchemist
-        case Profession.farrier.rawValue:
-            profession = .farrier
-        case Profession.innkeeper.rawValue, "Innkeeper": // Handle common misspelling in JSON
-            profession = .innkeeper
         case Profession.adventurer.rawValue:
             profession = .adventurer
-        case Profession.wenche.rawValue:
-            profession = .wenche
-        case Profession.general.rawValue:
-            profession = .general
+        case Profession.cityGuard.rawValue:
+            profession = .cityGuard
+        case Profession.gardener.rawValue:
+            profession = .gardener
+        case Profession.maintenanceWorker.rawValue:
+            profession = .maintenanceWorker
+        case Profession.cleaner.rawValue:
+            profession = .cleaner
+        case Profession.apprentice.rawValue:
+            profession = .apprentice
+        case Profession.lordLady.rawValue:
+            profession = .lordLady
+        case Profession.administrator.rawValue:
+            profession = .administrator
+        case Profession.stableHand.rawValue:
+            profession = .stableHand
+        case Profession.kitchenStaff.rawValue:
+            profession = .kitchenStaff
+        case Profession.militaryOfficer.rawValue:
+            profession = .militaryOfficer
+        case Profession.servant.rawValue:
+            profession = .servant
+        case Profession.monk.rawValue:
+            profession = .monk
+        case Profession.religiousScholar.rawValue:
+            profession = .religiousScholar
+        case Profession.generalLaborer.rawValue:
+            profession = .generalLaborer
+        case Profession.bookseller.rawValue:
+            profession = .bookseller
+        case Profession.herbalist.rawValue:
+            profession = .herbalist
+        case Profession.barmaid.rawValue:
+            profession = .barmaid
+        case Profession.entertainer.rawValue:
+            profession = .entertainer
+        case Profession.tavernKeeper.rawValue, "Innkeeper":
+            profession = .tavernKeeper
+        case Profession.dockWorker.rawValue:
+            profession = .dockWorker
+        case Profession.sailor.rawValue:
+            profession = .sailor
+        case Profession.shipCaptain.rawValue:
+            profession = .shipCaptain
+        case Profession.pilgrim.rawValue:
+            profession = .pilgrim
+        case Profession.courtesan.rawValue:
+            profession = .courtesan
+        case Profession.noProfession.rawValue:
+            profession = .noProfession
         default:
-            DebugLogService.shared.log("Unknown profession '\(professionString)', defaulting to adventurer", category: "Warning")
-            profession = .adventurer
+            DebugLogService.shared.log("Unknown profession '\(professionString)', defaulting to noProfession", category: "Warning")
+            profession = .noProfession
         }
         
         return NPC(name: name, sex: sex, age: age, profession: profession, isVampire: isVampire, id: id)

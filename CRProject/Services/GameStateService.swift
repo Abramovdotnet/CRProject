@@ -91,7 +91,6 @@ class GameStateService : ObservableObject, GameService{
         
         // Advance time when changing location
         gameTime.advanceTime()
-        gameEventsBus.addSystemMessage("Player entered \(currentScene?.name ?? "").")
     }
     
     private func updateRelatedLocations(for locationId: Int) {

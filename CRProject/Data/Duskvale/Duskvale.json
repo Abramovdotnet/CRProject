@@ -182,14 +182,6 @@
         "sceneType": "district"
     },
     {
-        "id": 24,
-        "name": "The Noble's Crest",
-        "isParent": true,
-        "parentSceneId": 31,
-        "isIndoor": false,
-        "sceneType": "district"
-    },
-    {
         "id": 25,
         "name": "Backtown",
         "isParent": true,
