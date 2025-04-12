@@ -149,7 +149,7 @@ struct NavigationWebView: View {
         }
         
         let allSiblings = viewModel.siblingScenes + (current.hubSceneIds.compactMap { id in
-            try? LocationReader.getLocation(by: id)
+            try? LocationReader.getRuntimeLocation(by: id)
         })
 
         if allSiblings.contains(where: { $0.id == location.id }) {
@@ -200,7 +200,7 @@ struct NavigationWebView: View {
         
         // Connect to siblings and hub locations (radial lines)
         let allSiblings = viewModel.siblingScenes + (current.hubSceneIds.compactMap { id in
-            try? LocationReader.getLocation(by: id)
+            try? LocationReader.getRuntimeLocation(by: id)
         })
         for sibling in allSiblings.prefix(maxSiblingNodes) {
             if let siblingPos = relativePosition(for: sibling) {
@@ -520,7 +520,7 @@ extension MainSceneViewModel {
         
         // Add immediate siblings and hub locations (limit to 6)
         let allSiblings = siblingScenes + (current.hubSceneIds.compactMap { id in
-            try? LocationReader.getLocation(by: id)
+            try? LocationReader.getRuntimeLocation(by: id)
         })
         locations.append(contentsOf: Array(allSiblings.prefix(6)))
         
@@ -538,7 +538,7 @@ extension MainSceneViewModel {
         
         // Add connections to siblings and hub locations
         let allSiblings = siblingScenes + (current.hubSceneIds.compactMap { id in
-            try? LocationReader.getLocation(by: id)
+            try? LocationReader.getRuntimeLocation(by: id)
         })
         let siblings = Array(allSiblings.prefix(6))
         let leftSiblings = Array(siblings[..<min(3, siblings.count)])

@@ -55,8 +55,17 @@ class NPCBehaviorService: GameService {
             .sorted(by: {$0.npcCount() > $1.npcCount() })
             .prefix(5)
         
+        var emptyLocs = LocationReader.getLocations()
+            .filter( { $0.sceneType != .town && $0.sceneType != .road && $0.sceneType != .district && $0.npcCount() == 0 && $0.sceneType != .house})
+        
         for location in locations {
             gameEventBusService.addCommonMessage(message: "\(location.name) characters: \(location.npcCount())")
+            DebugLogService.shared.log("\(location.name) characters: \(location.npcCount())")
+        }
+        
+        for location in emptyLocs {
+            gameEventBusService.addCommonMessage(message: "\(location.name), Type: \(location.sceneType.rawValue) is empty")
+            DebugLogService.shared.log("\(location.name), Type: \(location.sceneType.rawValue) is empty")
         }
     }
     

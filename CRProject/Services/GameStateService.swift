@@ -79,7 +79,7 @@ class GameStateService : ObservableObject, GameService{
         DebugLogService.shared.log("Changing location to ID: \(locationId)", category: "Location")
         
         // Try to find and set the new location
-        let newLocation = try LocationReader.getLocation(by: locationId)
+        let newLocation = try LocationReader.getRuntimeLocation(by: locationId)
         DebugLogService.shared.log("Found new location: \(newLocation.name)", category: "Location")
         
         // Update current scene

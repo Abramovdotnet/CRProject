@@ -145,7 +145,8 @@ class MainSceneViewModel: ObservableObject {
         // Create initial scene using LocationReader
         do {
 
-            let initialScene = try LocationReader.getLocation(by: 10)
+            
+            let initialScene = try LocationReader.getRuntimeLocation(by: 10)
             try gameStateService.changeLocation(to: initialScene.id)
             
             // Set default awareness to 0
@@ -572,7 +573,7 @@ extension MainSceneViewModel {
         // Add hub locations
         if let current = currentScene {
             let hubScenes = current.hubSceneIds.compactMap { id in
-                try? LocationReader.getLocation(by: id)
+                try? LocationReader.getRuntimeLocation(by: id)
             }
             scenes.append(contentsOf: hubScenes)
         }
