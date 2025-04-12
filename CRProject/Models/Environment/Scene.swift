@@ -65,6 +65,10 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
         }
     }
     
+    func npcCount() -> Int {
+        return _characters.count
+    }
+    
     func addCharacter(_ character: any Character) {
         _characters[character.id] = character
         character.currentLocationId = self.id

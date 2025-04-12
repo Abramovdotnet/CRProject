@@ -4766,8 +4766,7 @@
     "name" : "Elisabetta Bergman",
     "profession" : "Cleaner",
     "homeLocationId" : 0,
-    "sex" : "female",
-    "isVampire": false
+    "sex" : "female"
   },
   {
     "sex" : "female",

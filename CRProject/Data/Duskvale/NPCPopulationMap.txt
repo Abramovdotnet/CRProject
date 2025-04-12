@@ -1,0 +1,155 @@
+### **1. Backtown (id: 25)**
+**IDs: 1-3**  
+- The Dragon's Hearth (tavern)
+- The Moonlit Chalice (tavern)
+- The Velvet Veil (brothel)
+**IDs: 52-56**  
+- The Velvet House (house)
+- The Silk Cottage (house)
+- The Lace Manor (house)
+- The Satin House (house)
+- The Taffeta Cottage (house)
+**IDs: 57-61**  
+- The Chiffon House (house)
+- The Damask Cottage (house)
+- The Brocade Manor (house)
+- The Tulle House (house)
+- The Organza Cottage (house)
+
+### **2. The Hallowed Grounds (id: 26)**
+**IDs: 4-7**  
+- The Black Cathedral (cathedral)
+- The Shadow Cloister (cathedral)
+- The Crypt of Whispers (square)
+- Fountain of the Ancients (square)
+**IDs: 65-69**  
+- The Fountain House (house)
+- The Spring Cottage (house)
+- The Well Manor (house)
+- The Stream House (house)
+- The Brook Cottage (house)
+**IDs: 70-74**  
+- The River House (house)
+- The Pond Cottage (house)
+- The Lake Manor (house)
+- The Creek House (house)
+- The Falls Cottage (house)
+
+### **3. The Hearth's Haven (id: 27)**
+**IDs: 8-9**  
+- The Steam Haven (bathhouse)
+- The Verdant Court (square)
+**IDs: 39-43**  
+- The Stone Cottage (house)
+- The Mossy Manor (house)
+- The Ivy House (house)
+- The Rose Cottage (house)
+- The Willow House (house)
+**IDs: 44-48**  
+- The Oak Cottage (house)
+- The Maple House (house)
+- The Pine Cottage (house)
+- The Birch House (house)
+- The Cedar Cottage (house)
+
+### **4. The Noble's Crest (id: 28)**
+**IDs: 10-12**  
+- The Ivory Keep (manor)
+- Guard Barracks (military)
+- The Crest Square (square)
+**IDs: 78-82**  
+- The Crest House (house)
+- The Noble Cottage (house)
+- The Regal Manor (house)
+- The Crown House (house)
+- The Scepter Cottage (house)
+**IDs: 83-87**  
+- The Throne House (house)
+- The Orb Cottage (house)
+- The Crown Manor (house)
+- The Scepter House (house)
+- The Orb Manor (house)
+
+### **5. Market (id: 29)**
+**IDs: 13, 15-19, 30**  
+- The Iron Heart (blacksmith)
+- Trade Warehouses (warehouse)
+- The Quill & Scroll (bookstore)
+- The Herbalist's Den (alchemistShop)
+- The Golden Scales (house)
+- The Steel Anvil (blacksmith)
+- Shining Steel (blacksmith)
+**IDs: 91-95**  
+- The Warehouse House (house)
+- The Cargo Cottage (house)
+- The Trade Manor (house)
+- The Merchant House (house)
+- The Market Cottage (house)
+**IDs: 96-100**  
+- The Stall House (house)
+- The Booth Cottage (house)
+- The Shop Manor (house)
+- The Store House (house)
+- The Booth Manor (house)
+
+### **6. Docks District (id: 32)**
+**IDs: 33-35**  
+- The Drunken Sailor (tavern)
+- The Long Pier (docks)
+- Docks Guard Barracks (military)
+**IDs: 104-108**  
+- The Pier House (house)
+- The Dock Cottage (house)
+- The Harbor Manor (house)
+- The Wharf House (house)
+- The Quay Cottage (house)
+**IDs: 109-113**  
+- The Jetty House (house)
+- The Mooring Cottage (house)
+- The Berth Manor (house)
+- The Slip House (house)
+- The Dock Manor (house)
+
+### **19. Ave 7 (id: 116)**
+**IDs: 119-123**  
+- The Anchor House (house)
+- The Compass Cottage (house)
+- The Rudder Manor (house)
+- The Mast House (house)
+- The Sail Cottage (house)
+
+### **20. Ave 7 Qt. 2 (id: 118)**
+**IDs: 124-128**  
+- The Helm House (house)
+- The Keel Cottage (house)
+- The Bow Manor (house)
+- The Stern House (house)
+- The Hull Cottage (house)
+
+### **21. Ave 8 (id: 129)**
+**IDs: 132-136**  
+- The Rum House (house)
+- The Grog Cottage (house)
+- The Ale Manor (house)
+- The Mead House (house)
+- The Cask Cottage (house)
+**IDs: 137-141**  
+- The Barrel House (house)
+- The Keg Cottage (house)
+- The Tun Manor (house)
+- The Flask House (house)
+- The Stein Cottage (house)
+
+### **Watchtowers (No Parent)**
+**IDs: 114-115**  
+- NW Watchtower (military)
+- SE Watchtower (district)
+
+### **Duskvale (Root Parent, id: 31)**
+This is the root parent location containing all districts.
+
+### Notes:
+1. All "road" type locations (Ave X Qt. X) were excluded as requested
+2. Each district maintains a clean numerical range of child locations
+3. Watchtowers are listed separately as they have no parentSceneId
+4. House subtypes (cottage/manor/house) are preserved in the naming

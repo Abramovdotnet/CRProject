@@ -1,6 +1,6 @@
 # DUSKVALE POPULATION DISTRIBUTION
 
-## RESIDENTIAL DISTRICT
+## THE HEARTH'S HAVEN
 [████████████████████] 100% (200/200)
 [██████████████████  ] No profession: 45% (90/200)
 [███                 ] City guard: 5.625% (11/200)
@@ -31,7 +31,7 @@
 [█                   ] City guard: 7.5% (2/37)
 [█                   ] Cleaner: 7.5% (2/37)
 
-## COMMERCIAL DISTRICT
+## MARKET
 [████████████████████] 100% (100/100)
 [██████████████      ] General laborer: 70.25% (70/100)
 [██                  ] Bookseller: 15% (15/100)
@@ -40,7 +40,7 @@
 [█                   ] Alchemist: 2% (2/100)
 [█                   ] Herbalist: 2% (2/100)
 
-## ENTERTAINMENT DISTRICT
+## BACKTOWN
 [████████████████████] 100% (50/50)
 [████████            ] Barmaid: 32% (16/50)
 [████████            ] Entertainer: 32% (16/50)

@@ -279,37 +279,37 @@ extension Profession {
     private var leisureActivities: [NPCActivityType] {
         switch self {
         // Nobility/High Status
-        case .lordLady: return [.drink, .gamble, .bathe, .entertain, .socialize]
-        case .courtesan: return [.drink, .bathe, .entertain, .socialize]
+        case .lordLady: return [.drink, .gamble, .bathe, .entertain]
+        case .courtesan: return [.drink, .bathe, .entertain]
         
         // Entertainment Industry
         case .entertainer: return [.drink, .socialize, .bathe]
-        case .tavernKeeper: return [.drink, .gamble, .socialize]
-        case .barmaid: return [.drink, .socialize]
+        case .tavernKeeper: return [.drink, .gamble]
+        case .barmaid: return [.drink]
         
         // Military/Security
         case .guardman, .cityGuard, .militaryOfficer:
-            return [.drink, .gamble, .socialize]
+            return [.drink, .gamble]
         
         // Maritime Professions
         case .sailor, .dockWorker, .shipCaptain:
-            return [.drink, .gamble, .socialize]
+            return [.drink, .gamble]
         
         // Religious
         case .priest, .monk, .religiousScholar, .pilgrim:
-            return [.pray, .study, .socialize]
+            return [.pray, .study]
         
         // Craftsmen/Tradespeople
         case .blacksmith, .carpenter, .tailor, .alchemist, .herbalist:
-            return [.drink, .socialize]
+            return [.drink, .study]
         case .merchant, .bookseller:
-            return [.drink, .socialize, .gamble]
+            return [.drink, .gamble]
         
         // Laborers
         case .gardener, .stableHand, .maintenanceWorker, .generalLaborer:
-            return [.drink, .socialize]
+            return [.drink]
         case .cleaner:
-            return [.drink, .socialize, .bathe]
+            return [.drink, .bathe]
         
         // Domestic/Service
         case .servant, .kitchenStaff:
@@ -320,8 +320,8 @@ extension Profession {
             return [.drink, .gamble, .explore]
         
         // Special Cases
-        case .apprentice: return [.socialize, .study]
-        case .noProfession: return [.idle, .socialize]
+        case .apprentice: return [.study]
+        case .noProfession: return [.idle, .socialize, .gamble, .drink, .entertain]
             
         default:
             return [.drink]

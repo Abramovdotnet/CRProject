@@ -45,7 +45,7 @@ class NPCActivityManager {
         let activityCategory: ActivityCategory
         
         if npc.profession == .noProfession {
-            activityCategory = .leisure
+            activityCategory = .noProfession
         } else {
             if categoryRoll <= weights.essential {
                 activityCategory = .essential
@@ -62,6 +62,8 @@ class NPCActivityManager {
             return getEssentialActivity(currentHour: currentHour)
         case .work:
             return getWorkActivity(for: npc.profession, phase: phase)
+        case .noProfession:
+            return getNoProfessionActivity(for: npc, currentHour: currentHour, phase: phase)
         case .leisure:
             return getLeisureActivity(for: npc.profession, phase: phase)
         case .action:
@@ -80,13 +82,27 @@ class NPCActivityManager {
             return npc.currentActivity
         }
     }
+
     
-    private func getEssentialActivity(currentHour: Int) -> NPCActivityType {
-        // 70% chance to sleep at night, 30% during day
+    func getNoProfessionActivity(for npc: NPC, currentHour: Int, phase: DayPhase) -> NPCActivityType{
+        var leisureActivities = Profession.noProfession.primaryLeisureActivities().filter( { $0 != .sleep } )
+        
         let isSleepTime = currentHour >= 22 || currentHour < 6
         let sleepRoll = Int.random(in: 1...100)
         
-        if isSleepTime && sleepRoll <= 70 || !isSleepTime && sleepRoll <= 30 {
+        if isSleepTime && sleepRoll <= 95 || !isSleepTime && sleepRoll <= 5 {
+            return .sleep
+        } else {
+            return leisureActivities.randomElement() ?? .socialize
+        }
+    }
+    
+    private func getEssentialActivity(currentHour: Int) -> NPCActivityType {
+        // 95% chance to sleep at night, 5% during day
+        let isSleepTime = currentHour >= 22 || currentHour < 6
+        let sleepRoll = Int.random(in: 1...100)
+        
+        if isSleepTime && sleepRoll <= 95 || !isSleepTime && sleepRoll <= 5 {
             return .sleep
         } else {
             return .eat
@@ -131,6 +147,7 @@ class NPCActivityManager {
     private enum ActivityCategory {
         case essential
         case work
+        case noProfession
         case leisure
         case action
     }
