@@ -12,7 +12,7 @@
         "name": "The Moonlit Chalice",
         "isParent": false,
         "parentSceneId": 25,
-        "hubSceneIds": [7, 9, 12, 114],
+        "hubSceneIds": [7, 9, 12, 21, 114],
         "isIndoor": true,
         "sceneType": "tavern"
     },
@@ -54,7 +54,7 @@
         "name": "Fountain of the Ancients",
         "isParent": false,
         "parentSceneId": 26,
-        "hubSceneIds": [2, 12, 114, 63],
+        "hubSceneIds": [2, 12, 21, 114, 63],
         "isIndoor": false,
         "sceneType": "square"
     },
@@ -71,7 +71,7 @@
         "name": "The Verdant Court",
         "isParent": false,
         "parentSceneId": 27,
-        "hubSceneIds": [2, 12, 15, 115, 37],
+        "hubSceneIds": [2, 12, 15, 21, 115, 37],
         "isIndoor": false,
         "sceneType": "square"
     },
@@ -149,6 +149,14 @@
         "parentSceneId": 29,
         "isIndoor": true,
         "sceneType": "blacksmith"
+    },
+    {
+        "id": 21,
+        "name": "Armory",
+        "isParent": false,
+        "hubSceneIds": [2, 7, 9],
+        "isIndoor": true,
+        "sceneType": "military"
     },
     {
         "id": 114,

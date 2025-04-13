@@ -8,8 +8,7 @@
 class NPCBehaviorService: GameService {
     static let shared = NPCBehaviorService()
     private var gameEventBusService: GameEventsBusService = DependencyManager.shared.resolve()
-    
-    private var notAssigned: Int = 0
+
     private var activitiesSet: Int = 0
     
     var activitiesAssigned: [assignedActivity] = []
@@ -25,7 +24,9 @@ class NPCBehaviorService: GameService {
 
         for npc in npcsToHandle {
             handleNPCBehavior(npc: npc)
+            //sendSleepToHome(npc: npc)
         }
+
         
         // Create a dictionary to count each activity type
         var activityCounts: [NPCActivityType: Int] = [:]
@@ -43,10 +44,8 @@ class NPCBehaviorService: GameService {
             )
         }
         
-        gameEventBusService.addCommonMessage(message: "\(notAssigned) not assigned")
         gameEventBusService.addCommonMessage(message: "\(activitiesSet) activities set")
-        
-        notAssigned = 0
+
         activitiesSet = 0
         activitiesAssigned = []
         
@@ -114,7 +113,6 @@ class NPCBehaviorService: GameService {
             updateNPCState(npc: npc, gameDay: gameTimeService.currentDay)
         } else {
             gameEventBusService.addDangerMessage(message: "Cannot find location for activity \(newActivity.rawValue)")
-            notAssigned += 1
         }
     }
     

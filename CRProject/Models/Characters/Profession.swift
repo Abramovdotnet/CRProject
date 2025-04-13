@@ -51,7 +51,7 @@ enum Profession: String, CaseIterable, Codable {
         case .cityGuard:     return "shield.checkered"
         case .gardener:      return "leaf.fill"
         case .maintenanceWorker: return "wrench.fill"
-        case .cleaner:       return "broom.fill"
+        case .cleaner:       return "paintbrush.fill"
         case .apprentice:    return "book.fill"
         case .lordLady:     return "crown.fill"
         case .administrator: return "person.fill.badge.plus"
