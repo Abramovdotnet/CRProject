@@ -554,6 +554,18 @@ class MainSceneViewModel: ObservableObject {
             }
         }
     }
+    
+    func getAvailableHideouts() -> [HidingCell] {
+        return (currentScene?.sceneType.possibleHidingCells())!
+    }
+    
+    func getPlayer() -> Player {
+        return gameStateService.getPlayer()!
+    }
+    
+    func getGameStateService() -> GameStateService {
+        return gameStateService
+    }
 }
 
 extension MainSceneViewModel {

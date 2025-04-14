@@ -134,7 +134,7 @@ struct SelectedNPCView: View {
         .frame(height: 60)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.5))
+                .fill(Color.black.opacity(0.7))
                 .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
         )
     }

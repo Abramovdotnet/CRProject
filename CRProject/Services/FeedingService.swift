@@ -7,6 +7,8 @@ class FeedingService: GameService {
     private let statisticsService: StatisticsService
     private let gameEventsBus: GameEventsBusService
     
+    static var shared: FeedingService = DependencyManager.shared.resolve()
+    
     init(bloodService: BloodManagementService = DependencyManager.shared.resolve(),
          gameTime: GameTimeService = DependencyManager.shared.resolve(),
          vampireNatureRevealService: VampireNatureRevealService = DependencyManager.shared.resolve(),
@@ -43,7 +45,7 @@ class FeedingService: GameService {
         else if prey.currentActivity != .sleep {
             prey.isVampireAttackWitness = true
             
-            //setNPCsAsWitnesses(sceneId: sceneId)
+            setNPCsAsWitnesses(sceneId: sceneId)
         }
         
         if prey.currentActivity == .sleep {
@@ -68,6 +70,7 @@ class FeedingService: GameService {
         var scene = try? LocationReader.getRuntimeLocation(by: sceneId)
         
         var npcs = scene?.getNPCs()
+            .filter( { $0.isAlive && $0.currentActivity != .sleep && !$0.isSpecialBehaviorSet })
         
         guard let npcs else { return }
         
@@ -96,7 +99,7 @@ class FeedingService: GameService {
         if prey.currentActivity == .sleep {
             awarenessIncreaseValue -= 25
         } else {
-            //setNPCsAsWitnesses(sceneId: sceneId)
+            setNPCsAsWitnesses(sceneId: sceneId)
         }
         
         // Increase awareness in the scene where feeding occurred

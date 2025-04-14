@@ -4,23 +4,61 @@ import SwiftUI
 struct NPCSGridView: View {
     let npcs: [NPC]
     @StateObject private var npcManager = NPCInteractionManager.shared
+    @StateObject private var gameStateService: GameStateService = DependencyManager.shared.resolve()
     var onAction: (NPCAction) -> Void
     
     // Fixed 6-column grid configuration
     private let columns: [GridItem] = Array(repeating: .init(.flexible(), spacing: 8), count: 6)
     
+    private struct NPCData: Identifiable {
+        let npc: NPC
+        let isSelected: Bool
+        let isDisabled: Bool
+        var id: Int { npc.index }
+    }
+    
+    private func prepareNPCData() -> [NPCData] {
+        var result: [NPCData] = []
+        
+        // Sort NPCs by index in descending order
+        let sortedNPCs: [NPC] = npcs.sorted { $0.index > $1.index }
+        
+        // Take first 100 NPCs
+        let maxNPCs = min(100, sortedNPCs.count)
+        let limitedNPCs: [NPC] = Array(sortedNPCs[0..<maxNPCs])
+        
+        // Create NPCData for each NPC
+        for npc in limitedNPCs {
+            let isSelected: Bool = npcManager.selectedNPC?.id == npc.id
+            let isDisabled: Bool = {
+                guard let player = gameStateService.getPlayer() else { return false }
+                return player.hiddenAt != .none
+            }()
+            
+            let data = NPCData(
+                npc: npc,
+                isSelected: isSelected,
+                isDisabled: isDisabled
+            )
+            result.append(data)
+        }
+        
+        return result
+    }
+    
     var body: some View {
         ScrollView {
             LazyVGrid(columns: columns, spacing: 8) {
-                ForEach(npcs.sorted(by: { $0.index > $1.index }).prefix(100), id: \.index) { npc in
+                ForEach(prepareNPCData()) { data in
                     NPCGridButton(
-                        npc: npc,
-                        isSelected: npcManager.selectedNPC?.id == npc.id
+                        npc: data.npc,
+                        isSelected: data.isSelected,
+                        isDisabled: data.isDisabled
                     ) {
-                        if npcManager.selectedNPC?.id == npc.id {
-                            onAction(.startConversation(npc))
+                        if data.isSelected {
+                            onAction(.startConversation(data.npc))
                         } else {
-                            npcManager.select(with: npc)
+                            npcManager.select(with: data.npc)
                         }
                     }
                 }
@@ -33,6 +71,7 @@ struct NPCSGridView: View {
 struct NPCGridButton: View {
     let npc: NPC
     let isSelected: Bool
+    let isDisabled: Bool
     let onTap: () -> Void
     
     @State private var moonOpacity: Double = 0.6
@@ -48,7 +87,7 @@ struct NPCGridButton: View {
                 ZStack {
                     // Background with conditional glow for sleeping NPCs
                     RoundedRectangle(cornerRadius: 8)
-                        .fill(isSelected ? Theme.accentColor.opacity(0.5) : Color.black.opacity(0.5))
+                        .fill(isSelected ? Theme.accentColor.opacity(0.5) : Color.black.opacity(0.7))
                         .overlay(
                             Group {
                                 if npc.currentActivity == .sleep {
@@ -183,8 +222,10 @@ struct NPCGridButton: View {
             
         }
         .buttonStyle(PlainButtonStyle())
-        .opacity(npc.isAlive ? 1 : 0.7)
+        .opacity(npc.isAlive ? (isDisabled ? 0.5 : 1) : 0.7)
+        .disabled(isDisabled)
         .animation(.easeInOut(duration: 0.3), value: npc.isAlive)
+        .animation(.easeInOut(duration: 0.3), value: isDisabled)
         .onAppear {
             if npc.currentActivity == .sleep {
                 withAnimation(Animation.easeInOut(duration: 1.5).repeatForever()) {

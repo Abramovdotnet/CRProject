@@ -125,7 +125,7 @@ struct ChatHistoryView: View {
         .padding(.top, 4)
         .background(
             RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.5))
+                .fill(Color.black.opacity(0.82))
                 .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
                 .opacity(0.9)
         )

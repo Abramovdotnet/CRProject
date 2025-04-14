@@ -69,4 +69,96 @@ enum SceneType: String, CaseIterable {
         default: return "questionmark.circle.fill"
         }
     }
+    
+    func possibleHidingCells() -> [HidingCell] {
+            switch self {
+            // Religious Buildings
+            case .cathedral, .cloister:
+                return [.basement, .attic, .grave]
+                
+            case .cemetery:
+                return [.grave, .basement]
+                
+            // Administrative
+            case .manor:
+                return [.basement, .attic, .roof]
+                
+            case .military:
+                return [.basement, .roof]
+                
+            // Commercial
+            case .blacksmith:
+                return [.basement]
+                
+            case .alchemistShop:
+                return [.basement, .attic]
+                
+            case .warehouse:
+                return [.basement, .roof]
+                
+            case .bookstore:
+                return [.basement]
+                
+            // Entertainment
+            case .tavern:
+                return [.basement, .attic]
+                
+            case .brothel:
+                return [.basement, .attic]
+                
+            case .bathhouse:
+                return [.basement]
+                
+            // Public Spaces
+            case .square:
+                return [.none]
+                
+            case .docks:
+                return [.sewer, .basement]
+                
+            case .road:
+                return [.none]
+                
+            // Residential
+            case .house:
+                return [.basement, .attic, .roof]
+                
+            // General/Districts
+            case .town, .district:
+                return [.none]
+                
+            @unknown default:
+                return []
+            }
+        }
+}
+
+enum HidingCell: String, Codable, CaseIterable {
+    case basement = "basement"
+    case attic = "attic"
+    case grave = "grave"
+    case roof = "roof"
+    case sewer = "sewer"
+    case none = "none"
+    
+    var iconName: String {
+        switch self {
+        case .basement:
+            return "square.stack.3d.down.right.fill"
+        case .attic:
+            return "clock.fill"
+        case .grave:
+            return "cross.fill"
+        case .roof:
+            return "house.fill"
+        case .sewer:
+            return "aqi.medium"
+        case .none:
+            return "xmark.circle.fill"
+        }
+    }
+    
+    var description: String {
+        return rawValue.capitalized
+    }
 }

@@ -75,8 +75,18 @@ class GameStateService : ObservableObject, GameService{
         return player
     }
     
+    func movePlayerThroughHideouts(to: HidingCell) {
+        player?.hiddenAt = to
+        
+        if player?.hiddenAt != nil {
+            npcManager.selectedNPC = nil
+        }
+    }
+    
     func changeLocation(to locationId: Int) throws {
         DebugLogService.shared.log("Changing location to ID: \(locationId)", category: "Location")
+        
+        movePlayerThroughHideouts(to: .none)
         
         // Try to find and set the new location
         let newLocation = try LocationReader.getRuntimeLocation(by: locationId)
@@ -155,8 +165,9 @@ class GameStateService : ObservableObject, GameService{
     
     func advanceWorldState(advanceSafe: Bool = false) {
         guard let scene = currentScene else { return }
+        guard let player = player else { return }
         
-        if !advanceSafe {
+        if player.hiddenAt == .none {
             // If current scene is indoor and it's not night time, increase awareness
             if scene.isIndoor && !gameTime.isNightTime {
                 vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 10)
@@ -168,6 +179,8 @@ class GameStateService : ObservableObject, GameService{
                     }
                 }
             }
+        } else {
+            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
         }
         
         // Reduce awareness for nearest scenes by 5
@@ -175,8 +188,38 @@ class GameStateService : ObservableObject, GameService{
             vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
         }
         
-        if player?.bloodMeter.currentBlood ?? 0 <= 30 {
+        var currentPlayerBlood = player.bloodMeter.currentBlood
+        
+        if currentPlayerBlood <= 30 {
             gameEventsBus.addDangerMessage(message: "* I feel huge lack of blood!*")
+        }
+        
+        if currentPlayerBlood <= 10 {
+            releasePlayerThirst()
+        }
+    }
+    
+    func releasePlayerThirst() {
+        guard let scene = currentScene else { return }
+        guard let player = player else { return }
+        
+        if player.hiddenAt != .none {
+            gameEventsBus.addDangerMessage(message: "* Madness forces player get out from hideout *")
+            movePlayerThroughHideouts(to: .none)
+        }
+        
+        var npcs = scene.getNPCs()
+            .filter( { $0.isAlive && !$0.isSpecialBehaviorSet })
+        
+        var randomVictim = npcs.randomElement()
+        
+        var amountOfBloodToFeed = 100 - player.bloodMeter.currentBlood
+        
+        if let randomVictim = randomVictim {
+            gameEventsBus.addDangerMessage(message: "* Relentless blood thirst!*")
+            try? FeedingService.shared.feedOnCharacter(vampire: player, prey: randomVictim, amount: amountOfBloodToFeed, in: scene.id)
+            
+            VibrationService.shared.errorVibration()
         }
     }
     
