@@ -30,7 +30,8 @@ class FeedingService: GameService {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
         
-        prey.isBeasy = true
+        prey.isSpecialBehaviorSet = true
+        
         try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
         
         var awarenessIncreaseValue: Float = 40.0;
@@ -40,14 +41,14 @@ class FeedingService: GameService {
             awarenessIncreaseValue -= 20
         }
         else if prey.currentActivity != .sleep {
-            prey.isVampireAttachWitness = true
+            prey.isVampireAttackWitness = true
+            
+            //setNPCsAsWitnesses(sceneId: sceneId)
         }
         
         if prey.currentActivity == .sleep {
             awarenessIncreaseValue -= 10
         }
-        
-        GameStateService.shared.advanceWorldState()
         
         // Increase awareness in the scene where feeding occurred
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
@@ -58,6 +59,23 @@ class FeedingService: GameService {
             gameEventsBus.addDangerMessage(message: "* I just killed \(prey.name)! Feel satisfied... *")
             // Double awareness increase if killing victim
             vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
+        }
+        
+        gameTime.advanceTime()
+    }
+    
+    func setNPCsAsWitnesses(sceneId: Int) {
+        var scene = try? LocationReader.getRuntimeLocation(by: sceneId)
+        
+        var npcs = scene?.getNPCs()
+        
+        guard let npcs else { return }
+        
+        if npcs.count > 1 {
+            for npc in npcs {
+                npc.isVampireAttackWitness = true
+                npc.isBeasy = true
+            }
         }
     }
     
@@ -77,15 +95,17 @@ class FeedingService: GameService {
         
         if prey.currentActivity == .sleep {
             awarenessIncreaseValue -= 25
+        } else {
+            //setNPCsAsWitnesses(sceneId: sceneId)
         }
-        
-        GameStateService.shared.advanceWorldState()
         
         // Increase awareness in the scene where feeding occurred
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
         statisticsService.incrementVictimsDrained()
         
         gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
+        
+        gameTime.advanceTime()
     }
 }
 

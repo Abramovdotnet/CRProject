@@ -37,11 +37,14 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case quest = "Questing"
     case smuggle = "Smuggling"
     case spy = "Spying"
+    case love = "Love"
+    case flirt = "Flirting"
     
     // Action activities
     case seducted = "Seducted"
     case duzzled = "Duzzled"
     case fleeing = "Fleeing"
+    case casualty = "Casualty"
     
     var description: String {
         return self.rawValue
@@ -86,11 +89,14 @@ extension NPCActivityType {
         case .quest: return ["tavern", "keep"] // Quest givers
         case .smuggle: return ["docks", "warehouse"]
         case .spy: return ["brothel", "tavern", "road"]
+        case .love: return []
+        case .flirt: return []
             
         // Action
         case .seducted: return []
         case .duzzled: return []
-        case .fleeing: return ["military", "watchtower", "barracks"]
+        case .fleeing: return ["military", "watchtower", "barracks", "manor", "tavern", "cathedral", "monastery"]
+        case .casualty: return ["military", "watchtower", "barracks"]
         }
     }
     
@@ -158,11 +164,14 @@ extension NPCActivityType {
         case .quest: return "star.fill"
         case .smuggle: return "briefcase.fill"
         case .spy: return "eye.fill"
+        case .love: return "heart.fill"
+        case .flirt: return "heart"
             
         // Action
         case .seducted: return "heart.fill"
         case .duzzled: return "hand.thumbsup.fill"
         case .fleeing: return "figure.run"
+        case .casualty: return "xmark.circle.fill"
         }
     }
     
@@ -203,10 +212,14 @@ extension NPCActivityType {
         case .quest: return .yellow
         case .smuggle: return .red
         case .spy: return .purple
+        case .love: return .pink
+        case .flirt: return .red
             
+        // Action
         case .seducted: return .red
         case .duzzled: return .pink
         case .fleeing: return .red
+        case .casualty: return .red
         }
     }
 }

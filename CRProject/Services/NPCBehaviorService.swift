@@ -8,6 +8,7 @@
 class NPCBehaviorService: GameService {
     static let shared = NPCBehaviorService()
     private var gameEventBusService: GameEventsBusService = DependencyManager.shared.resolve()
+    private var npcInteractionService: NPCInteractionService;
 
     private var activitiesSet: Int = 0
     
@@ -17,54 +18,23 @@ class NPCBehaviorService: GameService {
         
     init() {
         npcs = NPCReader.getNPCs()
+        npcInteractionService = NPCInteractionService()
+        DependencyManager.shared.register(npcInteractionService)
     }
         
     func updateActivity() {
-        let npcsToHandle = npcs.filter { $0.homeLocationId > 0 }
+        let npcsToHandle = npcs.filter { $0.homeLocationId > 0 && $0.isAlive }
+        let gameTimeService: GameTimeService = DependencyManager.shared.resolve()
 
         for npc in npcsToHandle {
-            handleNPCBehavior(npc: npc)
+            handleNPCBehavior(npc: npc, gameTimeService: gameTimeService)
             //sendSleepToHome(npc: npc)
         }
+        
+        npcInteractionService.handleNPCInteractionsBehavior()
 
-        
-        // Create a dictionary to count each activity type
-        var activityCounts: [NPCActivityType: Int] = [:]
-        for activity in activitiesAssigned {
-            activityCounts[activity.activity] = (activityCounts[activity.activity] ?? 0) + 1
-        }
-        
-        // Log counts for each activity type with icons
-        for (activity, count) in activityCounts.sorted(by: { $0.key.rawValue < $1.key.rawValue }) {
-            gameEventBusService.addMessageWithIcon(
-                message: "\(count) \(activity.rawValue.capitalized)",
-                icon: activity.icon,
-                iconColor: activity.color,
-                type: .common
-            )
-        }
-        
-        gameEventBusService.addCommonMessage(message: "\(activitiesSet) activities set")
-
-        activitiesSet = 0
-        activitiesAssigned = []
-        
-        var locations = LocationReader.getLocations()
-            .filter( { $0.npcCount() > 0 } )
-            .sorted(by: {$0.npcCount() > $1.npcCount() })
-            .prefix(5)
-        
-        var emptyLocs = LocationReader.getLocations()
-            .filter( { $0.sceneType != .town && $0.sceneType != .road && $0.sceneType != .district && $0.npcCount() == 0 && $0.sceneType != .house})
-        
-        for location in locations {
-            gameEventBusService.addCommonMessage(message: "\(location.name) characters: \(location.npcCount())")
-            DebugLogService.shared.log("\(location.name) characters: \(location.npcCount())")
-        }
-        
-        for location in emptyLocs {
-            gameEventBusService.addCommonMessage(message: "\(location.name), Type: \(location.sceneType.rawValue) is empty")
-            DebugLogService.shared.log("\(location.name), Type: \(location.sceneType.rawValue) is empty")
+        for npc in npcsToHandle {
+            updateNPCState(npc: npc, gameDay: gameTimeService.currentDay)
         }
     }
     
@@ -78,17 +48,14 @@ class NPCBehaviorService: GameService {
         }
     }
     
-    private func handleNPCBehavior(npc: NPC) {
-        let gameTimeService: GameTimeService = DependencyManager.shared.resolve()
-        let newActivity = npc.isBeasy
-            ? NPCActivityManager.shared.getActionActivity(for: npc)
+    private func handleNPCBehavior(npc: NPC, gameTimeService: GameTimeService) {
+        let newActivity = npc.isBeasy || npc.isSpecialBehaviorSet
+            ? NPCActivityManager.shared.getSpecialBehaviorActivity(for: npc)
             : NPCActivityManager.shared.getActivity(for: npc)
         
         npc.currentActivity = newActivity
         
         activitiesSet += 1
-        
-        print("\(newActivity.rawValue) set for \(npc.name): \(npc.profession.rawValue)")
         
         if newActivity == .sleep {
             sendSleepToHome(npc: npc)
@@ -100,6 +67,10 @@ class NPCBehaviorService: GameService {
         
         let graph = LocationGraph.shared
         
+        if newActivity == .casualty {
+            print("CASUALTY")
+        }
+        
         if let (path, target) = graph.nearestLocation(for: newActivity, from: npc.homeLocationId) {
             if target.id == npc.currentLocationId {
                 activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
@@ -110,7 +81,6 @@ class NPCBehaviorService: GameService {
                 activitiesAssigned.append(assignedActivity(isStay: false, activity: newActivity))
             }
             
-            updateNPCState(npc: npc, gameDay: gameTimeService.currentDay)
         } else {
             gameEventBusService.addDangerMessage(message: "Cannot find location for activity \(newActivity.rawValue)")
         }
@@ -134,9 +104,7 @@ class NPCBehaviorService: GameService {
         if npcCurrentLocation?.id != npc.homeLocationId {
             npcCurrentLocation?.removeCharacter(id: npc.id)
             
-            if npcHomeLocation == npcHomeLocation {
-                npcHomeLocation?.addCharacter(npc)
-            }
+            npcHomeLocation?.addCharacter(npc)
         }
     }
     
@@ -144,10 +112,11 @@ class NPCBehaviorService: GameService {
         if npc.isIntimidated {
             if gameDay > npc.intimidationDay {
                 npc.isIntimidated = false
+                npc.intimidationDay = 0
             }
         }
         
-        if npc.isBeasy && npc.currentActivity != .fleeing {
+        if npc.isBeasy {
             npc.isBeasy = false
         }
         
@@ -155,4 +124,6 @@ class NPCBehaviorService: GameService {
             npc.bloodMeter.addBlood(2)
         }
     }
+    
+    
 }

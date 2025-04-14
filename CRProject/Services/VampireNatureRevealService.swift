@@ -10,6 +10,8 @@ class VampireNatureRevealService: ObservableObject, GameService {
     private let awarenessPublisher = PassthroughSubject<Int, Never>()
     private let gameEventsBus: GameEventsBusService
     
+    static var shared: VampireNatureRevealService = DependencyManager.shared.resolve()
+    
     init(gameEventsBus: GameEventsBusService = DependencyManager.shared.resolve()) {
         self.gameEventsBus = gameEventsBus
     }

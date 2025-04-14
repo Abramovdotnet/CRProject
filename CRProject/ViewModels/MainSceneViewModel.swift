@@ -68,8 +68,8 @@ class MainSceneViewModel: ObservableObject {
                 self?.currentScene = scene
                 self?.updateRelatedLocations(for: scene?.id ?? 0)
                 // Update NPCs when scene changes
-                if let characters = scene?.getCharacters() {
-                    self?.npcs = characters.compactMap { $0 as? NPC }
+                if let npcs = scene?.getNPCs() {
+                    self?.npcs = npcs
                 }
             }
             .store(in: &cancellables)

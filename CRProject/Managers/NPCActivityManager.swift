@@ -36,6 +36,11 @@ class NPCActivityManager {
     }
     
     func getActivity(for npc: NPC) -> NPCActivityType {
+        
+        if npc.currentActivity == .fleeing {
+            return npc.currentActivity
+        }
+        
         let currentHour = gameTime.currentHour
         let phase = gameTime.dayPhase
         let weights = phaseWeights[phase] ?? ActivityWeights(work: 50, leisure: 30, essential: 20)
@@ -67,17 +72,19 @@ class NPCActivityManager {
         case .leisure:
             return getLeisureActivity(for: npc.profession, phase: phase)
         case .action:
-            return getActionActivity(for: npc)
+            return getSpecialBehaviorActivity(for: npc)
         }
     }
     
-    func getActionActivity(for npc: NPC) -> NPCActivityType{
+    func getSpecialBehaviorActivity(for npc: NPC) -> NPCActivityType{
         if npc.bloodMeter.currentBlood <= 40 && npc.isIntimidated {
             return .duzzled
         } else if npc.bloodMeter.currentBlood > 40 && npc.isIntimidated {
             return .seducted
-        } else if npc.isVampireAttachWitness {
+        } else if npc.isVampireAttackWitness {
             return .fleeing
+        } else if npc.isCasualtyWitness {
+            return .casualty
         } else {
             return npc.currentActivity
         }

@@ -1,6 +1,4 @@
-import Foundation
 import Combine
-
 class NPCInteractionManager: ObservableObject {
     static let shared = NPCInteractionManager()
     

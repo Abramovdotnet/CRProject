@@ -134,32 +134,10 @@ class GameStateService : ObservableObject, GameService{
         }
     }
     
-    func advanceWorldState() {
-        guard let scene = currentScene else { return }
-        
-        // If current scene is indoor and it's not night time, increase awareness
-        if scene.isIndoor && !gameTime.isNightTime {
-            vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 10)
-            
-            // Increase awareness for nearest scenes by 5 if current scene is indoor
-            if scene.isIndoor {
-                for nearScene in siblingScenes {
-                    vampireNatureRevealService.increaseAwareness(for: nearScene.id, amount: 5)
-                }
-            }
-        }
-        
-        // Reduce awareness for nearest scenes by 5
-        for scene in siblingScenes {
-            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
-        }
-        
-        if player?.bloodMeter.currentBlood ?? 0 <= 30 {
-            gameEventsBus.addDangerMessage(message: "* I feel huge lack of blood!*")
-        }
-    }
-    
     private func handleSafeTimeAdvanced() {
+        NPCBehaviorService.shared.updateActivity()
+        advanceWorldState(advanceSafe: true)
+        
         // Reduce awareness for nearest scenes by 5
         for scene in siblingScenes {
             vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
@@ -172,6 +150,33 @@ class GameStateService : ObservableObject, GameService{
             if !scene.hasCharacter(with: npcManager.selectedNPC!.id) {
                 npcManager.selectedNPC = nil
             }
+        }
+    }
+    
+    func advanceWorldState(advanceSafe: Bool = false) {
+        guard let scene = currentScene else { return }
+        
+        if !advanceSafe {
+            // If current scene is indoor and it's not night time, increase awareness
+            if scene.isIndoor && !gameTime.isNightTime {
+                vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 10)
+                
+                // Increase awareness for nearest scenes by 5 if current scene is indoor
+                if scene.isIndoor {
+                    for nearScene in siblingScenes {
+                        vampireNatureRevealService.increaseAwareness(for: nearScene.id, amount: 5)
+                    }
+                }
+            }
+        }
+        
+        // Reduce awareness for nearest scenes by 5
+        for scene in siblingScenes {
+            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
+        }
+        
+        if player?.bloodMeter.currentBlood ?? 0 <= 30 {
+            gameEventsBus.addDangerMessage(message: "* I feel huge lack of blood!*")
         }
     }
     

@@ -36,6 +36,10 @@ class NPCReader : GameService {
             DebugLogService.shared.log("Error reading NPCs.json file: \(error)", category: "NPC")
         }
     }
+    
+    static func getRuntimeNPC(by id: Int) -> NPC? {
+        return npcsPool.first(where: { $0.id == id })
+    }
 
     static func getNPC(by id: UUID) -> NPC? {
         loadNPCs()

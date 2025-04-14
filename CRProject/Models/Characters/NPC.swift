@@ -18,11 +18,15 @@ class NPC: Character {
     let bloodMeter: BloodMeter = BloodMeter(initialBlood: 100.0)
     var isVampire: Bool = false
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
+    var isMilitary: Bool { profession == .militaryOfficer || profession == .guardman || profession == .cityGuard }
     var isUnknown: Bool = true
     var isIntimidated: Bool = false
     var intimidationDay: Int = 0
     var isBeasy: Bool = false
-    var isVampireAttachWitness = false
+    var isSpecialBehaviorSet: Bool = false
+    var isVampireAttackWitness = false
+    var isCasualtyWitness = false
+    var casualtyNpcId : Int = 0
     var isCrimeWitness = false
     var homeLocationId: Int = 0
     var currentLocationId: Int = 0
@@ -31,6 +35,9 @@ class NPC: Character {
     var leisureActivities: [NPCActivityType] = []
     var currentActivity: NPCActivityType = .idle
     
+    var currentInteractionNPC: NPC? = nil
+    
+    var deathStatus: DeathStatus = .none
     
     init() {}
     
@@ -54,6 +61,14 @@ class NPC: Character {
             let availableBlood = min(amount, donor.bloodMeter.bloodPercentage)
             donor.bloodMeter.useBlood(availableBlood)
             self.bloodMeter.addBlood(availableBlood)
+        }
+    }
+    
+    func getDeathStatus() -> DeathStatus {
+        if deathStatus != .none {
+            return deathStatus
+        } else {
+            return isAlive ? .none : .unknown
         }
     }
 }
