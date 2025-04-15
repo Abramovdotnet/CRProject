@@ -144,12 +144,12 @@ struct DialogueView: View {
                 
                 // Hypnosis Game Overlay
                 if viewModel.showHypnosisGame {
-                    HypnosisGameView(onComplete: { score in
+                    /*HypnosisGameView(onComplete: { score in
                         viewModel.onHypnosisGameComplete(score: score)
                     }, npc: viewModel.npc)
                     .transition(.opacity.animation(.linear(duration: 0.2)))
                     .zIndex(2)
-                    .ignoresSafeArea()
+                    .ignoresSafeArea()*/
                 }
             }
             .foregroundColor(Theme.textColor)

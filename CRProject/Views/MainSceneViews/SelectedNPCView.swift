@@ -90,12 +90,12 @@ struct SelectedNPCView: View {
             HStack(spacing: 10) {
                 if npc.isUnknown {
                     ActionButton(
-                        icon: "magnifyingglass",
+                        icon: "person.fill.questionmark",
                         action: {
                             onAction(.investigate(npc))
                             VibrationService.shared.lightTap()
                         },
-                        color: Theme.primaryColor)
+                        color: Theme.textColor)
                 }
                 
                 if npc.isAlive {
@@ -107,14 +107,14 @@ struct SelectedNPCView: View {
                         },
                         color: Theme.textColor)
                     
-                    if !npc.isIntimidated && !npc.isUnknown {
+                    if !npc.isUnknown {
                         ActionButton(
-                            icon: "heart.fill",
+                            icon: "moon.stars",
                             action: {
                                 onAction(.startIntimidation(npc))
                                 VibrationService.shared.lightTap()
                             },
-                            color: Theme.bloodProgressColor)
+                            color: .blue)
                     }
                     
                     if !npc.isVampire {

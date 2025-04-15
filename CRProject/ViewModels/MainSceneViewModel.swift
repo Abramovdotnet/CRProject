@@ -146,7 +146,7 @@ class MainSceneViewModel: ObservableObject {
         do {
 
             
-            let initialScene = try LocationReader.getRuntimeLocation(by: 10)
+            let initialScene = try LocationReader.getRuntimeLocation(by: 2)
             try gameStateService.changeLocation(to: initialScene.id)
             
             // Set default awareness to 0
@@ -331,7 +331,7 @@ class MainSceneViewModel: ObservableObject {
         DebugLogService.shared.log("DEBUG: Sibling scenes count: \(siblingScenes.count)", category: "Debug")
     }
     
-    private func updatePlayerBloodPercentage() {
+    func updatePlayerBloodPercentage() {
         withAnimation(.easeInOut(duration: 0.3)) {
             guard let player = gameStateService.getPlayer() else { return }
             self.playerBloodPercentage = bloodManagementService.getBloodPercentage(of: player)

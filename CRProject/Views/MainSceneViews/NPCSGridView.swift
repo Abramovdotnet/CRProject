@@ -32,6 +32,9 @@ struct NPCSGridView: View {
             let isSelected: Bool = npcManager.selectedNPC?.id == npc.id
             let isDisabled: Bool = {
                 guard let player = gameStateService.getPlayer() else { return false }
+                guard npc.currentActivity != .followingPlayer else { return false }
+                guard npc.currentActivity != .allyingPlayer else { return false }
+                guard npc.currentActivity != .seductedByPlayer else { return false }
                 return player.hiddenAt != .none
             }()
             

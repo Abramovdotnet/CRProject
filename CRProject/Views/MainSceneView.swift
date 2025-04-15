@@ -424,7 +424,7 @@ struct MainSceneView: View {
             }
             .sheet(isPresented: $showingVampireGaze) {
                 if let npc = npcManager.selectedNPC {
-                    VampireGazeView(npc: npc, isPresented: $showingVampireGaze)
+                    VampireGazeView(npc: npc, isPresented: $showingVampireGaze, mainViewModel: viewModel)
                 }
             }
             .withDebugOverlay(viewModel: viewModel)

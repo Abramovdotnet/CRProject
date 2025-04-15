@@ -32,16 +32,14 @@ class FeedingService: GameService {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
         
-        prey.isSpecialBehaviorSet = true
-        
         try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
         
         var awarenessIncreaseValue: Float = 50.0;
         
-        if prey.isIntimidated {
-            prey.isIntimidated = false
-            awarenessIncreaseValue -= 20
+        if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
+            awarenessIncreaseValue -= 40
         }
+        
         else if prey.currentActivity != .sleep {
             prey.isVampireAttackWitness = true
             
@@ -66,22 +64,6 @@ class FeedingService: GameService {
         gameTime.advanceTime()
     }
     
-    func setNPCsAsWitnesses(sceneId: Int) {
-        var scene = try? LocationReader.getRuntimeLocation(by: sceneId)
-        
-        var npcs = scene?.getNPCs()
-            .filter( { $0.isAlive && $0.currentActivity != .sleep && !$0.isSpecialBehaviorSet })
-        
-        guard let npcs else { return }
-        
-        if npcs.count > 1 {
-            for npc in npcs {
-                npc.isVampireAttackWitness = true
-                npc.isBeasy = true
-            }
-        }
-    }
-    
     func emptyBlood(vampire: any Character, prey: NPC, in sceneId: Int) throws {
         guard canFeed(vampire: vampire, prey: prey) else {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
@@ -93,6 +75,10 @@ class FeedingService: GameService {
         
         if prey.isIntimidated {
             prey.isIntimidated = false
+            awarenessIncreaseValue -= 25
+        }
+        
+        if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
             awarenessIncreaseValue -= 25
         }
         
@@ -109,6 +95,22 @@ class FeedingService: GameService {
         gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
         
         gameTime.advanceTime()
+    }
+    
+    func setNPCsAsWitnesses(sceneId: Int) {
+        var scene = try? LocationReader.getRuntimeLocation(by: sceneId)
+        
+        var npcs = scene?.getNPCs()
+            .filter( { $0.isAlive && $0.currentActivity != .sleep && !$0.isSpecialBehaviorSet })
+        
+        guard let npcs else { return }
+        
+        if npcs.count > 1 {
+            for npc in npcs {
+                npc.isVampireAttackWitness = true
+                npc.isBeasy = true
+            }
+        }
     }
 }
 

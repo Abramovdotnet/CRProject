@@ -80,7 +80,7 @@ class NPCActivityManager {
         if npc.bloodMeter.currentBlood <= 40 && npc.isIntimidated {
             return .duzzled
         } else if npc.bloodMeter.currentBlood > 40 && npc.isIntimidated {
-            return .seducted
+            return .seductedByPlayer
         } else if npc.isVampireAttackWitness {
             return .fleeing
         } else if npc.isCasualtyWitness {

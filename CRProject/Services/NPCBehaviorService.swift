@@ -80,6 +80,12 @@ class NPCBehaviorService: GameService {
             return
         }
         
+        if newActivity == .followingPlayer || newActivity == .allyingPlayer || newActivity == .seductedByPlayer {
+            sendAfterPlayer(npc: npc)
+            activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
+            return
+        }
+        
         guard let (path, target) = locationGraph.nearestLocation(for: newActivity, from: npc.homeLocationId) else {
             gameEventBusService.addDangerMessage(message: "Cannot find location for activity \(newActivity.rawValue)")
             return
@@ -115,6 +121,18 @@ class NPCBehaviorService: GameService {
         }
     }
     
+    func sendAfterPlayer(npc: NPC) {
+        let npcCurrentLocation = LocationReader.getLocationById(by: npc.currentLocationId)
+        let playerLocation = GameStateService.shared.currentScene
+        
+        guard let playerLocationId = playerLocation?.id else { return }
+        
+        if npc.currentLocationId != playerLocationId {
+            npcCurrentLocation?.removeCharacter(id: npc.id)
+            playerLocation?.addCharacter(npc)
+        }
+    }
+    
     func updateNPCState(npc: NPC, gameDay: Int) {
         if npc.isIntimidated && gameDay > npc.intimidationDay {
             npc.isIntimidated = false
@@ -123,6 +141,14 @@ class NPCBehaviorService: GameService {
         
         if npc.isBeasy {
             npc.isBeasy = false
+        }
+        
+        if npc.specialBehaviorTime > 0 {
+            npc.specialBehaviorTime -= 1
+        }
+        
+        if npc.specialBehaviorTime <= 0 {
+            npc.isSpecialBehaviorSet = false
         }
         
         if npc.isAlive && npc.bloodMeter.currentBlood < 100 {

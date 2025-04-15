@@ -11,18 +11,21 @@ struct VampireGazeView: View {
     let npc: NPC
     @Environment(\.dismiss) private var dismiss
     @Binding var isPresented: Bool
-    @State private var selectedPower: VampireGazeSystem.GazePower?
+    @State private var selectedPower: VampireGaze.GazePower?
     @State private var showingEffect = false
     @State private var effectOpacity = 0.0
     @State private var backgroundOpacity = 0.0
     @State private var contentOpacity = 0.0
     @State private var moonPhase: Double = 0.0
     
-    private let gazeSystem = VampireGazeSystem.shared
+    @ObservedObject var mainViewModel: MainSceneViewModel
     
-    init(npc: NPC, isPresented: Binding<Bool> = .constant(true)) {
+    private let gazeSystem = VampireGaze.shared
+    
+    init(npc: NPC, isPresented: Binding<Bool> = .constant(true), mainViewModel: MainSceneViewModel) {
         self.npc = npc
         _isPresented = isPresented
+        self.mainViewModel = mainViewModel
     }
     
     var body: some View {
@@ -49,22 +52,23 @@ struct VampireGazeView: View {
                     
                     // NPC Info Card
                     VStack(spacing: 8) {
-                        Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                            .font(Theme.bodyFont)
-                            .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                        
                         // Character icon and blood meter
-                        if npc.isUnknown {
-                            Text(npc.isVampire ? "Vampire" : "Mortal")
+                  
+                        HStack {
+                            Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
                                 .font(Theme.bodyFont)
-                                .foregroundColor(npc.isVampire ? Theme.primaryColor : .green)
-                        } else {
+                                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
                             
-                            if !npc.isUnknown {
-                                Text(npc.name)
+                            if npc.isUnknown {
+                                Text(npc.isVampire ? "Vampire" : "Mortal")
                                     .font(Theme.bodyFont)
-                                    .foregroundColor(.white)
-                                    .lineLimit(1)
+                                    .foregroundColor(npc.isVampire ? Theme.primaryColor : .green)
+                            } else {
+                                if !npc.isUnknown {
+                                    Text(npc.name)
+                                        .font(Theme.bodyFont)
+                                        .foregroundColor(.white)
+                                        .lineLimit(1)
                             }
 
                             if !npc.isUnknown {
@@ -73,47 +77,52 @@ struct VampireGazeView: View {
                                     .foregroundColor(npc.profession.color)
                                     .lineLimit(1)
                             }
-
-                            HStack(spacing: 8) {
-                                if npc.currentActivity == .sleep {
-                                    Image(systemName: "moon.zzz.fill")
-                                        .foregroundColor(.blue)
-                                        .font(Theme.bodyFont)
-                                }
-                                if npc.isIntimidated {
-                                    Image(systemName: "heart.fill")
-                                        .foregroundColor(Theme.bloodProgressColor)
-                                        .font(Theme.bodyFont)
-                                }
-                                
-                                Image(systemName: "waveform.path.ecg")
+                            
+                            if npc.currentActivity == .sleep {
+                                Image(systemName: "moon.zzz.fill")
+                                    .foregroundColor(.blue)
                                     .font(Theme.bodyFont)
-                                    .foregroundColor(npc.isAlive ? .green : Theme.primaryColor)
-                                
-                                HStack(spacing: 1) {
-                                    ForEach(0..<5) { index in
-                                        let segmentValue = Double(npc.bloodMeter.currentBlood) / 100.0
-                                        let segmentThreshold = Double(index + 1) / 5.0
-                                        
-                                        Rectangle()
-                                            .fill(segmentValue >= segmentThreshold ?
-                                                  Theme.bloodProgressColor : Color.black.opacity(0.3))
-                                            .frame(height: 2)
-                                    }
-                                }
-                                .frame(width: 30)
-                                
-                                Text(npc.isVampire ? "Vampire" : "Mortal")
+                            }
+                            if npc.isIntimidated {
+                                Image(systemName: "heart.fill")
+                                    .foregroundColor(Theme.bloodProgressColor)
                                     .font(Theme.bodyFont)
-                                    .foregroundColor(npc.isVampire ? Theme.primaryColor : .green)
+                            }
+                            
+                            Image(systemName: "waveform.path.ecg")
+                                .font(Theme.bodyFont)
+                                .foregroundColor(npc.isAlive ? .green : Theme.primaryColor)
+                            
+                            HStack(spacing: 1) {
+                                ForEach(0..<5) { index in
+                                    let segmentValue = Double(npc.bloodMeter.currentBlood) / 100.0
+                                    let segmentThreshold = Double(index + 1) / 5.0
+                                    
+                                    Rectangle()
+                                        .fill(segmentValue >= segmentThreshold ?
+                                              Theme.bloodProgressColor : Color.black.opacity(0.3))
+                                        .frame(height: 2)
+                                }
+                            }
+                            .frame(width: 30)
+                            
+                            Text(npc.isVampire ? "Vampire" : "Mortal")
+                                .font(Theme.bodyFont)
+                                .foregroundColor(npc.isVampire ? Theme.primaryColor : .green)
                             }
                         }
                         
                         // Resistance Bar
                         VStack(spacing: 4) {
-                            Text("Resistance to Dark Powers")
-                                .font(Theme.bodyFont)
-                                .foregroundColor(Theme.textColor)
+                            HStack {
+                                Text("Resistance to Dark Powers")
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(Theme.textColor)
+                                
+                                Text(String(format: "%.1f%%", gazeSystem.calculateNPCResistance(npc: npc)))
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(Theme.bloodProgressColor)
+                            }
                             
                             GradientProgressBar(value: gazeSystem.calculateNPCResistance(npc: npc))
                                 .frame(width: 200, height: 5)
@@ -148,22 +157,28 @@ struct VampireGazeView: View {
                     // Power Selection Area (Right Side)
                     VStack(spacing: 15) {
                         Text("Choose Your Dark Power")
-                            .font(Theme.headingFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(.white)
                             .shadow(color: .black, radius: 2)
                         
-                        VStack(spacing: 10) {
-                            ForEach(VampireGazeSystem.GazePower.allCases, id: \.self) { power in
-                                EnhancedPowerButton(
+                        VStack(spacing: 12) {
+                            ForEach(VampireGaze.GazePower.availableCases(npc: npc), id: \.self) { power in
+                                
+                                let data = EnhancedPowerButtonData(
                                     power: power,
                                     isSelected: selectedPower == power,
-                                    action: { attemptGazePower(power) },
-                                    isCompact: true
+                                    isDisabled: power.cost > mainViewModel.playerBloodPercentage)
+                                
+                                EnhancedPowerButton(
+                                    data: data,
+                                    action: { attemptGazePower(power) }
                                 )
                             }
                         }
+                        .frame(width: 380)
                     }
                     .frame(maxWidth: geometry.size.width * 0.4)
+                    .padding(.top, 10)
                     
                     Spacer()
                 }
@@ -177,6 +192,11 @@ struct VampireGazeView: View {
                 }
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
+            
+            TopWidgetView(viewModel: mainViewModel)
+                .frame(maxWidth: .infinity)
+                .padding(.top, geometry.safeAreaInsets.top)
+                .foregroundColor(Theme.textColor)
         }
         .onAppear {
             withAnimation(.easeIn(duration: 0.3)) {
@@ -201,6 +221,10 @@ struct VampireGazeView: View {
                     EnhancedHypnoticSpiralEffect()
                 case .dominate:
                     EnhancedDarkTendrils()
+                case .scare:
+                    EnhancedPurpleMistEffect()
+                case .follow:
+                    EnhancedHypnoticSpiralEffect()
                 case .none:
                     EmptyView()
                 }
@@ -209,12 +233,20 @@ struct VampireGazeView: View {
         }
     }
     
-    private func attemptGazePower(_ power: VampireGazeSystem.GazePower) {
+    private func attemptGazePower(_ power: VampireGaze.GazePower) {
         selectedPower = power
         showingEffect = true
         VibrationService.shared.lightTap()
         
         let success = gazeSystem.attemptGazePower(power: power, on: npc)
+        
+        if let player = GameStateService.shared.player {
+            player.bloodMeter.useBlood(power.cost)
+            // Notify observers that blood percentage has changed
+            NotificationCenter.default.post(name: .bloodPercentageChanged, object: nil)
+            // Update main view model's blood percentage
+            mainViewModel.updatePlayerBloodPercentage()
+        }
         
         withAnimation(.easeInOut(duration: 1.0)) {
             effectOpacity = 1.0
@@ -240,11 +272,14 @@ struct VampireGazeView: View {
 
 // MARK: - Enhanced Components
 
-struct EnhancedPowerButton: View {
-    let power: VampireGazeSystem.GazePower
+struct EnhancedPowerButtonData {
+    let power: VampireGaze.GazePower
     let isSelected: Bool
+    var isDisabled: Bool
+}
+struct EnhancedPowerButton: View {
+    let data: EnhancedPowerButtonData
     let action: () -> Void
-    var isCompact: Bool = false
     @State private var scale: CGFloat = 1.0
     @State private var glowOpacity: Double = 0.0
     @State private var hoverScale: CGFloat = 1.0
@@ -261,88 +296,108 @@ struct EnhancedPowerButton: View {
             }
             action()
         }) {
-            HStack(spacing: 20) {
-                // Power icon with enhanced effects
-                ZStack {
-                    // Outer glow
-                    Circle()
-                        .fill(power.color)
-                        .blur(radius: 20)
-                        .opacity(glowOpacity)
-                    
-                    // Icon background
-                    Circle()
-                        .fill(
-                            RadialGradient(
-                                gradient: Gradient(colors: [
-                                    power.color.opacity(0.3),
-                                    Color.black.opacity(0.8)
-                                ]),
-                                center: .center,
-                                startRadius: 0,
-                                endRadius: 25
+            ZStack {
+                // Main content
+                HStack(spacing: 12) {
+                    // Power icon with enhanced effects
+                    ZStack {
+                        // Outer glow
+                        Circle()
+                            .fill(data.power.color)
+                            .blur(radius: 20)
+                            .opacity(glowOpacity)
+                        
+                        // Icon background
+                        Circle()
+                            .fill(
+                                RadialGradient(
+                                    gradient: Gradient(colors: [
+                                        data.power.color.opacity(0.3),
+                                        Color.black.opacity(0.8)
+                                    ]),
+                                    center: .center,
+                                    startRadius: 0,
+                                    endRadius: 25
+                                )
                             )
-                        )
-                        .overlay(
-                            Circle()
-                                .stroke(power.color, lineWidth: isSelected ? 2 : 1)
-                        )
-                    
-                    // Power icon
-                    Image(systemName: power.icon)
-                        .font(Theme.bodyFont)
-                        .foregroundColor(power.color)
-                }
-                .frame(width: isCompact ? 50 : 60, height: isCompact ? 50 : 60)
-                
-                // Power information
-                VStack(alignment: .leading, spacing: isCompact ? 3 : 6) {
-                    Text(power.rawValue.capitalized)
-                        .font(Theme.headingFont)
-                        .foregroundColor(power.color)
-                        .shadow(color: power.color.opacity(0.5), radius: 3)
-                    
-                    Text(power.description)
-                        .font(Theme.bodyFont)
-                        .foregroundColor(.gray)
-                        .lineLimit(2)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-            }
-            .padding(.horizontal, isCompact ? 20 : 25)
-            .padding(.vertical, isCompact ? 8 : 10)
-            .background(
-                ZStack {
-                    // Button background
-                    RoundedRectangle(cornerRadius: 20)
-                        .fill(Color.black.opacity(0.6))
-                    
-                    // Decorative border
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    power.color.opacity(0.6),
-                                    power.color.opacity(0.2),
-                                    power.color.opacity(0.6)
-                                ]),
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            ),
-                            lineWidth: 1.5
-                        )
-                    
-                    // Selection indicator
-                    if isSelected {
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(power.color.opacity(0.8), lineWidth: 2)
-                            .blur(radius: 2)
+                            .overlay(
+                                Circle()
+                                    .stroke(data.power.color, lineWidth: data.isSelected ? 2 : 1)
+                            )
+                        
+                        // Power icon
+                        Image(systemName: data.power.icon)
+                            .font(Theme.bodyFont)
+                            .foregroundColor(data.power.color)
                     }
+                    .frame(width: 42, height: 42)
+                    
+                    // Power information
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(data.power.rawValue.capitalized)
+                            .font(Theme.headingFont)
+                            .foregroundColor(data.power.color)
+                            .shadow(color: data.power.color.opacity(0.5), radius: 3)
+                        
+                        Text(data.power.description)
+                            .font(Theme.bodyFont)
+                            .foregroundColor(.gray)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+                    }
+                    .frame(width: 220, alignment: .leading)
+                    
+                    // Cost indicator
+                    HStack(spacing: 2) {
+                        Text(String(format: "%.1f", data.power.cost))
+                            .font(Theme.bodyFont)
+                            .foregroundColor(Theme.bloodProgressColor)
+                        Text("%")
+                            .font(Theme.bodyFont)
+                            .foregroundColor(Theme.bloodProgressColor)
+                        Image(systemName: "drop.fill")
+                            .font(.system(size: 12))
+                            .foregroundColor(Theme.bloodProgressColor)
+                    }
+                    .frame(width: 65)
                 }
-            )
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
+                .frame(height: 60)
+                .background(
+                    ZStack {
+                        // Button background
+                        RoundedRectangle(cornerRadius: 20)
+                            .fill(Color.black.opacity(0.6))
+                        
+                        // Decorative border
+                        RoundedRectangle(cornerRadius: 20)
+                            .stroke(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        data.power.color.opacity(0.6),
+                                        data.power.color.opacity(0.2),
+                                        data.power.color.opacity(0.6)
+                                    ]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                ),
+                                lineWidth: 1.5
+                            )
+                        
+                        // Selection indicator
+                        if data.isSelected {
+                            RoundedRectangle(cornerRadius: 20)
+                                .stroke(data.power.color.opacity(0.8), lineWidth: 2)
+                                .blur(radius: 2)
+                        }
+                    }
+                )
+            }
             .scaleEffect(scale * hoverScale)
         }
         .buttonStyle(PlainButtonStyle())
+        .disabled(data.isDisabled)
         .onHover { isHovered in
             withAnimation(.easeInOut(duration: 0.2)) {
                 hoverScale = isHovered ? 1.02 : 1.0
@@ -350,7 +405,7 @@ struct EnhancedPowerButton: View {
         }
         .onAppear {
             withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-                glowOpacity = isSelected ? 0.5 : 0.0
+                glowOpacity = data.isSelected ? 0.5 : 0.0
             }
         }
     }
@@ -518,6 +573,42 @@ struct EnhancedRedMistEffect: View {
                     context.stroke(
                         path,
                         with: .color(.red.opacity(0.2)),
+                        lineWidth: 25
+                    )
+                }
+            }
+            .onChange(of: timeline.date) { _ in
+                phase += 0.02
+            }
+        }
+    }
+}
+
+
+struct EnhancedPurpleMistEffect: View {
+    @State private var phase: CGFloat = 0
+    
+    var body: some View {
+        TimelineView(.animation) { timeline in
+            Canvas { context, size in
+                context.addFilter(.blur(radius: 30))
+                
+                for i in 0..<12 {
+                    var path = Path()
+                    let offset = CGFloat(i) * 0.2 + phase
+                    
+                    for x in stride(from: 0, through: size.width, by: 15) {
+                        let y = sin(x/40 + offset) * 30 + size.height/2
+                        if x == 0 {
+                            path.move(to: CGPoint(x: x, y: y))
+                        } else {
+                            path.addLine(to: CGPoint(x: x, y: y))
+                        }
+                    }
+                    
+                    context.stroke(
+                        path,
+                        with: .color(.purple.opacity(0.2)),
                         lineWidth: 25
                     )
                 }

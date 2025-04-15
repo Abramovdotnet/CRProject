@@ -24,6 +24,7 @@ class NPC: Character {
     var intimidationDay: Int = 0
     var isBeasy: Bool = false
     var isSpecialBehaviorSet: Bool = false
+    var specialBehaviorTime: Int = 0
     var isVampireAttackWitness = false
     var isCasualtyWitness = false
     var casualtyNpcId : Int = 0

@@ -7,8 +7,8 @@
 
 import SwiftUI
 
-class VampireGazeSystem: GameService {
-    static let shared = VampireGazeSystem()
+class VampireGaze: GameService {
+    static let shared = VampireGaze()
     
     private let gameEventBusService: GameEventsBusService
     private let gameTimeService: GameTimeService
@@ -17,20 +17,38 @@ class VampireGazeSystem: GameService {
         case charm     // Gentle seduction
         case mesmerize // Deep hypnosis
         case dominate  // Forceful control
+        case scare // Savage fear
+        case follow // Force follow
+        
+        static func availableCases(npc: NPC) -> [GazePower] {
+            if npc.isIntimidated {
+                return npc.currentActivity == .fleeing ? [.mesmerize] : [.scare, .follow]
+            } else {
+                if npc.currentActivity != .fleeing {
+                    return [.charm, .mesmerize, .dominate, .scare, .follow]
+                } else {
+                    return [.charm, .mesmerize, .dominate]
+                }
+            }
+        }
         
         var icon: String {
             switch self {
             case .charm: return "heart.fill"
             case .mesmerize: return "eye.fill"
             case .dominate: return "bolt.fill"
+            case .scare: return "figure.run"
+            case .follow: return "person.2.fill"
             }
         }
         
         var color: Color {
             switch self {
-            case .charm: return .red
+            case .charm: return .teal
             case .mesmerize: return .purple
-            case .dominate: return .orange
+            case .dominate: return .green
+            case .scare: return .red
+            case .follow: return .blue
             }
         }
         
@@ -39,6 +57,18 @@ class VampireGazeSystem: GameService {
             case .charm: return "Gentle seduction, most effective on social NPCs"
             case .mesmerize: return "Hypnotic influence, works on weak-willed NPCs"
             case .dominate: return "Forceful control, effective but risky"
+            case .scare: return "Savage fear, most effective on weak-willed NPCs"
+            case .follow: return "Forces NPC to follow you"
+            }
+        }
+        
+        var cost: Float {
+            switch self {
+            case .charm: return 20
+            case .mesmerize: return 30
+            case .dominate: return 40
+            case .scare: return 10
+            case .follow: return 20
             }
         }
     }
@@ -72,7 +102,7 @@ class VampireGazeSystem: GameService {
             resistance += 20
         case .priest, .monk:
             resistance += 30
-        case .lordLady, .lordLady:
+        case .lordLady, .militaryOfficer:
             resistance += 10
         default:
             break
@@ -96,6 +126,12 @@ class VampireGazeSystem: GameService {
         case .dominate:
             successChance = 50 - resistance * 0.7
             awarenessIncrease = 15
+        case .scare:
+            successChance = 50 - resistance * 0.7
+            awarenessIncrease = 15
+        case .follow:
+            successChance = 50 - resistance * 0.7
+            awarenessIncrease = 15
         }
         
         let roll = Float.random(in: 0...100)
@@ -103,9 +139,28 @@ class VampireGazeSystem: GameService {
         let success = true
         
         if success {
-            npc.isIntimidated = true
             npc.isBeasy = true
-            npc.intimidationDay = gameTimeService.currentDay + 1 // Effect lasts till next day
+            
+            if power == .scare {
+                npc.isSpecialBehaviorSet = true
+                npc.specialBehaviorTime = 4
+                npc.currentActivity = .fleeing
+            } else if power == .charm {
+                npc.isSpecialBehaviorSet = true
+                npc.specialBehaviorTime = 4
+                npc.currentActivity = .seductedByPlayer
+            } else if power == .dominate {
+                npc.isSpecialBehaviorSet = true
+                npc.specialBehaviorTime = 4
+                npc.currentActivity = .allyingPlayer
+            } else if power == .follow {
+                npc.isSpecialBehaviorSet = true
+                npc.specialBehaviorTime = 4
+                npc.currentActivity = .followingPlayer
+            } else {
+                npc.isIntimidated = true
+                npc.intimidationDay = gameTimeService.currentDay + 1 // Effect lasts till next day
+            }
             
             gameEventBusService.addMessageWithIcon(
                 message: "Successfully used \(power.rawValue) on \(npc.name)",

@@ -41,10 +41,12 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case flirt = "Flirting"
     
     // Action activities
-    case seducted = "Seducted"
+    case seductedByPlayer = "Seducted"
     case duzzled = "Duzzled"
     case fleeing = "Fleeing"
     case casualty = "Casualty"
+    case followingPlayer = "Following"
+    case allyingPlayer = "Allying"
     
     var description: String {
         return self.rawValue
@@ -93,10 +95,12 @@ extension NPCActivityType {
         case .flirt: return []
             
         // Action
-        case .seducted: return []
+        case .seductedByPlayer: return []
         case .duzzled: return []
         case .fleeing: return ["military", "watchtower", "barracks", "manor", "tavern", "cathedral", "monastery"]
         case .casualty: return ["military", "watchtower", "barracks"]
+        case .followingPlayer: return []
+        case .allyingPlayer: return []
         }
     }
     
@@ -168,10 +172,12 @@ extension NPCActivityType {
         case .flirt: return "heart"
             
         // Action
-        case .seducted: return "heart.fill"
+        case .seductedByPlayer: return "heart.fill"
         case .duzzled: return "hand.thumbsup.fill"
         case .fleeing: return "figure.run"
         case .casualty: return "xmark.circle.fill"
+        case .followingPlayer: return "person.2.fill"
+        case .allyingPlayer: return "bolt.fill"
         }
     }
     
@@ -216,10 +222,12 @@ extension NPCActivityType {
         case .flirt: return .red
             
         // Action
-        case .seducted: return .red
+        case .seductedByPlayer: return .red
         case .duzzled: return .pink
         case .fleeing: return .red
         case .casualty: return .red
+        case .followingPlayer: return .blue
+        case .allyingPlayer : return .green
         }
     }
 }
