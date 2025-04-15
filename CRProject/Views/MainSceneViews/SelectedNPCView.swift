@@ -87,7 +87,7 @@ struct SelectedNPCView: View {
             Spacer()
             
             // Right Section: Action Buttons
-            HStack(spacing: 20) {
+            HStack(spacing: 10) {
                 if npc.isUnknown {
                     ActionButton(
                         icon: "magnifyingglass",
@@ -106,6 +106,16 @@ struct SelectedNPCView: View {
                             VibrationService.shared.lightTap()
                         },
                         color: Theme.textColor)
+                    
+                    if !npc.isIntimidated && !npc.isUnknown {
+                        ActionButton(
+                            icon: "heart.fill",
+                            action: {
+                                onAction(.startIntimidation(npc))
+                                VibrationService.shared.lightTap()
+                            },
+                            color: Theme.bloodProgressColor)
+                    }
                     
                     if !npc.isVampire {
                         

@@ -527,34 +527,6 @@ class MainSceneViewModel: ObservableObject {
         DebugLogService.shared.log("Debug overlay \(isDebugOverlayVisible ? "shown" : "hidden")", category: "Debug")
     }
     
-    func handleNPCAction(_ action: NPCAction) {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            switch action {
-            case .feed(let npc):
-                if let sceneId = currentScene?.id {
-                    if let player = gameStateService.getPlayer() {
-                        try? feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30, in: sceneId)
-                    }
-                }
-            case .drain(let npc):
-                if let sceneId = currentScene?.id {
-                    if let player = gameStateService.getPlayer() {
-                        try? feedingService.emptyBlood(vampire: player, prey: npc, in: sceneId)
-                    }
-                }
-                updatePlayerBloodPercentage()
-                
-            case .investigate(let npc):
-                if let player = gameStateService.getPlayer() {
-                    investigationService.investigate(inspector: player, investigationObject: npc)
-                }
-                
-            case .startConversation(let npc):
-                npcManager.startConversation(with: npc)
-            }
-        }
-    }
-    
     func getAvailableHideouts() -> [HidingCell] {
         return (currentScene?.sceneType.possibleHidingCells())!
     }

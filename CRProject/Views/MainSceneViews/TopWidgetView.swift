@@ -19,7 +19,8 @@ struct TopWidgetView: View {
             
             Text("Blood: \(Int(viewModel.playerBloodPercentage))%")
                 .font(Theme.bodyFont)
-            ProgressBar(value: Double(viewModel.playerBloodPercentage / 100.0), color: Theme.bloodProgressColor)
+            
+            ProgressBar(value: Double(viewModel.playerBloodPercentage / 100), color: Theme.bloodProgressColor)
             
             Spacer()
             

@@ -14,12 +14,23 @@ struct DialogueView: View {
     @ObservedObject var mainViewModel: MainSceneViewModel
     @Environment(\.dismiss) private var dismiss
     
+    @State private var backgroundOpacity = 0.0
+    @State private var moonPhase: Double = 0.0
+    @State private var contentOpacity = 0.0
+    
     // MARK: - Body
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Image("MainSceneBackground")
-                    .resizable()
+                Color.black
+                    .opacity(0.9)
+                    .ignoresSafeArea()
+                
+         
+              
+                // Blood mist effect
+                EnhancedBloodMistEffect()
+                    .opacity(0.4)
                     .ignoresSafeArea()
                     
                 // Dialogue Content
@@ -114,6 +125,7 @@ struct DialogueView: View {
                     }
                     .padding()
                 }
+                .opacity(contentOpacity)
                 .padding(.top, 10)
                 
                 // Action Result Overlay
@@ -148,6 +160,17 @@ struct DialogueView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, geometry.safeAreaInsets.top)
                 .foregroundColor(Theme.textColor)
+        }
+        .onAppear {
+            withAnimation(.easeIn(duration: 0.3)) {
+                backgroundOpacity = 1
+            }
+            withAnimation(.easeIn(duration: 0.4).delay(0.3)) {
+                contentOpacity = 1
+            }
+            withAnimation(.easeInOut(duration: 2.0).repeatForever()) {
+                moonPhase = 1
+            }
         }
     }
 }
