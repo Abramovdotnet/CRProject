@@ -5,72 +5,70 @@
 //  Created by Abramov Anatoliy on 13.04.2025.
 //
 
+import SwiftUI
+
 class NPCInteractionService : GameService {
     private let gameEventBusService: GameEventsBusService
     private let gameTimeService: GameTimeService
+    private let vampireNatureRevealService: VampireNatureRevealService
+    
+    // Cache for interaction messages and icons
+    private let interactionMessages: [NPCInteraction: (message: String, icon: String, color: Color)] = [
+        .service: ("serving", NPCActivityType.serve.icon, NPCActivityType.serve.color),
+        .patrol: ("stops", NPCActivityType.patrol.icon, NPCActivityType.patrol.color),
+        .drunkFight: ("starts to fights with", NPCActivityType.drink.icon, NPCActivityType.drink.color),
+        .gambleFight: ("starts to fights with", NPCActivityType.drink.icon, NPCActivityType.drink.color),
+        .prostitution: ("have a good time with", NPCActivityType.love.icon, NPCActivityType.love.color),
+        .flirt: ("flirt with", NPCActivityType.flirt.icon, NPCActivityType.flirt.color),
+        .smithingCraft: ("completed smithing order for", NPCActivityType.craft.icon, NPCActivityType.craft.color),
+        .alchemyCraft: ("completed alchemy order for", NPCActivityType.craft.icon, NPCActivityType.craft.color),
+        .awareAboutVampire: ("warns about vampire attack", NPCActivityType.fleeing.icon, NPCActivityType.fleeing.color),
+        .findOutCasualty: ("just found dead corpse of", NPCActivityType.casualty.icon, NPCActivityType.casualty.color),
+        .awareAboutCasualty: ("reports about casualty", NPCActivityType.casualty.icon, NPCActivityType.casualty.color)
+    ]
     
     init() {
         self.gameEventBusService = DependencyManager.shared.resolve()
         self.gameTimeService = DependencyManager.shared.resolve()
+        self.vampireNatureRevealService = VampireNatureRevealService.shared
     }
     
     func handleNPCInteractionsBehavior() {
-        var scenes = LocationReader.getLocations()
-            .filter { $0.npcCount() > 1 }  // Only filter out completely empty scenes
+        // Use lazy collections and early filtering
+        let scenes = LocationReader.getLocations()
+            .lazy
+            .filter { $0.npcCount() > 1 }
         
         for scene in scenes {
-            var npcs = scene.getNPCs()
+            let npcs = scene.getNPCs()
             
-            // Process each NPC in the scene
-            for npc in npcs {
-                // Reset interaction if needed
+            // Create a lookup table for alive and awake NPCs
+            let activeNPCs = npcs.filter { $0.isAlive && $0.currentActivity != .sleep }
+            
+            for npc in activeNPCs {
+                // Skip if already interacting
                 if npc.currentInteractionNPC != nil {
                     npc.currentInteractionNPC = nil
                     continue
                 }
                 
-                // Skip dead NPCs
-                if npc.isAlive == false {
-                    continue
-                }
-                
-                if npc.isCasualtyWitness {
-                    print("WITNESS")
-                }
-                
-                // Skip sleeping NPCs
-                guard npc.currentActivity != .sleep else { continue }
-                
-                // Find potential interaction targets
-                var potentialTargets = npcs.filter { otherNPC in
+                // Find potential targets using a more efficient filter
+                let potentialTargets = activeNPCs.filter { otherNPC in
                     otherNPC.id != npc.id &&
                     otherNPC.currentInteractionNPC == nil &&
                     isInteractionPossible(currentNPC: npc, otherNPC: otherNPC)
                 }
                 
                 // Prioritize casualty discovery
-                var target = potentialTargets.first(where: { !$0.isAlive })
+                let target = potentialTargets.first(where: { !$0.isAlive }) ?? potentialTargets.randomElement()
                 
-                
-                if npc.isCasualtyWitness {
-                    print(">>> Current NPC is a casualty witness: \(npc.name)")
-                }
-                if target != nil {
-                    print(">>> Found casualty: \(target!.name)")
-                }
-                
-                if target == nil {
-                    // Try to find an interaction target
-                    target = potentialTargets.randomElement()
-                }
-                
-                if target != nil {
+                if let target = target {
                     // Set up the interaction
                     npc.currentInteractionNPC = target
-                    target?.currentInteractionNPC = npc
+                    target.currentInteractionNPC = npc
                     
                     // Trigger the interaction event
-                    triggerInteractionEvent(scene: scene, currentNPC: npc, otherNPC: target!)
+                    triggerInteractionEvent(scene: scene, currentNPC: npc, otherNPC: target)
                 }
             }
         }
@@ -78,84 +76,103 @@ class NPCInteractionService : GameService {
     
     private func isInteractionPossible(currentNPC: NPC, otherNPC: NPC) -> Bool {
         return currentNPC.isAlive &&
-        currentNPC.currentActivity != .sleep && otherNPC.currentActivity != .sleep &&
-        // Allow fleeing NPCs to interact with non-fleeing NPCs
-        otherNPC.currentActivity != .fleeing
+               currentNPC.currentActivity != .sleep &&
+               otherNPC.currentActivity != .sleep &&
+               otherNPC.currentActivity != .fleeing
     }
     
     private func triggerInteractionEvent(scene: Scene, currentNPC: NPC, otherNPC: NPC) {
-        var interaction = NPCInteraction.getPossibleInteraction(currentNPC: currentNPC, otherNPC: otherNPC, gameTimeService: gameTimeService, currentScene: scene)
+        let interaction = NPCInteraction.getPossibleInteraction(
+            currentNPC: currentNPC,
+            otherNPC: otherNPC,
+            gameTimeService: gameTimeService,
+            currentScene: scene
+        )
         
-        if interaction != .observing {
-            switch interaction {
-            case .conversation:
-                break
-            case .service:
-                gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) serving \(otherNPC.name),  \(otherNPC.profession.rawValue) at \(scene.name.capitalized)",  icon: NPCActivityType.serve.icon, iconColor: NPCActivityType.serve.color, type: .common)
-            case .patrol:
-                gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) stops \(otherNPC.name),  \(otherNPC.profession.rawValue) at \(scene.name.capitalized)",  icon: NPCActivityType.patrol.icon, iconColor: NPCActivityType.patrol.color, type: .common)
-            case .drunkFight:
-                gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) starts to fights with \(otherNPC.name), \(otherNPC.profession.rawValue) after warm dispute at \(scene.name.capitalized)",  icon: NPCActivityType.drink.icon, iconColor: NPCActivityType.drink.color, type: .common)
-            case .gambleFight:
-                gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) starts to fights with \(otherNPC.name), \(otherNPC.profession.rawValue) after warm dispute at \(scene.name.capitalized)",  icon: NPCActivityType.drink.icon, iconColor: NPCActivityType.drink.color, type: .common)
-            case .prostitution:
-                gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) and \(otherNPC.name),  \(otherNPC.profession.rawValue) have a good time at \(scene.name.capitalized)",  icon: NPCActivityType.love.icon, iconColor: NPCActivityType.love.color, type: .common)
-            case .flirt:
-                var isSuccesful = Int.random(in: 0...100) > 80
-                
-                if isSuccesful {
-                    gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) flirt with \(otherNPC.name),  \(otherNPC.profession.rawValue) at \(scene.name.capitalized)",  icon: NPCActivityType.flirt.icon, iconColor: NPCActivityType.flirt.color, type: .common)
-                } else {
-                    gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) tries to flirts with \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized), but beeing rejected",  icon: "heart.slash", iconColor: NPCActivityType.flirt.color, type: .common)
-                }
-            case .smithingCraft:
-                gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) completed smithing order for \(otherNPC.name),  \(otherNPC.profession.rawValue) at \(scene.name.capitalized)",  icon: NPCActivityType.craft.icon, iconColor: NPCActivityType.craft.color, type: .common)
-            case .alchemyCraft:
-                gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) completed alchemy order for \(otherNPC.name),  \(otherNPC.profession.rawValue) at \(scene.name.capitalized)",  icon: NPCActivityType.craft.icon, iconColor: NPCActivityType.craft.color, type: .common)
-            case .awareAboutVampire:
-                gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) warns \(otherNPC.name),  \(otherNPC.profession.rawValue) about vampire attack, \(scene.name.capitalized)",  icon: NPCActivityType.fleeing.icon, iconColor: NPCActivityType.fleeing.color, type: .common)
-            case .findOutCasualty:
-                gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) just found dead corpse of \(otherNPC.name),  \(otherNPC.profession.rawValue), at \(scene.name.capitalized)",  icon: NPCActivityType.casualty.icon, iconColor: NPCActivityType.casualty.color, type: .common)
-            case .awareAboutCasualty:
-                gameEventBusService.addMessageWithIcon(message: "\(currentNPC.name), \(currentNPC.profession.rawValue) reports \(otherNPC.name),  \(otherNPC.profession.rawValue) about casualty, \(scene.name.capitalized)",  icon: NPCActivityType.casualty.icon, iconColor: NPCActivityType.casualty.color, type: .common)
-            case .gameOver:
-                VampireNatureRevealService.shared.increaseAwareness(for: scene.id, amount: 100.0)
-            case .observing:
-                return
-            }
+        guard interaction != .observing else { return }
+        
+        if let (message, icon, color) = interactionMessages[interaction] {
+            gameEventBusService.addMessageWithIcon(
+                message: "\(currentNPC.name), \(currentNPC.profession.rawValue) \(message) \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized)",
+                icon: icon,
+                iconColor: color,
+                type: .common
+            )
         }
         
-        if interaction == .drunkFight || interaction == .gambleFight {
-            var currentNPCHasAdvantage = (currentNPC.profession == .guardman || currentNPC.profession == .cityGuard) &&
-                (otherNPC.profession != .guardman || otherNPC.profession == .cityGuard)
-            var successCap = currentNPCHasAdvantage ? 70 : 100
-            var currentNPCWon = Int.random(in: 0...100) > successCap
-            
-            if currentNPCWon {
-                currentNPC.bloodMeter.useBlood(Float.random(in: 10.0...30.0))
-                otherNPC.bloodMeter.useBlood(Float.random(in: 30.0...50.0))
-            } else {
-                currentNPC.bloodMeter.useBlood(Float.random(in: 20.0...50.0))
-                otherNPC.bloodMeter.useBlood(Float.random(in: 20.0...50.0))
-            }
-        } else if interaction == .awareAboutVampire {
-            otherNPC.currentActivity = .fleeing
-            otherNPC.isVampireAttackWitness = true
-        } else if interaction == .findOutCasualty {
-            currentNPC.isCasualtyWitness = true
-            currentNPC.isSpecialBehaviorSet = true
-            currentNPC.casualtyNpcId = otherNPC.id
-            otherNPC.deathStatus = .investigated
-        } else if interaction == .awareAboutCasualty {
-            currentNPC.isCasualtyWitness = false
-            currentNPC.isSpecialBehaviorSet = false
-            
-            var casualtyNPC = NPCReader.getRuntimeNPC(by: currentNPC.casualtyNpcId )
-            
-            if casualtyNPC != nil {
-                casualtyNPC?.deathStatus = .confirmed
-                currentNPC.casualtyNpcId = 0
-            }
+        // Handle special cases
+        switch interaction {
+        case .drunkFight, .gambleFight:
+            handleFightInteraction(currentNPC: currentNPC, otherNPC: otherNPC)
+        case .awareAboutVampire:
+            handleVampireAwareness(otherNPC: otherNPC)
+        case .findOutCasualty:
+            handleCasualtyDiscovery(currentNPC: currentNPC, otherNPC: otherNPC)
+        case .awareAboutCasualty:
+            handleCasualtyAwareness(currentNPC: currentNPC)
+        case .flirt:
+            handleFlirtInteraction(currentNPC: currentNPC, otherNPC: otherNPC, scene: scene)
+        case .gameOver:
+            vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 100.0)
+        default:
+            break
+        }
+    }
+    
+    private func handleFightInteraction(currentNPC: NPC, otherNPC: NPC) {
+        let currentNPCHasAdvantage = (currentNPC.profession == .guardman || currentNPC.profession == .cityGuard) &&
+            (otherNPC.profession != .guardman && otherNPC.profession != .cityGuard)
+        let successCap = currentNPCHasAdvantage ? 70 : 100
+        let currentNPCWon = Int.random(in: 0...100) > successCap
+        
+        if currentNPCWon {
+            currentNPC.bloodMeter.useBlood(Float.random(in: 10.0...30.0))
+            otherNPC.bloodMeter.useBlood(Float.random(in: 30.0...50.0))
+        } else {
+            currentNPC.bloodMeter.useBlood(Float.random(in: 20.0...50.0))
+            otherNPC.bloodMeter.useBlood(Float.random(in: 20.0...50.0))
+        }
+    }
+    
+    private func handleVampireAwareness(otherNPC: NPC) {
+        otherNPC.currentActivity = .fleeing
+        otherNPC.isVampireAttackWitness = true
+    }
+    
+    private func handleCasualtyDiscovery(currentNPC: NPC, otherNPC: NPC) {
+        currentNPC.isCasualtyWitness = true
+        currentNPC.isSpecialBehaviorSet = true
+        currentNPC.casualtyNpcId = otherNPC.id
+        otherNPC.deathStatus = .investigated
+    }
+    
+    private func handleCasualtyAwareness(currentNPC: NPC) {
+        currentNPC.isCasualtyWitness = false
+        currentNPC.isSpecialBehaviorSet = false
+        
+        if let casualtyNPC = NPCReader.getRuntimeNPC(by: currentNPC.casualtyNpcId) {
+            casualtyNPC.deathStatus = .confirmed
+            currentNPC.casualtyNpcId = 0
+        }
+    }
+    
+    private func handleFlirtInteraction(currentNPC: NPC, otherNPC: NPC, scene: Scene) {
+        let isSuccessful = Int.random(in: 0...100) > 80
+        
+        if isSuccessful {
+            gameEventBusService.addMessageWithIcon(
+                message: "\(currentNPC.name), \(currentNPC.profession.rawValue) flirt with \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized)",
+                icon: NPCActivityType.flirt.icon,
+                iconColor: NPCActivityType.flirt.color,
+                type: .common
+            )
+        } else {
+            gameEventBusService.addMessageWithIcon(
+                message: "\(currentNPC.name), \(currentNPC.profession.rawValue) tries to flirts with \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized), but beeing rejected",
+                icon: "heart.slash",
+                iconColor: NPCActivityType.flirt.color,
+                type: .common
+            )
         }
     }
 }
@@ -288,7 +305,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             }
         } else {
             // Find out casualty
-            if currentNPC.currentActivity != .casualty && !currentNPC.isCasualtyWitness && !otherNPC.isAlive && otherNPC.getDeathStatus() == .unknown {
+            if currentNPC.currentActivity != .casualty && !currentNPC.isCasualtyWitness && otherNPC.isAlive && otherNPC.getDeathStatus() == .unknown {
                 return .findOutCasualty
             }
             // Casualty report

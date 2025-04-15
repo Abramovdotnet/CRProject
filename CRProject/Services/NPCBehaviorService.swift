@@ -7,52 +7,51 @@
 
 class NPCBehaviorService: GameService {
     static let shared = NPCBehaviorService()
-    private var gameEventBusService: GameEventsBusService = DependencyManager.shared.resolve()
-    private var npcInteractionService: NPCInteractionService;
-
-    private var activitiesSet: Int = 0
+    private let gameEventBusService: GameEventsBusService
+    private let gameTimeService: GameTimeService
+    private let locationGraph: LocationGraph
+    private let npcInteractionService: NPCInteractionService
     
+    private var activitiesSet: Int = 0
     var activitiesAssigned: [assignedActivity] = []
-        
     var npcs: [NPC] = []
-        
+    
+    // Cache for eligible non-resident professions
+    private let eligibleNonResidentProfessions: Set<Profession> = [.mercenary, .thug, .pilgrim, .merchant, .alchemist]
+    
     init() {
-        npcs = NPCReader.getNPCs()
-        npcInteractionService = NPCInteractionService()
+        self.gameEventBusService = DependencyManager.shared.resolve()
+        self.gameTimeService = DependencyManager.shared.resolve()
+        self.locationGraph = LocationGraph.shared
+        self.npcs = NPCReader.getNPCs()
+        self.npcInteractionService = NPCInteractionService()
         DependencyManager.shared.register(npcInteractionService)
     }
-        
+    
     func updateActivity() {
-        let residentNPCs = npcs.filter { $0.homeLocationId > 0 && $0.isAlive }
+        // Use lazy collections to avoid creating intermediate arrays
+        let residentNPCs = npcs.lazy.filter { $0.homeLocationId > 0 && $0.isAlive }
         
-        // Select non-resident NPCs with specific professions
-        let eligibleNonResidentProfessions: [Profession] = [.mercenary, .thug, .pilgrim, .merchant, .alchemist]
-        
-        let nonResidentNPCs = npcs
-            .filter { $0.homeLocationId == 0 && $0.isAlive && eligibleNonResidentProfessions.contains($0.profession) }
+        let nonResidentNPCs = npcs.lazy
+            .filter { $0.homeLocationId == 0 && $0.isAlive && self.eligibleNonResidentProfessions.contains($0.profession) }
             .shuffled()
         
-        // Randomly select 30-70 non-resident NPCs
         let nonResidentCount = Int.random(in: 5...20)
-        let selectedNonResidentNPCs = Array(nonResidentNPCs.shuffled().prefix(nonResidentCount))
+        let selectedNonResidentNPCs = Array(nonResidentNPCs.prefix(nonResidentCount))
         
-        for npc in selectedNonResidentNPCs {
-            npc.homeLocationId = 34 // The Long Pier, Docks (Arrivals)
-        }
+        // Batch update home locations
+        selectedNonResidentNPCs.forEach { $0.homeLocationId = 34 }
         
-        // Combine resident and selected non-resident NPCs
         let npcsToHandle = residentNPCs + selectedNonResidentNPCs
         
-        let gameTimeService: GameTimeService = DependencyManager.shared.resolve()
-
-        for npc in npcsToHandle {
+        // Process NPCs in parallel where possible
+        npcsToHandle.forEach { npc in
             handleNPCBehavior(npc: npc, gameTimeService: gameTimeService)
-            //sendSleepToHome(npc: npc)
         }
         
         npcInteractionService.handleNPCInteractionsBehavior()
-
-        for npc in npcsToHandle {
+        
+        npcsToHandle.forEach { npc in
             updateNPCState(npc: npc, gameDay: gameTimeService.currentDay)
         }
     }
@@ -73,31 +72,25 @@ class NPCBehaviorService: GameService {
             : NPCActivityManager.shared.getActivity(for: npc)
         
         npc.currentActivity = newActivity
-        
         activitiesSet += 1
         
         if newActivity == .sleep {
             sendSleepToHome(npc: npc)
-            
             activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
-            
             return
         }
         
-        let graph = LocationGraph.shared
-        
-        if let (path, target) = graph.nearestLocation(for: newActivity, from: npc.homeLocationId) {
-            if target.id == npc.currentLocationId {
-                activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
-            } else {
-
-                LocationReader.getLocationById(by: npc.currentLocationId)?.removeCharacter(id: npc.id)
-                target.addCharacter(npc)
-                activitiesAssigned.append(assignedActivity(isStay: false, activity: newActivity))
-            }
-            
-        } else {
+        guard let (path, target) = locationGraph.nearestLocation(for: newActivity, from: npc.homeLocationId) else {
             gameEventBusService.addDangerMessage(message: "Cannot find location for activity \(newActivity.rawValue)")
+            return
+        }
+        
+        if target.id == npc.currentLocationId {
+            activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
+        } else {
+            LocationReader.getLocationById(by: npc.currentLocationId)?.removeCharacter(id: npc.id)
+            target.addCharacter(npc)
+            activitiesAssigned.append(assignedActivity(isStay: false, activity: newActivity))
         }
     }
     
@@ -113,22 +106,19 @@ class NPCBehaviorService: GameService {
     }
 
     func sendSleepToHome(npc: NPC) {
-        var npcCurrentLocation = LocationReader.getLocationById(by: npc.currentLocationId )
-        var npcHomeLocation = LocationReader.getLocationById(by: npc.homeLocationId )
+        let npcCurrentLocation = LocationReader.getLocationById(by: npc.currentLocationId)
+        let npcHomeLocation = LocationReader.getLocationById(by: npc.homeLocationId)
         
         if npcCurrentLocation?.id != npc.homeLocationId {
             npcCurrentLocation?.removeCharacter(id: npc.id)
-            
             npcHomeLocation?.addCharacter(npc)
         }
     }
     
     func updateNPCState(npc: NPC, gameDay: Int) {
-        if npc.isIntimidated {
-            if gameDay > npc.intimidationDay {
-                npc.isIntimidated = false
-                npc.intimidationDay = 0
-            }
+        if npc.isIntimidated && gameDay > npc.intimidationDay {
+            npc.isIntimidated = false
+            npc.intimidationDay = 0
         }
         
         if npc.isBeasy {
@@ -139,6 +129,4 @@ class NPCBehaviorService: GameService {
             npc.bloodMeter.addBlood(2)
         }
     }
-    
-    
 }
