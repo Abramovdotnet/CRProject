@@ -25356,7 +25356,7 @@
     "sex": "male",
     "homeLocationId": 0,
     "isVampire": false,
-    "profession": "Entertainer",
+    "profession": "Thug",
     "name": "Quentin Hoffmann",
     "age": 70,
     "id": 5008
@@ -25529,7 +25529,7 @@
     "homeLocationId": 0,
     "sex": "male",
     "name": "Oswald Bernard",
-    "profession": "No profession",
+    "profession": "Thug",
     "isVampire": false
   },
   {
@@ -25672,7 +25672,7 @@
     "sex": "male",
     "homeLocationId": 0,
     "isVampire": false,
-    "profession": "Tailor",
+    "profession": "Thug",
     "name": "Olivier Martin",
     "id": 851
   },
@@ -25751,7 +25751,7 @@
   {
     "name": "Kenneth Petit",
     "isVampire": false,
-    "profession": "Monk",
+    "profession": "Thug",
     "homeLocationId": 0,
     "age": 59,
     "sex": "male",
@@ -25844,7 +25844,7 @@
     "id": 3034,
     "isVampire": false,
     "homeLocationId": 0,
-    "profession": "Stable hand",
+    "profession": "Thug",
     "sex": "male"
   },
   {
@@ -26020,7 +26020,7 @@
   },
   {
     "name": "Thomas MacDonald",
-    "profession": "Cleaner",
+    "profession": "Thug",
     "age": 64,
     "sex": "male",
     "id": 2348,
@@ -26128,7 +26128,7 @@
   },
   {
     "name": "Uhtred MacGregor",
-    "profession": "Apprentice",
+    "profession": "Thug",
     "age": 56,
     "sex": "male",
     "id": 2442,
@@ -26275,7 +26275,7 @@
     "name": "Eustace Schulz",
     "sex": "male",
     "id": 6465,
-    "profession": "No profession",
+    "profession": "Thug",
     "age": 53,
     "isVampire": false
   },
@@ -26462,7 +26462,7 @@
   {
     "sex": "male",
     "isVampire": false,
-    "profession": "Entertainer",
+    "profession": "Thug",
     "age": 42,
     "homeLocationId": 0,
     "id": 5067,
@@ -27767,7 +27767,7 @@
   {
     "age": 42,
     "sex": "male",
-    "profession": "Priest",
+    "profession": "Mercenary",
     "name": "Edmund Weber",
     "isVampire": false,
     "homeLocationId": 0,
@@ -27795,7 +27795,7 @@
     "age": 45,
     "sex": "male",
     "homeLocationId": 0,
-    "name": "Christopher Brown",
+    "name": "Mercenary",
     "id": 6533,
     "isVampire": false,
     "profession": "No profession"
@@ -27825,7 +27825,7 @@
     "isVampire": false,
     "sex": "male",
     "homeLocationId": 0,
-    "profession": "Religious scholar"
+    "profession": "Mercenary"
   },
   {
     "profession": "Herbalist",
@@ -27866,7 +27866,7 @@
   {
     "isVampire": false,
     "age": 50,
-    "profession": "Stable hand",
+    "profession": "Mercenary",
     "name": "Marie Dubois",
     "homeLocationId": 0,
     "sex": "female",
@@ -27912,7 +27912,7 @@
     "sex": "male",
     "homeLocationId": 0,
     "id": 796,
-    "profession": "Carpenter",
+    "profession": "Mercenary",
     "age": 64,
     "isVampire": false,
     "name": "Fulke Wilson"
@@ -27946,7 +27946,7 @@
   },
   {
     "age": 57,
-    "profession": "Carpenter",
+    "profession": "Mercenary",
     "id": 701,
     "name": "Maeve MacKenzie",
     "homeLocationId": 0,
@@ -27975,7 +27975,7 @@
     "isVampire": false,
     "id": 4183,
     "homeLocationId": 0,
-    "profession": "Religious scholar",
+    "profession": "Mercenary",
     "sex": "female",
     "age": 28,
     "name": "Dorothy Weber"
@@ -28189,7 +28189,7 @@
   },
   {
     "name": "Wymund MacKenzie",
-    "profession": "General laborer",
+    "profession": "Mercenary",
     "sex": "male",
     "homeLocationId": 0,
     "isVampire": false,
@@ -28431,7 +28431,7 @@
     "isVampire": false
   },
   {
-    "profession": "Sailor",
+    "profession": "Mercenary",
     "isVampire": false,
     "sex": "male",
     "id": 5711,

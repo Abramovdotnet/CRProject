@@ -199,11 +199,11 @@ struct NPCGridButton: View {
                     .frame(width: 70, height: 20)
                     .overlay(
                         HStack {
-                            Image(systemName: npc.currentActivity.icon)
-                                .foregroundColor(npc.currentActivity.color)
+                            Image(systemName: npc.isAlive ? npc.currentActivity.icon : "xmark.circle.fill")
+                                .foregroundColor(npc.isAlive ? npc.currentActivity.color : Theme.bloodProgressColor)
                                 .font(Theme.smallFont)
-                            Text(npc.currentActivity.description)
-                                .foregroundColor(Theme.textColor)
+                            Text(npc.isAlive ? npc.currentActivity.description : "Dead")
+                                .foregroundColor(npc.isAlive ? Theme.textColor : Theme.bloodProgressColor)
                                 .font(Theme.smallFont)
                                 .padding(.leading, -5)
                         }

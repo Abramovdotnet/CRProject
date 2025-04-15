@@ -281,6 +281,8 @@ extension Profession {
         
         // Specialized
         case .adventurer: return [.explore, .quest]
+        case .mercenary: return [.quest, .explore]
+        case .thug: return [.quest, .explore]
         
         // Learning/Unemployed
         case .apprentice: return [.study, .craft]

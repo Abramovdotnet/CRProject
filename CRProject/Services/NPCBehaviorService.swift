@@ -23,7 +23,26 @@ class NPCBehaviorService: GameService {
     }
         
     func updateActivity() {
-        let npcsToHandle = npcs.filter { $0.homeLocationId > 0 && $0.isAlive }
+        let residentNPCs = npcs.filter { $0.homeLocationId > 0 && $0.isAlive }
+        
+        // Select non-resident NPCs with specific professions
+        let eligibleNonResidentProfessions: [Profession] = [.mercenary, .thug, .pilgrim, .merchant, .alchemist]
+        
+        let nonResidentNPCs = npcs
+            .filter { $0.homeLocationId == 0 && $0.isAlive && eligibleNonResidentProfessions.contains($0.profession) }
+            .shuffled()
+        
+        // Randomly select 30-70 non-resident NPCs
+        let nonResidentCount = Int.random(in: 5...20)
+        let selectedNonResidentNPCs = Array(nonResidentNPCs.shuffled().prefix(nonResidentCount))
+        
+        for npc in selectedNonResidentNPCs {
+            npc.homeLocationId = 34 // The Long Pier, Docks (Arrivals)
+        }
+        
+        // Combine resident and selected non-resident NPCs
+        let npcsToHandle = residentNPCs + selectedNonResidentNPCs
+        
         let gameTimeService: GameTimeService = DependencyManager.shared.resolve()
 
         for npc in npcsToHandle {
@@ -66,10 +85,6 @@ class NPCBehaviorService: GameService {
         }
         
         let graph = LocationGraph.shared
-        
-        if newActivity == .casualty {
-            print("CASUALTY")
-        }
         
         if let (path, target) = graph.nearestLocation(for: newActivity, from: npc.homeLocationId) {
             if target.id == npc.currentLocationId {

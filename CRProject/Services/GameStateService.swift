@@ -132,7 +132,7 @@ class GameStateService : ObservableObject, GameService{
         advanceWorldState()
         
         // Reduce player blood pool
-        player?.bloodMeter.useBlood(5)
+        player?.bloodMeter.useBlood(4)
         
         // Reset selection if npc left location
         guard let scene = currentScene else { return }
@@ -167,25 +167,17 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return }
         guard let player = player else { return }
         
-        if player.hiddenAt == .none {
-            // If current scene is indoor and it's not night time, increase awareness
-            if scene.isIndoor && !gameTime.isNightTime {
-                vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 10)
-                
-                // Increase awareness for nearest scenes by 5 if current scene is indoor
-                if scene.isIndoor {
-                    for nearScene in siblingScenes {
-                        vampireNatureRevealService.increaseAwareness(for: nearScene.id, amount: 5)
-                    }
-                }
-            }
+        if player.hiddenAt != .none {
+            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 6)
         } else {
-            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
+            if !gameTime.isNightTime {
+                vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 6)
+            }
         }
         
         // Reduce awareness for nearest scenes by 5
         for scene in siblingScenes {
-            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
+            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 6)
         }
         
         var currentPlayerBlood = player.bloodMeter.currentBlood

@@ -141,6 +141,10 @@ class NPCReader : GameService {
             profession = .courtesan
         case Profession.noProfession.rawValue:
             profession = .noProfession
+        case Profession.mercenary.rawValue:
+            profession = .mercenary
+        case Profession.thug.rawValue:
+            profession = .thug
         case Profession.cleaner.rawValue:
             profession = .cleaner
         default:

@@ -111,10 +111,10 @@ enum SceneType: String, CaseIterable {
                 
             // Public Spaces
             case .square:
-                return [.none]
+                return [.sewers]
                 
             case .docks:
-                return [.sewer, .basement]
+                return [.sewers]
                 
             case .road:
                 return [.none]
@@ -138,7 +138,7 @@ enum HidingCell: String, Codable, CaseIterable {
     case attic = "attic"
     case grave = "grave"
     case roof = "roof"
-    case sewer = "sewer"
+    case sewers = "sewer"
     case none = "none"
     
     var iconName: String {
@@ -151,7 +151,7 @@ enum HidingCell: String, Codable, CaseIterable {
             return "cross.fill"
         case .roof:
             return "house.fill"
-        case .sewer:
+        case .sewers:
             return "aqi.medium"
         case .none:
             return "xmark.circle.fill"

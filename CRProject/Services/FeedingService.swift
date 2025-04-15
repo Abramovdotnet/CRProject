@@ -36,7 +36,7 @@ class FeedingService: GameService {
         
         try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
         
-        var awarenessIncreaseValue: Float = 40.0;
+        var awarenessIncreaseValue: Float = 50.0;
         
         if prey.isIntimidated {
             prey.isIntimidated = false
@@ -49,7 +49,7 @@ class FeedingService: GameService {
         }
         
         if prey.currentActivity == .sleep {
-            awarenessIncreaseValue -= 10
+            awarenessIncreaseValue -= 20
         }
         
         // Increase awareness in the scene where feeding occurred

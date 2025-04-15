@@ -428,7 +428,7 @@ struct MainSceneView: View {
         case .attic:
             atticHideoutScale = 1
             break
-        case .sewer:
+        case .sewers:
             sewerHideoutScale = 1
             break
         default:
@@ -450,7 +450,7 @@ struct MainSceneView: View {
         case .attic:
             atticHideoutScale = 0.9
             break
-        case .sewer:
+        case .sewers:
             sewerHideoutScale = 0.9
             break
         default:
@@ -470,7 +470,7 @@ struct MainSceneView: View {
             return atticHideoutScale
         case .none:
             return noneHideoutScale
-        case .sewer:
+        case .sewers:
             return sewerHideoutScale
         }
     }
