@@ -88,16 +88,6 @@ struct SelectedNPCView: View {
             
             // Right Section: Action Buttons
             HStack(spacing: 10) {
-                if npc.isUnknown {
-                    ActionButton(
-                        icon: "person.fill.questionmark",
-                        action: {
-                            onAction(.investigate(npc))
-                            VibrationService.shared.lightTap()
-                        },
-                        color: Theme.textColor)
-                }
-                
                 if npc.isAlive {
                     ActionButton(
                         icon: "bubble.left.fill",

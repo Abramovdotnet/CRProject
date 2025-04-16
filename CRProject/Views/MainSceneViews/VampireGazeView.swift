@@ -51,106 +51,175 @@ struct VampireGazeView: View {
                     Spacer()
                     
                     // NPC Info Card
-                    VStack(spacing: 8) {
-                        // Character icon and blood meter
-                  
-                        HStack {
-                            Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                .font(Theme.bodyFont)
-                                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                            
-                            if npc.isUnknown {
-                                Text(npc.isVampire ? "Vampire" : "Mortal")
-                                    .font(Theme.bodyFont)
-                                    .foregroundColor(npc.isVampire ? Theme.primaryColor : .green)
-                            } else {
-                                if !npc.isUnknown {
-                                    Text(npc.name)
-                                        .font(Theme.bodyFont)
-                                        .foregroundColor(.white)
-                                        .lineLimit(1)
-                            }
-
-                            if !npc.isUnknown {
-                                Text(npc.profession.rawValue)
-                                    .font(Theme.bodyFont)
-                                    .foregroundColor(npc.profession.color)
-                                    .lineLimit(1)
-                            }
-                            
-                            if npc.currentActivity == .sleep {
-                                Image(systemName: "moon.zzz.fill")
-                                    .foregroundColor(.blue)
-                                    .font(Theme.bodyFont)
-                            }
-                            if npc.isIntimidated {
-                                Image(systemName: "heart.fill")
-                                    .foregroundColor(Theme.bloodProgressColor)
-                                    .font(Theme.bodyFont)
-                            }
-                            
-                            Image(systemName: "waveform.path.ecg")
-                                .font(Theme.bodyFont)
-                                .foregroundColor(npc.isAlive ? .green : Theme.primaryColor)
-                            
-                            HStack(spacing: 1) {
-                                ForEach(0..<5) { index in
-                                    let segmentValue = Double(npc.bloodMeter.currentBlood) / 100.0
-                                    let segmentThreshold = Double(index + 1) / 5.0
-                                    
-                                    Rectangle()
-                                        .fill(segmentValue >= segmentThreshold ?
-                                              Theme.bloodProgressColor : Color.black.opacity(0.3))
-                                        .frame(height: 2)
-                                }
-                            }
-                            .frame(width: 30)
-                            
-                            Text(npc.isVampire ? "Vampire" : "Mortal")
-                                .font(Theme.bodyFont)
-                                .foregroundColor(npc.isVampire ? Theme.primaryColor : .green)
-                            }
-                        }
-                        
-                        // Resistance Bar
-                        VStack(spacing: 4) {
-                            HStack {
-                                Text("Resistance to Dark Powers")
-                                    .font(Theme.bodyFont)
-                                    .foregroundColor(Theme.textColor)
-                                
-                                Text(String(format: "%.1f%%", gazeSystem.calculateNPCResistance(npc: npc)))
-                                    .font(Theme.bodyFont)
-                                    .foregroundColor(Theme.bloodProgressColor)
-                            }
-                            
-                            GradientProgressBar(value: gazeSystem.calculateNPCResistance(npc: npc))
-                                .frame(width: 200, height: 5)
-                        }
-                        .padding(.top, 8)
-                    }
-                    .padding(.vertical, 20)
-                    .padding(.horizontal, 30)
-                    .background(
-                        RoundedRectangle(cornerRadius: 15)
-                            .fill(Color.black.opacity(0.6))
+                    ZStack(alignment: .top) {
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [
+                                        Color.black.opacity(0.9),
+                                        Color(npc.profession.color).opacity(0.05)
+                                    ]),
+                                    startPoint: .top,
+                                    endPoint: .bottom
+                                )
+                            )
                             .overlay(
-                                RoundedRectangle(cornerRadius: 15)
+                                RoundedRectangle(cornerRadius: 12)
                                     .stroke(
                                         LinearGradient(
                                             gradient: Gradient(colors: [
-                                                .red.opacity(0.4),
-                                                .red.opacity(0.2),
-                                                .red.opacity(0.4)
+                                                Color.white.opacity(0.1),
+                                                Color.white.opacity(0.05),
+                                                Color.clear
                                             ]),
                                             startPoint: .topLeading,
                                             endPoint: .bottomTrailing
                                         ),
-                                        lineWidth: 1.5
+                                        lineWidth: 0.5
                                     )
                             )
+                        
+                        Color.black.opacity(0.9)
+                        
+                        VStack(alignment: .leading) {
+                            ZStack {
+                                getNPCImage()
+                                    .resizable()
+                                    .frame(width: 160, height: 160)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                            }
+                            
+                            if !npc.isUnknown {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    HStack {
+                                        Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                                            .font(Theme.smallFont)
+                                            .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                                        Text(npc.name)
+                                            .font(Theme.smallFont)
+                                            .foregroundColor(Theme.textColor)
+                                    }
+                                    .padding(.top, 4)
+                                    
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        HStack {
+                                            Text("Resistance")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(Theme.textColor)
+                                            
+                                            Text(String(format: "%.1f%%", VampireGaze.shared.calculateNPCResistance(npc: npc)))
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(Theme.bloodProgressColor)
+                                        }
+                                        
+                                        GradientProgressBar(value: VampireGaze.shared.calculateNPCResistance(npc: npc))
+                                            .frame(width: 140, height: 5)
+                                            .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
+                                    }
+                                    .padding(.top, 4)
+
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        HStack(alignment: .top) {
+                                            Text("Health")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(Theme.textColor)
+                                            
+                                            Text(String(format: "%.1f%%", npc.bloodMeter.currentBlood))
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(Theme.bloodProgressColor)
+                                        }
+                                        
+                                        ProgressBar(value: Double(npc.bloodMeter.currentBlood / 100), color: Theme.bloodProgressColor, height: 6)
+                                            .frame(width: 140)
+                                            .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
+                                    }
+                                }
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 2)
+                            }
+                        }
+                        
+                        if !npc.isUnknown {
+                            VStack(alignment: .leading) {
+                                if npc.isSpecialBehaviorSet {
+                                    HStack {
+                                        Spacer()
+                                        ZStack {
+                                            VStack(spacing: 4) {
+                                                ProgressBar(value: Double(Double(npc.specialBehaviorTime) / 4.0), color: npc.currentActivity.color, height: 6)
+                                                    .shadow(color: npc.currentActivity.color.opacity(0.3), radius: 2)
+                                                
+                                                HStack(alignment: .center) {
+                                                    Spacer()
+                                                    Text(npc.currentActivity.description)
+                                                        .font(Theme.smallFont)
+                                                        .foregroundColor(Theme.textColor)
+                                                    
+                                                    Text(String(format: "%.1f%%", Double(npc.specialBehaviorTime) / 4.0 * 100))
+                                                        .font(Theme.smallFont)
+                                                        .foregroundColor(Theme.bloodProgressColor)
+                                                    Spacer()
+                                                }
+                                                .padding(.bottom, 4)
+                                            }
+                                        }
+                                        .frame(width: 120)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(Color.black.opacity(0.9))
+                                                .shadow(color: .black.opacity(0.3), radius: 4)
+                                        )
+                                        Spacer()
+                                    }
+                                }
+                                Spacer()
+                                HStack {
+                                    Image(systemName: npc.profession.icon)
+                                        .font(Theme.smallFont)
+                                        .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                                        .lineLimit(1)
+                                    Text("\(npc.profession.rawValue)")
+                                        .font(Theme.smallFont)
+                                        .foregroundColor(npc.profession.color)
+                                        .lineLimit(1)
+                                    Spacer()
+                                    
+                                    Image(systemName: npc.isAlive ? npc.currentActivity.icon : "xmark.circle.fill")
+                                        .foregroundColor(npc.isAlive ? npc.currentActivity.color : Theme.bloodProgressColor)
+                                        .font(Theme.smallFont)
+                                    Text(npc.isAlive ? npc.currentActivity.description : "Dead")
+                                        .foregroundColor(npc.isAlive ? Theme.textColor : Theme.bloodProgressColor)
+                                        .font(Theme.smallFont)
+                                        .padding(.leading, -5)
+                                }
+                            }
+                            .padding(.bottom, 6)
+                            .padding(.top, 2)
+                            .padding(.horizontal, 8)
+                        }
+                        
+                        if npc.isUnknown {
+                            Image(systemName: "questionmark.circle")
+                                .font(Theme.superTitleFont)
+                                .foregroundColor(Theme.textColor)
+                                .animation(.easeInOut(duration: 0.3), value: npc.isUnknown)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                        }
+                        
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Theme.primaryColor.opacity(0.8), lineWidth: 2)
+                            .background(Color.white.opacity(0.05))
+                            .blur(radius: 0.5)
+                    }
+                    .cornerRadius(12)
+                    .frame(width: 160, height: 260)
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.black.opacity(0.3))
+                            .blur(radius: 2)
+                            .offset(y: 2)
                     )
-                    .frame(maxWidth: geometry.size.width * 0.5)
                     
                     Spacer()
                     
@@ -208,6 +277,14 @@ struct VampireGazeView: View {
             withAnimation(.easeInOut(duration: 2.0).repeatForever()) {
                 moonPhase = 1
             }
+        }
+    }
+    
+    private func getNPCImage() -> Image {
+        if npc.isUnknown {
+            return Image(uiImage: UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")!)
+        } else {
+            return Image(uiImage: UIImage(named: "npc\(npc.id.description)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")!)
         }
     }
     

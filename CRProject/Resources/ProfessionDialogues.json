@@ -11,22 +11,6 @@
                         "nextNode": "baker_work"
                     },
                     {
-                        "text": "You seem nervous... [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "baker_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "You have such a charming smile... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "baker_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
-                    },
-                    {
                         "text": "May I know your name? [Investigate]",
                         "type": "investigate",
                         "nextNode": "investigation_intro"
@@ -128,22 +112,6 @@
                         "nextNode": "merchant_goods"
                     },
                     {
-                        "text": "Your prices seem high... [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "merchant_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "Perhaps we can negotiate... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "merchant_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
-                    },
-                    {
                         "text": "May I know your name? [Investigate]",
                         "type": "investigate",
                         "nextNode": "investigation_intro"
@@ -242,22 +210,6 @@
                         "nextNode": "guard_situation"
                     },
                     {
-                        "text": "You don't want to mess with me... [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "guard_intimidated",
-                        "requirements": {
-                            "minStrength": 4
-                        }
-                    },
-                    {
-                        "text": "Surely we can work something out... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "guard_seduced",
-                        "requirements": {
-                            "minCharisma": 4
-                        }
-                    },
-                    {
                         "text": "May I know your name? [Investigate]",
                         "type": "investigate",
                         "nextNode": "investigation_intro"
@@ -341,20 +293,9 @@
                         "nextNode": "blacksmith_work"
                     },
                     {
-                        "text": "I need weapons... special ones [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "blacksmith_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "That's quite impressive craftsmanship... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "blacksmith_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -430,20 +371,9 @@
                         "nextNode": "miller_business"
                     },
                     {
-                        "text": "What's really in those sacks? [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "miller_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "The mill seems... private [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "miller_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -519,20 +449,9 @@
                         "nextNode": "priest_church"
                     },
                     {
-                        "text": "What secrets do these walls hide? [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "priest_intimidated",
-                        "requirements": {
-                            "minStrength": 4
-                        }
-                    },
-                    {
-                        "text": "I seek... private counsel [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "priest_seduced",
-                        "requirements": {
-                            "minCharisma": 4
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -608,20 +527,9 @@
                         "nextNode": "innkeeper_guests"
                     },
                     {
-                        "text": "I know you're hiding something... [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "innkeeper_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "Such a cozy establishment... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "innkeeper_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -697,20 +605,9 @@
                         "nextNode": "alchemist_wares"
                     },
                     {
-                        "text": "Show me your real inventory... [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "alchemist_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "Perhaps we could make a special arrangement... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "alchemist_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -786,20 +683,9 @@
                         "nextNode": "minstrel_songs"
                     },
                     {
-                        "text": "Sing about the dark secrets... [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "minstrel_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "I'd love a private performance... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "minstrel_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -875,20 +761,9 @@
                         "nextNode": "scribe_writing"
                     },
                     {
-                        "text": "Show me the forbidden texts... [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "scribe_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "Your knowledge intrigues me... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "scribe_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -964,20 +839,9 @@
                         "nextNode": "hunter_prey"
                     },
                     {
-                        "text": "Tell me about the real predators... [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "hunter_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "You seem experienced in tracking... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "hunter_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -1053,20 +917,9 @@
                         "nextNode": "apothecary_wares"
                     },
                     {
-                        "text": "Show me your special remedies... [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "apothecary_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "I need something... personal [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "apothecary_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -1142,20 +995,9 @@
                         "nextNode": "herald_news"
                     },
                     {
-                        "text": "Tell me the real stories... [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "herald_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "Surely you have private news... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "herald_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -1231,20 +1073,9 @@
                         "nextNode": "cooper_work"
                     },
                     {
-                        "text": "What do you hide in these barrels? [Intimidate]",
-                        "type": "intimidate",
-                        "nextNode": "cooper_intimidated",
-                        "requirements": {
-                            "minStrength": 3
-                        }
-                    },
-                    {
-                        "text": "Your craftsmanship is impressive... [Intrigue]",
-                        "type": "intrigue",
-                        "nextNode": "cooper_seduced",
-                        "requirements": {
-                            "minCharisma": 3
-                        }
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
                     }
                 ]
             },

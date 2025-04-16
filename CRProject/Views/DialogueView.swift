@@ -57,19 +57,15 @@ struct DialogueView: View {
                                         .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : .green)
                                 } else {
                                     
-                                    if !viewModel.npc.isUnknown {
-                                        Text(viewModel.npc.name)
-                                            .font(Theme.bodyFont)
-                                            .foregroundColor(.white)
-                                            .lineLimit(1)
-                                    }
-
-                                    if !viewModel.npc.isUnknown {
-                                        Text(viewModel.npc.profession.rawValue)
-                                            .font(Theme.bodyFont)
-                                            .foregroundColor(viewModel.npc.profession.color)
-                                            .lineLimit(1)
-                                    }
+                                    Text(viewModel.npc.name)
+                                        .font(Theme.bodyFont)
+                                        .foregroundColor(.white)
+                                        .lineLimit(1)
+                          
+                                    Text(viewModel.npc.profession.rawValue)
+                                        .font(Theme.bodyFont)
+                                        .foregroundColor(viewModel.npc.profession.color)
+                                        .lineLimit(1)
 
                                     HStack(spacing: 8) {
                                         if viewModel.npc.currentActivity == .sleep {
@@ -189,7 +185,7 @@ private struct DialogueOptionButton: View {
                 Spacer()
                 
                 if option.type != .normal {
-                    Image(systemName: option.type == .intimidate ? "exclamationmark.triangle" : "heart")
+                    Image(systemName: option.type == .intimidate ? "exclamationmark.triangle" : "person.fill.questionmark")
                         .foregroundColor(option.type == .intimidate ? .red : .pink)
                 }
             }

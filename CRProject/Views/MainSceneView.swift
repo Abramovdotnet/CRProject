@@ -1,6 +1,5 @@
 import SwiftUI
-
-struct MainSceneView: View {
+ struct MainSceneView: View {
     @ObservedObject var viewModel: MainSceneViewModel
     @StateObject private var npcManager = NPCInteractionManager.shared
     @StateObject private var gameStateService: GameStateService = DependencyManager.shared.resolve()
@@ -16,6 +15,13 @@ struct MainSceneView: View {
     @State private var sewerHideoutScale: CGFloat = 1.0
     @State private var showSmokeEffect = false
     @State private var showingVampireGaze = false
+    
+    init(viewModel: MainSceneViewModel) {
+        self.viewModel = viewModel
+    }
+    
+    // Reference to grid view for scrolling
+    private var gridViewRef: NPCSGridView?
     
     private var isPlayerHidden: Bool {
         guard let player = gameStateService.getPlayer() else { return false }
@@ -434,15 +440,20 @@ struct MainSceneView: View {
     private func handleNPCAction(_ action: NPCAction) {
         switch action {
         case .startConversation(let npc):
+            // Don't call playerInteracted here - it will be called after dialogue completion
             npcManager.startConversation(with: npc)
         case .startIntimidation(let npc):
+            // Don't call playerInteracted here - it will be called after gaze completion
             showVampireGaze(npc: npc)
         case .feed(let npc):
             viewModel.feedOnCharacter(npc)
+            npcManager.playerInteracted(with: npc)
         case .drain(let npc):
             viewModel.emptyBloodFromCharacter(npc)
+            npcManager.playerInteracted(with: npc)
         case .investigate(let npc):
             viewModel.investigateNPC(npc)
+            npcManager.playerInteracted(with: npc)
         }
     }
     
@@ -540,7 +551,3 @@ private struct BottomWidgetView: View {
         .padding(.bottom, 5)
     }
 }
-
-#Preview {
-    MainSceneView(viewModel: MainSceneViewModel())
-} 

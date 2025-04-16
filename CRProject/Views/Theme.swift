@@ -11,6 +11,7 @@ enum Theme {
     static let awarenessProgressColor = Color(red: 0.4, green: 0.1, blue: 0.5) // Purple
     
     static let titleFont = Font.custom("Optima-Bold", size: 18)
+    static let superTitleFont = Font.custom("Optima", size: 22)
     static let headingFont = Font.custom("Optima-Bold", size: 14)
     static let headingLightFont = Font.custom("Optima", size: 14)
     static let bodyFont = Font.custom("Optima", size: 12)
@@ -35,6 +36,7 @@ struct VampireButtonStyle: ButtonStyle {
 struct ProgressBar: View {
     let value: Double
     let color: Color
+    var height: CGFloat = 8
     
     var body: some View {
         GeometryReader { geometry in
@@ -49,7 +51,7 @@ struct ProgressBar: View {
                     .frame(width: geometry.size.width * CGFloat(value))
             }
         }
-        .frame(height: 8)
+        .frame(height: height)
         .cornerRadius(4)
         .overlay(
             RoundedRectangle(cornerRadius: 4)

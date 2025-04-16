@@ -36,6 +36,8 @@ class NPC: Character {
     var leisureActivities: [NPCActivityType] = []
     var currentActivity: NPCActivityType = .idle
     
+    var lastPlayerInteractionDate: Date = Date()
+    
     var currentInteractionNPC: NPC? = nil
     
     var deathStatus: DeathStatus = .none

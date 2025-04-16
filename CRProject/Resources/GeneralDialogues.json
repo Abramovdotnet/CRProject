@@ -20,22 +20,6 @@
                     "nextNode": "general_strange"
                 },
                 {
-                    "text": "You look scared... [Intimidate]",
-                    "type": "intimidate",
-                    "nextNode": "general_intimidated",
-                    "requirements": {
-                        "minStrength": 2
-                    }
-                },
-                {
-                    "text": "I find you intriguing... [Intrigue]",
-                    "type": "intrigue",
-                    "nextNode": "general_seduced",
-                    "requirements": {
-                        "minCharisma": 2
-                    }
-                },
-                {
                     "text": "May I ask who you are? [Investigate]",
                     "type": "investigate",
                     "nextNode": "investigation_intro",

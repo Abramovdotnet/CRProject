@@ -61,6 +61,8 @@ class FeedingService: GameService {
             vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
         }
         
+        NPCInteractionManager.shared.playerInteracted(with: prey)
+        
         gameTime.advanceTime()
     }
     
@@ -93,6 +95,8 @@ class FeedingService: GameService {
         statisticsService.incrementVictimsDrained()
         
         gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
+        
+        NPCInteractionManager.shared.playerInteracted(with: prey)
         
         gameTime.advanceTime()
     }

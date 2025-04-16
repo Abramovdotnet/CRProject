@@ -179,6 +179,8 @@ class VampireGaze: GameService {
             )
         }
         
+        NPCInteractionManager.shared.playerInteracted(with: npc)
+        
         return success
     }
 } 
