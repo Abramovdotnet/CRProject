@@ -1,5 +1,6 @@
 import SwiftUICore
 import SwiftUI
+import CoreMotion // Import CoreMotion
 
 struct NPCSGridView: View {
     let npcs: [NPC]
@@ -59,7 +60,7 @@ struct NPCSGridView: View {
                 startPoint: .leading,
                 endPoint: .trailing
             )
-            .frame(width: 40)
+            .frame(width: 15)
             
             Rectangle()
                 .fill(Color.black)
@@ -69,7 +70,7 @@ struct NPCSGridView: View {
                 startPoint: .leading,
                 endPoint: .trailing
             )
-            .frame(width: 40)
+            .frame(width: 15)
         }
     }
     
@@ -116,7 +117,7 @@ struct NPCSGridView: View {
                                         axis: (x: 0, y: 1, z: 0)
                                     )
                             }
-                            .shadow(color: data.isSelected ? Theme.primaryColor.opacity(0.5) : .black.opacity(0.5), radius: data.isSelected ? 15 : 10)
+                            .shadow(color: data.isSelected ? data.npc.isUnknown ? Color.white.opacity(0.8) : data.npc.currentActivity.color.opacity(0.5) : .black.opacity(0.5), radius: data.isSelected ? 15 : 10)
                             .id(data.id)
                         }
                     }
@@ -157,10 +158,18 @@ struct NPCGridButton: View {
     @State private var moonOpacity: Double = 0.6
     @State private var heartOpacity: Double = 0.6
     @State private var activityOpacity: Double = 0.7
-    @State private var isHovered = false
     @State private var tappedScale: CGFloat = 1.0
     @State private var lastTapTime: Date = Date()
+    @State private var parallaxOffset: CGSize = .zero // Keep parallax offset
     
+    // Core Motion properties
+    private let motionManager = CMMotionManager()
+    private let queue = OperationQueue()
+    
+    private let parallaxIntensity: CGFloat = 8 // Adjust sensitivity
+    private let buttonWidth: CGFloat = 160
+    private let buttonHeight: CGFloat = 260
+
     var body: some View {
         Button(action: {
             let now = Date()
@@ -194,6 +203,7 @@ struct NPCGridButton: View {
             lastTapTime = now
         }) {
             ZStack(alignment: .top) {
+                // Background
                 RoundedRectangle(cornerRadius: 12)
                     .fill(
                         LinearGradient(
@@ -223,15 +233,22 @@ struct NPCGridButton: View {
                 
                 Color.black.opacity(0.9)
                 
+                // Content (Image and Text)
                 VStack(alignment: .leading) {
+                    // Image container with parallax
                     ZStack {
                         getNPCImage()
                             .resizable()
-                            .frame(width: 160, height: 160)
+                            .scaledToFill()
+                            .frame(width: buttonWidth, height: 160)
+                            .offset(x: parallaxOffset.width, y: parallaxOffset.height)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
                     }
+                    .frame(width: buttonWidth, height: 160)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
                     
+                    // Text details (rest of the card)
                     if !npc.isUnknown {
                         VStack(alignment: .leading, spacing: 2) {
                             HStack {
@@ -351,32 +368,27 @@ struct NPCGridButton: View {
                 
                 if isSelected {
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Theme.primaryColor.opacity(0.8), lineWidth: 2)
+                        .stroke(npc.isUnknown ? .white.opacity(0.8) : npc.currentActivity.color.opacity(0.8), lineWidth: 2)
                         .background(Color.white.opacity(0.05))
                         .blur(radius: 0.5)
                 }
             }
             .cornerRadius(12)
-            .frame(width: 160, height: 260)
+            .frame(width: buttonWidth, height: buttonHeight)
             .background(
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.black.opacity(0.3))
                     .blur(radius: 2)
                     .offset(y: 2)
             )
-            .scaleEffect(isHovered ? 1.02 : tappedScale)
+            .scaleEffect(tappedScale)
         }
         .buttonStyle(PlainButtonStyle())
         .opacity(npc.isAlive ? (isDisabled ? 0.5 : 1) : 0.7)
         .disabled(isDisabled)
-        .onHover { hovering in
-            withAnimation(.easeInOut(duration: 0.2)) {
-                isHovered = hovering
-                if tappedScale != 1.0 { tappedScale = 1.0 }
-            }
-        }
         .animation(.easeInOut(duration: 0.3), value: isSelected)
         .onAppear {
+            startMotionUpdates()
             if npc.currentActivity == .sleep {
                 withAnimation(Animation.easeInOut(duration: 1.5).repeatForever()) {
                     moonOpacity = 1.0
@@ -388,6 +400,45 @@ struct NPCGridButton: View {
                 }
             }
         }
+        .onDisappear {
+            stopMotionUpdates()
+        }
+    }
+    
+    // Start motion updates
+    private func startMotionUpdates() {
+        guard motionManager.isDeviceMotionAvailable else { return }
+        
+        motionManager.deviceMotionUpdateInterval = 1/60 // 60 Hz
+        motionManager.startDeviceMotionUpdates(to: queue) { (data, error) in
+            guard let data = data else { return }
+            
+            // Get attitude (roll, pitch)
+            let roll = data.attitude.roll
+            let pitch = data.attitude.pitch
+            
+            // Calculate offset based on tilt (SWAPPED MAPPING)
+            // Pitch (vertical tilt) controls offsetX
+            // Roll (horizontal tilt) controls offsetY
+            let offsetX = CGFloat(pitch) * parallaxIntensity // Use pitch for X
+            let offsetY = CGFloat(roll) * parallaxIntensity  // Use roll for Y
+            
+            // Update on main thread
+            DispatchQueue.main.async {
+                withAnimation(.easeOut(duration: 0.1)) {
+                     // Clamp the offset to avoid extreme movement
+                    self.parallaxOffset = CGSize(
+                        width: max(-10, min(10, offsetX)), 
+                        height: max(-10, min(10, offsetY))
+                    )
+                }
+            }
+        }
+    }
+    
+    // Stop motion updates
+    private func stopMotionUpdates() {
+        motionManager.stopDeviceMotionUpdates()
     }
     
     private func getNPCImage() -> Image {

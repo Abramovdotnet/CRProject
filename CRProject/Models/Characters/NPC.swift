@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-class NPC: Character {
+class NPC: Character {    
     var id: Int = 0
     var index : Int = 0
     var name: String = ""

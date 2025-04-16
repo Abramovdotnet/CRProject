@@ -48,180 +48,9 @@ struct VampireGazeView: View {
                 
                 // Main Content (Horizontal Layout)
                 HStack(alignment: .center, spacing: 20) {
-                    Spacer()
-                    
-                    // NPC Info Card
-                    ZStack(alignment: .top) {
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        Color.black.opacity(0.9),
-                                        Color(npc.profession.color).opacity(0.05)
-                                    ]),
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(
-                                        LinearGradient(
-                                            gradient: Gradient(colors: [
-                                                Color.white.opacity(0.1),
-                                                Color.white.opacity(0.05),
-                                                Color.clear
-                                            ]),
-                                            startPoint: .topLeading,
-                                            endPoint: .bottomTrailing
-                                        ),
-                                        lineWidth: 0.5
-                                    )
-                            )
-                        
-                        Color.black.opacity(0.9)
-                        
-                        VStack(alignment: .leading) {
-                            ZStack {
-                                getNPCImage()
-                                    .resizable()
-                                    .frame(width: 160, height: 160)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
-                            }
-                            
-                            if !npc.isUnknown {
-                                VStack(alignment: .leading, spacing: 2) {
-                                    HStack {
-                                        Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                            .font(Theme.smallFont)
-                                            .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                                        Text(npc.name)
-                                            .font(Theme.smallFont)
-                                            .foregroundColor(Theme.textColor)
-                                    }
-                                    .padding(.top, 4)
-                                    
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        HStack {
-                                            Text("Resistance")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.textColor)
-                                            
-                                            Text(String(format: "%.1f%%", VampireGaze.shared.calculateNPCResistance(npc: npc)))
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.bloodProgressColor)
-                                        }
-                                        
-                                        GradientProgressBar(value: VampireGaze.shared.calculateNPCResistance(npc: npc))
-                                            .frame(width: 140, height: 5)
-                                            .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
-                                    }
-                                    .padding(.top, 4)
-
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        HStack(alignment: .top) {
-                                            Text("Health")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.textColor)
-                                            
-                                            Text(String(format: "%.1f%%", npc.bloodMeter.currentBlood))
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.bloodProgressColor)
-                                        }
-                                        
-                                        ProgressBar(value: Double(npc.bloodMeter.currentBlood / 100), color: Theme.bloodProgressColor, height: 6)
-                                            .frame(width: 140)
-                                            .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
-                                    }
-                                }
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 2)
-                            }
-                        }
-                        
-                        if !npc.isUnknown {
-                            VStack(alignment: .leading) {
-                                if npc.isSpecialBehaviorSet {
-                                    HStack {
-                                        Spacer()
-                                        ZStack {
-                                            VStack(spacing: 4) {
-                                                ProgressBar(value: Double(Double(npc.specialBehaviorTime) / 4.0), color: npc.currentActivity.color, height: 6)
-                                                    .shadow(color: npc.currentActivity.color.opacity(0.3), radius: 2)
-                                                
-                                                HStack(alignment: .center) {
-                                                    Spacer()
-                                                    Text(npc.currentActivity.description)
-                                                        .font(Theme.smallFont)
-                                                        .foregroundColor(Theme.textColor)
-                                                    
-                                                    Text(String(format: "%.1f%%", Double(npc.specialBehaviorTime) / 4.0 * 100))
-                                                        .font(Theme.smallFont)
-                                                        .foregroundColor(Theme.bloodProgressColor)
-                                                    Spacer()
-                                                }
-                                                .padding(.bottom, 4)
-                                            }
-                                        }
-                                        .frame(width: 120)
-                                        .background(
-                                            RoundedRectangle(cornerRadius: 8)
-                                                .fill(Color.black.opacity(0.9))
-                                                .shadow(color: .black.opacity(0.3), radius: 4)
-                                        )
-                                        Spacer()
-                                    }
-                                }
-                                Spacer()
-                                HStack {
-                                    Image(systemName: npc.profession.icon)
-                                        .font(Theme.smallFont)
-                                        .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                                        .lineLimit(1)
-                                    Text("\(npc.profession.rawValue)")
-                                        .font(Theme.smallFont)
-                                        .foregroundColor(npc.profession.color)
-                                        .lineLimit(1)
-                                    Spacer()
-                                    
-                                    Image(systemName: npc.isAlive ? npc.currentActivity.icon : "xmark.circle.fill")
-                                        .foregroundColor(npc.isAlive ? npc.currentActivity.color : Theme.bloodProgressColor)
-                                        .font(Theme.smallFont)
-                                    Text(npc.isAlive ? npc.currentActivity.description : "Dead")
-                                        .foregroundColor(npc.isAlive ? Theme.textColor : Theme.bloodProgressColor)
-                                        .font(Theme.smallFont)
-                                        .padding(.leading, -5)
-                                }
-                            }
-                            .padding(.bottom, 6)
-                            .padding(.top, 2)
-                            .padding(.horizontal, 8)
-                        }
-                        
-                        if npc.isUnknown {
-                            Image(systemName: "questionmark.circle")
-                                .font(Theme.superTitleFont)
-                                .foregroundColor(Theme.textColor)
-                                .animation(.easeInOut(duration: 0.3), value: npc.isUnknown)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                        }
-                        
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Theme.primaryColor.opacity(0.8), lineWidth: 2)
-                            .background(Color.white.opacity(0.05))
-                            .blur(radius: 0.5)
-                    }
-                    .cornerRadius(12)
-                    .frame(width: 160, height: 260)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12)
-                            .fill(Color.black.opacity(0.3))
-                            .blur(radius: 2)
-                            .offset(y: 2)
-                    )
-                    
-                    Spacer()
+                    // NPC Info Card (Left Side)
+                    npcInfoCard
+                        .frame(width: 160, height: 260)
                     
                     // Power Selection Area (Right Side)
                     VStack(spacing: 15) {
@@ -230,26 +59,29 @@ struct VampireGazeView: View {
                             .foregroundColor(.white)
                             .shadow(color: .black, radius: 2)
                         
-                        VStack(spacing: 12) {
+                        // Grid layout for power buttons
+                        LazyVGrid(columns: [
+                            GridItem(.flexible()),
+                            GridItem(.flexible())
+                        ], spacing: 8) {
                             ForEach(VampireGaze.GazePower.availableCases(npc: npc), id: \.self) { power in
-                                
                                 let data = EnhancedPowerButtonData(
                                     power: power,
                                     isSelected: selectedPower == power,
-                                    isDisabled: power.cost > mainViewModel.playerBloodPercentage)
+                                    isDisabled: power.cost > mainViewModel.playerBloodPercentage
+                                )
                                 
                                 EnhancedPowerButton(
                                     data: data,
                                     action: { attemptGazePower(power) }
                                 )
+                                .frame(height: 65)
                             }
                         }
-                        .frame(width: 380)
+                        .frame(maxWidth: .infinity)
                     }
-                    .frame(maxWidth: geometry.size.width * 0.4)
-                    .padding(.top, 10)
-                    
-                    Spacer()
+                    .frame(maxWidth: geometry.size.width * 0.7)
+                    .padding(.horizontal, 16)
                 }
                 .padding()
                 .opacity(contentOpacity)
@@ -345,6 +177,178 @@ struct VampireGazeView: View {
             }
         }
     }
+    
+    private var npcInfoCard: some View {
+        ZStack(alignment: .top) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.black.opacity(0.9),
+                            Color(npc.profession.color).opacity(0.05)
+                        ]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.white.opacity(0.1),
+                                    Color.white.opacity(0.05),
+                                    Color.clear
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 0.5
+                        )
+                )
+            
+            Color.black.opacity(0.9)
+            
+            VStack(alignment: .leading) {
+                ZStack {
+                    getNPCImage()
+                        .resizable()
+                        .frame(width: 160, height: 160)
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                }
+                
+                if !npc.isUnknown {
+                    VStack(alignment: .leading, spacing: 2) {
+                        HStack {
+                            Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                                .font(Theme.smallFont)
+                                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                            Text(npc.name)
+                                .font(Theme.smallFont)
+                                .foregroundColor(Theme.textColor)
+                        }
+                        .padding(.top, 4)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text("Resistance")
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Theme.textColor)
+                                
+                                Text(String(format: "%.1f%%", VampireGaze.shared.calculateNPCResistance(npc: npc)))
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Theme.bloodProgressColor)
+                            }
+                            
+                            GradientProgressBar(value: VampireGaze.shared.calculateNPCResistance(npc: npc))
+                                .frame(width: 140, height: 5)
+                                .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
+                        }
+                        .padding(.top, 4)
+
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack(alignment: .top) {
+                                Text("Health")
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Theme.textColor)
+                                
+                                Text(String(format: "%.1f%%", npc.bloodMeter.currentBlood))
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Theme.bloodProgressColor)
+                            }
+                            
+                            ProgressBar(value: Double(npc.bloodMeter.currentBlood / 100), color: Theme.bloodProgressColor, height: 6)
+                                .frame(width: 140)
+                                .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 2)
+                }
+            }
+            
+            if !npc.isUnknown {
+                VStack(alignment: .leading) {
+                    if npc.isSpecialBehaviorSet {
+                        HStack {
+                            Spacer()
+                            ZStack {
+                                VStack(spacing: 4) {
+                                    ProgressBar(value: Double(Double(npc.specialBehaviorTime) / 4.0), color: npc.currentActivity.color, height: 6)
+                                        .shadow(color: npc.currentActivity.color.opacity(0.3), radius: 2)
+                                    
+                                    HStack(alignment: .center) {
+                                        Spacer()
+                                        Text(npc.currentActivity.description)
+                                            .font(Theme.smallFont)
+                                            .foregroundColor(Theme.textColor)
+                                        
+                                        Text(String(format: "%.1f%%", Double(npc.specialBehaviorTime) / 4.0 * 100))
+                                            .font(Theme.smallFont)
+                                            .foregroundColor(Theme.bloodProgressColor)
+                                        Spacer()
+                                    }
+                                    .padding(.bottom, 4)
+                                }
+                            }
+                            .frame(width: 120)
+                            .background(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Color.black.opacity(0.9))
+                                    .shadow(color: .black.opacity(0.3), radius: 4)
+                            )
+                            Spacer()
+                        }
+                    }
+                    Spacer()
+                    HStack {
+                        Image(systemName: npc.profession.icon)
+                            .font(Theme.smallFont)
+                            .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                            .lineLimit(1)
+                        Text("\(npc.profession.rawValue)")
+                            .font(Theme.smallFont)
+                            .foregroundColor(npc.profession.color)
+                            .lineLimit(1)
+                        Spacer()
+                        
+                        Image(systemName: npc.isAlive ? npc.currentActivity.icon : "xmark.circle.fill")
+                            .foregroundColor(npc.isAlive ? npc.currentActivity.color : Theme.bloodProgressColor)
+                            .font(Theme.smallFont)
+                        Text(npc.isAlive ? npc.currentActivity.description : "Dead")
+                            .foregroundColor(npc.isAlive ? Theme.textColor : Theme.bloodProgressColor)
+                            .font(Theme.smallFont)
+                            .padding(.leading, -5)
+                    }
+                }
+                .padding(.bottom, 6)
+                .padding(.top, 2)
+                .padding(.horizontal, 8)
+            }
+            
+            if npc.isUnknown {
+                Image(systemName: "questionmark.circle")
+                    .font(Theme.superTitleFont)
+                    .foregroundColor(Theme.textColor)
+                    .animation(.easeInOut(duration: 0.3), value: npc.isUnknown)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+            }
+            
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(Theme.primaryColor.opacity(0.8), lineWidth: 2)
+                .background(Color.white.opacity(0.05))
+                .blur(radius: 0.5)
+        }
+        .cornerRadius(12)
+        .frame(width: 160, height: 260)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.3))
+                .blur(radius: 2)
+                .offset(y: 2)
+        )
+    }
 }
 
 // MARK: - Enhanced Components
@@ -373,116 +377,74 @@ struct EnhancedPowerButton: View {
             }
             action()
         }) {
-            ZStack {
-                // Main content
-                HStack(spacing: 12) {
-                    // Power icon with enhanced effects
-                    ZStack {
-                        // Outer glow
-                        Circle()
-                            .fill(data.power.color)
-                            .blur(radius: 20)
-                            .opacity(glowOpacity)
-                        
-                        // Icon background
-                        Circle()
-                            .fill(
-                                RadialGradient(
-                                    gradient: Gradient(colors: [
-                                        data.power.color.opacity(0.3),
-                                        Color.black.opacity(0.8)
-                                    ]),
-                                    center: .center,
-                                    startRadius: 0,
-                                    endRadius: 25
-                                )
-                            )
-                            .overlay(
-                                Circle()
-                                    .stroke(data.power.color, lineWidth: data.isSelected ? 2 : 1)
-                            )
-                        
-                        // Power icon
-                        Image(systemName: data.power.icon)
-                            .font(Theme.bodyFont)
-                            .foregroundColor(data.power.color)
-                    }
-                    .frame(width: 42, height: 42)
+            HStack(spacing: 12) {
+                // Icon
+                ZStack {
+                    Circle()
+                        .fill(data.power.color)
+                        .blur(radius: 15)
+                        .opacity(glowOpacity)
                     
-                    // Power information
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(data.power.rawValue.capitalized)
-                            .font(Theme.headingFont)
-                            .foregroundColor(data.power.color)
-                            .shadow(color: data.power.color.opacity(0.5), radius: 3)
-                        
-                        Text(data.power.description)
-                            .font(Theme.bodyFont)
-                            .foregroundColor(.gray)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                    }
-                    .frame(width: 220, alignment: .leading)
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                gradient: Gradient(colors: [
+                                    data.power.color.opacity(0.3),
+                                    Color.black.opacity(0.8)
+                                ]),
+                                center: .center,
+                                startRadius: 0,
+                                endRadius: 25
+                            )
+                        )
+                        .frame(width: 36, height: 36)
                     
-                    // Cost indicator
-                    HStack(spacing: 2) {
-                        Text(String(format: "%.1f", data.power.cost))
-                            .font(Theme.bodyFont)
-                            .foregroundColor(Theme.bloodProgressColor)
-                        Text("%")
-                            .font(Theme.bodyFont)
-                            .foregroundColor(Theme.bloodProgressColor)
-                        Image(systemName: "drop.fill")
-                            .font(.system(size: 12))
-                            .foregroundColor(Theme.bloodProgressColor)
-                    }
-                    .frame(width: 65)
+                    Image(systemName: data.power.icon)
+                        .font(.system(size: 16))
+                        .foregroundColor(data.power.color)
                 }
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
-                .frame(height: 60)
-                .background(
-                    ZStack {
-                        // Button background
-                        RoundedRectangle(cornerRadius: 20)
-                            .fill(Color.black.opacity(0.6))
+                .frame(width: 36, height: 36)
+                
+                // Text content
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(data.power.description)
+                            .font(Theme.smallFont)
+                            .foregroundColor(.white)
+                            .lineLimit(2)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .multilineTextAlignment(.leading)
                         
-                        // Decorative border
-                        RoundedRectangle(cornerRadius: 20)
-                            .stroke(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [
-                                        data.power.color.opacity(0.6),
-                                        data.power.color.opacity(0.2),
-                                        data.power.color.opacity(0.6)
-                                    ]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                ),
-                                lineWidth: 1.5
-                            )
+                        Spacer()
                         
-                        // Selection indicator
-                        if data.isSelected {
-                            RoundedRectangle(cornerRadius: 20)
-                                .stroke(data.power.color.opacity(0.8), lineWidth: 2)
-                                .blur(radius: 2)
-                        }
+                        Text("\(Int(data.power.cost))🩸")
+                            .font(Theme.smallFont)
+                            .foregroundColor(Theme.bloodProgressColor)
+                            .padding(.leading, 4)
                     }
-                )
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.black.opacity(0.7))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(data.power.color.opacity(0.3), lineWidth: 1)
+                    )
+            )
             .scaleEffect(scale * hoverScale)
         }
         .buttonStyle(PlainButtonStyle())
         .disabled(data.isDisabled)
-        .onHover { isHovered in
+        .opacity(data.isDisabled ? 0.5 : 1.0)
+        .onHover { hovering in
             withAnimation(.easeInOut(duration: 0.2)) {
-                hoverScale = isHovered ? 1.02 : 1.0
-            }
-        }
-        .onAppear {
-            withAnimation(.easeInOut(duration: 1.5).repeatForever(autoreverses: true)) {
-                glowOpacity = data.isSelected ? 0.5 : 0.0
+                hoverScale = hovering ? 1.05 : 1.0
+                glowOpacity = hovering ? 0.3 : 0.0
             }
         }
     }
