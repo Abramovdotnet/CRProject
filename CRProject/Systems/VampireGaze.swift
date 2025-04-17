@@ -79,11 +79,10 @@ class VampireGaze: GameService {
     }
     
     func calculateNPCResistance(npc: NPC) -> Float {
-        var resistance: Float = 100.0
+        var resistance: Float = 100.0 - (100.0 - npc.bloodMeter.currentBlood)
         
         // Base modifiers
-        if gameTimeService.isNightTime { resistance -= 10 }
-        if npc.isIntimidated { resistance -= 15 }
+        if gameTimeService.isNightTime { resistance -= 20 }
         
         // Activity-based modifiers
         switch npc.currentActivity {
@@ -91,6 +90,7 @@ class VampireGaze: GameService {
         case .sleep: resistance -= 30
         case .pray: resistance += 25
         case .patrol: resistance += 15
+        case .guardPost: resistance += 15
         default: break
         }
         
@@ -118,19 +118,19 @@ class VampireGaze: GameService {
         
         switch power {
         case .charm:
-            successChance = 70 - resistance * 0.5
-            awarenessIncrease = 5
+            successChance = 100 - resistance
+            awarenessIncrease = 10
         case .mesmerize:
-            successChance = 60 - resistance * 0.6
+            successChance = 100 - resistance
             awarenessIncrease = 10
         case .dominate:
-            successChance = 50 - resistance * 0.7
-            awarenessIncrease = 15
+            successChance = 100 - resistance
+            awarenessIncrease = 20
         case .scare:
-            successChance = 50 - resistance * 0.7
-            awarenessIncrease = 15
+            successChance = 100 - resistance
+            awarenessIncrease = 20
         case .follow:
-            successChance = 50 - resistance * 0.7
+            successChance = 100 - resistance
             awarenessIncrease = 15
         }
         
@@ -145,21 +145,24 @@ class VampireGaze: GameService {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .fleeing
+                npc.decreasePlayerRelationship(with: 10)
             } else if power == .charm {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .seductedByPlayer
+                npc.increasePlayerRelationship(with: 5)
             } else if power == .dominate {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .allyingPlayer
+                npc.increasePlayerRelationship(with: 10)
             } else if power == .follow {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .followingPlayer
             } else {
-                npc.isIntimidated = true
-                npc.intimidationDay = gameTimeService.currentDay + 1 // Effect lasts till next day
+                //npc.isIntimidated = true
+                //npc.intimidationDay = gameTimeService.currentDay + 1 // Effect lasts till next day
             }
             
             gameEventBusService.addMessageWithIcon(
@@ -170,6 +173,7 @@ class VampireGaze: GameService {
             )
         } else {
             VampireNatureRevealService.shared.increaseAwareness(for: npc.currentLocationId, amount: awarenessIncrease)
+            npc.decreasePlayerRelationship(with: 10)
             
             gameEventBusService.addMessageWithIcon(
                 message: "Failed to use \(power.rawValue) on \(npc.name)",

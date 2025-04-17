@@ -75,13 +75,10 @@ class FeedingService: GameService {
         
         var awarenessIncreaseValue: Float = 70;
         
-        if prey.isIntimidated {
-            prey.isIntimidated = false
-            awarenessIncreaseValue -= 25
-        }
-        
         if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
             awarenessIncreaseValue -= 25
+        } else {
+            prey.decreasePlayerRelationship(with: 100)
         }
         
         if prey.currentActivity == .sleep {
@@ -113,6 +110,7 @@ class FeedingService: GameService {
             for npc in npcs {
                 npc.isVampireAttackWitness = true
                 npc.isBeasy = true
+                npc.decreasePlayerRelationship(with: 100)
             }
         }
     }

@@ -35,6 +35,10 @@ class NPC: Character {
     var workActivities: [NPCActivityType] = []
     var leisureActivities: [NPCActivityType] = []
     var currentActivity: NPCActivityType = .idle
+    var morality: String = ""
+    var background: String = ""
+    var playerRelationship: Relationship = Relationship()
+    var npcsRelationship: [NPCRelationship] = []
     
     var lastPlayerInteractionDate: Date = Date()
     
@@ -72,6 +76,42 @@ class NPC: Character {
             return deathStatus
         } else {
             return isAlive ? .none : .unknown
+        }
+    }
+    
+    func increasePlayerRelationship(with value: Int) {
+        playerRelationship.increase(value: value)
+    }
+    
+    func decreasePlayerRelationship(with value: Int) {
+        playerRelationship.decrease(value: value)
+    }
+    
+    func increaseNPCRelationship(with value: Int, of npc: NPC) {
+        let relationshipIndex = npcsRelationship.firstIndex { $0.npcId == npc.id }
+        
+        if let index = relationshipIndex {
+            npcsRelationship[index].increase(value: value)
+        } else {
+            let relationship = NPCRelationship()
+            relationship.npcId = npc.id
+            relationship.increase(value: value)
+            
+            npcsRelationship.append(relationship)
+        }
+    }
+    
+    func decreaseNPCRelationship(with value: Int, of npc: NPC) {
+        let relationshipIndex = npcsRelationship.firstIndex { $0.npcId == npc.id }
+        
+        if let index = relationshipIndex {
+            npcsRelationship[index].decrease(value: value)
+        } else {
+            let relationship = NPCRelationship()
+            relationship.npcId = npc.id
+            relationship.decrease(value: value)
+            
+            npcsRelationship.append(relationship)
         }
     }
 }

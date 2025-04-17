@@ -155,6 +155,7 @@ struct VampireGazeView: View {
             NotificationCenter.default.post(name: .bloodPercentageChanged, object: nil)
             // Update main view model's blood percentage
             mainViewModel.updatePlayerBloodPercentage()
+            mainViewModel.updateSceneAwareness()
         }
         
         withAnimation(.easeInOut(duration: 1.0)) {
@@ -227,6 +228,10 @@ struct VampireGazeView: View {
                             Text(npc.name)
                                 .font(Theme.smallFont)
                                 .foregroundColor(Theme.textColor)
+                            Spacer()
+                            Text("Age \(npc.age)")
+                                .font(Theme.smallFont)
+                                .foregroundColor(Theme.textColor)
                         }
                         .padding(.top, 4)
                         
@@ -241,7 +246,7 @@ struct VampireGazeView: View {
                                     .foregroundColor(Theme.bloodProgressColor)
                             }
                             
-                            GradientProgressBar(value: VampireGaze.shared.calculateNPCResistance(npc: npc))
+                            GradientProgressBar(value: VampireGaze.shared.calculateNPCResistance(npc: npc), backgroundColor: npc.currentActivity.color.opacity(0.3))
                                 .frame(width: 140, height: 5)
                                 .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
                         }
@@ -466,7 +471,7 @@ struct GradientProgressBar: View {
          backgroundColor: Color = Color.black.opacity(0.3),
          cornerRadius: CGFloat = 3)
     {
-        self.value = max(0, min(value, 100)) // Clamp value to 0-100
+        self.value = value
         self.barColor = barColor ?? .red
         self.useGradient = useGradient
         self.showGlow = showGlow
@@ -498,7 +503,7 @@ struct GradientProgressBar: View {
                         .overlay(glowOverlay())
                 } else {
                     Rectangle()
-                        .fill(barColor) // Use flat color
+                        .fill(value > 0 ? barColor : Theme.bloodProgressColor)
                         .frame(width: calculateWidth(containerWidth: geometry.size.width))
                         .overlay(glowOverlay())
                 }
@@ -509,7 +514,8 @@ struct GradientProgressBar: View {
 
     // Helper to calculate width based on container
     private func calculateWidth(containerWidth: CGFloat) -> CGFloat {
-        return containerWidth * CGFloat(value / 100.0)
+        let absoluteValue = abs(value)
+         return containerWidth * CGFloat(absoluteValue / 100.0)
     }
 
     // Helper for optional glow

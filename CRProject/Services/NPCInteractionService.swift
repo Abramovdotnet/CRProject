@@ -40,20 +40,22 @@ class NPCInteractionService : GameService {
             .filter { $0.npcCount() > 1 }
         
         for scene in scenes {
-            let npcs = scene.getNPCs()
+            let npcs = scene.getNPCs().filter { $0.currentActivity != .sleep }
             
-            // Create a lookup table for alive and awake NPCs
-            let activeNPCs = npcs.filter { $0.isAlive && $0.currentActivity != .sleep }
-            
-            for npc in activeNPCs {
+            for npc in npcs {
                 // Skip if already interacting
                 if npc.currentInteractionNPC != nil {
                     npc.currentInteractionNPC = nil
                     continue
                 }
                 
+                // Skip behavior evaluation for dead npcs
+                if !npc.isAlive {
+                    continue
+                }
+                
                 // Find potential targets using a more efficient filter
-                let potentialTargets = activeNPCs.filter { otherNPC in
+                let potentialTargets = npcs.filter { otherNPC in
                     otherNPC.id != npc.id &&
                     otherNPC.currentInteractionNPC == nil &&
                     isInteractionPossible(currentNPC: npc, otherNPC: otherNPC)
@@ -142,6 +144,7 @@ class NPCInteractionService : GameService {
     private func handleCasualtyDiscovery(currentNPC: NPC, otherNPC: NPC) {
         currentNPC.isCasualtyWitness = true
         currentNPC.isSpecialBehaviorSet = true
+        currentNPC.specialBehaviorTime = 4
         currentNPC.casualtyNpcId = otherNPC.id
         otherNPC.deathStatus = .investigated
     }
@@ -305,7 +308,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             }
         } else {
             // Find out casualty
-            if currentNPC.currentActivity != .casualty && !currentNPC.isCasualtyWitness && otherNPC.isAlive && otherNPC.getDeathStatus() == .unknown {
+            if currentNPC.currentActivity != .casualty && !currentNPC.isCasualtyWitness && !otherNPC.isAlive && otherNPC.getDeathStatus() == .unknown {
                 return .findOutCasualty
             }
             // Casualty report

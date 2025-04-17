@@ -338,7 +338,7 @@ class MainSceneViewModel: ObservableObject {
         }
     }
     
-    private func updateSceneAwareness() {
+    func updateSceneAwareness() {
         withAnimation(.easeInOut(duration: 0.3)) {
             guard let currentSceneId = currentScene?.id else { return }
             sceneAwareness = vampireNatureRevealService.getAwareness(for: currentSceneId)

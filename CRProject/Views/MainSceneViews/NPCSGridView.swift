@@ -77,72 +77,91 @@ struct NPCSGridView: View {
     var body: some View {
         ScrollViewReader { proxy in
             ZStack {
-                // Background with blur effect on edges
-                HStack(spacing: 0) {
-                    Rectangle()
-                        .fill(Color.clear.opacity(0.7))
-                        .frame(width: 10)
-                        .blur(radius: 3)
-                    Spacer()
-                    Rectangle()
-                        .fill(Color.clear.opacity(0.7))
-                        .frame(width: 10)
-                        .blur(radius: 3)
-                }
-                .allowsHitTesting(false)
-
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 20) {
-                        // Add a scroll position anchor view at the very start
-                        Color.clear
-                            .frame(width: 1)
-                            .id("scrollAnchor")
-                        
-                        ForEach(prepareNPCData()) { data in
-                            NPCGridButton(
-                                npc: data.npc,
-                                isSelected: data.isSelected,
-                                isDisabled: data.isDisabled,
-                                onTap: {
-                                    npcManager.select(with: data.npc)
-                                },
-                                onAction: onAction
-                            )
-                            .scrollTransition(.interactive) { content, phase in
-                                content
-                                    .opacity(phase.isIdentity ? 1.0 : 0.5)
-                                    .scaleEffect(phase.isIdentity ? 1.0 : 0.8)
-                                    .rotation3DEffect(
-                                        .degrees(phase.value * -20),
-                                        axis: (x: 0, y: 1, z: 0)
-                                    )
-                            }
-                            .shadow(color: data.isSelected ? data.npc.isUnknown ? Color.white.opacity(0.8) : data.npc.currentActivity.color.opacity(0.5) : .black.opacity(0.5), radius: data.isSelected ? 15 : 10)
-                            .id(data.id)
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 10)
-                }
-                .frame(height: 280)
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.clear.opacity(0.7))
-                        .shadow(color: .black.opacity(0.2), radius: 15, x: 0, y: 5)
-                        .blur(radius: 2)
-                )
-                .clipShape(RoundedRectangle(cornerRadius: 12))
-                .mask(edgeMask)
+                // Background blur remains here
+                blurredBackgroundEdges
                 
-                // Scroll when an actual interaction action occurs
-                .onChange(of: npcManager.lastInteractionActionTimestamp) { _ in 
-                    guard npcManager.lastInteractionActionTimestamp != nil else { return }
-                    
-                    withAnimation(.easeOut(duration: 0.3)) {
-                        // Scroll to the anchor view instead of first NPC
-                        proxy.scrollTo("scrollAnchor", anchor: .leading)
+                // Call the extracted ScrollView
+                npcScrollView(proxy: proxy)
+            }
+        }
+    }
+    
+    // Extracted background blur view
+    private var blurredBackgroundEdges: some View {
+        HStack(spacing: 0) {
+            Rectangle()
+                .fill(Color.clear.opacity(0.7))
+                .frame(width: 10)
+                .blur(radius: 3)
+            Spacer()
+            Rectangle()
+                .fill(Color.clear.opacity(0.7))
+                .frame(width: 10)
+                .blur(radius: 3)
+        }
+        .allowsHitTesting(false)
+    }
+    
+    // Extracted ScrollView
+    private func npcScrollView(proxy: ScrollViewProxy) -> some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack(spacing: 20) {
+                // Add a scroll position anchor view at the very start
+                Color.clear
+                    .frame(width: 1)
+                    .id("scrollAnchor")
+                
+                ForEach(prepareNPCData()) { data in
+                    NPCGridButton(
+                        npc: data.npc,
+                        isSelected: data.isSelected,
+                        isDisabled: data.isDisabled,
+                        onTap: {
+                            // First select the NPC
+                            npcManager.select(with: data.npc)
+                            
+                            // Then scroll to center with animation
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                proxy.scrollTo(data.id, anchor: .center)
+                            }
+                        },
+                        onAction: onAction
+                    )
+                    .scrollTransition(.interactive) { content, phase in
+                        let opacityValue = 1.0 - abs(phase.value) * 1.0
+                        let scaleValue = 1.0 - abs(phase.value) * 0.2
+                        let rotationValue = phase.value * -20
+                        
+                        return content
+                            .opacity(opacityValue)
+                            .scaleEffect(scaleValue)
+                            .rotation3DEffect(
+                                .degrees(rotationValue),
+                                axis: (x: 0, y: 1, z: 0)
+                            )
                     }
+                    .shadow(color: data.isSelected ? data.npc.isUnknown ? Color.white.opacity(0.8) : data.npc.currentActivity.color.opacity(0.5) : .black.opacity(0.5), radius: data.isSelected ? 15 : 10)
+                    .id(data.id)
                 }
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 10)
+        }
+        .frame(height: 300)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.clear.opacity(0.7))
+                .shadow(color: .black.opacity(0.2), radius: 15, x: 0, y: 5)
+                .blur(radius: 2)
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .mask(edgeMask)
+        .onChange(of: npcManager.lastInteractionActionTimestamp) { _ in 
+            guard npcManager.lastInteractionActionTimestamp != nil else { return }
+            
+            withAnimation(.easeOut(duration: 0.3)) {
+                // Scroll to the anchor view instead of first NPC
+                proxy.scrollTo("scrollAnchor", anchor: .leading)
             }
         }
     }
@@ -168,7 +187,7 @@ struct NPCGridButton: View {
     
     private let parallaxIntensity: CGFloat = 8 // Adjust sensitivity
     private let buttonWidth: CGFloat = 160
-    private let buttonHeight: CGFloat = 260
+    private let buttonHeight: CGFloat = 280
 
     var body: some View {
         Button(action: {
@@ -258,25 +277,29 @@ struct NPCGridButton: View {
                                 Text(npc.name)
                                     .font(Theme.smallFont)
                                     .foregroundColor(Theme.textColor)
+                                Spacer()
+                                Text("Age \(npc.age)")
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Theme.textColor)
                             }
                             .padding(.top, 4)
                             
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack {
-                                    Text("Resistance")
+                                    Text("Relationship ")
                                         .font(Theme.smallFont)
                                         .foregroundColor(Theme.textColor)
                                     
-                                    Text(String(format: "%.1f%%", VampireGaze.shared.calculateNPCResistance(npc: npc)))
+                                    Text(getRelationshipPercentage())
                                         .font(Theme.smallFont)
-                                        .foregroundColor(Theme.bloodProgressColor)
+                                        .foregroundColor(getRelationshipColor())
                                 }
                                 
-                                GradientProgressBar(value: VampireGaze.shared.calculateNPCResistance(npc: npc))
+                                GradientProgressBar(value: Float(abs(npc.playerRelationship.value)), barColor: npc.playerRelationship.value >= 0 ? Color.green : Color.red, backgroundColor: Theme.textColor.opacity(0.3))
                                     .frame(width: 140, height: 5)
-                                    .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
+                                    .shadow(color: Color.green.opacity(0.3), radius: 2)
                             }
-                            .padding(.top, 4)
+                            .padding(.top, 10)
 
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(alignment: .top) {
@@ -293,13 +316,14 @@ struct NPCGridButton: View {
                                     .frame(width: 140)
                                     .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
                             }
+                            .padding(.top, 6)
                         }
                         .padding(.horizontal, 8)
                         .padding(.vertical, 2)
                     }
                 }
                 
-                if !npc.isUnknown {
+                if !npc.isUnknown && npc.isAlive {
                     VStack(alignment: .leading) {
                         if npc.isSpecialBehaviorSet {
                             HStack {
@@ -372,6 +396,7 @@ struct NPCGridButton: View {
                         .background(Color.white.opacity(0.05))
                         .blur(radius: 0.5)
                 }
+                
             }
             .cornerRadius(12)
             .frame(width: buttonWidth, height: buttonHeight)
@@ -446,6 +471,22 @@ struct NPCGridButton: View {
             return Image(uiImage: UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")!)
         } else {
             return Image(uiImage: UIImage(named: "npc\(npc.id.description)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")!)
+        }
+    }
+    
+    private func getRelationshipPercentage() -> String {
+        if npc.playerRelationship.value < 0 {
+            return "-\(abs(npc.playerRelationship.value))%"
+        } else {
+            return "\(npc.playerRelationship.value)%"
+        }
+    }
+    
+    private func getRelationshipColor() -> Color {
+        if npc.playerRelationship.value < 0 {
+            return Theme.bloodProgressColor
+        } else {
+            return .green
         }
     }
 }

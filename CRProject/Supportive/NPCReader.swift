@@ -61,6 +61,8 @@ class NPCReader : GameService {
     private static func createNPC(from data: [String: Any]) -> NPC? {
         guard let id = data["id"] as? Int,
               let name = data["name"] as? String,
+              let morality = data["morality"] as? String,
+              let background = data["background"] as? String,
               let age = data["age"] as? Int,
               let homeLocationId = data["homeLocationId"] as? Int,
               let sexString = data["sex"] as? String,
@@ -154,6 +156,8 @@ class NPCReader : GameService {
         
         var npc = NPC(name: name, sex: sex, age: age, profession: profession, isVampire: isVampire, id: id)
         npc.homeLocationId = homeLocationId
+        npc.morality = morality
+        npc.background = background
         
         return npc
     }
