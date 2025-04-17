@@ -289,7 +289,7 @@ struct NPCGridButton: View {
                                     Text("Relationship ")
                                         .font(Theme.smallFont)
                                         .foregroundColor(Theme.textColor)
-                                    
+                                    Spacer()
                                     Text(getRelationshipPercentage())
                                         .font(Theme.smallFont)
                                         .foregroundColor(getRelationshipColor())
@@ -299,14 +299,14 @@ struct NPCGridButton: View {
                                     .frame(width: 140, height: 5)
                                     .shadow(color: Color.green.opacity(0.3), radius: 2)
                             }
-                            .padding(.top, 10)
+                            .padding(.top, 8)
 
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(alignment: .top) {
                                     Text("Health")
                                         .font(Theme.smallFont)
                                         .foregroundColor(Theme.textColor)
-                                    
+                                    Spacer()
                                     Text(String(format: "%.1f%%", npc.bloodMeter.currentBlood))
                                         .font(Theme.smallFont)
                                         .foregroundColor(Theme.bloodProgressColor)
@@ -316,7 +316,7 @@ struct NPCGridButton: View {
                                     .frame(width: 140)
                                     .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
                             }
-                            .padding(.top, 6)
+                            .padding(.top, 8)
                         }
                         .padding(.horizontal, 8)
                         .padding(.vertical, 2)
@@ -330,31 +330,30 @@ struct NPCGridButton: View {
                                 Spacer()
                                 ZStack {
                                     VStack(spacing: 4) {
-                                        ProgressBar(value: Double(Double(npc.specialBehaviorTime) / 4.0), color: npc.currentActivity.color, height: 6)
-                                            .shadow(color: npc.currentActivity.color.opacity(0.3), radius: 2)
-                                        
                                         HStack(alignment: .center) {
                                             Spacer()
-                                            Text(npc.currentActivity.description)
+                                            Image(systemName: npc.currentActivity.icon)
+                                                .foregroundColor(npc.currentActivity.color)
                                                 .font(Theme.smallFont)
-                                                .foregroundColor(Theme.textColor)
-                                            
-                                            Text(String(format: "%.1f%%", Double(npc.specialBehaviorTime) / 4.0 * 100))
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.bloodProgressColor)
+                                                .padding(.leading, 3)
+                                            GradientProgressBar(value: Float(Float(npc.specialBehaviorTime) / 4.0 * 100), barColor: npc.currentActivity.color, backgroundColor: Theme.textColor.opacity(0.3))
+                                                .frame(width: 100, height: 5)
+                                                .shadow(color: Color.green.opacity(0.3), radius: 2)
+                                                .padding(.leading, -5)
                                             Spacer()
                                         }
-                                        .padding(.bottom, 4)
                                     }
                                 }
-                                .frame(width: 120)
+                                .frame(width: 120, height: 15)
                                 .background(
                                     RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color.black.opacity(0.9))
+                                        .fill(Color.black.opacity(0.7))
                                         .shadow(color: .black.opacity(0.3), radius: 4)
                                 )
+                                .padding(.top, 1)
                                 Spacer()
                             }
+                            .padding(.top, -3)
                         }
                         Spacer()
                         HStack {

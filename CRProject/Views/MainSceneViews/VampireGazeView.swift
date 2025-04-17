@@ -240,7 +240,7 @@ struct VampireGazeView: View {
                                 Text("Resistance")
                                     .font(Theme.smallFont)
                                     .foregroundColor(Theme.textColor)
-                                
+                                Spacer()
                                 Text(String(format: "%.1f%%", VampireGaze.shared.calculateNPCResistance(npc: npc)))
                                     .font(Theme.smallFont)
                                     .foregroundColor(Theme.bloodProgressColor)
@@ -257,7 +257,7 @@ struct VampireGazeView: View {
                                 Text("Health")
                                     .font(Theme.smallFont)
                                     .foregroundColor(Theme.textColor)
-                                
+                                Spacer()
                                 Text(String(format: "%.1f%%", npc.bloodMeter.currentBlood))
                                     .font(Theme.smallFont)
                                     .foregroundColor(Theme.bloodProgressColor)
@@ -267,6 +267,7 @@ struct VampireGazeView: View {
                                 .frame(width: 140)
                                 .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
                         }
+                        .padding(.top, 8)
                     }
                     .padding(.horizontal, 8)
                     .padding(.vertical, 2)
@@ -275,37 +276,6 @@ struct VampireGazeView: View {
             
             if !npc.isUnknown {
                 VStack(alignment: .leading) {
-                    if npc.isSpecialBehaviorSet {
-                        HStack {
-                            Spacer()
-                            ZStack {
-                                VStack(spacing: 4) {
-                                    ProgressBar(value: Double(Double(npc.specialBehaviorTime) / 4.0), color: npc.currentActivity.color, height: 6)
-                                        .shadow(color: npc.currentActivity.color.opacity(0.3), radius: 2)
-                                    
-                                    HStack(alignment: .center) {
-                                        Spacer()
-                                        Text(npc.currentActivity.description)
-                                            .font(Theme.smallFont)
-                                            .foregroundColor(Theme.textColor)
-                                        
-                                        Text(String(format: "%.1f%%", Double(npc.specialBehaviorTime) / 4.0 * 100))
-                                            .font(Theme.smallFont)
-                                            .foregroundColor(Theme.bloodProgressColor)
-                                        Spacer()
-                                    }
-                                    .padding(.bottom, 4)
-                                }
-                            }
-                            .frame(width: 120)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.black.opacity(0.9))
-                                    .shadow(color: .black.opacity(0.3), radius: 4)
-                            )
-                            Spacer()
-                        }
-                    }
                     Spacer()
                     HStack {
                         Image(systemName: npc.profession.icon)
@@ -341,18 +311,19 @@ struct VampireGazeView: View {
             }
             
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Theme.primaryColor.opacity(0.8), lineWidth: 2)
+                .stroke(npc.currentActivity.color.opacity(0.8), lineWidth: 2)
                 .background(Color.white.opacity(0.05))
                 .blur(radius: 0.5)
         }
         .cornerRadius(12)
-        .frame(width: 160, height: 260)
+        .frame(width: 160, height: 280)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.black.opacity(0.3))
                 .blur(radius: 2)
                 .offset(y: 2)
         )
+        .shadow(color: npc.currentActivity.color.opacity(0.5), radius: 15)
     }
 }
 
