@@ -27,6 +27,7 @@ class NPCInteractionService : GameService {
         .findOutCasualty: ("just found dead corpse of", NPCActivityType.casualty.icon, NPCActivityType.casualty.color),
         .awareAboutCasualty: ("reports about casualty", NPCActivityType.casualty.icon, NPCActivityType.casualty.color),
         .askForProtection: ("hires for protection", NPCActivityType.protect.icon, NPCActivityType.protect.color),
+        .trade: ("trade goods with", NPCActivityType.sell.icon, NPCActivityType.sell.color),
         .conversation: ("shares humors with", NPCActivityType.socialize.icon, NPCActivityType.socialize.color)
     ]
     
@@ -130,6 +131,8 @@ class NPCInteractionService : GameService {
             handlePatrol(currentNPC: currentNPC, otherNPC: otherNPC)
         case .smithingCraft, .alchemyCraft:
             handleCraft(currentNPC: currentNPC, otherNPC: otherNPC)
+        case .trade:
+            handleTrade(currentNPC: currentNPC, otherNPC: otherNPC)
         case .gameOver:
             vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 100.0)
         default:
@@ -220,8 +223,6 @@ class NPCInteractionService : GameService {
         otherNPC.decreaseNPCRelationship(with: 4, of: currentNPC)
     }
     
-    
-    
     private func handlePatrol(currentNPC: NPC, otherNPC: NPC)
     {
         currentNPC.decreaseNPCRelationship(with: 2, of: otherNPC)
@@ -232,6 +233,12 @@ class NPCInteractionService : GameService {
     {
         currentNPC.increaseNPCRelationship(with: 10, of: otherNPC)
         otherNPC.increaseNPCRelationship(with: 10, of: currentNPC)
+    }
+    
+    private func handleTrade(currentNPC: NPC, otherNPC: NPC)
+    {
+        currentNPC.increaseNPCRelationship(with: 3, of: otherNPC)
+        otherNPC.increaseNPCRelationship(with: 3, of: currentNPC)
     }
     
     private func handleFlirtInteraction(currentNPC: NPC, otherNPC: NPC, scene: Scene) {
@@ -278,6 +285,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
     case awareAboutCasualty = "awareAboutCasualty"
     case findOutCasualty = "findOutCasualty"
     case askForProtection = "askForProtection"
+    case trade = "trade"
     case gameOver = "gameOver"
     
     static func getPossibleInteraction(currentNPC: NPC, otherNPC: NPC, gameTimeService: GameTimeService, currentScene: Scene) -> NPCInteraction {
@@ -311,7 +319,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
             }
             
             // Serve
-            if (currentNPC.profession == .tavernKeeper || currentNPC.profession == .servant || currentNPC.profession == .barmaid) && (otherNPC.profession != .tavernKeeper && otherNPC.profession != .servant && otherNPC.profession != .barmaid && otherNPC.profession != .kitchenStaff) {
+            if (currentNPC.profession == .tavernKeeper || currentNPC.profession == .servant || currentNPC.profession == .barmaid) && (otherNPC.profession != .tavernKeeper && otherNPC.profession != .servant && otherNPC.profession != .barmaid && otherNPC.profession != .kitchenStaff)
+                && (otherNPC.currentActivity == .drink || otherNPC.currentActivity == .eat){
                 var wouldOfferService = Int.random(in: 0...100) > 20
                 
                 availableInteractions.append(wouldOfferService ? .service : .observing)
@@ -347,7 +356,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             
             // Flirt
             if currentNPC.profession != .priest && otherNPC.profession != .priest && currentNPC.sex != otherNPC.sex && currentNPC.age < 50 && otherNPC.age < 50 {
-                var entertainCap = gameTimeService.isNightTime ? 85 : 90
+                var entertainCap = gameTimeService.isNightTime ? 90 : 95
           
                 var wouldFlirt = Int.random(in: 0...100) > entertainCap
                 
@@ -379,15 +388,17 @@ enum NPCInteraction : String, CaseIterable, Codable {
             }
             
             // Conversation
-            var wouldConversate = Int.random(in: 0...100) > 30
-            
-            if wouldConversate {
-                var currentRelationship = currentNPC.getNPCRelationshipValue(of: otherNPC)
-                var argueCap = (currentRelationship >= 0 ? (currentRelationship + 70) : (70 - abs(currentRelationship)))
+            if (currentNPC.currentActivity == otherNPC.currentActivity  ){
+                var wouldConversate = Int.random(in: 0...100) > 90
                 
-                var wouldArgue = Int.random(in: 0...100) > Int(argueCap)
-                
-                availableInteractions.append(wouldArgue ? .argue : .conversation)
+                if wouldConversate {
+                    var currentRelationship = currentNPC.getNPCRelationshipValue(of: otherNPC)
+                    var argueCap = (currentRelationship >= 0 ? (currentRelationship + 70) : (70 - abs(currentRelationship)))
+                    
+                    var wouldArgue = Int.random(in: 0...100) > Int(argueCap)
+                    
+                    availableInteractions.append(wouldArgue ? .argue : .conversation)
+                }
             }
             
             // Looking for protection
@@ -397,6 +408,18 @@ enum NPCInteraction : String, CaseIterable, Codable {
                 
                 if wouldAskForProtection {
                     return askForProtection
+                }
+            }
+            
+            // Trade
+            if currentNPC.currentActivity == .sell {
+                if (currentScene.sceneType == .blacksmith || currentScene.sceneType == .alchemistShop || currentScene.sceneType == .bookstore
+                    || currentNPC.profession == .merchant) && !gameTimeService.isNightTime {
+                    var wouldTrade = Int.random(in: 0...100) > 20
+                    
+                    if wouldTrade {
+                        availableInteractions.append(.trade)
+                    }
                 }
             }
             

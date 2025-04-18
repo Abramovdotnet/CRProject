@@ -62,6 +62,7 @@ class NPCReader : GameService {
         guard let id = data["id"] as? Int,
               let name = data["name"] as? String,
               let morality = data["morality"] as? String,
+              let motivation = data["motivation"] as? String,
               let background = data["background"] as? String,
               let age = data["age"] as? Int,
               let homeLocationId = data["homeLocationId"] as? Int,
@@ -156,8 +157,18 @@ class NPCReader : GameService {
         
         var npc = NPC(name: name, sex: sex, age: age, profession: profession, isVampire: isVampire, id: id)
         npc.homeLocationId = homeLocationId
-        npc.morality = morality
         npc.background = background
+        
+        // Initialize morality and motivation using their respective initializers
+        if let moralityEnum = Morality(rawValue: morality) {
+           npc.morality = moralityEnum
+        }
+
+        if let motivationEnum = Motivation(rawValue: motivation) {
+           npc.motivation = motivationEnum
+        } else {
+           npc.motivation = .unknown // Default to unknown if motivation string doesn't match any case
+        }
         
         return npc
     }

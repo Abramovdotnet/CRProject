@@ -10,41 +10,32 @@ struct SelectedNPCView: View {
                 // Action Buttons
                 HStack(spacing: 6) {
                     if !npc.isUnknown {
-                        HStack {
-                            Spacer()
-                            ZStack {
-                                VStack(spacing: 4) {
-                                    HStack(alignment: .center) {
-                                        Spacer()
-                                        Image(systemName: npc.currentActivity.icon)
-                                            .foregroundColor(npc.currentActivity.color)
-                                            .font(Theme.smallFont)
-                                            .padding(.leading, 3)
-                                        GradientProgressBar(value: Float(Float(npc.specialBehaviorTime) / 4.0 * 100), barColor: npc.currentActivity.color, backgroundColor: Theme.textColor.opacity(0.3))
-                                            .frame(width: 50, height: 5)
-                                            .shadow(color: Color.green.opacity(0.3), radius: 2)
-                                            .padding(.leading, -5)
-                                        Text(getSpecialBehaviorProgress())
-                                            .font(Theme.smallFont)
-                                            .foregroundColor(Theme.bloodProgressColor)
-                                    }
-                                }
-                            }
-                            .frame(width: 120, height: 15)
-                            .background(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Color.black.opacity(0.7))
-                                    .shadow(color: .black.opacity(0.3), radius: 4)
-                            )
-                            .padding(.top, 1)
-                            Spacer()
+                        Image(systemName: npc.currentActivity.icon)
+                            .foregroundColor(npc.currentActivity.color)
+                            .font(Theme.smallFont)
+                            .padding(.leading, 3)
+                        Text(npc.currentActivity.description)
+                            .font(Theme.smallFont)
+                            .foregroundColor(npc.currentActivity.color)
+                        
+                        if npc.isSpecialBehaviorSet {
+                            Text(getSpecialBehaviorProgress())
+                                .font(Theme.smallFont)
+                                .foregroundColor(Theme.bloodProgressColor)
                         }
-                        .padding(.top, -3)
                     }
-                    Spacer()
-                    Text(npc.morality)
+                    Image(systemName: npc.morality.icon)
                         .font(Theme.smallFont)
-                        .foregroundColor(Theme.textColor)
+                        .foregroundColor(npc.morality.color)
+                    Text(npc.morality.description)
+                        .font(Theme.smallFont)
+                        .foregroundColor(npc.morality.color)
+                    Image(systemName: npc.motivation.icon)
+                        .font(Theme.smallFont)
+                        .foregroundColor(npc.motivation.color)
+                    Text(npc.motivation.description)
+                        .font(Theme.smallFont)
+                        .foregroundColor(npc.motivation.color)
                     
                     if npc.isAlive {
                         ActionButton(

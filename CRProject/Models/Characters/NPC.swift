@@ -16,6 +16,8 @@ class NPC: Character {
     var age: Int = 0
     var profession: Profession = .adventurer
     let bloodMeter: BloodMeter = BloodMeter(initialBlood: 100.0)
+    var morality: Morality = .neutral
+    var motivation: Motivation = .community
     var isVampire: Bool = false
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isMilitary: Bool { profession == .militaryOfficer || profession == .guardman || profession == .cityGuard }
@@ -38,7 +40,6 @@ class NPC: Character {
     var workActivities: [NPCActivityType] = []
     var leisureActivities: [NPCActivityType] = []
     var currentActivity: NPCActivityType = .idle
-    var morality: String = ""
     var background: String = ""
     var playerRelationship: Relationship = Relationship()
     var npcsRelationship: [NPCRelationship] = []
