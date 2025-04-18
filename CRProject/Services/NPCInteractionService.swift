@@ -16,15 +16,18 @@ class NPCInteractionService : GameService {
     private let interactionMessages: [NPCInteraction: (message: String, icon: String, color: Color)] = [
         .service: ("serving", NPCActivityType.serve.icon, NPCActivityType.serve.color),
         .patrol: ("stops", NPCActivityType.patrol.icon, NPCActivityType.patrol.color),
-        .drunkFight: ("starts to fights with", NPCActivityType.drink.icon, NPCActivityType.drink.color),
-        .gambleFight: ("starts to fights with", NPCActivityType.drink.icon, NPCActivityType.drink.color),
+        .drunkFight: ("starts to fights with", "figure.boxing", NPCActivityType.drink.color),
+        .gambleFight: ("starts to fights with", "figure.boxing", NPCActivityType.drink.color),
+        .argue: ("argues with", "captions.bubble.fill", Color.orange),
         .prostitution: ("have a good time with", NPCActivityType.love.icon, NPCActivityType.love.color),
         .flirt: ("flirt with", NPCActivityType.flirt.icon, NPCActivityType.flirt.color),
         .smithingCraft: ("completed smithing order for", NPCActivityType.craft.icon, NPCActivityType.craft.color),
         .alchemyCraft: ("completed alchemy order for", NPCActivityType.craft.icon, NPCActivityType.craft.color),
         .awareAboutVampire: ("warns about vampire attack", NPCActivityType.fleeing.icon, NPCActivityType.fleeing.color),
         .findOutCasualty: ("just found dead corpse of", NPCActivityType.casualty.icon, NPCActivityType.casualty.color),
-        .awareAboutCasualty: ("reports about casualty", NPCActivityType.casualty.icon, NPCActivityType.casualty.color)
+        .awareAboutCasualty: ("reports about casualty", NPCActivityType.casualty.icon, NPCActivityType.casualty.color),
+        .askForProtection: ("hires for protection", NPCActivityType.protect.icon, NPCActivityType.protect.color),
+        .conversation: ("shares humors with", NPCActivityType.socialize.icon, NPCActivityType.socialize.color)
     ]
     
     init() {
@@ -40,7 +43,7 @@ class NPCInteractionService : GameService {
             .filter { $0.npcCount() > 1 }
         
         for scene in scenes {
-            let npcs = scene.getNPCs().filter { $0.currentActivity != .sleep }
+            let npcs = scene.getNPCs().filter { $0.currentActivity != .sleep && !$0.isSpecialBehaviorSet}
             
             for npc in npcs {
                 // Skip if already interacting
@@ -58,6 +61,7 @@ class NPCInteractionService : GameService {
                 let potentialTargets = npcs.filter { otherNPC in
                     otherNPC.id != npc.id &&
                     otherNPC.currentInteractionNPC == nil &&
+                    !otherNPC.isNpcInteractionBehaviorSet &&
                     isInteractionPossible(currentNPC: npc, otherNPC: otherNPC)
                 }
                 
@@ -95,7 +99,7 @@ class NPCInteractionService : GameService {
         
         if let (message, icon, color) = interactionMessages[interaction] {
             gameEventBusService.addMessageWithIcon(
-                message: "\(currentNPC.name), \(currentNPC.profession.rawValue) \(message) \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized)",
+                message: "\(currentNPC.name), \(currentNPC.profession.rawValue) \(message) \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized). Relation: \(currentNPC.getNPCRelationshipValue(of: otherNPC)), State: \(currentNPC.getNPCRelationshipState(of: otherNPC)?.description ?? "Unknown")",
                 icon: icon,
                 iconColor: color,
                 type: .common
@@ -114,6 +118,18 @@ class NPCInteractionService : GameService {
             handleCasualtyAwareness(currentNPC: currentNPC)
         case .flirt:
             handleFlirtInteraction(currentNPC: currentNPC, otherNPC: otherNPC, scene: scene)
+        case .askForProtection:
+            handleAskForProtection(currentNPC: currentNPC, otherNPC: otherNPC)
+        case .conversation:
+            handleConversation(currentNPC: currentNPC, otherNPC: otherNPC)
+        case .prostitution:
+            handleProstitution(currentNPC: currentNPC, otherNPC: otherNPC)
+        case .argue:
+            handleArgue(currentNPC: currentNPC, otherNPC: otherNPC)
+        case .patrol:
+            handlePatrol(currentNPC: currentNPC, otherNPC: otherNPC)
+        case .smithingCraft, .alchemyCraft:
+            handleCraft(currentNPC: currentNPC, otherNPC: otherNPC)
         case .gameOver:
             vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 100.0)
         default:
@@ -124,7 +140,16 @@ class NPCInteractionService : GameService {
     private func handleFightInteraction(currentNPC: NPC, otherNPC: NPC) {
         let currentNPCHasAdvantage = (currentNPC.profession == .guardman || currentNPC.profession == .cityGuard) &&
             (otherNPC.profession != .guardman && otherNPC.profession != .cityGuard)
-        let successCap = currentNPCHasAdvantage ? 70 : 100
+        var successCap = currentNPCHasAdvantage ? 30 : 50
+        
+        if currentNPC.alliedWithNPC != nil {
+  
+            if currentNPC.alliedWithNPC?.currentActivity == .protect {
+                successCap -= 20
+            } else {
+                successCap -= 10
+            }
+        }
         let currentNPCWon = Int.random(in: 0...100) > successCap
         
         if currentNPCWon {
@@ -134,6 +159,9 @@ class NPCInteractionService : GameService {
             currentNPC.bloodMeter.useBlood(Float.random(in: 20.0...50.0))
             otherNPC.bloodMeter.useBlood(Float.random(in: 20.0...50.0))
         }
+        
+        currentNPC.decreaseNPCRelationship(with: 10, of: otherNPC)
+        otherNPC.decreaseNPCRelationship(with: 10, of: currentNPC)
     }
     
     private func handleVampireAwareness(otherNPC: NPC) {
@@ -159,8 +187,57 @@ class NPCInteractionService : GameService {
         }
     }
     
+    private func handleAskForProtection(currentNPC: NPC, otherNPC: NPC) {
+        var protectionTime = Int.random(in: 3...72)
+        otherNPC.isNpcInteractionBehaviorSet = true
+        otherNPC.npcInteractionSpecialTime = protectionTime
+        otherNPC.npcInteractionTargetNpcId = currentNPC.id
+        otherNPC.alliedWithNPC = currentNPC
+        currentNPC.alliedWithNPC = otherNPC
+        currentNPC.increaseNPCRelationship(with: 10, of: otherNPC)
+        otherNPC.increaseNPCRelationship(with: 10, of: currentNPC)
+    }
+    
+    private func handleConversation(currentNPC: NPC, otherNPC: NPC)
+    {
+        currentNPC.currentActivity = .socialize
+        otherNPC.currentActivity = .socialize
+        currentNPC.increaseNPCRelationship(with: 2, of: otherNPC)
+        otherNPC.increaseNPCRelationship(with: 2, of: currentNPC)
+    }
+    
+    private func handleProstitution(currentNPC: NPC, otherNPC: NPC)
+    {
+        currentNPC.increaseNPCRelationship(with: 5, of: otherNPC)
+        otherNPC.increaseNPCRelationship(with: 5, of: currentNPC)
+    }
+      
+    private func handleArgue(currentNPC: NPC, otherNPC: NPC)
+    {
+        currentNPC.currentActivity = .socialize
+        otherNPC.currentActivity = .socialize
+        currentNPC.decreaseNPCRelationship(with: 4, of: otherNPC)
+        otherNPC.decreaseNPCRelationship(with: 4, of: currentNPC)
+    }
+    
+    
+    
+    private func handlePatrol(currentNPC: NPC, otherNPC: NPC)
+    {
+        currentNPC.decreaseNPCRelationship(with: 2, of: otherNPC)
+        otherNPC.decreaseNPCRelationship(with: 2, of: currentNPC)
+    }
+    
+    private func handleCraft(currentNPC: NPC, otherNPC: NPC)
+    {
+        currentNPC.increaseNPCRelationship(with: 10, of: otherNPC)
+        otherNPC.increaseNPCRelationship(with: 10, of: currentNPC)
+    }
+    
     private func handleFlirtInteraction(currentNPC: NPC, otherNPC: NPC, scene: Scene) {
-        let isSuccessful = Int.random(in: 0...100) > 80
+        var flirtCap = 80 - otherNPC.getNPCRelationshipValue(of: currentNPC)
+        
+        let isSuccessful = Int.random(in: 0...100) > flirtCap
         
         if isSuccessful {
             gameEventBusService.addMessageWithIcon(
@@ -169,6 +246,8 @@ class NPCInteractionService : GameService {
                 iconColor: NPCActivityType.flirt.color,
                 type: .common
             )
+            otherNPC.increaseNPCRelationship(with: 5, of: currentNPC)
+            currentNPC.increaseNPCRelationship(with: 5, of: otherNPC)
         } else {
             gameEventBusService.addMessageWithIcon(
                 message: "\(currentNPC.name), \(currentNPC.profession.rawValue) tries to flirts with \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized), but beeing rejected",
@@ -176,12 +255,16 @@ class NPCInteractionService : GameService {
                 iconColor: NPCActivityType.flirt.color,
                 type: .common
             )
+            
+            otherNPC.decreaseNPCRelationship(with: 5, of: currentNPC)
+            currentNPC.decreaseNPCRelationship(with: 5, of: otherNPC)
         }
     }
 }
 
 enum NPCInteraction : String, CaseIterable, Codable {
     case conversation = "conversation"
+    case argue = "argue"
     case service = "service"
     case patrol = "patrol"
     case drunkFight = "drunk fight"
@@ -194,6 +277,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
     case awareAboutVampire = "awareAboutVampire"
     case awareAboutCasualty = "awareAboutCasualty"
     case findOutCasualty = "findOutCasualty"
+    case askForProtection = "askForProtection"
     case gameOver = "gameOver"
     
     static func getPossibleInteraction(currentNPC: NPC, otherNPC: NPC, gameTimeService: GameTimeService, currentScene: Scene) -> NPCInteraction {
@@ -236,12 +320,10 @@ enum NPCInteraction : String, CaseIterable, Codable {
             // Patrol
             if currentNPC.isMilitary && !otherNPC.isMilitary && otherNPC.profession != .lordLady {
                 if currentNPC.currentActivity == .patrol || currentNPC.currentActivity == .guardPost {
-                    if otherNPC.currentActivity == .drink || otherNPC.currentActivity == .love  || otherNPC.currentActivity == .spy {
-                        var wouldInteract = Int.random(in: 0...100) > 70
-                        
-                        if wouldInteract {
-                            availableInteractions.append(.patrol)
-                        }
+                    var wouldInteract = Int.random(in: 0...100) > (gameTimeService.isNightTime ? 40 : 70)
+                    
+                    if wouldInteract {
+                        availableInteractions.append(.patrol)
                     }
                 }
             }
@@ -261,12 +343,6 @@ enum NPCInteraction : String, CaseIterable, Codable {
                     availableInteractions.append(.prostitution)
                 }
 
-            } else {
-                var wouldConversate = Int.random(in: 0...100) > 20
-                
-                if wouldConversate {
-                    availableInteractions.append(.conversation)
-                }
             }
             
             // Flirt
@@ -299,6 +375,28 @@ enum NPCInteraction : String, CaseIterable, Codable {
                     if wouldExecuteOrder {
                         availableInteractions.append(.alchemyCraft)
                     }
+                }
+            }
+            
+            // Conversation
+            var wouldConversate = Int.random(in: 0...100) > 30
+            
+            if wouldConversate {
+                var currentRelationship = currentNPC.getNPCRelationshipValue(of: otherNPC)
+                var argueCap = (currentRelationship >= 0 ? (currentRelationship + 70) : (70 - abs(currentRelationship)))
+                
+                var wouldArgue = Int.random(in: 0...100) > Int(argueCap)
+                
+                availableInteractions.append(wouldArgue ? .argue : .conversation)
+            }
+            
+            // Looking for protection
+            if currentNPC.bloodMeter.currentBlood < 70 && otherNPC.profession == .mercenary && !otherNPC.isNpcInteractionBehaviorSet {
+                var protectionCap = 100 - currentNPC.bloodMeter.currentBlood
+                var wouldAskForProtection = Int.random(in: 0...100) > Int(protectionCap)
+                
+                if wouldAskForProtection {
+                    return askForProtection
                 }
             }
             

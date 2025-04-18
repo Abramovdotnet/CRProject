@@ -36,7 +36,6 @@ class NPCActivityManager {
     }
     
     func getActivity(for npc: NPC) -> NPCActivityType {
-        
         if npc.currentActivity == .fleeing {
             return npc.currentActivity
         }
@@ -77,9 +76,7 @@ class NPCActivityManager {
     }
     
     func getSpecialBehaviorActivity(for npc: NPC) -> NPCActivityType{
-        if npc.bloodMeter.currentBlood > 40 && npc.isIntimidated {
-            return .seductedByPlayer
-        } else if npc.isVampireAttackWitness {
+        if npc.isVampireAttackWitness {
             return .fleeing
         } else if npc.isCasualtyWitness {
             return .casualty

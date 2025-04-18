@@ -74,8 +74,8 @@ enum Profession: String, CaseIterable, Codable {
         case .shipCaptain:  return "person.fill.badge.plus"
         case .pilgrim:      return "person.fill.checkmark"
         case .courtesan:    return "heart.fill"
-        case .mercenary:    return "sword"
-        case .thug:         return "hand.thumbsdown"
+        case .mercenary:    return "person.badge.shield.checkmark.fill"
+        case .thug:         return "figure.wrestling"
         case .noProfession: return "person.fill"
         }
     }

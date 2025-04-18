@@ -24,6 +24,9 @@ class NPC: Character {
     var intimidationDay: Int = 0
     var isBeasy: Bool = false
     var isSpecialBehaviorSet: Bool = false
+    var isNpcInteractionBehaviorSet: Bool = false
+    var npcInteractionSpecialTime: Int = 0
+    var npcInteractionTargetNpcId: Int = 0
     var specialBehaviorTime: Int = 0
     var isVampireAttackWitness = false
     var isCasualtyWitness = false
@@ -39,6 +42,7 @@ class NPC: Character {
     var background: String = ""
     var playerRelationship: Relationship = Relationship()
     var npcsRelationship: [NPCRelationship] = []
+    var alliedWithNPC: NPC?
     
     var lastPlayerInteractionDate: Date = Date()
     
@@ -80,22 +84,22 @@ class NPC: Character {
     }
     
     func increasePlayerRelationship(with value: Int) {
-        playerRelationship.increase(value: value)
+        playerRelationship.increase(amount: value)
     }
     
     func decreasePlayerRelationship(with value: Int) {
-        playerRelationship.decrease(value: value)
+        playerRelationship.decrease(amount: value)
     }
     
     func increaseNPCRelationship(with value: Int, of npc: NPC) {
         let relationshipIndex = npcsRelationship.firstIndex { $0.npcId == npc.id }
         
         if let index = relationshipIndex {
-            npcsRelationship[index].increase(value: value)
+            npcsRelationship[index].increase(amount: value)
         } else {
             let relationship = NPCRelationship()
             relationship.npcId = npc.id
-            relationship.increase(value: value)
+            relationship.increase(amount: value)
             
             npcsRelationship.append(relationship)
         }
@@ -105,13 +109,33 @@ class NPC: Character {
         let relationshipIndex = npcsRelationship.firstIndex { $0.npcId == npc.id }
         
         if let index = relationshipIndex {
-            npcsRelationship[index].decrease(value: value)
+            npcsRelationship[index].decrease(amount: value)
         } else {
             let relationship = NPCRelationship()
             relationship.npcId = npc.id
-            relationship.decrease(value: value)
+            relationship.decrease(amount: value)
             
             npcsRelationship.append(relationship)
+        }
+    }
+    
+    func getNPCRelationshipValue(of npc: NPC) -> Int {
+        let relationshipIndex = npcsRelationship.firstIndex { $0.npcId == npc.id }
+        
+        if let index = relationshipIndex {
+            return npcsRelationship[index].value
+        } else {
+            return 0
+        }
+    }
+    
+    func getNPCRelationshipState(of npc: NPC) -> RelationshipState? {
+        let relationshipIndex = npcsRelationship.firstIndex { $0.npcId == npc.id }
+        
+        if let index = relationshipIndex {
+            return npcsRelationship[index].state
+        } else {
+            return nil
         }
     }
 }

@@ -21,7 +21,7 @@ struct SelectedNPCView: View {
                                             .font(Theme.smallFont)
                                             .padding(.leading, 3)
                                         GradientProgressBar(value: Float(Float(npc.specialBehaviorTime) / 4.0 * 100), barColor: npc.currentActivity.color, backgroundColor: Theme.textColor.opacity(0.3))
-                                            .frame(width: 60, height: 5)
+                                            .frame(width: 50, height: 5)
                                             .shadow(color: Color.green.opacity(0.3), radius: 2)
                                             .padding(.leading, -5)
                                         Text(getSpecialBehaviorProgress())

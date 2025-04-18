@@ -23,6 +23,7 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case harvest = "Harvesting"
     case cook = "Cooking"
     case transport = "Transporting"
+    case protect = "Protection"
     
     // Social/Leisure
     case socialize = "Socializing"
@@ -32,6 +33,7 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case gamble = "Gambling"
     case bathe = "Bathing"
     case explore = "Exploring"
+    case meet = "Meeting"
     
     // Special
     case quest = "Questing"
@@ -45,6 +47,7 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case duzzled = "Duzzled"
     case fleeing = "Fleeing"
     case casualty = "Casualty"
+    case lookingForProtection = "Looking for protection"
     case followingPlayer = "Following"
     case allyingPlayer = "Allying"
     
@@ -77,6 +80,7 @@ extension NPCActivityType {
         case .harvest: return ["alchemistShop", "square"] // Gardens/plants
         case .cook: return ["house", "manor", "tavern"]
         case .transport: return ["warehouse", "docks", "market"]
+        case .protect: return []
         
         // Social/Leisure
         case .socialize: return ["tavern", "square", "market", "bathhouse"]
@@ -85,7 +89,8 @@ extension NPCActivityType {
         case .drink: return ["tavern", "brothel", "house", "road"]
         case .gamble: return ["tavern", "brothel"]
         case .bathe: return ["bathhouse"]
-        case .explore: return ["crypt", "district"] // Exploration sites
+        case .explore: return ["tavern", "market", "manor", "brothel", "blacksmith", "alchemistShop", "bookstore", "road", "square", "military", "bathhouse"] // Exploration sites
+        case .meet: return []
         
         // Special
         case .quest: return ["tavern", "keep"] // Quest givers
@@ -93,6 +98,7 @@ extension NPCActivityType {
         case .spy: return ["brothel", "tavern", "road"]
         case .love: return []
         case .flirt: return []
+        case .lookingForProtection: return ["tavern", "manor"]
             
         // Action
         case .seductedByPlayer: return []
@@ -154,6 +160,7 @@ extension NPCActivityType {
         case .harvest: return "leaf.fill"
         case .cook: return "flame.fill"
         case .transport: return "shippingbox.fill"
+        case .protect: return "shield.fill"
         
         // Social/Leisure
         case .socialize: return "person.2.fill"
@@ -163,6 +170,7 @@ extension NPCActivityType {
         case .gamble: return "dice.fill"
         case .bathe: return "shower.fill"
         case .explore: return "map.fill"
+        case .meet: return "captions.bubble.fill"
         
         // Special
         case .quest: return "star.fill"
@@ -170,6 +178,7 @@ extension NPCActivityType {
         case .spy: return "eye.fill"
         case .love: return "heart.fill"
         case .flirt: return "heart"
+        case .lookingForProtection: return "hand.thumbsup.fill"
             
         // Action
         case .seductedByPlayer: return "heart.fill"
@@ -204,6 +213,7 @@ extension NPCActivityType {
         case .harvest: return .green
         case .cook: return .orange
         case .transport: return .brown
+        case .protect: return .green
         
         // Social/Leisure
         case .socialize: return .purple
@@ -213,6 +223,7 @@ extension NPCActivityType {
         case .gamble: return .red
         case .bathe: return .blue
         case .explore: return .green
+        case .meet: return .green
         
         // Special
         case .quest: return .yellow
@@ -220,6 +231,7 @@ extension NPCActivityType {
         case .spy: return .purple
         case .love: return .pink
         case .flirt: return .red
+        case .lookingForProtection: return .pink
             
         // Action
         case .seductedByPlayer: return .red
@@ -235,7 +247,7 @@ extension NPCActivityType {
 extension Profession {
     /// Base activities available to all professions
     private var baseActivities: [NPCActivityType] {
-        return [.sleep, .eat, .idle, .socialize]
+        return [.sleep, .eat, .idle, .socialize, .meet]
     }
     
     /// Profession-specific work activities
@@ -289,7 +301,7 @@ extension Profession {
         
         // Specialized
         case .adventurer: return [.explore, .quest]
-        case .mercenary: return [.quest, .explore]
+        case .mercenary: return [.explore]
         case .thug: return [.quest, .explore]
         
         // Learning/Unemployed
@@ -341,6 +353,8 @@ extension Profession {
         // Adventurous
         case .adventurer:
             return [.drink, .gamble, .explore]
+        case .mercenary:
+            return [.drink, .gamble, .explore, .train]
         
         // Special Cases
         case .apprentice: return [.study]

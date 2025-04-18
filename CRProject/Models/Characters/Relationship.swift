@@ -14,16 +14,18 @@ class Relationship : Codable {
         state = RelationshipState.getState(value: value)
     }
     
-    func increase(value: Int) {
-        self.value += value
+    func increase(amount: Int) {
+        value += amount
+        value = value > Relationship.MAX_VALUE ? Relationship.MAX_VALUE : value
     }
     
-    func decrease(value: Int) {
-        self.value -= value
+    func decrease(amount: Int) {
+        value -= amount
+        value = value < Relationship.MIN_VALUE ? Relationship.MIN_VALUE : value
     }
     
-    func setValue(_ value: Int) {
-        self.value = value
+    func setValue(amount: Int) {
+        value = max(amount, 100)
         updateState()
     }
 }

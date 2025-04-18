@@ -67,7 +67,7 @@ class NPCBehaviorService: GameService {
     }
     
     private func handleNPCBehavior(npc: NPC, gameTimeService: GameTimeService) {
-        let newActivity = npc.isBeasy || npc.isSpecialBehaviorSet
+        let newActivity = npc.isBeasy || npc.isSpecialBehaviorSet || npc.isNpcInteractionBehaviorSet
             ? NPCActivityManager.shared.getSpecialBehaviorActivity(for: npc)
             : NPCActivityManager.shared.getActivity(for: npc)
         
@@ -78,6 +78,29 @@ class NPCBehaviorService: GameService {
             sendSleepToHome(npc: npc)
             activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
             return
+        }
+        
+        if newActivity == .protect {
+            var target = NPCReader.getRuntimeNPC(by: npc.npcInteractionTargetNpcId)
+            
+            if target != nil {
+                sendAfterNPC(follower: npc, target: target!)
+                activitiesAssigned.append(assignedActivity(isStay: false, activity: newActivity))
+            }
+
+            return
+        }
+        
+        if newActivity == .meet {
+            var friendId = npc.npcsRelationship.first { $0.state == .friend || $0.state == .ally }
+            
+            if friendId != nil {
+                var friend = NPCReader.getRuntimeNPC(by: friendId!.npcId)!
+                
+                sendAfterNPC(follower: npc, target: friend)
+                activitiesAssigned.append(assignedActivity(isStay: false, activity: newActivity))
+            }
+            
         }
         
         if newActivity == .followingPlayer || newActivity == .allyingPlayer || newActivity == .seductedByPlayer {
@@ -121,6 +144,16 @@ class NPCBehaviorService: GameService {
         }
     }
     
+    func sendAfterNPC(follower: NPC, target: NPC) {
+        let followerCurrentLocation = LocationReader.getLocationById(by: follower.currentLocationId)
+        let targetCurrentLocation = LocationReader.getLocationById(by: target.currentLocationId)
+        
+        if followerCurrentLocation?.id != targetCurrentLocation?.id {
+            followerCurrentLocation?.removeCharacter(id: follower.id)
+            targetCurrentLocation?.addCharacter(follower)
+        }
+    }
+    
     func sendAfterPlayer(npc: NPC) {
         let npcCurrentLocation = LocationReader.getLocationById(by: npc.currentLocationId)
         let playerLocation = GameStateService.shared.currentScene
@@ -149,6 +182,20 @@ class NPCBehaviorService: GameService {
         
         if npc.specialBehaviorTime <= 0 {
             npc.isSpecialBehaviorSet = false
+        }
+        
+        if npc.npcInteractionSpecialTime > 0 {
+            npc.npcInteractionSpecialTime -= 1
+        }
+        
+        if npc.npcInteractionSpecialTime <= 0 && npc.isNpcInteractionBehaviorSet {
+            npc.isNpcInteractionBehaviorSet = false
+            npc.npcInteractionTargetNpcId = 0
+            
+            if npc.alliedWithNPC != nil {
+                npc.alliedWithNPC?.alliedWithNPC = nil
+                npc.alliedWithNPC = nil
+            }
         }
         
         if npc.isAlive && npc.bloodMeter.currentBlood < 100 {
