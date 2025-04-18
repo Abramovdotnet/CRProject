@@ -36,47 +36,6 @@ struct SelectedNPCView: View {
                     Text(npc.motivation.description)
                         .font(Theme.smallFont)
                         .foregroundColor(npc.motivation.color)
-                    
-                    if npc.isAlive {
-                        ActionButton(
-                            icon: "bubble.left.fill",
-                            action: {
-                                onAction(.startConversation(npc))
-                                VibrationService.shared.lightTap()
-                            },
-                            color: Theme.textColor)
-                        
-                        if !npc.isUnknown {
-                            ActionButton(
-                                icon: "moon.stars",
-                                action: {
-                                    onAction(.startIntimidation(npc))
-                                    VibrationService.shared.lightTap()
-                                },
-                                color: .blue)
-                        }
-                        
-                        if !npc.isVampire {
-                            
-                            if !npc.isUnknown {
-                                ActionButton(
-                                    icon: "drop.halffull",
-                                    action: {
-                                        onAction(.feed(npc))
-                                        VibrationService.shared.regularTap()
-                                    },
-                                    color: Theme.primaryColor)
-                            }
-                            
-                            ActionButton(
-                                icon: "drop.fill",
-                                action: {
-                                    onAction(.drain(npc))
-                                    VibrationService.shared.successVibration()
-                                },
-                                color: Theme.primaryColor)
-                        }
-                    }
                 }
                 Text(npc.background)
                     .font(Theme.smallFont)

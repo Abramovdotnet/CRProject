@@ -84,7 +84,6 @@ class NPCActivityManager {
             return npc.currentActivity
         }
     }
-
     
     func getNoProfessionActivity(for npc: NPC, currentHour: Int, phase: DayPhase) -> NPCActivityType{
         var leisureActivities = Profession.noProfession.primaryLeisureActivities().filter( { $0 != .sleep } )

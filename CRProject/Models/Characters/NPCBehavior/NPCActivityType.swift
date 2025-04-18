@@ -41,12 +41,12 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case spy = "Spying"
     case love = "Love"
     case flirt = "Flirting"
+    case duzzled = "Duzzled"
+    case casualty = "Casualty"
     
     // Action activities
     case seductedByPlayer = "Seducted"
-    case duzzled = "Duzzled"
     case fleeing = "Fleeing"
-    case casualty = "Casualty"
     case lookingForProtection = "Looking for protection"
     case followingPlayer = "Following"
     case allyingPlayer = "Allying"
@@ -104,12 +104,21 @@ extension NPCActivityType {
         case .seductedByPlayer: return []
         case .duzzled: return []
         case .fleeing: return ["military", "watchtower", "barracks", "manor", "tavern", "cathedral", "monastery"]
-        case .casualty: return ["military", "watchtower", "barracks"]
+        case .casualty: return ["military", "watchtower", "barracks", "manor"]
         case .followingPlayer: return []
         case .allyingPlayer: return []
         }
     }
     
+    var specialBehaviorTime: Int {
+        switch self {
+        case .seductedByPlayer, .allyingPlayer, .followingPlayer:
+            return 4
+        case .casualty:
+            return 72
+        default: return 1
+        }
+    }
     var prefersIndoor: Bool? {
         switch self {
         case .sleep, .craft, .research: return true

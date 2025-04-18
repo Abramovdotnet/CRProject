@@ -22,7 +22,7 @@ class Player: Character, Codable {
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isUnknown: Bool = false
     var isIntimidated: Bool = false
-    var isBeasy: Bool = false
+    var isBeasyByPlayerAction: Bool = false
     var intimidationDay: Int = 0
     var homeLocationId: Int = 0
     var currentLocationId: Int = 0

@@ -44,7 +44,7 @@ class NPCInteractionService : GameService {
             .filter { $0.npcCount() > 1 }
         
         for scene in scenes {
-            let npcs = scene.getNPCs().filter { $0.currentActivity != .sleep && !$0.isSpecialBehaviorSet}
+            let npcs = scene.getNPCs().filter { $0.currentActivity != .sleep}
             
             for npc in npcs {
                 // Skip if already interacting
@@ -66,8 +66,14 @@ class NPCInteractionService : GameService {
                     isInteractionPossible(currentNPC: npc, otherNPC: otherNPC)
                 }
                 
-                // Prioritize casualty discovery
-                let target = potentialTargets.first(where: { !$0.isAlive }) ?? potentialTargets.randomElement()
+                var target: NPC?
+                
+                if npc.isCasualtyWitness {
+                    target = potentialTargets.first(where: { $0.isMilitary })
+                } else {
+                    // Prioritize casualty discovery
+                    target = potentialTargets.first(where: { !$0.isAlive }) ?? potentialTargets.randomElement()
+                }
                 
                 if let target = target {
                     // Set up the interaction
@@ -175,7 +181,7 @@ class NPCInteractionService : GameService {
     private func handleCasualtyDiscovery(currentNPC: NPC, otherNPC: NPC) {
         currentNPC.isCasualtyWitness = true
         currentNPC.isSpecialBehaviorSet = true
-        currentNPC.specialBehaviorTime = 4
+        currentNPC.specialBehaviorTime = NPCActivityType.casualty.specialBehaviorTime
         currentNPC.casualtyNpcId = otherNPC.id
         otherNPC.deathStatus = .investigated
     }
@@ -243,7 +249,6 @@ class NPCInteractionService : GameService {
     
     private func handleFlirtInteraction(currentNPC: NPC, otherNPC: NPC, scene: Scene) {
         var flirtCap = 80 - otherNPC.getNPCRelationshipValue(of: currentNPC)
-        
         let isSuccessful = Int.random(in: 0...100) > flirtCap
         
         if isSuccessful {

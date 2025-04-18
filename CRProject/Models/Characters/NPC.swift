@@ -24,7 +24,7 @@ class NPC: Character {
     var isUnknown: Bool = true
     var isIntimidated: Bool = false
     var intimidationDay: Int = 0
-    var isBeasy: Bool = false
+    var isBeasyByPlayerAction: Bool = false
     var isSpecialBehaviorSet: Bool = false
     var isNpcInteractionBehaviorSet: Bool = false
     var npcInteractionSpecialTime: Int = 0

@@ -99,7 +99,7 @@ import SwiftUI
                                     VStack(alignment: .leading, spacing: 4) {
                                         HStack {
                                             Image(systemName: viewModel.currentScene?.sceneType.iconName ?? "")
-                                                .font(Theme.titleFont) // Slightly smaller for better fit
+                                                .font(Theme.titleFont)
                                                 .foregroundColor(Theme.textColor)
                                             Text(viewModel.currentScene?.name ?? "Unknown")
                                                 .font(Theme.captionFont)
@@ -138,8 +138,8 @@ import SwiftUI
                                         npcs: viewModel.npcs,
                                         onAction: handleNPCAction
                                     )
-                                    .frame(width: geometry.size.width * 0.5)
                                 }
+                                .frame(maxWidth: .infinity)
                                 
                                 // Right section: Location Info and Chat (60%)
                                 VStack(spacing: 20) {
@@ -165,12 +165,12 @@ import SwiftUI
                                                             Image("iconFrame")
                                                                 .resizable()
                                                                 .aspectRatio(contentMode: .fit)
-                                                                .frame(width: 50 * 1.1, height: 50 * 1.1)
+                                                                .frame(width: 40 * 1.1, height: 40 * 1.1)
                                                             
                                                             // 2. Background circle (middle layer)
                                                             Circle()
                                                                 .fill(Color.black.opacity(0.7))
-                                                                .frame(width: 50 * 0.85, height: 50 * 0.85)
+                                                                .frame(width: 40 * 0.85, height: 40 * 0.85)
                                                                 .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
                                                                 .overlay(
                                                                     Circle()
@@ -180,7 +180,7 @@ import SwiftUI
                                                             Image("clockWatch")
                                                                 .resizable()
                                                                 .aspectRatio(contentMode: .fit)
-                                                                .frame(width: 50 * 0.8, height: 50 * 0.8)
+                                                                .frame(width: 40 * 0.8, height: 40 * 0.8)
                                                             
                                                             Image(systemName: "hourglass.bottomhalf.fill")
                                                                 .font(Theme.bodyFont)
@@ -217,12 +217,12 @@ import SwiftUI
                                                                 Image("iconFrame")
                                                                     .resizable()
                                                                     .aspectRatio(contentMode: .fit)
-                                                                    .frame(width: 50 * 1.1, height: 50 * 1.1)
+                                                                    .frame(width: 40 * 1.1, height: 40 * 1.1)
                                                                 
                                                                 // 2. Background circle (middle layer)
                                                                 Circle()
                                                                     .fill(Color.black.opacity(0.7))
-                                                                    .frame(width: 50 * 0.85, height: 50 * 0.85)
+                                                                    .frame(width: 40 * 0.85, height: 40 * 0.85)
                                                                     .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
                                                                     .overlay(
                                                                         Circle()
@@ -233,7 +233,7 @@ import SwiftUI
                                                                 Image("compassAlt")
                                                                     .resizable()
                                                                     .aspectRatio(contentMode: .fit)
-                                                                    .frame(width: 50 * 0.8, height: 50 * 0.8)
+                                                                    .frame(width: 40 * 0.8, height: 40 * 0.8)
                                                                 
                                                                 Image(systemName: "map.fill")
                                                                     .font(Theme.bodyFont)
@@ -254,91 +254,246 @@ import SwiftUI
                                     }
                                     .frame(maxWidth: .infinity, alignment: .trailing)
                                     
-                                    // Actions
-                                    VStack(alignment: .leading, spacing: 10) {
-                                        HStack(alignment: .top, spacing: 8) {
-                                            if viewModel.getPlayer().hiddenAt == .none {
-                                                ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
-                                                    VStack {
-                                                        ZStack {
-                                                            Button(action: {
-                                                                withAnimation(.easeInOut(duration: 0.1)) {
-                                                                    reduceHideoutButtonScale(hideoutType: hideout)
-                                                                }
-                                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                                    withAnimation(.spring()) {
-                                                                        setDefaultHideoutButtonScale(hideoutType: hideout)
-                                                                        showSmokeEffect = true
-                                                                        viewModel.getGameStateService().movePlayerThroughHideouts(to: hideout)
-                                                                        VibrationService.shared.lightTap()
-                                                                        
-                                                                        // Reset smoke effect after animation
-                                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                                                            showSmokeEffect = false
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }) {
-                                                                ZStack {
-                                                                    // 1. Frame (bottom layer)
-                                                                    Image("iconFrameAlt")
-                                                                        .resizable()
-                                                                        .aspectRatio(contentMode: .fit)
-                                                                        .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                                    
-                                                                    // 2. Background circle (middle layer)
-                                                                    Circle()
-                                                                        .fill(Color.black.opacity(0.7))
-                                                                        .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                                        .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                                        .overlay(
-                                                                            Circle()
-                                                                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                                        )
-                                                                    
-                                                                        Image(hideout.rawValue)
-                                                                            .resizable()
-                                                                            .aspectRatio(contentMode: .fit)
-                                                                            .frame(width: 40 * 0.8, height: 40 * 0.8)
-                                                                        
-                                                                        Text(hideout.description)
-                                                                            .font(Theme.smallFont)
-                                                                            .foregroundColor(Theme.textColor)
-                                                                            .padding(.top, 1)
-                                                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                                }
-                                                                .scaleEffect(getHideoutButtonScale(hideoutType: hideout))
-                                                            }
-                                                            .buttonStyle(PlainButtonStyle())
-                                                            .contentShape(Circle())
-                                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                    
+                                    // Chat History
+                                    ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
+                                        .frame(maxWidth: .infinity)
+                                        .frame(maxHeight: .infinity)
+                                        .padding(.bottom, npcManager.selectedNPC != nil ? 0 : 10)
+                                    
+                                    if npcManager.selectedNPC != nil {
+                                        SelectedNPCView(npc: npcManager.selectedNPC!, onAction: handleNPCAction)
+                                            .id(npcManager.selectedNPC!.id)
+                                            .padding(.top, -15)
+                                     
+                                    }
+                                }
+                                .frame(maxWidth: .infinity)
+                                // Buttons stack
+                                VStack(alignment: .leading, spacing: 8) {
+                                    if viewModel.getPlayer().hiddenAt == .none {
+                                        ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
+                                            VStack {
+                                                ZStack {
+                                                    Button(action: {
+                                                        withAnimation(.easeInOut(duration: 0.1)) {
+                                                            reduceHideoutButtonScale(hideoutType: hideout)
                                                         }
-                                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                            withAnimation(.spring()) {
+                                                                setDefaultHideoutButtonScale(hideoutType: hideout)
+                                                                showSmokeEffect = true
+                                                                viewModel.getGameStateService().movePlayerThroughHideouts(to: hideout)
+                                                                VibrationService.shared.lightTap()
+                                                                
+                                                                // Reset smoke effect after animation
+                                                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                                                    showSmokeEffect = false
+                                                                }
+                                                            }
+                                                        }
+                                                    }) {
+                                                        ZStack {
+                                                            // 1. Frame (bottom layer)
+                                                            Image("iconFrameAlt")
+                                                                .resizable()
+                                                                .aspectRatio(contentMode: .fit)
+                                                                .frame(width: 40 * 1.1, height: 40 * 1.1)
+                                                            
+                                                            // 2. Background circle (middle layer)
+                                                            Circle()
+                                                                .fill(Color.black.opacity(0.7))
+                                                                .frame(width: 40 * 0.85, height: 40 * 0.85)
+                                                                .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                                                                .overlay(
+                                                                    Circle()
+                                                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                                                )
+                                                            
+                                                                Image(hideout.rawValue)
+                                                                    .resizable()
+                                                                    .aspectRatio(contentMode: .fit)
+                                                                    .frame(width: 40 * 0.8, height: 40 * 0.8)
+                                                                
+                                                                Text(hideout.description)
+                                                                    .font(Theme.smallFont)
+                                                                    .foregroundColor(Theme.textColor)
+                                                                    .padding(.top, 1)
+                                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                        }
+                                                        .scaleEffect(getHideoutButtonScale(hideoutType: hideout))
                                                     }
+                                                    .buttonStyle(PlainButtonStyle())
+                                                    .contentShape(Circle())
+                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                 }
-                                            } else {
+                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                            }
+                                        }
+                                    } else {
+                                        VStack {
+                                            ZStack {
+                                                Button(action: {
+                                                    withAnimation(.easeInOut(duration: 0.1)) {
+                                                        noneHideoutScale = 0.9
+                                                    }
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                        withAnimation(.spring()) {
+                                                            noneHideoutScale = 1.0
+                                                            viewModel.getGameStateService().movePlayerThroughHideouts(to: .none)
+                                                            VibrationService.shared.lightTap()
+                                                        }
+                                                    }
+                                                }) {
+                                                    ZStack {
+                                                        // 1. Frame (bottom layer)
+                                                        Image("iconFrameAlt")
+                                                            .resizable()
+                                                            .aspectRatio(contentMode: .fit)
+                                                            .frame(width: 40 * 1.1, height: 40 * 1.1)
+                                                        
+                                                        // 2. Background circle (middle layer)
+                                                        Circle()
+                                                            .fill(Color.black.opacity(0.7))
+                                                            .frame(width: 40 * 0.85, height: 40 * 0.85)
+                                                            .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                                                            .overlay(
+                                                                Circle()
+                                                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                                            )
+                                                        
+                                                            Image(viewModel.currentScene?.sceneType.rawValue ?? "default")
+                                                                .resizable()
+                                                                .aspectRatio(contentMode: .fit)
+                                                                .frame(width: 40 * 0.8, height: 40 * 0.8)
+                                                            
+                                                            Text("Exit")
+                                                                .font(Theme.smallFont)
+                                                                .foregroundColor(Theme.textColor)
+                                                                .padding(.top, 1)
+                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                    }
+                                                    .scaleEffect(noneHideoutScale)
+                                                }
+                                                .buttonStyle(PlainButtonStyle())
+                                                .contentShape(Circle())
+                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                            }
+                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                        }
+                                    }
+                                    
+                                    if let selectedNPC = npcManager.selectedNPC {
+                                        if selectedNPC.isAlive {
+                                            VStack {
+                                                ZStack {
+                                                    Button(action: {
+                                                        withAnimation(.easeInOut(duration: 0.1)) {
+                                                            // Add scale animation
+                                                        }
+                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                            withAnimation(.spring()) {
+                                                                handleNPCAction(.startConversation(selectedNPC))
+                                                                VibrationService.shared.lightTap()
+                                                            }
+                                                        }
+                                                    }) {
+                                                        ZStack {
+                                                            // 1. Frame (bottom layer)
+                                                            Image("iconFrameAlt")
+                                                                .resizable()
+                                                                .aspectRatio(contentMode: .fit)
+                                                                .frame(width: 40 * 1.1, height: 40 * 1.1)
+                                                            
+                                                            // 2. Background circle (middle layer)
+                                                            Circle()
+                                                                .fill(Color.black.opacity(0.7))
+                                                                .frame(width: 40 * 0.85, height: 40 * 0.85)
+                                                                .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                                                                .overlay(
+                                                                    Circle()
+                                                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                                                )
+                                                            
+                                                            Image(systemName: "bubble.left.fill")
+                                                                .font(Theme.bodyFont)
+                                                                .foregroundColor(Theme.textColor)
+                                                                .padding(.top, 1)
+                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                        }
+                                                    }
+                                                    .buttonStyle(PlainButtonStyle())
+                                                    .contentShape(Circle())
+                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                }
+                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                            }
+                                        }
+                                        if !selectedNPC.isUnknown {
+                                            VStack {
+                                                ZStack {
+                                                    Button(action: {
+                                                        withAnimation(.easeInOut(duration: 0.1)) {
+                                                            // Add scale animation
+                                                        }
+                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                            withAnimation(.spring()) {
+                                                                handleNPCAction(.startIntimidation(selectedNPC))
+                                                                VibrationService.shared.lightTap()
+                                                            }
+                                                        }
+                                                    }) {
+                                                        ZStack {
+                                                            Image("iconFrameAlt")
+                                                                .resizable()
+                                                                .aspectRatio(contentMode: .fit)
+                                                                .frame(width: 40 * 1.1, height: 40 * 1.1)
+                                                            
+                                                            Circle()
+                                                                .fill(Color.black.opacity(0.7))
+                                                                .frame(width: 40 * 0.85, height: 40 * 0.85)
+                                                                .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                                                                .overlay(
+                                                                    Circle()
+                                                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                                                )
+                                                            
+                                                            Image(systemName: "moon.stars")
+                                                                .font(Theme.bodyFont)
+                                                                .foregroundColor(.blue)
+                                                                .padding(.top, 1)
+                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                        }
+                                                    }
+                                                    .buttonStyle(PlainButtonStyle())
+                                                    .contentShape(Circle())
+                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                }
+                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                            }
+                                        }
+                                        
+                                        if !selectedNPC.isVampire {
+                                            if !selectedNPC.isUnknown {
                                                 VStack {
                                                     ZStack {
                                                         Button(action: {
                                                             withAnimation(.easeInOut(duration: 0.1)) {
-                                                                noneHideoutScale = 0.9
+                                                                // Add scale animation
                                                             }
                                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                                 withAnimation(.spring()) {
-                                                                    noneHideoutScale = 1.0
-                                                                    viewModel.getGameStateService().movePlayerThroughHideouts(to: .none)
-                                                                    VibrationService.shared.lightTap()
+                                                                    handleNPCAction(.feed(selectedNPC))
+                                                                    VibrationService.shared.regularTap()
                                                                 }
                                                             }
                                                         }) {
                                                             ZStack {
-                                                                // 1. Frame (bottom layer)
                                                                 Image("iconFrameAlt")
                                                                     .resizable()
                                                                     .aspectRatio(contentMode: .fit)
                                                                     .frame(width: 40 * 1.1, height: 40 * 1.1)
                                                                 
-                                                                // 2. Background circle (middle layer)
                                                                 Circle()
                                                                     .fill(Color.black.opacity(0.7))
                                                                     .frame(width: 40 * 0.85, height: 40 * 0.85)
@@ -348,18 +503,12 @@ import SwiftUI
                                                                             .stroke(Color.white.opacity(0.2), lineWidth: 1)
                                                                     )
                                                                 
-                                                                    Image(viewModel.currentScene?.sceneType.rawValue ?? "default")
-                                                                        .resizable()
-                                                                        .aspectRatio(contentMode: .fit)
-                                                                        .frame(width: 40 * 0.8, height: 40 * 0.8)
-                                                                    
-                                                                    Text("Exit")
-                                                                        .font(Theme.smallFont)
-                                                                        .foregroundColor(Theme.textColor)
-                                                                        .padding(.top, 1)
-                                                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                                Image(systemName: "drop.halffull")
+                                                                    .font(Theme.bodyFont)
+                                                                    .foregroundColor(Theme.primaryColor)
+                                                                    .padding(.top, 1)
+                                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                             }
-                                                            .scaleEffect(noneHideoutScale)
                                                         }
                                                         .buttonStyle(PlainButtonStyle())
                                                         .contentShape(Circle())
@@ -368,33 +517,59 @@ import SwiftUI
                                                     .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                 }
                                             }
+                                            
+                                            VStack {
+                                                ZStack {
+                                                    Button(action: {
+                                                        withAnimation(.easeInOut(duration: 0.1)) {
+                                                            // Add scale animation
+                                                        }
+                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                            withAnimation(.spring()) {
+                                                                handleNPCAction(.drain(selectedNPC))
+                                                                VibrationService.shared.successVibration()
+                                                            }
+                                                        }
+                                                    }) {
+                                                        ZStack {
+                                                            Image("iconFrameAlt")
+                                                                .resizable()
+                                                                .aspectRatio(contentMode: .fit)
+                                                                .frame(width: 40 * 1.1, height: 40 * 1.1)
+                                                            
+                                                            Circle()
+                                                                .fill(Color.black.opacity(0.7))
+                                                                .frame(width: 40 * 0.85, height: 40 * 0.85)
+                                                                .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                                                                .overlay(
+                                                                    Circle()
+                                                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                                                )
+                                                            
+                                                            Image(systemName: "drop.fill")
+                                                                .font(Theme.bodyFont)
+                                                                .foregroundColor(Theme.primaryColor)
+                                                                .padding(.top, 1)
+                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                        }
+                                                    }
+                                                    .buttonStyle(PlainButtonStyle())
+                                                    .contentShape(Circle())
+                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                }
+                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                            }
                                         }
-                                    }
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .padding(.trailing, 5)
-                                    .padding(.top, -10)
-                                    .padding(.bottom, -10)
-                                    
-                                    VStack {
-                                        // Chat History
-                                        ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
-                                            .frame(maxWidth: .infinity)
-                                            .frame(maxHeight: .infinity)
                                         
-                                        if npcManager.selectedNPC != nil {
-                                            SelectedNPCView(npc: npcManager.selectedNPC!, onAction: handleNPCAction)
-                                                .id(npcManager.selectedNPC!.id)
-                                        }
                                     }
-                                    .padding(.bottom, 15)
-                                    
                                 }
-                                .frame(width: geometry.size.width * 0.5)
+                                .frame(width: 25)
+                                .frame(maxHeight: .infinity, alignment: .top)
                             }
+                            .padding(.horizontal, -10)
                         }
                         .frame(maxHeight: .infinity)
                     }
-                    .padding(.horizontal)
                 }
                 
                 // Red Overlay for low blood

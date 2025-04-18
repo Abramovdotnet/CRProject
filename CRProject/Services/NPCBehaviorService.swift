@@ -30,10 +30,10 @@ class NPCBehaviorService: GameService {
     
     func updateActivity() {
         // Use lazy collections to avoid creating intermediate arrays
-        let residentNPCs = npcs.lazy.filter { $0.homeLocationId > 0 && $0.isAlive }
+        let residentNPCs = npcs.lazy.filter { $0.homeLocationId > 0}
         
         let nonResidentNPCs = npcs.lazy
-            .filter { $0.homeLocationId == 0 && $0.isAlive && self.eligibleNonResidentProfessions.contains($0.profession) }
+            .filter { $0.homeLocationId == 0 && self.eligibleNonResidentProfessions.contains($0.profession) }
             .shuffled()
         
         let nonResidentCount = Int.random(in: 5...20)
@@ -67,10 +67,13 @@ class NPCBehaviorService: GameService {
     }
     
     private func handleNPCBehavior(npc: NPC, gameTimeService: GameTimeService) {
-        let newActivity = npc.isBeasy || npc.isSpecialBehaviorSet || npc.isNpcInteractionBehaviorSet
+        let newActivity = npc.isBeasyByPlayerAction || npc.isSpecialBehaviorSet || npc.isNpcInteractionBehaviorSet
             ? NPCActivityManager.shared.getSpecialBehaviorActivity(for: npc)
             : NPCActivityManager.shared.getActivity(for: npc)
         
+        if !npc.isAlive {
+            return
+        }
         npc.currentActivity = newActivity
         activitiesSet += 1
         
@@ -172,8 +175,8 @@ class NPCBehaviorService: GameService {
             npc.intimidationDay = 0
         }
         
-        if npc.isBeasy {
-            npc.isBeasy = false
+        if npc.isBeasyByPlayerAction {
+            npc.isBeasyByPlayerAction = false
         }
         
         if npc.specialBehaviorTime > 0 {
@@ -200,6 +203,21 @@ class NPCBehaviorService: GameService {
         
         if npc.isAlive && npc.bloodMeter.currentBlood < 100 {
             npc.bloodMeter.addBlood(2)
+        }
+        
+        if !npc.isAlive && npc.isSpecialBehaviorSet {
+            npc.isSpecialBehaviorSet = false
+            npc.specialBehaviorTime = 0
+        }
+        
+        if !npc.isAlive && npc.isNpcInteractionBehaviorSet {
+            npc.isNpcInteractionBehaviorSet = false
+            npc.npcInteractionTargetNpcId = 0
+            
+            if npc.alliedWithNPC != nil {
+                npc.alliedWithNPC?.alliedWithNPC = nil
+                npc.alliedWithNPC = nil
+            }
         }
     }
 }

@@ -139,7 +139,7 @@ class VampireGaze: GameService {
         let success = true
         
         if success {
-            npc.isBeasy = true
+            npc.isBeasyByPlayerAction = true
             
             if power == .scare {
                 npc.isSpecialBehaviorSet = true

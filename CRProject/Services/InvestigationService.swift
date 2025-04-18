@@ -35,7 +35,7 @@ class InvestigationService: GameService {
         
         // Investigate the object
         investigationObject.isUnknown = false
-        investigationObject.isBeasy = true
+        investigationObject.isBeasyByPlayerAction = true
         
         // Update statistics
         statisticsService.incrementInvestigations()

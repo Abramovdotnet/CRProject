@@ -109,7 +109,7 @@ class FeedingService: GameService {
         if npcs.count > 1 {
             for npc in npcs {
                 npc.isVampireAttackWitness = true
-                npc.isBeasy = true
+                npc.isBeasyByPlayerAction = true
                 npc.decreasePlayerRelationship(with: 100)
             }
         }

@@ -60,7 +60,7 @@ struct NPCSGridView: View {
                 startPoint: .leading,
                 endPoint: .trailing
             )
-            .frame(width: 15)
+            .frame(width: 10)
             
             Rectangle()
                 .fill(Color.black)
@@ -70,7 +70,7 @@ struct NPCSGridView: View {
                 startPoint: .leading,
                 endPoint: .trailing
             )
-            .frame(width: 15)
+            .frame(width: 10)
         }
     }
     
@@ -147,7 +147,7 @@ struct NPCSGridView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
         }
-        .frame(height: 300)
+        .frame(height: 320)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.clear.opacity(0.7))
@@ -336,7 +336,7 @@ struct NPCGridButton: View {
                                                 .foregroundColor(npc.currentActivity.color)
                                                 .font(Theme.smallFont)
                                                 .padding(.leading, 3)
-                                            GradientProgressBar(value: Float(Float(npc.specialBehaviorTime) / 4.0 * 100), barColor: npc.currentActivity.color, backgroundColor: Theme.textColor.opacity(0.3))
+                                            GradientProgressBar(value: Float(Float(npc.specialBehaviorTime) / Float(npc.currentActivity.specialBehaviorTime * 100)), barColor: npc.currentActivity.color, backgroundColor: Theme.textColor.opacity(0.3))
                                                 .frame(width: 100, height: 5)
                                                 .shadow(color: Color.green.opacity(0.3), radius: 2)
                                                 .padding(.leading, -5)
