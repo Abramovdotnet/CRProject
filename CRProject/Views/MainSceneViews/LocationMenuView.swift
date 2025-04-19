@@ -6,9 +6,9 @@ struct LocationInfoView: View {
     @ObservedObject var viewModel: MainSceneViewModel
     
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: 1) {
             Text("Awareness: \(Int(viewModel.sceneAwareness))%")
-                .font(Theme.bodyFont)
+                .font(Theme.smallFont)
             ProgressBar(value: Double(viewModel.sceneAwareness / 100.0), color: Theme.awarenessProgressColor)
         }
     }

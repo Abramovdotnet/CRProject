@@ -57,18 +57,17 @@ struct ChatMessageView: View {
     
     var body: some View {
         HStack(alignment: .top) {
+            if message.icon != nil {
+                Image(systemName: message.icon!)
+                    .foregroundColor(message.iconColor ?? typeColor)
+                    .font(Theme.smallFont)
+            }
             Text(message.timestampHourString)
                 .font(Theme.smallFont)
             
             Text(message.message)
                 .font(Theme.smallFont)
                 .foregroundColor(typeColor.opacity(0.9))
-            
-            if message.icon != nil {
-                Image(systemName: message.icon!)
-                    .foregroundColor(message.iconColor ?? typeColor)
-                    .font(Theme.smallFont)
-            }
         }
         .opacity(isAppearing ? 1 : 0)
         .offset(y: isAppearing ? 0 : 10)

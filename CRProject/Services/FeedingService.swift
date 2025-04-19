@@ -27,7 +27,7 @@ class FeedingService: GameService {
         return prey.bloodMeter.bloodPercentage > 0
     }
     
-    func feedOnCharacter(vampire: any Character, prey: NPC, amount: Float, in sceneId: Int) throws {
+    func feedOnCharacter(vampire: Player, prey: NPC, amount: Float, in sceneId: Int) throws {
         guard canFeed(vampire: vampire, prey: prey) else {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
@@ -40,15 +40,16 @@ class FeedingService: GameService {
             awarenessIncreaseValue -= 40
         }
         
-        else if prey.currentActivity != .sleep {
-            prey.isVampireAttackWitness = true
-            
-            setNPCsAsWitnesses(sceneId: sceneId)
-        }
-        
         if prey.currentActivity == .sleep {
             awarenessIncreaseValue -= 20
         }
+        
+        if vampire.desiredVictim.isDesiredVictim(npc: prey){
+            vampire.bloodMeter.addBlood(100.0)
+            vampire.desiredVictim.setDesiredVictim()
+        }
+        
+        setWitnessesIfExists(sceneId: sceneId)
         
         // Increase awareness in the scene where feeding occurred
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
@@ -83,9 +84,9 @@ class FeedingService: GameService {
         
         if prey.currentActivity == .sleep {
             awarenessIncreaseValue -= 25
-        } else {
-            setNPCsAsWitnesses(sceneId: sceneId)
         }
+        
+        setWitnessesIfExists(sceneId: sceneId)
         
         // Increase awareness in the scene where feeding occurred
         vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
@@ -98,13 +99,17 @@ class FeedingService: GameService {
         gameTime.advanceTime()
     }
     
-    func setNPCsAsWitnesses(sceneId: Int) {
+    func setWitnessesIfExists(sceneId: Int) {
         var scene = try? LocationReader.getRuntimeLocation(by: sceneId)
         
         var npcs = scene?.getNPCs()
-            .filter( { $0.isAlive && $0.currentActivity != .sleep && !$0.isSpecialBehaviorSet })
+            .filter( { $0.isAlive && $0.currentActivity != .sleep && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer })
         
-        guard let npcs else { return }
+        guard var npcs else { return }
+        
+        if GameStateService.shared.player?.hiddenAt != .none {
+            npcs = npcs.filter( { $0.currentActivity == .followingPlayer })
+        }
         
         if npcs.count > 1 {
             for npc in npcs {

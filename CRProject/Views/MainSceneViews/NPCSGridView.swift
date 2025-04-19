@@ -325,36 +325,6 @@ struct NPCGridButton: View {
                 
                 if !npc.isUnknown && npc.isAlive {
                     VStack(alignment: .leading) {
-                        if npc.isSpecialBehaviorSet {
-                            HStack {
-                                Spacer()
-                                ZStack {
-                                    VStack(spacing: 4) {
-                                        HStack(alignment: .center) {
-                                            Spacer()
-                                            Image(systemName: npc.currentActivity.icon)
-                                                .foregroundColor(npc.currentActivity.color)
-                                                .font(Theme.smallFont)
-                                                .padding(.leading, 3)
-                                            GradientProgressBar(value: Float(Float(npc.specialBehaviorTime) / Float(npc.currentActivity.specialBehaviorTime * 100)), barColor: npc.currentActivity.color, backgroundColor: Theme.textColor.opacity(0.3))
-                                                .frame(width: 100, height: 5)
-                                                .shadow(color: Color.green.opacity(0.3), radius: 2)
-                                                .padding(.leading, -5)
-                                            Spacer()
-                                        }
-                                    }
-                                }
-                                .frame(width: 120, height: 15)
-                                .background(
-                                    RoundedRectangle(cornerRadius: 8)
-                                        .fill(Color.black.opacity(0.7))
-                                        .shadow(color: .black.opacity(0.3), radius: 4)
-                                )
-                                .padding(.top, 1)
-                                Spacer()
-                            }
-                            .padding(.top, -3)
-                        }
                         Spacer()
                         HStack {
                             Image(systemName: npc.profession.icon)

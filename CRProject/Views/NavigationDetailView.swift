@@ -229,8 +229,7 @@ struct LocationNode: View {
     let data: LocationNodeData
     
     private var isAccessible: Bool {
-        guard data.location.id != data.currentLocation?.id else { return false }  // Disable current location
-        return (data.playerBlood - 5) >= 10
+        return GameTimeService.shared.isNightTime
     }
     
     private var relationshipIcon: String {

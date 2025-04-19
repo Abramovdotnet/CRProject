@@ -15,6 +15,7 @@ class GameTimeService: GameService {
     @Published private(set) var isNightTime: Bool = false
     @Published private(set) var dayPhase: DayPhase = .earlyMorning
     
+    static var shared: GameTimeService = DependencyManager.shared.resolve()
     
     private let statisticsService: StatisticsService
     

@@ -96,44 +96,6 @@ import SwiftUI
                         GeometryReader { geometry in
                             HStack(spacing: 20) {
                                 VStack {
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        HStack {
-                                            Image(systemName: viewModel.currentScene?.sceneType.iconName ?? "")
-                                                .font(Theme.titleFont)
-                                                .foregroundColor(Theme.textColor)
-                                            Text(viewModel.currentScene?.name ?? "Unknown")
-                                                .font(Theme.captionFont)
-                                            Spacer()
-                                            
-                                            LocationInfoView(scene: viewModel.currentScene, viewModel: viewModel)
-                                        }
-                                        if viewModel.getPlayer().hiddenAt != .none {
-                                            HStack {
-                                                Image(systemName: viewModel.getPlayer().hiddenAt.iconName)
-                                                    .foregroundColor(Theme.textColor)
-                                                    .font(Theme.captionFont)
-                                                Text(viewModel.getPlayer().hiddenAt.description)
-                                                    .foregroundColor(Theme.textColor)
-                                                    .font(Theme.captionFont)
-                                            }
-                                        }
-                                        HStack {
-                                            if let sceneType = viewModel.currentScene?.sceneType.rawValue {
-                                                Text("Type: \(sceneType.capitalized)")
-                                                    .foregroundColor(Theme.textColor)
-                                                    .font(Theme.smallFont)
-                                            }
-                                            if let isIndoor = viewModel.currentScene?.isIndoor {
-                                                Text("Is indoor: \(isIndoor ? "Yes" : "No")")
-                                                    .font(Theme.smallFont)
-                                                    .foregroundColor(Theme.textColor)
-                                            }
-                                            Text("Characters: \(viewModel.npcs.count)")
-                                                .foregroundColor(Theme.textColor)
-                                                .font(Theme.smallFont)
-                                        }
-                                    }.padding(.top, 10)
-                                    
                                     NPCSGridView(
                                         npcs: viewModel.npcs,
                                         onAction: handleNPCAction
@@ -381,6 +343,7 @@ import SwiftUI
                                             }
                                             .shadow(color: .black, radius: 3, x: 0, y: 2)
                                         }
+                                        .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
                                     }
                                     
                                     if let selectedNPC = npcManager.selectedNPC {

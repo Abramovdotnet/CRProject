@@ -27,6 +27,8 @@ class Player: Character, Codable {
     var homeLocationId: Int = 0
     var currentLocationId: Int = 0
     var hiddenAt: HidingCell = .none
+    
+    var desiredVictim: DesiredVictim = DesiredVictim()
 
     init(name: String, sex: Sex, age: Int, profession: Profession, id: Int) {
         self.name = name
