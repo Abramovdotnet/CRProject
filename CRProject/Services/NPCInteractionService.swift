@@ -113,10 +113,13 @@ class NPCInteractionService : GameService {
             )
         }
         
+        var hasSuccess = false
+        var isSuccess = false
         // Handle special cases
         switch interaction {
         case .drunkFight, .gambleFight:
-            handleFightInteraction(currentNPC: currentNPC, otherNPC: otherNPC)
+            isSuccess = handleFightInteraction(currentNPC: currentNPC, otherNPC: otherNPC)
+            hasSuccess = true
         case .awareAboutVampire:
             handleVampireAwareness(otherNPC: otherNPC)
         case .findOutCasualty:
@@ -124,7 +127,8 @@ class NPCInteractionService : GameService {
         case .awareAboutCasualty:
             handleCasualtyAwareness(currentNPC: currentNPC)
         case .flirt:
-            handleFlirtInteraction(currentNPC: currentNPC, otherNPC: otherNPC, scene: scene)
+            isSuccess = handleFlirtInteraction(currentNPC: currentNPC, otherNPC: otherNPC, scene: scene)
+            hasSuccess = true
         case .askForProtection:
             handleAskForProtection(currentNPC: currentNPC, otherNPC: otherNPC)
         case .conversation:
@@ -144,9 +148,15 @@ class NPCInteractionService : GameService {
         default:
             break
         }
+        
+        if hasSuccess {
+            NPCInteractionEventsService.shared.addEvent(interactionType: interaction, currentNPC: currentNPC, otherNPC: otherNPC, scene: scene, day: gameTimeService.currentDay, hour: gameTimeService.currentHour, hasSuccess: true, isSuccess: isSuccess)
+        } else {
+            NPCInteractionEventsService.shared.addEvent(interactionType: interaction, currentNPC: currentNPC, otherNPC: otherNPC, scene: scene, day: gameTimeService.currentDay, hour: gameTimeService.currentHour)
+        }
     }
     
-    private func handleFightInteraction(currentNPC: NPC, otherNPC: NPC) {
+    private func handleFightInteraction(currentNPC: NPC, otherNPC: NPC) -> Bool {
         let currentNPCHasAdvantage = (currentNPC.profession == .guardman || currentNPC.profession == .cityGuard) &&
             (otherNPC.profession != .guardman && otherNPC.profession != .cityGuard)
         var successCap = currentNPCHasAdvantage ? 30 : 50
@@ -171,6 +181,8 @@ class NPCInteractionService : GameService {
         
         currentNPC.decreaseNPCRelationship(with: 10, of: otherNPC)
         otherNPC.decreaseNPCRelationship(with: 10, of: currentNPC)
+        
+        return currentNPCWon
     }
     
     private func handleVampireAwareness(otherNPC: NPC) {
@@ -247,30 +259,19 @@ class NPCInteractionService : GameService {
         otherNPC.increaseNPCRelationship(with: 3, of: currentNPC)
     }
     
-    private func handleFlirtInteraction(currentNPC: NPC, otherNPC: NPC, scene: Scene) {
+    private func handleFlirtInteraction(currentNPC: NPC, otherNPC: NPC, scene: Scene) -> Bool {
         var flirtCap = 80 - otherNPC.getNPCRelationshipValue(of: currentNPC)
         let isSuccessful = Int.random(in: 0...100) > flirtCap
         
         if isSuccessful {
-            gameEventBusService.addMessageWithIcon(
-                message: "\(currentNPC.name), \(currentNPC.profession.rawValue) flirt with \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized)",
-                icon: NPCActivityType.flirt.icon,
-                iconColor: NPCActivityType.flirt.color,
-                type: .common
-            )
             otherNPC.increaseNPCRelationship(with: 5, of: currentNPC)
             currentNPC.increaseNPCRelationship(with: 5, of: otherNPC)
         } else {
-            gameEventBusService.addMessageWithIcon(
-                message: "\(currentNPC.name), \(currentNPC.profession.rawValue) tries to flirts with \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized), but beeing rejected",
-                icon: "heart.slash",
-                iconColor: NPCActivityType.flirt.color,
-                type: .common
-            )
-            
             otherNPC.decreaseNPCRelationship(with: 5, of: currentNPC)
             currentNPC.decreaseNPCRelationship(with: 5, of: otherNPC)
         }
+        
+        return isSuccessful
     }
 }
 
