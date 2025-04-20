@@ -56,7 +56,7 @@ enum Motivation: String, CaseIterable, Codable {
         case .protection: return "figure.arms.open"
         case .wealth: return "dollarsign.circle"
         case .honor: return "medal"
-        case .skill: return "wrench.and.screwdriver"
+        case .skill: return "wrench.and.screwdriver.fill"
         case .security: return "lock.shield"
         case .mystery: return "questionmark.circle"
         case .glory: return "star.fill"

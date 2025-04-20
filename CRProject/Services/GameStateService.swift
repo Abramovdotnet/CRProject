@@ -43,6 +43,14 @@ class GameStateService : ObservableObject, GameService{
         /*DependencyManager.shared.register(NPCPopulationService(gameStateService: self, gameEventsBus: gameEventsBus))
         self.npcPopulationService = DependencyManager.shared.resolve()*/
         
+        // Subscribe to day/night changes
+        NotificationCenter.default
+            .publisher(for: .nightAppears)
+            .sink { [weak self] _ in
+                self?.handleNightAppears()
+            }
+            .store(in: &cancellables)
+        
         // Subscribe to time advancement notifications
         NotificationCenter.default
             .publisher(for: .timeAdvanced)
@@ -142,6 +150,10 @@ class GameStateService : ObservableObject, GameService{
                 npcManager.selectedNPC = nil
             }
         }
+    }
+    
+    func handleNightAppears() {
+        player?.desiredVictim.updateDesiredVictim()
     }
     
     private func handleSafeTimeAdvanced() {

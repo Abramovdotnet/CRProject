@@ -42,16 +42,16 @@ class DesiredVictim {
     private(set) var desiredMotivation: Motivation?
     
     init() {
-        setDesiredVictim()
+        updateDesiredVictim()
     }
     
     /// Sets random characteristics for the desired victim
-    func setDesiredVictim() {
+    func updateDesiredVictim() {
         // Get all available professions and remove noProfession
         let availableProfessions = Profession.allCases
         
         // Randomly decide how many characteristics to use (3-5)
-        let numberOfCharacteristics = Int.random(in: 3...5)
+        let numberOfCharacteristics = Int.random(in: 1...3)
         
         // Reset all characteristics
         desiredProfession = nil

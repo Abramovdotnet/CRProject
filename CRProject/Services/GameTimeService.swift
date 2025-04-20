@@ -68,6 +68,8 @@ class GameTimeService: GameService {
             } else {
                 NotificationCenter.default.post(name: .dayAppears, object: nil)
             }
+            
+            
         }
         
         dayPhase = .currentPhase(hour: currentHour)

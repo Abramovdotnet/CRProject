@@ -46,7 +46,9 @@ class FeedingService: GameService {
         
         if vampire.desiredVictim.isDesiredVictim(npc: prey){
             vampire.bloodMeter.addBlood(100.0)
-            vampire.desiredVictim.setDesiredVictim()
+            vampire.desiredVictim.updateDesiredVictim()
+            
+            gameEventsBus.addDangerMessage(message: "Player consumed DESIRED victims blood.")
         }
         
         setWitnessesIfExists(sceneId: sceneId)
@@ -106,12 +108,13 @@ class FeedingService: GameService {
             .filter( { $0.isAlive && $0.currentActivity != .sleep && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer })
         
         guard var npcs else { return }
+        guard let player = GameStateService.shared.player else { return }
         
-        if GameStateService.shared.player?.hiddenAt != .none {
+        if player.hiddenAt != .none {
             npcs = npcs.filter( { $0.currentActivity == .followingPlayer })
         }
         
-        if npcs.count > 1 {
+        if npcs.count > 0 {
             for npc in npcs {
                 npc.isVampireAttackWitness = true
                 npc.isBeasyByPlayerAction = true

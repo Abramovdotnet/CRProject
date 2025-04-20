@@ -10,6 +10,11 @@ class MainSceneViewModel: ObservableObject {
     @Published var npcs: [NPC] = []
     @Published var sceneAwareness: Float = 0
     @Published var playerBloodPercentage: Float = 100
+    @Published var desiredProfession: Profession?
+    @Published var desiredSex: Sex?
+    @Published var desiredAge: String?
+    @Published var desiredMorality: Morality?
+    @Published var desiredMotivation: Motivation?
     @Published var currentDay: Int = 1
     @Published var currentHour: Int = 0
     @Published var isNight: Bool = false
@@ -61,6 +66,7 @@ class MainSceneViewModel: ObservableObject {
         gameStateService.setPlayer(player)
         
         updatePlayerBloodPercentage()
+        resetDesires()
         
         // Subscribe to scene changes
         gameStateService.$currentScene
@@ -270,7 +276,16 @@ class MainSceneViewModel: ObservableObject {
         updatePlayerBloodPercentage()
     }
     
-    
+    func resetDesires() {
+        GameStateService.shared.player?.desiredVictim.updateDesiredVictim()
+        
+        guard let desires = GameStateService.shared.player?.desiredVictim else { return }
+        
+        desiredAge = desires.desiredAgeRange?.rangeDescription
+        desiredSex = desires.desiredSex
+        desiredMorality = desires.desiredMorality
+        desiredProfession = desires.desiredProfession
+    }
     
     // MARK: - Blood Management
     func feedOnCharacter(_ npc: NPC) {

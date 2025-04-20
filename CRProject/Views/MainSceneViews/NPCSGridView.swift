@@ -263,6 +263,40 @@ struct NPCGridButton: View {
                             .offset(x: parallaxOffset.width, y: parallaxOffset.height)
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                        
+                        if GameStateService.shared.getPlayer()!.desiredVictim.isDesiredVictim(npc: npc) {
+                            ZStack {
+                                // 1. Frame (bottom layer)
+                                Image("iconFrame")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 40 * 1.1, height: 40 * 1.1)
+                                
+                                // 2. Background circle (middle layer)
+                                Circle()
+                                    .fill(Color.black.opacity(0.7))
+                                    .frame(width: 40 * 0.85, height: 40 * 0.85)
+                                    .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                    )
+                                
+                                Image("sphere1")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 40 * 0.8, height: 40 * 0.8)
+                            }
+                            .shadow(color: Theme.bloodProgressColor, radius: 3, x: 0, y: 2)
+                            .overlay(
+                                Circle()
+                                    .fill(Color.red.opacity(0.3))
+                                    .frame(width: 40 * 1.4, height: 40 * 1.4)
+                                    .blur(radius: 4)
+                                    .opacity(0.7 + sin(Date().timeIntervalSince1970 * 2) * 0.3)
+                                    .animation(Animation.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: UUID())
+                            )
+                        }
                     }
                     .frame(width: buttonWidth, height: 160)
                     .clipShape(RoundedRectangle(cornerRadius: 8))

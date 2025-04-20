@@ -48,7 +48,7 @@ import SwiftUI
         } else {
             GeometryReader { geometry in
                 ZStack { // Apply colorMultiply to this ZStack
-                    Image(uiImage: UIImage(named: viewModel.currentScene!.sceneType.rawValue) ?? UIImage(named: "MainSceneBackground")!)
+                    Image(uiImage: UIImage(named: "location\(viewModel.currentScene!.id.description)") ?? UIImage(named: "MainSceneBackground")!)
                         .resizable()
                         .ignoresSafeArea()
                         .saturation(isPlayerHidden ? 0 : 1)
@@ -100,12 +100,17 @@ import SwiftUI
                                         npcs: viewModel.npcs,
                                         onAction: handleNPCAction
                                     )
+                                    
+
+                                    NPCInfoView(npc: npcManager.selectedNPC, onAction: handleNPCAction)
+                                        .id(npcManager.selectedNPC?.id ?? 0)
+                                        .padding(.top, -15)
+                                     
                                 }
                                 .frame(maxWidth: .infinity)
                                 
-                                // Right section: Location Info and Chat (60%)
+                                // Right section: History and Actions
                                 VStack(spacing: 20) {
-                                    // Location Info
                                     VStack(alignment: .leading, spacing: 10) {
                                         HStack(alignment: .top, spacing: 10) {
                                             VStack {
@@ -215,134 +220,126 @@ import SwiftUI
                                         }
                                     }
                                     .frame(maxWidth: .infinity, alignment: .trailing)
-                                    
-                                    
+
                                     // Chat History
                                     ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
                                         .frame(maxWidth: .infinity)
                                         .frame(maxHeight: .infinity)
                                         .padding(.bottom, npcManager.selectedNPC != nil ? 0 : 10)
-                                    
-                                    if npcManager.selectedNPC != nil {
-                                        SelectedNPCView(npc: npcManager.selectedNPC!, onAction: handleNPCAction)
-                                            .id(npcManager.selectedNPC!.id)
-                                            .padding(.top, -15)
-                                     
-                                    }
                                 }
                                 .frame(maxWidth: .infinity)
                                 // Buttons stack
                                 VStack(alignment: .leading, spacing: 8) {
-                                    if viewModel.getPlayer().hiddenAt == .none {
-                                        ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
-                                            VStack {
-                                                ZStack {
-                                                    Button(action: {
-                                                        withAnimation(.easeInOut(duration: 0.1)) {
-                                                            reduceHideoutButtonScale(hideoutType: hideout)
+                                            if viewModel.getPlayer().hiddenAt == .none {
+                                                ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
+                                                    VStack {
+                                                        ZStack {
+                                                            Button(action: {
+                                                                withAnimation(.easeInOut(duration: 0.1)) {
+                                                                    reduceHideoutButtonScale(hideoutType: hideout)
+                                                                }
+                                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                                    withAnimation(.spring()) {
+                                                                        setDefaultHideoutButtonScale(hideoutType: hideout)
+                                                                        showSmokeEffect = true
+                                                                        viewModel.getGameStateService().movePlayerThroughHideouts(to: hideout)
+                                                                        VibrationService.shared.lightTap()
+                                                                        
+                                                                        // Reset smoke effect after animation
+                                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                                                            showSmokeEffect = false
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }) {
+                                                                ZStack {
+                                                                    // 1. Frame (bottom layer)
+                                                                    Image("iconFrameAlt")
+                                                                        .resizable()
+                                                                        .aspectRatio(contentMode: .fit)
+                                                                        .frame(width: 40 * 1.1, height: 40 * 1.1)
+                                                                    
+                                                                    // 2. Background circle (middle layer)
+                                                                    Circle()
+                                                                        .fill(Color.black.opacity(0.7))
+                                                                        .frame(width: 40 * 0.85, height: 40 * 0.85)
+                                                                        .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                                                                        .overlay(
+                                                                            Circle()
+                                                                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                                                        )
+                                                                    
+                                                                        Image(hideout.rawValue)
+                                                                            .resizable()
+                                                                            .aspectRatio(contentMode: .fit)
+                                                                            .frame(width: 40 * 0.8, height: 40 * 0.8)
+                                                                        
+                                                                        Text(hideout.description)
+                                                                            .font(Theme.smallFont)
+                                                                            .foregroundColor(Theme.textColor)
+                                                                            .padding(.top, 1)
+                                                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                                }
+                                                                .scaleEffect(getHideoutButtonScale(hideoutType: hideout))
+                                                            }
+                                                            .buttonStyle(PlainButtonStyle())
+                                                            .contentShape(Circle())
+                                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                         }
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                            withAnimation(.spring()) {
-                                                                setDefaultHideoutButtonScale(hideoutType: hideout)
-                                                                showSmokeEffect = true
-                                                                viewModel.getGameStateService().movePlayerThroughHideouts(to: hideout)
-                                                                VibrationService.shared.lightTap()
-                                                                
-                                                                // Reset smoke effect after animation
-                                                                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                                                    showSmokeEffect = false
+                                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                    }
+                                                }
+                                            } else {
+                                                VStack {
+                                                    ZStack {
+                                                        Button(action: {
+                                                            withAnimation(.easeInOut(duration: 0.1)) {
+                                                                noneHideoutScale = 0.9
+                                                            }
+                                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                                withAnimation(.spring()) {
+                                                                    noneHideoutScale = 1.0
+                                                                    viewModel.getGameStateService().movePlayerThroughHideouts(to: .none)
+                                                                    VibrationService.shared.lightTap()
                                                                 }
                                                             }
-                                                        }
-                                                    }) {
-                                                        ZStack {
-                                                            // 1. Frame (bottom layer)
-                                                            Image("iconFrameAlt")
-                                                                .resizable()
-                                                                .aspectRatio(contentMode: .fit)
-                                                                .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                            
-                                                            // 2. Background circle (middle layer)
-                                                            Circle()
-                                                                .fill(Color.black.opacity(0.7))
-                                                                .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                                .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                                .overlay(
-                                                                    Circle()
-                                                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                                )
-                                                            
-                                                                Image(hideout.rawValue)
+                                                        }) {
+                                                            ZStack {
+                                                                // 1. Frame (bottom layer)
+                                                                Image("iconFrameAlt")
                                                                     .resizable()
                                                                     .aspectRatio(contentMode: .fit)
-                                                                    .frame(width: 40 * 0.8, height: 40 * 0.8)
+                                                                    .frame(width: 40 * 1.1, height: 40 * 1.1)
                                                                 
-                                                                Text(hideout.description)
-                                                                    .font(Theme.smallFont)
-                                                                    .foregroundColor(Theme.textColor)
-                                                                    .padding(.top, 1)
-                                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                                // 2. Background circle (middle layer)
+                                                                Circle()
+                                                                    .fill(Color.black.opacity(0.7))
+                                                                    .frame(width: 40 * 0.85, height: 40 * 0.85)
+                                                                    .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                                                                    .overlay(
+                                                                        Circle()
+                                                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                                                                    )
+                                                                
+                                                                    Image(viewModel.currentScene?.sceneType.rawValue ?? "default")
+                                                                        .resizable()
+                                                                        .aspectRatio(contentMode: .fit)
+                                                                        .frame(width: 40 * 0.8, height: 40 * 0.8)
+                                                                    
+                                                                    Text("Exit")
+                                                                        .font(Theme.smallFont)
+                                                                        .foregroundColor(Theme.textColor)
+                                                                        .padding(.top, 1)
+                                                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                            }
+                                                            .scaleEffect(noneHideoutScale)
                                                         }
-                                                        .scaleEffect(getHideoutButtonScale(hideoutType: hideout))
+                                                        .buttonStyle(PlainButtonStyle())
+                                                        .contentShape(Circle())
+                                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                     }
-                                                    .buttonStyle(PlainButtonStyle())
-                                                    .contentShape(Circle())
                                                     .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                 }
-                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                            }
-                                        }
-                                    } else {
-                                        VStack {
-                                            ZStack {
-                                                Button(action: {
-                                                    withAnimation(.easeInOut(duration: 0.1)) {
-                                                        noneHideoutScale = 0.9
-                                                    }
-                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                        withAnimation(.spring()) {
-                                                            noneHideoutScale = 1.0
-                                                            viewModel.getGameStateService().movePlayerThroughHideouts(to: .none)
-                                                            VibrationService.shared.lightTap()
-                                                        }
-                                                    }
-                                                }) {
-                                                    ZStack {
-                                                        // 1. Frame (bottom layer)
-                                                        Image("iconFrameAlt")
-                                                            .resizable()
-                                                            .aspectRatio(contentMode: .fit)
-                                                            .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                        
-                                                        // 2. Background circle (middle layer)
-                                                        Circle()
-                                                            .fill(Color.black.opacity(0.7))
-                                                            .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                            .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                            .overlay(
-                                                                Circle()
-                                                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                            )
-                                                        
-                                                            Image(viewModel.currentScene?.sceneType.rawValue ?? "default")
-                                                                .resizable()
-                                                                .aspectRatio(contentMode: .fit)
-                                                                .frame(width: 40 * 0.8, height: 40 * 0.8)
-                                                            
-                                                            Text("Exit")
-                                                                .font(Theme.smallFont)
-                                                                .foregroundColor(Theme.textColor)
-                                                                .padding(.top, 1)
-                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                    }
-                                                    .scaleEffect(noneHideoutScale)
-                                                }
-                                                .buttonStyle(PlainButtonStyle())
-                                                .contentShape(Circle())
-                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                            }
-                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                        }
                                         .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
                                     }
                                     
