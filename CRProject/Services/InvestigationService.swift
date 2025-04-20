@@ -39,15 +39,5 @@ class InvestigationService: GameService {
         
         // Update statistics
         statisticsService.incrementInvestigations()
-        
-        if investigationObject.isVampire {
-            gameEventsBus.addDangerMessage(message:"\(investigationObject.name), Vampire. " +
-                                        "\(investigationObject.sex) " +
-                                       "\(investigationObject.profession).")
-        } else {
-            gameEventsBus.addSystemMessage("\(investigationObject.name), " +
-                                        " \(investigationObject.sex) " +
-                                       "\(investigationObject.profession).")
-        }
     }
 } 

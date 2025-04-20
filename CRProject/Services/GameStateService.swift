@@ -169,6 +169,8 @@ class GameStateService : ObservableObject, GameService{
     
     func handleNightAppears() {
         player?.desiredVictim.updateDesiredVictim()
+        
+        vampireNatureRevealService.decreaseAwareness(amount: 8)
     }
     
     private func handleSafeTimeAdvanced() {
@@ -189,11 +191,11 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return }
         guard let player = player else { return }
         
-        if player.hiddenAt != .none {
-            vampireNatureRevealService.decreaseAwareness(amount: 6)
+        if player.hiddenAt == .none {
+            vampireNatureRevealService.increaseAwareness(amount: 2)
         } else {
-            if !gameTime.isNightTime {
-                vampireNatureRevealService.increaseAwareness(amount: 6)
+            if gameTime.currentHour % 3 == 0 {
+                vampireNatureRevealService.decreaseAwareness(amount: 1)
             }
         }
 
@@ -221,16 +223,14 @@ class GameStateService : ObservableObject, GameService{
             movePlayerThroughHideouts(to: .none)
         }
         
-        var npcs = scene.getNPCs()
+        let npcs = scene.getNPCs()
             .filter( { $0.isAlive && !$0.isSpecialBehaviorSet })
         
-        var randomVictim = npcs.randomElement()
-        
-        var amountOfBloodToFeed = 100 - player.bloodMeter.currentBlood
-        
+        let randomVictim = npcs.randomElement()
+
         if let randomVictim = randomVictim {
             gameEventsBus.addDangerMessage(message: "* Relentless blood thirst!*")
-            try? FeedingService.shared.feedOnCharacter(vampire: player, prey: randomVictim, amount: amountOfBloodToFeed, in: scene.id)
+            try? FeedingService.shared.emptyBlood(vampire: player, prey: randomVictim, in: scene.id)
             
             VibrationService.shared.errorVibration()
         }

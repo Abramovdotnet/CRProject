@@ -530,11 +530,7 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func isLocationAccessible(_ scene: Scene) -> Bool {
-        guard let player = gameStateService.getPlayer() else { return false }
-        let bloodCost: Float = 5 // Standard blood cost for movement
-        let currentBlood = Float(player.bloodMeter.currentBlood)
-        let bloodAfterTravel = currentBlood - bloodCost
-        return bloodAfterTravel >= 10 // 10% threshold
+        return gameTime.isNightTime
     }
     
     func toggleDebugOverlay() {

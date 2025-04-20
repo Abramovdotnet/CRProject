@@ -34,14 +34,14 @@ class FeedingService: GameService {
         
         try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
         
-        var awarenessIncreaseValue: Float = 50.0;
+        var awarenessIncreaseValue: Float = 20.0;
         
         if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
-            awarenessIncreaseValue -= 40
+            awarenessIncreaseValue -= 10
         }
         
         if prey.currentActivity == .sleep {
-            awarenessIncreaseValue -= 20
+            awarenessIncreaseValue -= 5
         }
         
         if vampire.desiredVictim.isDesiredVictim(npc: prey){
@@ -76,16 +76,16 @@ class FeedingService: GameService {
         
         let drainedBlood = try bloodService.emptyBlood(vampire: vampire, prey: prey)
         
-        var awarenessIncreaseValue: Float = 70;
+        var awarenessIncreaseValue: Float = 90;
         
         if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
-            awarenessIncreaseValue -= 25
+            awarenessIncreaseValue -= 30
         } else {
             prey.decreasePlayerRelationship(with: 100)
         }
         
         if prey.currentActivity == .sleep {
-            awarenessIncreaseValue -= 25
+            awarenessIncreaseValue -= 30
         }
         
         setWitnessesIfExists(sceneId: sceneId)
