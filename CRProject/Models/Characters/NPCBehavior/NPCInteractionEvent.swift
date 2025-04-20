@@ -15,6 +15,7 @@ class NPCInteractionEvent {
     var hasSuccess: Bool = false
     var isSuccess: Bool = false
     var isSignleNpcEvent: Bool { get { otherNPC == nil }}
+    var isDiscussed = false
     
     init(interactionType: NPCInteraction, currentNPC: NPC, otherNPC: NPC? = nil, scene: Scene, day: Int, hour: Int, hasSuccess: Bool = false, isSuccess: Bool = false) {
         self.interactionType = interactionType
@@ -25,5 +26,9 @@ class NPCInteractionEvent {
         self.hour = hour
         self.hasSuccess = hasSuccess
         self.isSuccess = isSuccess
+    }
+    
+    func markAsDiscussed() {
+        isDiscussed = true
     }
 }

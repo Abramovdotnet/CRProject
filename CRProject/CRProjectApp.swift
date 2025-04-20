@@ -11,8 +11,8 @@ struct CRProjectApp: App {
         dependencyManager.register(NPCReader())
         dependencyManager.register(StatisticsService())
         dependencyManager.register(GameTimeService())
-        dependencyManager.register(NPCInteractionEventsService())
         dependencyManager.register(GameEventsBusService())
+        dependencyManager.register(NPCInteractionEventsService())
         
         // Then register other services
         dependencyManager.register(VampireNatureRevealService())

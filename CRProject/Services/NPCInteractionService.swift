@@ -104,6 +104,7 @@ class NPCInteractionService : GameService {
         
         guard interaction != .observing else { return }
         
+        /*
         if let (message, icon, color) = interactionMessages[interaction] {
             gameEventBusService.addMessageWithIcon(
                 message: "\(currentNPC.name), \(currentNPC.profession.rawValue) \(message) \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized). Relation: \(currentNPC.getNPCRelationshipValue(of: otherNPC)), State: \(currentNPC.getNPCRelationshipState(of: otherNPC)?.description ?? "Unknown")",
@@ -112,9 +113,11 @@ class NPCInteractionService : GameService {
                 type: .common
             )
         }
+        */
         
         var hasSuccess = false
         var isSuccess = false
+        
         // Handle special cases
         switch interaction {
         case .drunkFight, .gambleFight:
