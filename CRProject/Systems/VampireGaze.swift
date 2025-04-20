@@ -167,9 +167,12 @@ class VampireGaze: GameService {
             
             gameEventBusService.addMessageWithIcon(
                 message: "Successfully used \(power.rawValue) on \(npc.name)",
-                icon: power.icon,
-                iconColor: power.color,
-                type: .event
+                type: .event,
+                location: GameStateService.shared.currentScene?.name,
+                primaryNPC: npc,
+                interactionType: NPCInteraction.observing,
+                hasSuccess: true,
+                isSuccess: true
             )
         } else {
             VampireNatureRevealService.shared.increaseAwareness(amount: awarenessIncrease)
@@ -177,9 +180,12 @@ class VampireGaze: GameService {
             
             gameEventBusService.addMessageWithIcon(
                 message: "Failed to use \(power.rawValue) on \(npc.name)",
-                icon: power.icon,
-                iconColor: power.color,
-                type: .danger
+                type: .danger,
+                location: GameStateService.shared.currentScene?.name,
+                primaryNPC: npc,
+                interactionType: NPCInteraction.observing,
+                hasSuccess: true,
+                isSuccess: false
             )
         }
         

@@ -297,6 +297,124 @@ enum NPCInteraction : String, CaseIterable, Codable {
     case trade = "trade"
     case gameOver = "gameOver"
     
+    var description: String {
+        switch self {
+        case .conversation:
+            return "share humors with"
+        case .argue:
+            return "argues with"
+        case .service:
+            return "served"
+        case .patrol:
+            return "stopped"
+        case .drunkFight:
+            return "fights with"
+        case .gambleFight:
+            return "fights with"
+        case .observing:
+            return "observing"
+        case .prostitution:
+            return "made love with"
+        case .flirt:
+            return "flirted with"
+        case .smithingCraft:
+            return "crafted order for"
+        case .alchemyCraft:
+            return "boilded potion for"
+        case .awareAboutVampire:
+            return "spread vampire treat to"
+        case .awareAboutCasualty:
+            return "told about casualty"
+        case .findOutCasualty:
+            return "found dead body of"
+        case .askForProtection:
+            return "asked for protection"
+        case .trade:
+            return "make a deal with"
+        case .gameOver:
+            return "figure.meditation"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .conversation:
+            return NPCActivityType.socialize.icon
+        case .argue:
+            return "captions.bubble.fill"
+        case .service:
+            return NPCActivityType.serve.icon
+        case .patrol:
+            return NPCActivityType.patrol.icon
+        case .drunkFight:
+            return "figure.boxing"
+        case .gambleFight:
+            return "figure.boxing"
+        case .observing:
+            return "figure.meditation"
+        case .prostitution:
+            return NPCActivityType.love.icon
+        case .flirt:
+            return NPCActivityType.flirt.icon
+        case .smithingCraft:
+            return NPCActivityType.craft.icon
+        case .alchemyCraft:
+            return NPCActivityType.craft.icon
+        case .awareAboutVampire:
+            return NPCActivityType.fleeing.icon
+        case .awareAboutCasualty:
+            return NPCActivityType.casualty.icon
+        case .findOutCasualty:
+            return NPCActivityType.casualty.icon
+        case .askForProtection:
+            return NPCActivityType.protect.icon
+        case .trade:
+            return NPCActivityType.sell.icon
+        case .gameOver:
+            return "figure.meditation"
+        }
+    }
+    
+    
+    var color: Color {
+        switch self {
+        case .conversation:
+            return NPCActivityType.socialize.color
+        case .argue:
+            return Color.orange
+        case .service:
+            return NPCActivityType.serve.color
+        case .patrol:
+            return NPCActivityType.patrol.color
+        case .drunkFight:
+            return NPCActivityType.drink.color
+        case .gambleFight:
+            return NPCActivityType.gamble.color
+        case .observing:
+            return Color.green
+        case .prostitution:
+            return NPCActivityType.love.color
+        case .flirt:
+            return NPCActivityType.flirt.color
+        case .smithingCraft:
+            return NPCActivityType.craft.color
+        case .alchemyCraft:
+            return NPCActivityType.craft.color
+        case .awareAboutVampire:
+            return NPCActivityType.fleeing.color
+        case .awareAboutCasualty:
+            return NPCActivityType.casualty.color
+        case .findOutCasualty:
+            return NPCActivityType.casualty.color
+        case .askForProtection:
+            return NPCActivityType.protect.color
+        case .trade:
+            return NPCActivityType.sell.color
+        case .gameOver:
+            return Theme.bloodProgressColor
+        }
+    }
+    
     static func getPossibleInteraction(currentNPC: NPC, otherNPC: NPC, gameTimeService: GameTimeService, currentScene: Scene) -> NPCInteraction {
         var result = NPCInteraction.observing
         

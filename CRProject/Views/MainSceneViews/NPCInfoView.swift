@@ -70,9 +70,18 @@ struct NPCInfoView: View {
                         // Character info
                         HStack(spacing: 6) {
                             if !npc.isUnknown {
-                                Text(npc.name)
+                                Text("Target:")
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Theme.bloodProgressColor)
+                                Text(npc.sex.rawValue)
                                     .font(Theme.smallFont)
                                     .foregroundColor(Theme.textColor)
+                                Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Color.yellow)
+                                Text(npc.age.description)
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Color.yellow)
                                 Image(systemName: npc.currentActivity.icon)
                                     .foregroundColor(npc.currentActivity.color)
                                     .font(Theme.smallFont)

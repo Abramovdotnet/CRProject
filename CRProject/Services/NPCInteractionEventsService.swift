@@ -23,9 +23,10 @@ class NPCInteractionEventsService : GameService {
         
         guard let currentScene = GameStateService.shared.currentScene else { return }
         
-        if event.interactionType == .conversation {
-            
-            if currentScene.id == event.scene.id {
+        let isCurrentScene = currentScene.id == event.scene.id
+        
+        if isCurrentScene {
+            if event.interactionType == .conversation {
                 var randomNotConversationEvent = npcInteractionEvents.filter {
                     $0.scene.id != currentScene.id
                     && !$0.isDiscussed
@@ -34,6 +35,8 @@ class NPCInteractionEventsService : GameService {
                 
                 guard let randomNotConversationEvent else { return }
                 broadCastEventConversationToCurrentScene(currentEvent: event, discussionEvent: randomNotConversationEvent)
+            } else {
+                broadCastCurrentSceneEvent(currentEvent: event)
             }
         }
     }
@@ -48,30 +51,52 @@ class NPCInteractionEventsService : GameService {
         return npcInteractionEvents
     }
     
-    func broadCastEventConversationToCurrentScene(currentEvent: NPCInteractionEvent, discussionEvent: NPCInteractionEvent) {
-        if let engagedToEventNpc = discussionEvent.otherNPC {
+    func broadCastCurrentSceneEvent(currentEvent: NPCInteractionEvent) {
+        if let engagedToEventNpc = currentEvent.otherNPC {
             gameEventBusService.addMessageWithIcon(
-                message: "\(currentEvent.currentNPC.name): Humors say that \(discussionEvent.currentNPC.name) \(discussionEvent.interactionType.rawValue) to \(engagedToEventNpc.name), at \(discussionEvent.scene.name). recenlty",
-                type: .common
+                type: .common,
+                location: currentEvent.scene.name,
+                primaryNPC: currentEvent.currentNPC,
+                secondaryNPC: engagedToEventNpc,
+                interactionType: currentEvent.interactionType,
+                hasSuccess: currentEvent.hasSuccess,
+                isSuccess: currentEvent.isSuccess
             )
-            
-            if let commentatorNpc = currentEvent.otherNPC {
+        }
+    }
+    
+    func broadCastEventConversationToCurrentScene(currentEvent: NPCInteractionEvent, discussionEvent: NPCInteractionEvent) {
+        if let engagedToEventNpc = currentEvent.otherNPC {
+            if let engagedToDiscussionEvent = discussionEvent.otherNPC {
                 gameEventBusService.addMessageWithIcon(
-                    message: "\(commentatorNpc.name): no way!",
-                    type: .common
+                    type: .common,
+                    location: currentEvent.scene.name,
+                    primaryNPC: currentEvent.currentNPC,
+                    secondaryNPC: engagedToEventNpc,
+                    interactionType: NPCInteraction.conversation,
+                    hasSuccess: false,
+                    isSuccess: nil,
+                    isDiscussion: true,
+                    messageLocation: discussionEvent.scene.name,
+                    rumorInteractionType: discussionEvent.interactionType,
+                    rumorPrimaryNPC: discussionEvent.currentNPC,
+                    rumorSecondaryNPC: discussionEvent.otherNPC
                 )
             }
         } else {
             gameEventBusService.addMessageWithIcon(
-                message: "\(currentEvent.currentNPC.name): Humors say that \(discussionEvent.currentNPC.name) \(discussionEvent.interactionType.rawValue) at \(discussionEvent.scene.name). recenlty",
-                type: .common
+                type: .common,
+                location: currentEvent.scene.name,
+                primaryNPC: currentEvent.currentNPC,
+                interactionType: NPCInteraction.conversation,
+                hasSuccess: false,
+                isSuccess: nil,
+                isDiscussion: true,
+                messageLocation: discussionEvent.scene.name,
+                rumorInteractionType: discussionEvent.interactionType,
+                rumorPrimaryNPC: discussionEvent.currentNPC,
+                rumorSecondaryNPC: discussionEvent.otherNPC
             )
-            if let commentatorNpc = currentEvent.otherNPC {
-                gameEventBusService.addMessageWithIcon(
-                    message: "\(commentatorNpc.name): no way!",
-                    type: .common
-                )
-            }
         }
         
         discussionEvent.markAsDiscussed()

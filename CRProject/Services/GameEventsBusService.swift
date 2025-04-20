@@ -65,18 +65,41 @@ class GameEventsBusService: GameService, ObservableObject {
         }
     }
     
-    func addMessageWithIcon(message: String? = nil, icon: String? = nil, iconColor: Color? = nil,  type: MessageType) {
+    func addMessageWithIcon(
+        message: String? = nil,
+        type: MessageType,
+        location: String? = nil,
+        primaryNPC: NPC? = nil,
+        secondaryNPC: NPC? = nil,
+        interactionType: NPCInteraction? = nil,
+        hasSuccess: Bool = false,
+        isSuccess: Bool? = nil,
+        isDiscussion: Bool = false,
+        messageLocation: String? = nil,
+        rumorInteractionType: NPCInteraction? = nil,
+        rumorPrimaryNPC: NPC? = nil,
+        rumorSecondaryNPC: NPC? = nil
+    ) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
             let newMessage = ChatMessage(
                 timestampHour: gameTimeService.currentHour,
                 timestampDay: gameTimeService.currentDay,
-                timestampHourString: gameTimeService.currentHour.description + ":00  -",
-                message: message,  // Pass the optional, let ChatMessage handle it
-                icon: icon,
-                iconColor: iconColor,
-                type: type
+                timestampHourString: gameTimeService.currentHour.description + ":00 -",
+                message: message,
+                type: type,
+                location: location,
+                primaryNPC: primaryNPC,
+                secondaryNPC: secondaryNPC,
+                interactionType: interactionType,
+                hasSuccess: hasSuccess,
+                isSuccess: isSuccess,
+                isDiscussion: isDiscussion,
+                messageLocation: messageLocation,
+                rumorInteractionType: rumorInteractionType,
+                rumorPrimaryNPC: rumorPrimaryNPC,
+                rumorSecondaryNPC: rumorSecondaryNPC
             )
             
             // Queue mechanism - remove first if at capacity
@@ -98,6 +121,21 @@ class GameEventsBusService: GameService, ObservableObject {
                 type: .system
             )
         }
+    }
+    
+    // Legacy version for backward compatibility
+    func addMessageWithIcon(message: String? = nil, icon: String? = nil, iconColor: Color? = nil, type: MessageType) {
+        addMessageWithIcon(
+            message: message,
+            type: type,
+            location: nil,
+            primaryNPC: nil,
+            secondaryNPC: nil,
+            interactionType: nil,
+            hasSuccess: false,
+            isSuccess: nil,
+            isDiscussion: false
+        )
     }
     
     // Helper methods for common message types

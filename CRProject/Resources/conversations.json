@@ -1,0 +1,1765 @@
+{
+    "conversationTemplates": {
+        "findOutCasualty": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["tavern", "square", "market"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "I heard {target} got what they deserved...",
+                            "Good riddance to {target}, they had it coming.",
+                            "The world's better off without {target}..."
+                        ],
+                        "almostEnemy": [
+                            "I'm not surprised about {target}... They were always trouble.",
+                            "I saw this coming for {target}...",
+                            "I warned {target} about this..."
+                        ],
+                        "neutral": [
+                            "Did you hear about what happened to {target}? It's absolutely dreadful!",
+                            "I can't believe what I saw... {target} is no longer with us.",
+                            "The most terrible news - {target} was found dead this morning."
+                        ],
+                        "ally": [
+                            "I'm devastated... {target} was a good person.",
+                            "This is terrible... {target} didn't deserve this.",
+                            "I can't believe {target} is gone... They were so kind."
+                        ],
+                        "friend": [
+                            "I'm heartbroken... {target} was like family to me.",
+                            "I can't stop thinking about {target}... They were my closest friend.",
+                            "The world feels empty without {target}..."
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "Finally! I've been waiting for this day.",
+                                    "They got what was coming to them.",
+                                    "Good riddance, I say."
+                                ],
+                                "almostEnemy": [
+                                    "I'm not surprised... They had it coming.",
+                                    "They were always asking for trouble.",
+                                    "I saw this coming from a mile away."
+                                ],
+                                "neutral": [
+                                    "By the gods! That's horrible! What happened?",
+                                    "No way! I just saw {target} yesterday!",
+                                    "This can't be true... {target} was such a good person."
+                                ],
+                                "ally": [
+                                    "This is terrible... We need to find out what happened.",
+                                    "I can't believe it... {target} was always so kind.",
+                                    "We should do something to honor their memory."
+                                ],
+                                "friend": [
+                                    "No... This can't be happening...",
+                                    "I need to sit down... This is too much.",
+                                    "We need to find who did this... For {target}."
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "The gods have delivered justice at last.",
+                                    "Another troublemaker gone... The world is better for it.",
+                                    "I've seen their kind before... Always ends the same way."
+                                ],
+                                "almostEnemy": [
+                                    "I warned them this would happen...",
+                                    "Another life wasted on foolishness...",
+                                    "They should have listened to their elders."
+                                ],
+                                "neutral": [
+                                    "Another soul taken too soon... May they rest in peace.",
+                                    "I've seen too much death in my time... This is tragic.",
+                                    "The gods must be testing our faith with such news."
+                                ],
+                                "ally": [
+                                    "May the gods protect their soul... They were a good person.",
+                                    "I'll light a candle for them tonight...",
+                                    "Another good soul lost to this world..."
+                                ],
+                                "friend": [
+                                    "I've lost too many friends in my time... This hurts deeply.",
+                                    "They were like family to me... I'll miss them dearly.",
+                                    "The world grows darker with each friend we lose..."
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "I'm not going to pretend to be sad...",
+                                    "They were never nice to anyone.",
+                                    "I won't miss them, that's for sure."
+                                ],
+                                "almostEnemy": [
+                                    "I'm not surprised... They were always in trouble.",
+                                    "They should have been more careful...",
+                                    "I warned them about this..."
+                                ],
+                                "neutral": [
+                                    "Oh no! Poor {target}... This is so sad!",
+                                    "I can't believe it! {target} was always so kind.",
+                                    "This is just awful... I need to sit down."
+                                ],
+                                "ally": [
+                                    "I'm so upset... {target} was always so kind to me.",
+                                    "This is terrible... We need to do something.",
+                                    "I can't believe they're gone... They were so sweet."
+                                ],
+                                "friend": [
+                                    "No... This can't be happening...",
+                                    "I need to sit down... This is too much.",
+                                    "We need to find who did this... For {target}."
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "The gods work in mysterious ways...",
+                                    "Another troublemaker gone... The world is better for it.",
+                                    "I've seen their kind before... Always ends the same way."
+                                ],
+                                "almostEnemy": [
+                                    "I warned them this would happen...",
+                                    "Another life wasted on foolishness...",
+                                    "They should have listened to their elders."
+                                ],
+                                "neutral": [
+                                    "May the gods protect their soul... Such a tragedy.",
+                                    "Another young life lost... When will this end?",
+                                    "I'll light a candle for {target} tonight."
+                                ],
+                                "ally": [
+                                    "May the gods protect their soul... They were a good person.",
+                                    "I'll light a candle for them tonight...",
+                                    "Another good soul lost to this world..."
+                                ],
+                                "friend": [
+                                    "I've lost too many friends in my time... This hurts deeply.",
+                                    "They were like family to me... I'll miss them dearly.",
+                                    "The world grows darker with each friend we lose..."
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "conditions": {
+                        "sceneTypes": ["tavern", "brothel", "bathhouse"],
+                        "time": "night",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": [
+                        "Shh... Let me tell you about {target}... It's not safe to speak loudly.",
+                        "Between you and me... {target} met a terrible fate.",
+                        "I shouldn't be telling you this, but {target} is gone..."
+                    ],
+                    "responderPhrases": {
+                        "male": {
+                            "young": [
+                                "What?! Here? In the tavern?",
+                                "Keep your voice down... This is serious.",
+                                "I knew something was wrong when I didn't see {target} today."
+                            ],
+                            "old": [
+                                "Another one... The night grows darker.",
+                                "I've heard whispers about this... Terrible times.",
+                                "The tavern walls have seen too much death lately."
+                            ]
+                        },
+                        "female": {
+                            "young": [
+                                "Oh my... Should we tell the guards?",
+                                "I'm scared... Maybe we should leave.",
+                                "This is too much... I need another drink."
+                            ],
+                            "old": [
+                                "The night brings only bad news these days...",
+                                "I've lived too long to be surprised by death.",
+                                "May the gods protect us all from such fate."
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "awareAboutVampire": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["tavern", "square", "market"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "I saw a vampire attack {target}... Serves them right!",
+                            "A vampire got {target}... Maybe they'll think twice next time.",
+                            "I watched a vampire take {target}... They had it coming."
+                        ],
+                        "almostEnemy": [
+                            "I saw a vampire attack {target}... They should have been more careful.",
+                            "A vampire got {target}... I warned them about going out at night.",
+                            "I watched a vampire take {target}... They never listened to warnings."
+                        ],
+                        "neutral": [
+                            "You won't believe what I saw last night... A vampire attack!",
+                            "I barely escaped with my life... There was a vampire!",
+                            "The rumors are true... I saw a vampire with my own eyes!"
+                        ],
+                        "ally": [
+                            "I barely escaped a vampire attack... It was terrifying!",
+                            "I saw a vampire last night... We need to warn everyone!",
+                            "The rumors are true... Vampires are real and they're dangerous!"
+                        ],
+                        "friend": [
+                            "I almost died last night... A vampire attacked me!",
+                            "I barely escaped a vampire... We need to protect each other!",
+                            "The rumors are true... Vampires are real and they're hunting us!"
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "Good riddance... One less problem in this town.",
+                                    "Maybe now they'll learn to mind their own business.",
+                                    "The vampire did us a favor, if you ask me."
+                                ],
+                                "almostEnemy": [
+                                    "They should have been more careful...",
+                                    "I warned them about going out at night.",
+                                    "Maybe now they'll listen to warnings."
+                                ],
+                                "neutral": [
+                                    "A vampire?! Are you sure? That's impossible!",
+                                    "You must be mistaken... Vampires aren't real!",
+                                    "If you're telling the truth, we need to warn everyone!"
+                                ],
+                                "ally": [
+                                    "We need to protect each other... This is serious!",
+                                    "I'll help you warn others about this danger.",
+                                    "We should tell the guards about this immediately!"
+                                ],
+                                "friend": [
+                                    "I'll protect you... We need to stick together!",
+                                    "We should tell the guards and warn everyone!",
+                                    "I won't let anything happen to you... We'll get through this!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "The old stories speak of such creatures... They got what they deserved.",
+                                    "I've heard tales of vampires since I was a child... They should have listened.",
+                                    "The legends are true... They should have been more careful."
+                                ],
+                                "almostEnemy": [
+                                    "The old stories speak of such creatures... They should have listened.",
+                                    "I've heard tales of vampires since I was a child... They were warned.",
+                                    "The legends are true... They should have been more careful."
+                                ],
+                                "neutral": [
+                                    "I feared this day would come... The legends are true.",
+                                    "The old stories speak of such creatures... We're in danger.",
+                                    "I've heard tales of vampires since I was a child..."
+                                ],
+                                "ally": [
+                                    "The ancient texts warned us about this... We must prepare.",
+                                    "I've studied the old stories... We need to protect each other.",
+                                    "The legends speak of such creatures... We must be careful."
+                                ],
+                                "friend": [
+                                    "The ancient texts warned us about this... I'll protect you.",
+                                    "I've studied the old stories... We'll get through this together.",
+                                    "The legends speak of such creatures... We must stay together."
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "Maybe now they'll learn to be nicer to people.",
+                                    "They should have been more careful...",
+                                    "I warned them about going out at night."
+                                ],
+                                "almostEnemy": [
+                                    "They should have been more careful...",
+                                    "I warned them about going out at night.",
+                                    "Maybe now they'll listen to warnings."
+                                ],
+                                "neutral": [
+                                    "Oh no! We need to get out of here!",
+                                    "I've heard stories about vampires... This is terrifying!",
+                                    "Should we tell the city guard about this?"
+                                ],
+                                "ally": [
+                                    "We need to protect each other... This is serious!",
+                                    "I'll help you warn others about this danger.",
+                                    "We should tell the guards about this immediately!"
+                                ],
+                                "friend": [
+                                    "I'll protect you... We need to stick together!",
+                                    "We should tell the guards and warn everyone!",
+                                    "I won't let anything happen to you... We'll get through this!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "The old stories speak of such creatures... They got what they deserved.",
+                                    "I've heard tales of vampires since I was a child... They should have listened.",
+                                    "The legends are true... They should have been more careful."
+                                ],
+                                "almostEnemy": [
+                                    "The old stories speak of such creatures... They should have listened.",
+                                    "I've heard tales of vampires since I was a child... They were warned.",
+                                    "The legends are true... They should have been more careful."
+                                ],
+                                "neutral": [
+                                    "The ancient texts warned us about this...",
+                                    "I've lived long enough to see the impossible become real.",
+                                    "We must prepare... The night will be dangerous."
+                                ],
+                                "ally": [
+                                    "The ancient rituals must be performed... We're in danger.",
+                                    "I've studied the holy texts... We must prepare.",
+                                    "The gods give us strength to face this darkness."
+                                ],
+                                "friend": [
+                                    "The ancient rituals must be performed... I'll protect you.",
+                                    "I've studied the holy texts... We'll get through this together.",
+                                    "The gods give us strength to face this together."
+                                ]
+                            }
+                        }
+                    }
+                },
+                {
+                    "conditions": {
+                        "sceneTypes": ["cathedral", "cloister"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": [
+                        "I seek refuge in the house of the gods... A vampire attacked me!",
+                        "Bless me, for I have seen the unholy... A vampire walks among us!",
+                        "I come to you with a warning... The undead walk our streets!"
+                    ],
+                    "responderPhrases": {
+                        "male": {
+                            "young": [
+                                "The gods protect us... Tell me everything!",
+                                "We must pray for protection against this evil!",
+                                "The holy texts speak of such creatures... We must be prepared!"
+                            ],
+                            "old": [
+                                "The prophecies are coming true... The undead rise.",
+                                "I should have known... The signs were there.",
+                                "The gods test our faith with this trial..."
+                            ]
+                        },
+                        "female": {
+                            "young": [
+                                "May the gods protect us from this evil!",
+                                "We must light more candles and pray for safety!",
+                                "The holy sisters warned us about this... It's happening!"
+                            ],
+                            "old": [
+                                "The ancient rituals must be performed... We're in danger.",
+                                "I've studied the holy texts... We must prepare.",
+                                "The gods give us strength to face this darkness."
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        "drunkFight": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["tavern", "square", "market"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "Did you hear? {target} got into a drunken brawl. Serves them right!",
+                            "Finally someone taught {target} a lesson in that tavern fight!",
+                            "That drunk fool {target} got what they deserved in the fight!"
+                        ],
+                        "almostEnemy": [
+                            "Not surprised {target} got into a bar fight. Always looking for trouble.",
+                            "Heard about {target}'s drunken brawl? Typical...",
+                            "Another day, another fight for {target}. When will they learn?"
+                        ],
+                        "neutral": [
+                            "Have you heard about the fight? {target} was involved!",
+                            "There was quite a scene at the tavern. {target} got into a brawl!",
+                            "Word is spreading about {target}'s tavern fight..."
+                        ],
+                        "ally": [
+                            "I'm worried about {target}. They got into a nasty fight at the tavern.",
+                            "Poor {target}, that tavern brawl was quite serious.",
+                            "I hope {target} is alright after that fight..."
+                        ],
+                        "friend": [
+                            "I can't believe what happened to {target} in that fight!",
+                            "We need to check on {target} after that terrible brawl.",
+                            "I'm really concerned about {target} after that tavern fight."
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "Ha! I would have loved to see that!",
+                                    "About time someone put them in their place!",
+                                    "Serves them right for being such a drunk!"
+                                ],
+                                "almostEnemy": [
+                                    "Not the first time, won't be the last...",
+                                    "They were asking for it, if you ask me.",
+                                    "Maybe now they'll think twice before drinking so much."
+                                ],
+                                "neutral": [
+                                    "Really? In the tavern? That's quite something!",
+                                    "A fight? Was anyone seriously hurt?",
+                                    "The guards won't be happy about this..."
+                                ],
+                                "ally": [
+                                    "That's terrible! Are they badly hurt?",
+                                    "We should make sure they're alright.",
+                                    "I hope the guards caught who started it!"
+                                ],
+                                "friend": [
+                                    "We need to go check on them right now!",
+                                    "This is serious! They might need help!",
+                                    "I knew that tavern was trouble!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "Troublemakers get what they deserve.",
+                                    "The tavern's better off without their kind.",
+                                    "Let that be a lesson to them."
+                                ],
+                                "almostEnemy": [
+                                    "Some folks never learn...",
+                                    "Drink and pride, always a bad mix.",
+                                    "They brought it upon themselves."
+                                ],
+                                "neutral": [
+                                    "These young folks and their brawls...",
+                                    "Nothing good ever comes from tavern fights.",
+                                    "The town guard will have their hands full."
+                                ],
+                                "ally": [
+                                    "A shame to hear that. They're usually better than this.",
+                                    "The drink can make fools of us all.",
+                                    "I hope they learned something from this."
+                                ],
+                                "friend": [
+                                    "By the gods! We must help them!",
+                                    "This isn't like them at all...",
+                                    "I'll have words with the tavern keeper about this!"
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "Good! They deserved every bit of it!",
+                                    "Finally got what was coming to them!",
+                                    "I hope they remember this lesson!"
+                                ],
+                                "almostEnemy": [
+                                    "Well, what did they expect?",
+                                    "That's what happens when you drink too much.",
+                                    "Maybe now they'll behave better."
+                                ],
+                                "neutral": [
+                                    "How awful! Was anyone else hurt?",
+                                    "A fight? In public? How dreadful!",
+                                    "The guards should do something about these brawls!"
+                                ],
+                                "ally": [
+                                    "Oh no! We should send help!",
+                                    "That's terrible! Are they badly hurt?",
+                                    "Someone should stop these fights from happening!"
+                                ],
+                                "friend": [
+                                    "We must go to them right away!",
+                                    "This is terrible! They could be seriously hurt!",
+                                    "I knew that tavern was dangerous!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "The tavern's better off without such rowdy folk.",
+                                    "Let that be a lesson in manners.",
+                                    "Some people only learn the hard way."
+                                ],
+                                "almostEnemy": [
+                                    "That's what comes of such behavior.",
+                                    "No surprise there. They were asking for trouble.",
+                                    "Perhaps now they'll mind their manners."
+                                ],
+                                "neutral": [
+                                    "Such violence... What's this town coming to?",
+                                    "In my day, we settled things with words.",
+                                    "These brawls are getting out of hand."
+                                ],
+                                "ally": [
+                                    "Poor soul... The drink can be a terrible thing.",
+                                    "I hope they're not too badly hurt.",
+                                    "Someone should look after them."
+                                ],
+                                "friend": [
+                                    "Merciful heavens! We must help them!",
+                                    "This is dreadful! They need care!",
+                                    "I'll speak to the guard about this!"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "askForProtection": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["tavern", "square", "market", "barracks"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "Hah! Heard {target} is so scared they're hiring protection!",
+                            "Look who's running scared - {target} is hiring guards!",
+                            "The mighty {target} needs protection now. How pathetic!"
+                        ],
+                        "almostEnemy": [
+                            "Seems {target} is paranoid enough to hire protection.",
+                            "{target} must be in real trouble to need guards.",
+                            "Wonder what {target} did to need protection..."
+                        ],
+                        "neutral": [
+                            "Did you hear? {target} is seeking protection!",
+                            "Something must be wrong - {target} is hiring guards.",
+                            "Strange times - {target} is looking for protection."
+                        ],
+                        "ally": [
+                            "I'm worried about {target}, they're seeking protection.",
+                            "Something's frightened {target} enough to hire guards.",
+                            "Hope {target} is alright, they're looking for protection."
+                        ],
+                        "friend": [
+                            "I'm really concerned about {target}, they're seeking guards!",
+                            "Something's terribly wrong - {target} needs protection!",
+                            "We should help {target}, they're scared enough to hire protection!"
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "Cowards always need protection!",
+                                    "Let them waste their money on guards!",
+                                    "They should be afraid!"
+                                ],
+                                "almostEnemy": [
+                                    "Must have made some enemies...",
+                                    "About time they realized they need help.",
+                                    "Wonder what trouble they're in."
+                                ],
+                                "neutral": [
+                                    "These are dangerous times indeed.",
+                                    "Better safe than sorry, I suppose.",
+                                    "Must be something serious."
+                                ],
+                                "ally": [
+                                    "I hope they stay safe!",
+                                    "They must have good reason to be worried.",
+                                    "Maybe we should offer help?"
+                                ],
+                                "friend": [
+                                    "We should find out what's wrong!",
+                                    "They need our help, not just guards!",
+                                    "This is serious - we must do something!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "Money won't protect them forever.",
+                                    "Guards can't watch everything.",
+                                    "Let them cower behind their protectors."
+                                ],
+                                "almostEnemy": [
+                                    "The guilty always need protection.",
+                                    "Their past must be catching up.",
+                                    "Protection comes at a high price."
+                                ],
+                                "neutral": [
+                                    "Wise in these troubled times.",
+                                    "Better to be cautious than dead.",
+                                    "The nights are dark and full of danger."
+                                ],
+                                "ally": [
+                                    "I pray the protection helps them.",
+                                    "These are dangerous times indeed.",
+                                    "May the guards keep them safe."
+                                ],
+                                "friend": [
+                                    "We must help them ourselves!",
+                                    "This is more serious than I thought.",
+                                    "They need more than just hired help!"
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "How pathetic! Hiding behind guards!",
+                                    "All their money won't save them!",
+                                    "Let them live in fear!"
+                                ],
+                                "almostEnemy": [
+                                    "Guilty conscience, perhaps?",
+                                    "They must have angered someone important.",
+                                    "Protection doesn't come cheap."
+                                ],
+                                "neutral": [
+                                    "How worrying! What could be wrong?",
+                                    "These are frightening times indeed.",
+                                    "I hope they know what they're doing."
+                                ],
+                                "ally": [
+                                    "Poor thing! They must be terrified!",
+                                    "I hope they'll be alright!",
+                                    "Should we offer to help?"
+                                ],
+                                "friend": [
+                                    "We must help them immediately!",
+                                    "This is terrible! They need our support!",
+                                    "I'm so worried about them!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "Their sins must be catching up with them.",
+                                    "No amount of protection will save them.",
+                                    "Let them waste their coin on guards."
+                                ],
+                                "almostEnemy": [
+                                    "The wicked always need protection.",
+                                    "Their past must be haunting them.",
+                                    "Money buys guards, not peace."
+                                ],
+                                "neutral": [
+                                    "Such troubled times we live in.",
+                                    "The wise know when to seek help.",
+                                    "May the gods watch over them."
+                                ],
+                                "ally": [
+                                    "I'll pray for their safety.",
+                                    "These are dark times indeed.",
+                                    "I hope they find peace."
+                                ],
+                                "friend": [
+                                    "We must do something to help!",
+                                    "This is most concerning!",
+                                    "They need more than just hired swords!"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "service": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["tavern", "square", "market"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "Heard {target} is serving drinks now. How the mighty have fallen!",
+                            "You should see {target} serving tables. Pathetic!",
+                            "Look at {target}, reduced to serving others!"
+                        ],
+                        "almostEnemy": [
+                            "Saw {target} serving at the tavern. Not their best moment.",
+                            "Guess {target} had to find work somewhere.",
+                            "{target} seems to have found their level - serving others."
+                        ],
+                        "neutral": [
+                            "I saw {target} working at the tavern today.",
+                            "{target} seems to be doing well at their service job.",
+                            "Did you know {target} is working at the tavern now?"
+                        ],
+                        "ally": [
+                            "{target} is doing great work at the tavern.",
+                            "Nice to see {target} taking pride in their service.",
+                            "I'm glad {target} found honest work at the tavern."
+                        ],
+                        "friend": [
+                            "{target} is such a dedicated worker at the tavern!",
+                            "I'm proud of how well {target} is doing in their work.",
+                            "You should see how well {target} handles the tavern!"
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "Ha! Perfect job for them!",
+                                    "They deserve nothing better!",
+                                    "How embarrassing for them!"
+                                ],
+                                "almostEnemy": [
+                                    "Well, everyone needs work...",
+                                    "At least they're working, I suppose.",
+                                    "Better than begging in the streets."
+                                ],
+                                "neutral": [
+                                    "Honest work is nothing to be ashamed of.",
+                                    "The tavern's always hiring good help.",
+                                    "Good to hear they're working."
+                                ],
+                                "ally": [
+                                    "They're doing well for themselves!",
+                                    "It's good honest work!",
+                                    "I'm glad they found employment!"
+                                ],
+                                "friend": [
+                                    "They're one of the best servers there!",
+                                    "I'm so happy for them!",
+                                    "We should visit and show our support!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "A fitting position for such a person.",
+                                    "Let them learn some humility.",
+                                    "From grace to serving tables. Perfect."
+                                ],
+                                "almostEnemy": [
+                                    "Work is work, I suppose.",
+                                    "At least they're earning honest coin.",
+                                    "Everyone starts somewhere."
+                                ],
+                                "neutral": [
+                                    "Honest work builds character.",
+                                    "Nothing wrong with serving others.",
+                                    "Good to see people working."
+                                ],
+                                "ally": [
+                                    "They do their work with dignity.",
+                                    "A respectable profession indeed.",
+                                    "Good to see them prospering."
+                                ],
+                                "friend": [
+                                    "They bring honor to any work they do!",
+                                    "Such a dedicated worker!",
+                                    "We should support their endeavors!"
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "How delightful to see them serving others!",
+                                    "Finally found their proper place!",
+                                    "Suits them perfectly, don't you think?"
+                                ],
+                                "almostEnemy": [
+                                    "Well, we all need to eat somehow.",
+                                    "At least they're working...",
+                                    "Better than some alternatives."
+                                ],
+                                "neutral": [
+                                    "The tavern's lucky to have help.",
+                                    "Nothing wrong with honest work.",
+                                    "Everyone needs to start somewhere."
+                                ],
+                                "ally": [
+                                    "They're doing wonderfully there!",
+                                    "Such a hard worker!",
+                                    "I'm happy they found good work!"
+                                ],
+                                "friend": [
+                                    "They're absolutely wonderful at it!",
+                                    "We should visit them more often!",
+                                    "I'm so proud of their work!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "How appropriate for them.",
+                                    "Serving others suits them well.",
+                                    "A humbling experience, no doubt."
+                                ],
+                                "almostEnemy": [
+                                    "We all must work to survive.",
+                                    "At least it's honest work.",
+                                    "Times are hard for everyone."
+                                ],
+                                "neutral": [
+                                    "Service is noble work.",
+                                    "The tavern needs good help.",
+                                    "Honest work is a blessing."
+                                ],
+                                "ally": [
+                                    "They serve with such grace.",
+                                    "A credit to their profession.",
+                                    "Such a dedicated worker."
+                                ],
+                                "friend": [
+                                    "They bring dignity to their work!",
+                                    "Such a blessing to the tavern!",
+                                    "We should show our support!"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "trade": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["tavern", "market", "square", "blacksmith", "alchemistShop"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "Heard {target} is trying to cheat people in trade!",
+                            "Watch out for {target}'s deals - they're all scams!",
+                            "That swindler {target} is at it again with their trades!"
+                        ],
+                        "almostEnemy": [
+                            "I wouldn't trust {target}'s trading practices...",
+                            "Be careful if you're trading with {target}.",
+                            "{target}'s prices are always suspicious."
+                        ],
+                        "neutral": [
+                            "Have you traded with {target} lately?",
+                            "{target} seems to be doing well in trade.",
+                            "I heard {target} has some interesting goods."
+                        ],
+                        "ally": [
+                            "{target} always offers fair trades.",
+                            "You can trust {target}'s business practices.",
+                            "I've had good experiences trading with {target}."
+                        ],
+                        "friend": [
+                            "{target} is the most honest trader I know!",
+                            "You should definitely trade with {target}!",
+                            "I always recommend {target}'s business!"
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "They've tried to cheat me before!",
+                                    "Their prices are robbery!",
+                                    "I wouldn't trust them with a copper!"
+                                ],
+                                "almostEnemy": [
+                                    "Better to shop elsewhere...",
+                                    "Their reputation isn't the best.",
+                                    "I've heard similar complaints."
+                                ],
+                                "neutral": [
+                                    "The market needs more traders.",
+                                    "Competition is good for business.",
+                                    "As long as they're fair..."
+                                ],
+                                "ally": [
+                                    "They've always been fair with me!",
+                                    "Good to have honest traders!",
+                                    "I'll check their wares soon!"
+                                ],
+                                "friend": [
+                                    "Best trader in town, no doubt!",
+                                    "I always recommend their business!",
+                                    "They've never let me down!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "A cheat and a swindler, that one.",
+                                    "I've seen their kind before.",
+                                    "Keep your coin away from them."
+                                ],
+                                "almostEnemy": [
+                                    "Careful with their deals...",
+                                    "Not all that glitters is gold.",
+                                    "Trust is earned in trade."
+                                ],
+                                "neutral": [
+                                    "Trade keeps the town alive.",
+                                    "Every merchant has their way.",
+                                    "The market welcomes all."
+                                ],
+                                "ally": [
+                                    "They run an honest business.",
+                                    "Fair prices, fair trades.",
+                                    "Good to have them in town."
+                                ],
+                                "friend": [
+                                    "A merchant of the highest honor!",
+                                    "Trust them with my life and coin!",
+                                    "The market's finest, no doubt!"
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "Stay away from their shop!",
+                                    "They'll rob you blind!",
+                                    "Nothing but a cheat!"
+                                ],
+                                "almostEnemy": [
+                                    "I've heard stories...",
+                                    "Better safe than sorry.",
+                                    "Watch your purse there."
+                                ],
+                                "neutral": [
+                                    "More traders are always welcome.",
+                                    "The market needs variety.",
+                                    "Business is business."
+                                ],
+                                "ally": [
+                                    "Their prices are quite fair!",
+                                    "I've had good deals there!",
+                                    "Trustworthy merchant!"
+                                ],
+                                "friend": [
+                                    "The most honest trader around!",
+                                    "I shop there all the time!",
+                                    "You can trust them completely!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "That one's not to be trusted.",
+                                    "Keep your coin close there.",
+                                    "Beware their silver tongue."
+                                ],
+                                "almostEnemy": [
+                                    "Reputation speaks volumes...",
+                                    "Caution in trade is wise.",
+                                    "Time will tell their worth."
+                                ],
+                                "neutral": [
+                                    "Trade brings life to town.",
+                                    "All merchants have their ways.",
+                                    "The market judges fairly."
+                                ],
+                                "ally": [
+                                    "An honest business person.",
+                                    "Fair deals, fair prices.",
+                                    "Good for our community."
+                                ],
+                                "friend": [
+                                    "A blessing to our market!",
+                                    "Trust earned through honest trade!",
+                                    "The finest merchant around!"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "crafting": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["blacksmith", "alchemistShop", "market"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "Heard {target} is trying to pass off shoddy work as quality!",
+                            "That fraud {target} is ruining the craft's reputation!",
+                            "Watch out for {target}'s work - it's all subpar!"
+                        ],
+                        "almostEnemy": [
+                            "I wouldn't trust {target}'s craftsmanship...",
+                            "Be careful with {target}'s work.",
+                            "{target}'s quality is questionable at best."
+                        ],
+                        "neutral": [
+                            "Have you seen {target}'s latest work?",
+                            "{target} seems to be improving their craft.",
+                            "I heard {target} has some interesting creations."
+                        ],
+                        "ally": [
+                            "{target} creates such beautiful work!",
+                            "You can trust {target}'s craftsmanship.",
+                            "I've always been impressed by {target}'s work."
+                        ],
+                        "friend": [
+                            "{target} is the most skilled artisan I know!",
+                            "You should see {target}'s latest masterpiece!",
+                            "I always recommend {target}'s work!"
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "Their work is an insult to the craft!",
+                                    "They're ruining our reputation!",
+                                    "I wouldn't trust their work at all!"
+                                ],
+                                "almostEnemy": [
+                                    "Better to find another artisan...",
+                                    "Their quality isn't the best.",
+                                    "I've seen better work elsewhere."
+                                ],
+                                "neutral": [
+                                    "The craft needs more skilled hands.",
+                                    "Practice makes perfect, I suppose.",
+                                    "As long as they're improving..."
+                                ],
+                                "ally": [
+                                    "They've got real talent!",
+                                    "Good to have skilled artisans!",
+                                    "I'll check their work soon!"
+                                ],
+                                "friend": [
+                                    "Best artisan in town, no doubt!",
+                                    "I always recommend their work!",
+                                    "They've never disappointed!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "A disgrace to the craft, that one.",
+                                    "I've seen their shoddy work before.",
+                                    "Keep your coin away from their shop."
+                                ],
+                                "almostEnemy": [
+                                    "Careful with their work...",
+                                    "Not all that shines is quality.",
+                                    "Skill is earned through practice."
+                                ],
+                                "neutral": [
+                                    "Craftsmanship keeps the town alive.",
+                                    "Every artisan has their style.",
+                                    "The market judges quality fairly."
+                                ],
+                                "ally": [
+                                    "They do fine work indeed.",
+                                    "Quality materials, quality work.",
+                                    "Good to have them in town."
+                                ],
+                                "friend": [
+                                    "A master of their craft!",
+                                    "Trust them with my finest materials!",
+                                    "The town's finest artisan, no doubt!"
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "Stay away from their shop!",
+                                    "Their work is terrible!",
+                                    "Nothing but shoddy craftsmanship!"
+                                ],
+                                "almostEnemy": [
+                                    "I've seen their work...",
+                                    "Better safe than sorry.",
+                                    "Check the quality carefully."
+                                ],
+                                "neutral": [
+                                    "More artisans are always welcome.",
+                                    "The craft needs variety.",
+                                    "Skill takes time to develop."
+                                ],
+                                "ally": [
+                                    "Their work is quite impressive!",
+                                    "I've seen their creations!",
+                                    "Talented artisan!"
+                                ],
+                                "friend": [
+                                    "The most skilled artisan around!",
+                                    "I commission them all the time!",
+                                    "You can trust their work completely!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "That one's not to be trusted.",
+                                    "Keep your materials away from them.",
+                                    "Beware their false promises."
+                                ],
+                                "almostEnemy": [
+                                    "Reputation speaks volumes...",
+                                    "Quality takes time to prove.",
+                                    "Time will tell their worth."
+                                ],
+                                "neutral": [
+                                    "Craftsmanship brings life to town.",
+                                    "All artisans have their ways.",
+                                    "The market judges quality fairly."
+                                ],
+                                "ally": [
+                                    "A skilled craftsperson indeed.",
+                                    "Fine work, fine materials.",
+                                    "Good for our community."
+                                ],
+                                "friend": [
+                                    "A blessing to our craft!",
+                                    "Skill earned through dedication!",
+                                    "The finest artisan around!"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "patrol": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["barracks", "square", "market"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "Heard {target} is slacking on patrol again!",
+                            "That lazy guard {target} is neglecting their duty!",
+                            "Watch out for {target}'s patrol - they're never where they should be!"
+                        ],
+                        "almostEnemy": [
+                            "I wouldn't trust {target}'s patrol route...",
+                            "Be careful relying on {target}'s watch.",
+                            "{target}'s dedication to duty is questionable."
+                        ],
+                        "neutral": [
+                            "Have you seen {target} on patrol today?",
+                            "{target} seems to be taking their duty seriously.",
+                            "I heard {target} is doing well on patrol."
+                        ],
+                        "ally": [
+                            "{target} is such a dedicated guard!",
+                            "You can trust {target}'s watch.",
+                            "I've always felt safe with {target} on patrol."
+                        ],
+                        "friend": [
+                            "{target} is the most vigilant guard I know!",
+                            "You should see {target} on patrol!",
+                            "I always feel safe when {target} is on watch!"
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "They're a disgrace to the guard!",
+                                    "They're putting us all in danger!",
+                                    "I wouldn't trust them to watch a door!"
+                                ],
+                                "almostEnemy": [
+                                    "Better to rely on other guards...",
+                                    "Their dedication isn't the best.",
+                                    "I've seen them slacking before."
+                                ],
+                                "neutral": [
+                                    "The guard needs more dedicated members.",
+                                    "Duty is important, I suppose.",
+                                    "As long as they're doing their job..."
+                                ],
+                                "ally": [
+                                    "They're a credit to the guard!",
+                                    "Good to have vigilant guards!",
+                                    "I'll report to them if needed!"
+                                ],
+                                "friend": [
+                                    "Best guard in town, no doubt!",
+                                    "I always feel safe with them on watch!",
+                                    "They've never let us down!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "A disgrace to the uniform, that one.",
+                                    "I've seen their laziness before.",
+                                    "Keep your safety in other hands."
+                                ],
+                                "almostEnemy": [
+                                    "Careful relying on their watch...",
+                                    "Not all who wear the uniform are worthy.",
+                                    "Duty is earned through dedication."
+                                ],
+                                "neutral": [
+                                    "The guard keeps the town safe.",
+                                    "Every guard has their way.",
+                                    "The captain judges fairly."
+                                ],
+                                "ally": [
+                                    "They serve with honor.",
+                                    "Dedicated to their duty.",
+                                    "Good to have them in the guard."
+                                ],
+                                "friend": [
+                                    "A model for all guards!",
+                                    "Trust them with my life!",
+                                    "The town's finest guard, no doubt!"
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "Stay away from their patrol route!",
+                                    "They're never where they should be!",
+                                    "Nothing but a lazy guard!"
+                                ],
+                                "almostEnemy": [
+                                    "I've seen them slacking...",
+                                    "Better safe than sorry.",
+                                    "Don't rely on their watch."
+                                ],
+                                "neutral": [
+                                    "More guards are always welcome.",
+                                    "The guard needs all hands.",
+                                    "Duty takes time to learn."
+                                ],
+                                "ally": [
+                                    "They're quite dedicated!",
+                                    "I've seen them on patrol!",
+                                    "Vigilant guard!"
+                                ],
+                                "friend": [
+                                    "The most dedicated guard around!",
+                                    "I always feel safe with them!",
+                                    "You can trust their watch completely!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "That one's not to be trusted.",
+                                    "Keep your safety in other hands.",
+                                    "Beware their false vigilance."
+                                ],
+                                "almostEnemy": [
+                                    "Reputation speaks volumes...",
+                                    "Duty takes time to prove.",
+                                    "Time will tell their worth."
+                                ],
+                                "neutral": [
+                                    "The guard protects us all.",
+                                    "All guards have their ways.",
+                                    "The captain judges fairly."
+                                ],
+                                "ally": [
+                                    "A dedicated guard indeed.",
+                                    "True to their duty.",
+                                    "Good for our safety."
+                                ],
+                                "friend": [
+                                    "A blessing to our guard!",
+                                    "Duty earned through dedication!",
+                                    "The finest guard around!"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "flirt": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["tavern", "square", "market", "garden"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "Heard {target} is making a fool of themselves flirting again!",
+                            "That desperate {target} is at it again with their advances!",
+                            "Watch out for {target}'s flirting - it's all lies!"
+                        ],
+                        "almostEnemy": [
+                            "I wouldn't trust {target}'s sweet words...",
+                            "Be careful with {target}'s advances.",
+                            "{target}'s intentions are questionable."
+                        ],
+                        "neutral": [
+                            "Have you seen {target} trying to flirt?",
+                            "{target} seems to be quite the charmer.",
+                            "I heard {target} is getting attention."
+                        ],
+                        "ally": [
+                            "{target} has such a way with words!",
+                            "You can trust {target}'s intentions.",
+                            "I've seen {target} being quite charming."
+                        ],
+                        "friend": [
+                            "{target} is the most charming person I know!",
+                            "You should see {target} in action!",
+                            "I always enjoy {target}'s company!"
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "They're making a fool of themselves!",
+                                    "They're just desperate!",
+                                    "I wouldn't trust their sweet words!"
+                                ],
+                                "almostEnemy": [
+                                    "Better to stay away...",
+                                    "Their charm isn't genuine.",
+                                    "I've seen their act before."
+                                ],
+                                "neutral": [
+                                    "Everyone deserves a chance.",
+                                    "Love is in the air, I suppose.",
+                                    "As long as they're respectful..."
+                                ],
+                                "ally": [
+                                    "They've got real charm!",
+                                    "Good to see them happy!",
+                                    "I'll wish them luck!"
+                                ],
+                                "friend": [
+                                    "Most charming person around!",
+                                    "I always enjoy their company!",
+                                    "They've got great taste!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "A disgrace to romance, that one.",
+                                    "I've seen their tricks before.",
+                                    "Keep your heart away from them."
+                                ],
+                                "almostEnemy": [
+                                    "Careful with their words...",
+                                    "Not all that glitters is gold.",
+                                    "Love takes time to prove."
+                                ],
+                                "neutral": [
+                                    "Young love is always sweet.",
+                                    "Every heart has its way.",
+                                    "Time will tell their worth."
+                                ],
+                                "ally": [
+                                    "They court with honor.",
+                                    "True to their heart.",
+                                    "Good to see them happy."
+                                ],
+                                "friend": [
+                                    "A true romantic at heart!",
+                                    "Trust them with my daughter!",
+                                    "The town's finest matchmaker!"
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "Stay away from their advances!",
+                                    "They're just playing games!",
+                                    "Nothing but empty promises!"
+                                ],
+                                "almostEnemy": [
+                                    "I've seen their type...",
+                                    "Better safe than sorry.",
+                                    "Don't trust their sweet words."
+                                ],
+                                "neutral": [
+                                    "More romance is always welcome.",
+                                    "The heart wants what it wants.",
+                                    "Love takes time to blossom."
+                                ],
+                                "ally": [
+                                    "They're quite charming!",
+                                    "I've seen them in action!",
+                                    "Sweet talker!"
+                                ],
+                                "friend": [
+                                    "The most charming person around!",
+                                    "I always enjoy their company!",
+                                    "You can trust their heart completely!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "That one's not to be trusted.",
+                                    "Keep your heart away from them.",
+                                    "Beware their false promises."
+                                ],
+                                "almostEnemy": [
+                                    "Reputation speaks volumes...",
+                                    "Love takes time to prove.",
+                                    "Time will tell their worth."
+                                ],
+                                "neutral": [
+                                    "Young love is always sweet.",
+                                    "All hearts have their ways.",
+                                    "The town judges fairly."
+                                ],
+                                "ally": [
+                                    "A true romantic indeed.",
+                                    "Honest in their affections.",
+                                    "Good for young love."
+                                ],
+                                "friend": [
+                                    "A blessing to romance!",
+                                    "Love earned through honesty!",
+                                    "The finest matchmaker around!"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "prostitution": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["tavern", "brothel", "bathhouse"],
+                        "time": "night",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "Heard {target} is working the streets now. How low can they sink?",
+                            "That disgrace {target} is selling themselves for coin!",
+                            "Look at {target}, reduced to such shameful work!"
+                        ],
+                        "almostEnemy": [
+                            "I wouldn't be surprised if {target} is working in that trade...",
+                            "Heard rumors about {target}'s new line of work.",
+                            "{target} seems to have fallen on hard times..."
+                        ],
+                        "neutral": [
+                            "Have you heard about {target}'s situation?",
+                            "{target} seems to be in a difficult position.",
+                            "I heard {target} is working at the brothel."
+                        ],
+                        "ally": [
+                            "Poor {target}, they deserve better than this.",
+                            "I wish there was something we could do for {target}.",
+                            "It's sad to see {target} in such circumstances."
+                        ],
+                        "friend": [
+                            "I'm worried about {target}, they need help.",
+                            "We should do something to help {target}.",
+                            "This isn't the life {target} deserves."
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "They're a disgrace to the town!",
+                                    "They're bringing shame to us all!",
+                                    "I wouldn't be caught dead near them!"
+                                ],
+                                "almostEnemy": [
+                                    "Better to stay away from that area...",
+                                    "Their choices are their own.",
+                                    "I've heard the rumors."
+                                ],
+                                "neutral": [
+                                    "Times are hard for everyone.",
+                                    "People do what they must to survive.",
+                                    "It's not our place to judge."
+                                ],
+                                "ally": [
+                                    "They need help, not judgment.",
+                                    "We should try to help them.",
+                                    "I wish there was something we could do."
+                                ],
+                                "friend": [
+                                    "We need to help them get out of this!",
+                                    "This isn't what they deserve!",
+                                    "We should find them proper work!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "A stain on our community, that one.",
+                                    "I've seen their kind before.",
+                                    "Keep your distance from them."
+                                ],
+                                "almostEnemy": [
+                                    "Hard times make for hard choices...",
+                                    "Not all paths are honorable.",
+                                    "Life can be cruel sometimes."
+                                ],
+                                "neutral": [
+                                    "The night brings many shadows.",
+                                    "Every soul has its burden.",
+                                    "The gods judge us all in time."
+                                ],
+                                "ally": [
+                                    "They need guidance, not scorn.",
+                                    "A helping hand could change their path.",
+                                    "May the gods show them mercy."
+                                ],
+                                "friend": [
+                                    "We must help them find a better way!",
+                                    "This breaks my heart to see!",
+                                    "They deserve better than this!"
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "Stay away from that part of town!",
+                                    "They're bringing shame to us all!",
+                                    "Nothing but trouble there!"
+                                ],
+                                "almostEnemy": [
+                                    "I've heard the stories...",
+                                    "Better safe than sorry.",
+                                    "Don't go near that place."
+                                ],
+                                "neutral": [
+                                    "The night can be dangerous.",
+                                    "Everyone has their struggles.",
+                                    "Life isn't always fair."
+                                ],
+                                "ally": [
+                                    "They need our help, not our judgment.",
+                                    "I wish we could do something.",
+                                    "Poor soul needs guidance."
+                                ],
+                                "friend": [
+                                    "We must help them immediately!",
+                                    "This is terrible! They need our help!",
+                                    "I'm so worried about them!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "That one's not to be trusted.",
+                                    "Keep your distance from them.",
+                                    "Beware their company."
+                                ],
+                                "almostEnemy": [
+                                    "Reputation speaks volumes...",
+                                    "Choices have consequences.",
+                                    "Time will tell their worth."
+                                ],
+                                "neutral": [
+                                    "The night holds many secrets.",
+                                    "All paths have their reasons.",
+                                    "The gods see all in time."
+                                ],
+                                "ally": [
+                                    "A soul in need of guidance.",
+                                    "May they find a better path.",
+                                    "Good people can fall on hard times."
+                                ],
+                                "friend": [
+                                    "A blessing to help them find their way!",
+                                    "Hope earned through kindness!",
+                                    "We must show them a better path!"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        },
+        "argue": {
+            "templates": [
+                {
+                    "conditions": {
+                        "sceneTypes": ["tavern", "square", "market"],
+                        "time": "day",
+                        "minAge": 0,
+                        "maxAge": 100
+                    },
+                    "initiatorPhrases": {
+                        "enemy": [
+                            "Did you hear about {target}? They got into a heated argument with someone!",
+                            "That troublemaker {target} was causing a scene again!",
+                            "Look at {target}, always picking fights with people!"
+                        ],
+                        "almostEnemy": [
+                            "I saw {target} arguing with someone earlier...",
+                            "Heard {target} was making a scene again.",
+                            "{target} seems to be looking for trouble..."
+                        ],
+                        "neutral": [
+                            "Did you see {target} arguing with someone?",
+                            "I noticed {target} was in a heated discussion.",
+                            "There was quite an argument involving {target}."
+                        ],
+                        "ally": [
+                            "Poor {target}, they got into an argument.",
+                            "I wish {target} didn't have to deal with that.",
+                            "It's sad to see {target} in such a situation."
+                        ],
+                        "friend": [
+                            "I'm worried about {target}, they got into an argument.",
+                            "We should check on {target} after that argument.",
+                            "This isn't like {target}, they must be really upset."
+                        ]
+                    },
+                    "responderPhrases": {
+                        "male": {
+                            "young": {
+                                "enemy": [
+                                    "They're always causing trouble!",
+                                    "They're bringing chaos to our town!",
+                                    "I wouldn't be surprised if they started it!"
+                                ],
+                                "almostEnemy": [
+                                    "Better to stay away from that situation...",
+                                    "Their temper is their own problem.",
+                                    "I've seen this before with them."
+                                ],
+                                "neutral": [
+                                    "Arguments happen to everyone.",
+                                    "People have their reasons.",
+                                    "It's not our place to judge."
+                                ],
+                                "ally": [
+                                    "They need support, not judgment.",
+                                    "We should try to help them.",
+                                    "I wish there was something we could do."
+                                ],
+                                "friend": [
+                                    "We need to help them calm down!",
+                                    "This isn't like them!",
+                                    "We should find out what's wrong!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "A troublemaker, that one.",
+                                    "I've seen their kind before.",
+                                    "Keep your distance from them."
+                                ],
+                                "almostEnemy": [
+                                    "Youth and hot tempers...",
+                                    "Not all battles need fighting.",
+                                    "Life teaches patience in time."
+                                ],
+                                "neutral": [
+                                    "The day brings many conflicts.",
+                                    "Every soul has its burdens.",
+                                    "The gods judge us all in time."
+                                ],
+                                "ally": [
+                                    "They need guidance, not scorn.",
+                                    "A calm word could help.",
+                                    "May the gods grant them peace."
+                                ],
+                                "friend": [
+                                    "We must help them find peace!",
+                                    "This breaks my heart to see!",
+                                    "They deserve better than this!"
+                                ]
+                            }
+                        },
+                        "female": {
+                            "young": {
+                                "enemy": [
+                                    "Stay away from that drama!",
+                                    "They're always causing scenes!",
+                                    "Nothing but trouble there!"
+                                ],
+                                "almostEnemy": [
+                                    "I've heard about their temper...",
+                                    "Better safe than sorry.",
+                                    "Don't get involved."
+                                ],
+                                "neutral": [
+                                    "People have their reasons.",
+                                    "Everyone has bad days.",
+                                    "Life isn't always peaceful."
+                                ],
+                                "ally": [
+                                    "They need our support, not our judgment.",
+                                    "I wish we could help.",
+                                    "Poor soul needs peace."
+                                ],
+                                "friend": [
+                                    "We must help them immediately!",
+                                    "This is terrible! They need our help!",
+                                    "I'm so worried about them!"
+                                ]
+                            },
+                            "old": {
+                                "enemy": [
+                                    "That one's not to be trusted.",
+                                    "Keep your distance from them.",
+                                    "Beware their company."
+                                ],
+                                "almostEnemy": [
+                                    "Anger solves nothing...",
+                                    "Words have consequences.",
+                                    "Time will tell their worth."
+                                ],
+                                "neutral": [
+                                    "The day holds many challenges.",
+                                    "All conflicts have their reasons.",
+                                    "The gods see all in time."
+                                ],
+                                "ally": [
+                                    "A soul in need of peace.",
+                                    "May they find calm.",
+                                    "Good people can have bad days."
+                                ],
+                                "friend": [
+                                    "A blessing to help them find peace!",
+                                    "Hope earned through kindness!",
+                                    "We must show them a better way!"
+                                ]
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    }
+} 

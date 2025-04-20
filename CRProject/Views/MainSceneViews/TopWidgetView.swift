@@ -21,6 +21,7 @@ struct TopWidgetView: View {
                 .font(Theme.smallFont)
                 .foregroundColor(Theme.textColor)
             Text(viewModel.currentScene?.name ?? "Unknown")
+                .foregroundColor(.yellow)
                 .font(Theme.smallFont)
                 .padding(.leading, -5)
         
