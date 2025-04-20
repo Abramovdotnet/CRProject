@@ -172,7 +172,7 @@ class VampireGaze: GameService {
                 type: .event
             )
         } else {
-            VampireNatureRevealService.shared.increaseAwareness(for: npc.currentLocationId, amount: awarenessIncrease)
+            VampireNatureRevealService.shared.increaseAwareness(amount: awarenessIncrease)
             npc.decreasePlayerRelationship(with: 10)
             
             gameEventBusService.addMessageWithIcon(

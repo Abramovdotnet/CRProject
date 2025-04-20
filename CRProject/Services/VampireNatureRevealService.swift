@@ -6,7 +6,7 @@ extension Notification.Name {
 }
 
 class VampireNatureRevealService: ObservableObject, GameService {
-    private var awarenessLevels: [Int: Float] = [:]
+    private var awarenessLevel: Float = 0.0
     private let awarenessPublisher = PassthroughSubject<Int, Never>()
     private let gameEventsBus: GameEventsBusService
     
@@ -19,33 +19,28 @@ class VampireNatureRevealService: ObservableObject, GameService {
     var exposedPublisher: AnyPublisher<Int, Never> {
         awarenessPublisher
             .filter { [weak self] sceneId in
-                self?.getAwareness(for: sceneId) ?? 0 >= 100
+                self?.getAwareness() ?? 0 >= 100
             }
             .eraseToAnyPublisher()
     }
     
-    func getAwareness(for sceneId: Int) -> Float {
-        return awarenessLevels[sceneId] ?? 0.0 // Default minimum awareness
+    func getAwareness() -> Float {
+        return awarenessLevel
     }
     
-    func increaseAwareness(for sceneId: Int, amount: Float) {
-        let currentAwareness = getAwareness(for: sceneId)
-        let newAwareness = min(currentAwareness + amount, 100.0)
-        awarenessLevels[sceneId] = newAwareness
+    func increaseAwareness(amount: Float) {
+        awarenessLevel = min(awarenessLevel + amount, 100.0)
         
-        if newAwareness >= 100 {
-            awarenessPublisher.send(sceneId)
+        if awarenessLevel >= 100 {
             NotificationCenter.default.post(name: .exposed, object: nil)
         }
         
-        if newAwareness > 70 {
+        if awarenessLevel > 70 {
             gameEventsBus.addDangerMessage(message: "* People almost discovered me!")
         }
     }
     
-    func decreaseAwareness(for sceneId: Int, amount: Float) {
-        let currentAwareness = getAwareness(for: sceneId)
-        let newAwareness = max(currentAwareness - amount, 0.0)
-        awarenessLevels[sceneId] = newAwareness
+    func decreaseAwareness(amount: Float) {
+        awarenessLevel = max(awarenessLevel - amount, 0.0)
     }
 } 

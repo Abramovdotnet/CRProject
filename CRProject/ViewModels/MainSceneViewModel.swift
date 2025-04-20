@@ -156,7 +156,7 @@ class MainSceneViewModel: ObservableObject {
             try gameStateService.changeLocation(to: initialScene.id)
             
             // Set default awareness to 0
-            vampireNatureRevealService.decreaseAwareness(for: initialScene.id, amount: 100)
+            vampireNatureRevealService.decreaseAwareness(amount: 100)
         } catch {
             DebugLogService.shared.log("Error creating initial scene: \(error)", category: "Error")
         }
@@ -265,7 +265,7 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func resetAwareness() {
-        vampireNatureRevealService.decreaseAwareness(for: currentScene?.id ?? 0, amount: 100)
+        vampireNatureRevealService.decreaseAwareness(amount: 100)
         updateSceneAwareness()
     }
     
@@ -356,12 +356,12 @@ class MainSceneViewModel: ObservableObject {
     func updateSceneAwareness() {
         withAnimation(.easeInOut(duration: 0.3)) {
             guard let currentSceneId = currentScene?.id else { return }
-            sceneAwareness = vampireNatureRevealService.getAwareness(for: currentSceneId)
+            sceneAwareness = vampireNatureRevealService.getAwareness()
         }
     }
     
     func getLocationAwareness(_ scene: Scene) -> Float {
-        return vampireNatureRevealService.getAwareness(for: scene.id)
+        return vampireNatureRevealService.getAwareness()
     }
     
     func canSkipTimeSafe() -> Bool {
@@ -375,7 +375,7 @@ class MainSceneViewModel: ObservableObject {
     
     var isAwarenessSafe: Bool {
         guard let currentSceneId = currentScene?.id else { return true }
-        return vampireNatureRevealService.getAwareness(for: currentSceneId) < 100
+        return vampireNatureRevealService.getAwareness() < 100
     }
     
     func skipTimeToNight() {

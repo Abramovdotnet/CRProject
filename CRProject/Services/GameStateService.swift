@@ -150,6 +150,21 @@ class GameStateService : ObservableObject, GameService{
                 npcManager.selectedNPC = nil
             }
         }
+        
+        if !scene.isIndoor && !gameTime.isNightTime {
+            forcePlayerToFindHideout()
+        }
+    }
+    
+    func forcePlayerToFindHideout() {
+        guard let scene = currentScene else { return }
+        guard let player = player else { return }
+        
+        if player.hiddenAt == HidingCell.none {
+            player.hiddenAt = scene.sceneType.possibleHidingCells().randomElement() ?? .none
+            
+            gameEventsBus.addDangerMessage(message: "*My blood boiling under direct sunlight!*")
+        }
     }
     
     func handleNightAppears() {
@@ -159,11 +174,6 @@ class GameStateService : ObservableObject, GameService{
     private func handleSafeTimeAdvanced() {
         NPCBehaviorService.shared.updateActivity()
         advanceWorldState(advanceSafe: true)
-        
-        // Reduce awareness for nearest scenes by 5
-        for scene in siblingScenes {
-            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 5)
-        }
         
         // Reset selection if npc left location
         guard let scene = currentScene else { return }
@@ -180,18 +190,13 @@ class GameStateService : ObservableObject, GameService{
         guard let player = player else { return }
         
         if player.hiddenAt != .none {
-            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 6)
+            vampireNatureRevealService.decreaseAwareness(amount: 6)
         } else {
             if !gameTime.isNightTime {
-                vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 6)
+                vampireNatureRevealService.increaseAwareness(amount: 6)
             }
         }
-        
-        // Reduce awareness for nearest scenes by 5
-        for scene in siblingScenes {
-            vampireNatureRevealService.decreaseAwareness(for: scene.id, amount: 6)
-        }
-        
+
         var currentPlayerBlood = player.bloodMeter.currentBlood
         
         if currentPlayerBlood <= 30 {
@@ -206,6 +211,10 @@ class GameStateService : ObservableObject, GameService{
     func releasePlayerThirst() {
         guard let scene = currentScene else { return }
         guard let player = player else { return }
+        
+        if !scene.isIndoor && !gameTime.isNightTime {
+            endGame()
+        }
         
         if player.hiddenAt != .none {
             gameEventsBus.addDangerMessage(message: "* Madness forces player get out from hideout *")

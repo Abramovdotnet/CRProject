@@ -137,7 +137,7 @@ class DialogueViewModel: ObservableObject {
             showActionResult(success: false, action: "Seduction")
             
             if let currentSceneId = gameStateService.currentScene?.id {
-                vampireNatureRevealService.increaseAwareness(for: currentSceneId, amount: 20)
+                vampireNatureRevealService.increaseAwareness(amount: 20)
             }
         }
         

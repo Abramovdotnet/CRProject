@@ -264,7 +264,7 @@ struct NPCGridButton: View {
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
                         
-                        if GameStateService.shared.getPlayer()!.desiredVictim.isDesiredVictim(npc: npc) {
+                        if !npc.isUnknown && GameStateService.shared.getPlayer()!.desiredVictim.isDesiredVictim(npc: npc) {
                             ZStack {
                                 // 1. Frame (bottom layer)
                                 Image("iconFrame")

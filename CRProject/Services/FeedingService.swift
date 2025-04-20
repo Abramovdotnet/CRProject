@@ -54,14 +54,14 @@ class FeedingService: GameService {
         setWitnessesIfExists(sceneId: sceneId)
         
         // Increase awareness in the scene where feeding occurred
-        vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
+        vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
         statisticsService.incrementFeedings()
         gameEventsBus.addDangerMessage(message: "Player consumed \(prey.name) blood.")
         
         if !prey.isAlive {
             gameEventsBus.addDangerMessage(message: "* I just killed \(prey.name)! Feel satisfied... *")
             // Double awareness increase if killing victim
-            vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
+            vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
         }
         
         NPCInteractionManager.shared.playerInteracted(with: prey)
@@ -91,7 +91,7 @@ class FeedingService: GameService {
         setWitnessesIfExists(sceneId: sceneId)
         
         // Increase awareness in the scene where feeding occurred
-        vampireNatureRevealService.increaseAwareness(for: sceneId, amount: awarenessIncreaseValue)
+        vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
         statisticsService.incrementVictimsDrained()
         
         gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")

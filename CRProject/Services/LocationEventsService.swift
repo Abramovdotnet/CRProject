@@ -44,7 +44,7 @@ class LocationEventsService : GameService {
                     // New death (alive → dead)
                     deadNPCs[id] = lastNPC
                     DebugLogService.shared.log("NPC \(lastNPC.name) just died!", category: "Event")
-                    vampireNatureRevealService?.increaseAwareness(for: scene.id, amount: 30)
+                    vampireNatureRevealService?.increaseAwareness(amount: 30)
                     changesDetected = true
                 } else if deadNPCs[id] == nil {
                     // Persistent dead state (not yet recorded)
@@ -67,7 +67,7 @@ class LocationEventsService : GameService {
     }
     
     private func getMatchingEvents(scene: Scene, isNight: Bool) -> [EventTemplate] {
-        let awarenessLevel = vampireNatureRevealService?.getAwareness(for: scene.id) ?? 0
+        let awarenessLevel = vampireNatureRevealService?.getAwareness() ?? 0
         
         print(events.count)
         

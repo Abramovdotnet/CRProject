@@ -140,7 +140,7 @@ class NPCInteractionService : GameService {
         case .trade:
             handleTrade(currentNPC: currentNPC, otherNPC: otherNPC)
         case .gameOver:
-            vampireNatureRevealService.increaseAwareness(for: scene.id, amount: 100.0)
+            vampireNatureRevealService.increaseAwareness(amount: 100.0)
         default:
             break
         }

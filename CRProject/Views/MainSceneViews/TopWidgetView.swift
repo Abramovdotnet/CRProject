@@ -50,7 +50,7 @@ struct TopWidgetView: View {
                 .font(Theme.smallFont)
                 .padding(.leading, -5)
             ProgressBar(value: Double(viewModel.sceneAwareness / 100.0), color: Theme.awarenessProgressColor)
-                .frame(width: 70)
+                .frame(width: 100)
                 .padding(.leading, -5)
             
             Image(systemName: "drop.fill")
@@ -61,7 +61,7 @@ struct TopWidgetView: View {
                 .font(Theme.smallFont)
                 .padding(.leading, -5)
             ProgressBar(value: Double(viewModel.playerBloodPercentage / 100), color: Theme.bloodProgressColor)
-                .frame(width: 70)
+                .frame(width: 100)
                 .padding(.leading, -5)
             
             Spacer()

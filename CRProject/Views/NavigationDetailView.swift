@@ -97,7 +97,7 @@ struct NavigationWebView: View {
                                 location: location,
                                 currentLocation: viewModel.currentScene,
                                 playerBlood: Int(viewModel.playerBloodPercentage),
-                                awarenessLevel: Int(vampireNatureRevealService.getAwareness(for: location.id)),
+                                awarenessLevel: Int(vampireNatureRevealService.getAwareness()),
                                 onSelected: { onLocationSelected(location) }
                             )
                             if let position = relativePosition(for: location) {
@@ -278,36 +278,6 @@ struct LocationNode: View {
                         Text(data.location.name)
                             .font(Theme.captionFont)
                             .foregroundColor(Theme.textColor)
-                        
-                        HStack {
-                            ZStack{
-                                Rectangle()
-                                    .foregroundColor(.black.opacity(0.8))
-                                    .frame(width: 50, height: 8)
-                                    .cornerRadius(4)
-                            
-                                HStack(spacing:1) {
-                                    ForEach(0..<5) { index in
-                                        let segmentValue = Double(data.awarenessLevel) / 100.0
-                                        let segmentThreshold = Double(index + 1) / 10.0
-                                        
-                                        Rectangle()
-                                            .fill(segmentValue >= segmentThreshold ?
-                                                  Theme.awarenessProgressColor : Theme.textColor.opacity(0.5))
-                                            .frame(height: 5)
-                                    }
-                                }.padding(.horizontal, 2)
-                            }
-    
-                        }
-                        .frame(width: 50)
-                        .padding(.top, -5)
-                        
-                        Text("Awareness")
-                            .font(Theme.smallFont)
-                            .foregroundColor(Theme.textColor)
-                            .padding(.top, -8)
-                            .padding(.bottom, 3)
  
                         if needToShowNavigateIcon() {
                             HStack {
@@ -322,7 +292,7 @@ struct LocationNode: View {
               
                         }
                     }
-                    .padding(.top, needToShowNavigateIcon() ? 35 : 10)
+                    .padding(.top, needToShowNavigateIcon() ? 10 : -10)
                 }
                 .buttonStyle(PlainButtonStyle())
                 .contentShape(Circle())

@@ -99,7 +99,7 @@ enum Motivation: String, CaseIterable, Codable {
         case .control: return .purple
         case .violence: return .red
         case .logistics: return .brown
-        case .unknown: return .secondary
+        case .unknown: return Theme.textColor
         }
     }
     
