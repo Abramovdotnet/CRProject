@@ -37,11 +37,11 @@ class FeedingService: GameService {
         var awarenessIncreaseValue: Float = 20.0;
         
         if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
-            awarenessIncreaseValue -= 10
+            awarenessIncreaseValue -= 12
         }
         
         if prey.currentActivity == .sleep {
-            awarenessIncreaseValue -= 5
+            awarenessIncreaseValue -= 16
         }
         
         if vampire.desiredVictim.isDesiredVictim(npc: prey){
@@ -79,13 +79,13 @@ class FeedingService: GameService {
         var awarenessIncreaseValue: Float = 90;
         
         if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
-            awarenessIncreaseValue -= 30
+            awarenessIncreaseValue -= 60
         } else {
             prey.decreasePlayerRelationship(with: 100)
         }
         
         if prey.currentActivity == .sleep {
-            awarenessIncreaseValue -= 30
+            awarenessIncreaseValue -= 70
         }
         
         setWitnessesIfExists(sceneId: sceneId)

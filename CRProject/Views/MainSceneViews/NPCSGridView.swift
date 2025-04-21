@@ -22,9 +22,7 @@ struct NPCSGridView: View {
         var result: [NPCData] = []
         
         // Sort NPCs by lastPlayerInteractionDate (descending, handling optionals)
-        let sortedNPCs = npcs.sorted { npc1, npc2 in
-            return npc1.lastPlayerInteractionDate > npc2.lastPlayerInteractionDate
-        }
+        let sortedNPCs = npcs
         
         // Take first 100 NPCs
         let maxNPCs = min(100, sortedNPCs.count)
@@ -57,8 +55,8 @@ struct NPCSGridView: View {
         HStack(spacing: 0) {
             LinearGradient(
                 gradient: Gradient(colors: [.clear, .black]),
-                startPoint: .leading,
-                endPoint: .trailing
+                startPoint: .top,
+                endPoint: .bottom
             )
             .frame(width: 10)
             
@@ -67,8 +65,8 @@ struct NPCSGridView: View {
             
             LinearGradient(
                 gradient: Gradient(colors: [.black, .clear]),
-                startPoint: .leading,
-                endPoint: .trailing
+                startPoint: .top,
+                endPoint: .bottom
             )
             .frame(width: 10)
         }
@@ -81,7 +79,7 @@ struct NPCSGridView: View {
                 blurredBackgroundEdges
                 
                 // Call the extracted ScrollView
-                npcScrollView(proxy: proxy)
+                    npcScrollView(proxy: proxy)
             }
         }
     }
@@ -104,11 +102,14 @@ struct NPCSGridView: View {
     
     // Extracted ScrollView
     private func npcScrollView(proxy: ScrollViewProxy) -> some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            LazyHStack(spacing: 20) {
+        ScrollView(.vertical, showsIndicators: false) {
+            LazyVGrid(columns: [
+                GridItem(.flexible()),
+                GridItem(.flexible()),
+            ], spacing: 2) {
                 // Add a scroll position anchor view at the very start
                 Color.clear
-                    .frame(width: 1)
+                    .frame(height: 1)
                     .id("scrollAnchor")
                 
                 ForEach(prepareNPCData()) { data in
@@ -137,7 +138,7 @@ struct NPCSGridView: View {
                             .scaleEffect(scaleValue)
                             .rotation3DEffect(
                                 .degrees(rotationValue),
-                                axis: (x: 0, y: 1, z: 0)
+                                axis: (x: 1, y: 0, z: 0)
                             )
                     }
                     .shadow(color: data.isSelected ? data.npc.isUnknown ? Color.white.opacity(0.8) : data.npc.currentActivity.color.opacity(0.5) : .black.opacity(0.5), radius: data.isSelected ? 15 : 10)
@@ -147,7 +148,7 @@ struct NPCSGridView: View {
             .padding(.horizontal, 20)
             .padding(.vertical, 10)
         }
-        .frame(height: 320)
+        .frame(maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.clear.opacity(0.7))
@@ -160,8 +161,7 @@ struct NPCSGridView: View {
             guard npcManager.lastInteractionActionTimestamp != nil else { return }
             
             withAnimation(.easeOut(duration: 0.3)) {
-                // Scroll to the anchor view instead of first NPC
-                proxy.scrollTo("scrollAnchor", anchor: .leading)
+                proxy.scrollTo("scrollAnchor", anchor: .top)
             }
         }
     }
@@ -187,7 +187,6 @@ struct NPCGridButton: View {
     
     private let parallaxIntensity: CGFloat = 8 // Adjust sensitivity
     private let buttonWidth: CGFloat = 160
-    private let buttonHeight: CGFloat = 280
 
     var body: some View {
         Button(action: {
@@ -217,7 +216,7 @@ struct NPCGridButton: View {
                     }
                 }
                 VibrationService.shared.lightTap()
-                onTap()
+                //onTap()
             }
             lastTapTime = now
         }) {
@@ -402,7 +401,9 @@ struct NPCGridButton: View {
                 
             }
             .cornerRadius(12)
-            .frame(width: buttonWidth, height: buttonHeight)
+            .frame(width: buttonWidth)
+            .frame(height: 280)
+      
             .background(
                 RoundedRectangle(cornerRadius: 12)
                     .fill(Color.black.opacity(0.3))
@@ -491,6 +492,167 @@ struct NPCGridButton: View {
         } else {
             return .green
         }
+    }
+}
+
+struct HorizontalNPCGridButton: View {
+    let npc: NPC
+
+    var body: some View {
+        ZStack(alignment: .top) {
+            RoundedRectangle(cornerRadius: 12)
+                .fill(
+                    LinearGradient(
+                        gradient: Gradient(colors: [
+                            Color.black.opacity(0.9),
+                            Color(npc.profession.color).opacity(0.05)
+                        ]),
+                        startPoint: .top,
+                        endPoint: .bottom
+                    )
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(
+                            LinearGradient(
+                                gradient: Gradient(colors: [
+                                    Color.white.opacity(0.1),
+                                    Color.white.opacity(0.05),
+                                    Color.clear
+                                ]),
+                                startPoint: .topLeading,
+                                endPoint: .bottomTrailing
+                            ),
+                            lineWidth: 0.5
+                        )
+                )
+            
+            Color.black.opacity(0.9)
+            
+            VStack(alignment: .center) {
+                HStack {
+                    ZStack {
+                        getNPCImage()
+                            .resizable()
+                            .frame(width: 60, height: 60)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                            .padding(5)
+                    }
+                    
+                    if !npc.isUnknown {
+                        VStack(alignment: .leading, spacing: 2) {
+                            HStack {
+                                Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                                Text(npc.name)
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Theme.textColor)
+                                Image(systemName: npc.profession.icon)
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(npc.profession.color)
+                                Text(npc.profession.rawValue)
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(npc.profession.color)
+
+                                Spacer()
+                                Text("Age \(npc.age)")
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Theme.textColor)
+                            }
+                            .padding(5)
+                            
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack(alignment: .top) {
+                                    Text("Health")
+                                        .font(Theme.smallFont)
+                                        .foregroundColor(Theme.textColor)
+                                    Spacer()
+                                    Text(String(format: "%.1f%%", npc.bloodMeter.currentBlood))
+                                        .font(Theme.smallFont)
+                                        .foregroundColor(Theme.bloodProgressColor)
+                                }
+                                
+                                ProgressBar(value: Double(npc.bloodMeter.currentBlood / 100), color: Theme.bloodProgressColor, height: 6)
+                                    .frame(maxWidth: .infinity)
+                                    .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
+                            }
+                            .padding(.top, 8)
+                        }
+                        .padding(5)
+                    }
+                }
+    
+                HStack(spacing: 6) {
+                    if !npc.isUnknown {
+                        Text(npc.sex.rawValue)
+                            .font(Theme.smallFont)
+                            .foregroundColor(Theme.textColor)
+                        Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                            .font(Theme.smallFont)
+                            .foregroundColor(Color.yellow)
+                        Text(npc.age.description)
+                            .font(Theme.smallFont)
+                            .foregroundColor(Color.yellow)
+                        Image(systemName: npc.currentActivity.icon)
+                            .foregroundColor(npc.currentActivity.color)
+                            .font(Theme.smallFont)
+                            .padding(.leading, 3)
+                        Text(npc.currentActivity.description)
+                            .font(Theme.smallFont)
+                            .foregroundColor(npc.currentActivity.color)
+                        
+                        if npc.isSpecialBehaviorSet {
+                            Text(getSpecialBehaviorProgress())
+                                .font(Theme.smallFont)
+                                .foregroundColor(Theme.bloodProgressColor)
+                        }
+                    }
+                    Image(systemName: npc.morality.icon)
+                        .font(Theme.smallFont)
+                        .foregroundColor(npc.morality.color)
+                    Text(npc.morality.description)
+                        .font(Theme.smallFont)
+                        .foregroundColor(npc.morality.color)
+                    Image(systemName: npc.motivation.icon)
+                        .font(Theme.smallFont)
+                        .foregroundColor(npc.motivation.color)
+                    Text(npc.motivation.description)
+                        .font(Theme.smallFont)
+                        .foregroundColor(npc.motivation.color)
+                }
+                .padding(5)
+            }
+            .padding(5)
+            
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(npc.currentActivity.color.opacity(0.8), lineWidth: 2)
+                .background(Color.white.opacity(0.05))
+                .blur(radius: 0.5)
+                .padding(.horizontal, -2)
+        }
+        .frame(height: 100)
+        .cornerRadius(12)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.3))
+                .blur(radius: 2)
+                .offset(y: 2)
+        )
+        .shadow(color: npc.currentActivity.color.opacity(0.5), radius: 15)
+    }
+    
+    private func getNPCImage() -> Image {
+        if npc.isUnknown {
+            return Image(uiImage: UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")!)
+        } else {
+            return Image(uiImage: UIImage(named: "npc\(npc.id.description)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")!)
+        }
+    }
+    
+    private func getSpecialBehaviorProgress() -> String {
+        return "\(Float(npc.specialBehaviorTime ?? 0) / 4.0 * 100)%"
     }
 }
 

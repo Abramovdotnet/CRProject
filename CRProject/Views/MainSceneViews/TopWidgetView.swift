@@ -65,8 +65,6 @@ struct TopWidgetView: View {
                 .frame(width: 100)
                 .padding(.leading, -5)
             
-            Spacer()
-            
             Button(action: {
                 viewModel.respawnNPCs()
             }) {

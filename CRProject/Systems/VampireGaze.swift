@@ -64,11 +64,11 @@ class VampireGaze: GameService {
         
         var cost: Float {
             switch self {
-            case .charm: return 20
-            case .mesmerize: return 30
-            case .dominate: return 40
+            case .charm: return 10
+            case .mesmerize: return 20
+            case .dominate: return 10
             case .scare: return 10
-            case .follow: return 20
+            case .follow: return 10
             }
         }
     }

@@ -8,11 +8,7 @@ import SwiftUI
     @State private var watchScale: CGFloat = 1.0
     @State private var spentTimeWatchScale: CGFloat = 1.0
     @State private var noneHideoutScale: CGFloat = 1.0
-    @State private var basementHideoutScale: CGFloat = 1.0
-    @State private var roofHideoutScale: CGFloat = 1.0
-    @State private var atticHideoutScale: CGFloat = 1.0
-    @State private var graveHideoutScale: CGFloat = 1.0
-    @State private var sewerHideoutScale: CGFloat = 1.0
+    @State private var shadowHideoutScale: CGFloat = 1.0
     @State private var showSmokeEffect = false
     @State private var showingVampireGaze = false
     
@@ -94,142 +90,137 @@ import SwiftUI
                             .background(Color.clear)
                         
                         GeometryReader { geometry in
-                            HStack(spacing: 20) {
+                            HStack(spacing: 10) {
+                                // Left section: NPCSGridView
+                                NPCSGridView(
+                                    npcs: viewModel.npcs,
+                                    onAction: handleNPCAction
+                                )
                                 VStack {
-                                    NPCSGridView(
-                                        npcs: viewModel.npcs,
-                                        onAction: handleNPCAction
-                                    )
-                                    
-
                                     NPCInfoView(npc: npcManager.selectedNPC, onAction: handleNPCAction)
                                         .id(npcManager.selectedNPC?.id ?? 0)
-                                        .padding(.top, -15)
-                                     
-                                }
-                                .frame(maxWidth: .infinity)
-                                
-                                // Right section: History and Actions
-                                VStack(spacing: 20) {
-                                    VStack(alignment: .leading, spacing: 10) {
-                                        HStack(alignment: .top, spacing: 10) {
-                                            VStack {
-                                                ZStack {
-                                                    Button(action: {
-                                                        withAnimation(.easeInOut(duration: 0.1)) {
-                                                            watchScale = 0.9
-                                                        }
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                            withAnimation(.spring()) {
-                                                                watchScale = 1.0
-                                                                viewModel.advanceTime()
-                                                                VibrationService.shared.lightTap()
-                                                            }
-                                                        }
-                                                    }) {
-                                                        ZStack {
-                                                            // 1. Frame (bottom layer)
-                                                            Image("iconFrame")
-                                                                .resizable()
-                                                                .aspectRatio(contentMode: .fit)
-                                                                .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                            
-                                                            // 2. Background circle (middle layer)
-                                                            Circle()
-                                                                .fill(Color.black.opacity(0.7))
-                                                                .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                                .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                                .overlay(
-                                                                    Circle()
-                                                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                                )
-                                                            
-                                                            Image("clockWatch")
-                                                                .resizable()
-                                                                .aspectRatio(contentMode: .fit)
-                                                                .frame(width: 40 * 0.8, height: 40 * 0.8)
-                                                            
-                                                            Image(systemName: "hourglass.bottomhalf.fill")
-                                                                .font(Theme.bodyFont)
-                                                                .foregroundColor(Theme.textColor)
-                                                                .padding(.top, 1)
-                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                        }
-                                                        .scaleEffect(watchScale)
-                                                    }
-                                                    .buttonStyle(PlainButtonStyle())
-                                                    .contentShape(Circle())
-                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                }
-                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                            }
-                                            
-                                            if !isPlayerHidden {
-                                                VStack {
-                                                    ZStack {
-                                                        Button(action: {
-                                                            withAnimation(.easeInOut(duration: 0.1)) {
-                                                                compassScale = 0.9
-                                                            }
-                                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                                withAnimation(.spring()) {
-                                                                    compassScale = 1.0
-                                                                    showingNavigation = true
-                                                                    VibrationService.shared.lightTap()
-                                                                }
-                                                            }
-                                                        }) {
-                                                            ZStack {
-                                                                // 1. Frame (bottom layer)
-                                                                Image("iconFrame")
-                                                                    .resizable()
-                                                                    .aspectRatio(contentMode: .fit)
-                                                                    .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                                
-                                                                // 2. Background circle (middle layer)
-                                                                Circle()
-                                                                    .fill(Color.black.opacity(0.7))
-                                                                    .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                                    .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                                    .overlay(
-                                                                        Circle()
-                                                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                                    )
-                                                                
-                                                                // 3. Compass icon (top layer)
-                                                                Image("compassAlt")
-                                                                    .resizable()
-                                                                    .aspectRatio(contentMode: .fit)
-                                                                    .frame(width: 40 * 0.8, height: 40 * 0.8)
-                                                                
-                                                                Image(systemName: "map.fill")
-                                                                    .font(Theme.bodyFont)
-                                                                    .foregroundColor(Theme.textColor)
-                                                                    .padding(.top, 1)
-                                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                            }
-                                                            .scaleEffect(compassScale)
-                                                        }
-                                                        .buttonStyle(PlainButtonStyle())
-                                                        .contentShape(Circle())
-                                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                    }
-                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                }
-                                            }
-                                        }
+                                    
+                                    if npcManager.selectedNPC != nil {
+                                        HorizontalNPCGridButton(npc: npcManager.selectedNPC!)
                                     }
-                                    .frame(maxWidth: .infinity, alignment: .trailing)
-
+                               
                                     // Chat History
                                     ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
                                         .frame(maxWidth: .infinity)
-                                        .frame(maxHeight: .infinity)
-                                        .padding(.bottom, npcManager.selectedNPC != nil ? 0 : 10)
                                 }
-                                .frame(maxWidth: .infinity)
-                                // Buttons stack
-                                VStack(alignment: .leading, spacing: 8) {
+                                .frame(width: geometry.size.width * 0.4)
+                            
+                                VStack(alignment: .leading, spacing: 6) {
+                                    // Advance time
+                                    VStack {
+                                        ZStack {
+                                            Button(action: {
+                                                withAnimation(.easeInOut(duration: 0.1)) {
+                                                    watchScale = 0.9
+                                                }
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                    withAnimation(.spring()) {
+                                                        watchScale = 1.0
+                                                        viewModel.advanceTime()
+                                                        VibrationService.shared.lightTap()
+                                                    }
+                                                }
+                                            }) {
+                                                HStack(spacing: 12) {
+                                                    ZStack {
+                                                        Circle()
+                                                            .fill(Color.blue)
+                                                            .blur(radius: 15)
+                                                            .opacity(0.9)
+                                                        
+                                                        Circle()
+                                                            .fill(
+                                                                RadialGradient(
+                                                                    gradient: Gradient(colors: [
+                                                                        Color.blue.opacity(0.3),
+                                                                        Color.black.opacity(0.8)
+                                                                    ]),
+                                                                    center: .center,
+                                                                    startRadius: 0,
+                                                                    endRadius: 25
+                                                                )
+                                                            )
+                                                            .frame(width: 36, height: 36)
+                                                        
+                                                        Image(systemName: "hourglass.bottomhalf.fill")
+                                                            .font(.system(size: 16))
+                                                            .foregroundColor(Color.blue)
+                                                    }
+                                                    .frame(width: 26, height: 25)
+                                                }
+                                                .frame(maxWidth: .infinity)
+                                                .padding(.horizontal, 12)
+                                                .padding(.vertical, 10)
+                                                .scaleEffect(watchScale)
+                                            }
+                                            .buttonStyle(PlainButtonStyle())
+                                            .contentShape(Circle())
+                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                        }
+                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                    }
+                                    
+                                    if !isPlayerHidden {
+                                        // Show navigation
+                                        VStack {
+                                            ZStack {
+                                                Button(action: {
+                                                    withAnimation(.easeInOut(duration: 0.1)) {
+                                                        compassScale = 0.9
+                                                    }
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                        withAnimation(.spring()) {
+                                                            compassScale = 1.0
+                                                            showingNavigation = true
+                                                            VibrationService.shared.lightTap()
+                                                        }
+                                                    }
+                                                }) {
+                                                    HStack(spacing: 12) {
+                                                        ZStack {
+                                                            Circle()
+                                                                .fill(Color.green)
+                                                                .blur(radius: 15)
+                                                                .opacity(0.9)
+                                                            
+                                                            Circle()
+                                                                .fill(
+                                                                    RadialGradient(
+                                                                        gradient: Gradient(colors: [
+                                                                            Color.green.opacity(0.3),
+                                                                            Color.black.opacity(0.8)
+                                                                        ]),
+                                                                        center: .center,
+                                                                        startRadius: 0,
+                                                                        endRadius: 25
+                                                                    )
+                                                                )
+                                                                .frame(width: 36, height: 36)
+                                                            
+                                                            Image(systemName: "map.fill")
+                                                                .font(.system(size: 16))
+                                                                .foregroundColor(Color.green)
+                                                        }
+                                                        .frame(width: 26, height: 25)
+                                                    }
+                                                    .frame(maxWidth: .infinity)
+                                                    .padding(.horizontal, 12)
+                                                    .padding(.vertical, 10)
+                                                    .scaleEffect(compassScale)
+                                                }
+                                                .buttonStyle(PlainButtonStyle())
+                                                .contentShape(Circle())
+                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                            }
+                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                        }
+                                    }
+                                    // Hide
                                             if viewModel.getPlayer().hiddenAt == .none {
                                                 ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
                                                     VStack {
@@ -253,38 +244,42 @@ import SwiftUI
                                                                 }
                                                             }) {
                                                                 ZStack {
-                                                                    // 1. Frame (bottom layer)
-                                                                    Image("iconFrameAlt")
-                                                                        .resizable()
-                                                                        .aspectRatio(contentMode: .fit)
-                                                                        .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                                    
-                                                                    // 2. Background circle (middle layer)
-                                                                    Circle()
-                                                                        .fill(Color.black.opacity(0.7))
-                                                                        .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                                        .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                                        .overlay(
+                                                                    HStack(spacing: 12) {
+                                                                        ZStack {
                                                                             Circle()
-                                                                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                                        )
-                                                                    
-                                                                        Image(hideout.rawValue)
-                                                                            .resizable()
-                                                                            .aspectRatio(contentMode: .fit)
-                                                                            .frame(width: 40 * 0.8, height: 40 * 0.8)
-                                                                        
-                                                                        Text(hideout.description)
-                                                                            .font(Theme.smallFont)
-                                                                            .foregroundColor(Theme.textColor)
-                                                                            .padding(.top, 1)
-                                                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                                                .fill(Color.purple)
+                                                                                .blur(radius: 15)
+                                                                                .opacity(0.9)
+                                                                            
+                                                                            Circle()
+                                                                                .fill(
+                                                                                    RadialGradient(
+                                                                                        gradient: Gradient(colors: [
+                                                                                            Color.purple.opacity(0.3),
+                                                                                            Color.black.opacity(0.8)
+                                                                                        ]),
+                                                                                        center: .center,
+                                                                                        startRadius: 0,
+                                                                                        endRadius: 25
+                                                                                    )
+                                                                                )
+                                                                                .frame(width: 36, height: 36)
+                                                                            
+                                                                            Image(systemName: "eye.fill")
+                                                                                .font(.system(size: 16))
+                                                                                .foregroundColor(Color.purple)
+                                                                        }
+                                                                        .frame(width: 26, height: 25)
+                                                                    }
+                                                                    .frame(maxWidth: .infinity)
+                                                                    .padding(.horizontal, 12)
+                                                                    .padding(.vertical, 10)
+                                                                    .scaleEffect(getHideoutButtonScale(hideoutType: hideout))
                                                                 }
-                                                                .scaleEffect(getHideoutButtonScale(hideoutType: hideout))
+                                                                .buttonStyle(PlainButtonStyle())
+                                                                .contentShape(Circle())
+                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                             }
-                                                            .buttonStyle(PlainButtonStyle())
-                                                            .contentShape(Circle())
-                                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                         }
                                                         .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                     }
@@ -304,34 +299,36 @@ import SwiftUI
                                                                 }
                                                             }
                                                         }) {
-                                                            ZStack {
-                                                                // 1. Frame (bottom layer)
-                                                                Image("iconFrameAlt")
-                                                                    .resizable()
-                                                                    .aspectRatio(contentMode: .fit)
-                                                                    .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                                
-                                                                // 2. Background circle (middle layer)
-                                                                Circle()
-                                                                    .fill(Color.black.opacity(0.7))
-                                                                    .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                                    .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                                    .overlay(
-                                                                        Circle()
-                                                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                                    )
-                                                                
-                                                                    Image(viewModel.currentScene?.sceneType.rawValue ?? "default")
-                                                                        .resizable()
-                                                                        .aspectRatio(contentMode: .fit)
-                                                                        .frame(width: 40 * 0.8, height: 40 * 0.8)
+                                                            HStack(spacing: 12) {
+                                                                ZStack {
+                                                                    Circle()
+                                                                        .fill(Color.red)
+                                                                        .blur(radius: 15)
+                                                                        .opacity(0.9)
                                                                     
-                                                                    Text("Exit")
-                                                                        .font(Theme.smallFont)
-                                                                        .foregroundColor(Theme.textColor)
-                                                                        .padding(.top, 1)
-                                                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                                    Circle()
+                                                                        .fill(
+                                                                            RadialGradient(
+                                                                                gradient: Gradient(colors: [
+                                                                                    Color.red.opacity(0.3),
+                                                                                    Color.black.opacity(0.8)
+                                                                                ]),
+                                                                                center: .center,
+                                                                                startRadius: 0,
+                                                                                endRadius: 25
+                                                                            )
+                                                                        )
+                                                                        .frame(width: 36, height: 36)
+                                                                    
+                                                                    Image(systemName: "eye.slash")
+                                                                        .font(.system(size: 16))
+                                                                        .foregroundColor(Color.red)
+                                                                }
+                                                                .frame(width: 26, height: 25)
                                                             }
+                                                            .frame(maxWidth: .infinity)
+                                                            .padding(.horizontal, 12)
+                                                            .padding(.vertical, 10)
                                                             .scaleEffect(noneHideoutScale)
                                                         }
                                                         .buttonStyle(PlainButtonStyle())
@@ -345,12 +342,10 @@ import SwiftUI
                                     
                                     if let selectedNPC = npcManager.selectedNPC {
                                         if selectedNPC.isAlive {
+                                            // Start conversation
                                             VStack {
                                                 ZStack {
                                                     Button(action: {
-                                                        withAnimation(.easeInOut(duration: 0.1)) {
-                                                            // Add scale animation
-                                                        }
                                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                             withAnimation(.spring()) {
                                                                 handleNPCAction(.startConversation(selectedNPC))
@@ -358,29 +353,36 @@ import SwiftUI
                                                             }
                                                         }
                                                     }) {
-                                                        ZStack {
-                                                            // 1. Frame (bottom layer)
-                                                            Image("iconFrameAlt")
-                                                                .resizable()
-                                                                .aspectRatio(contentMode: .fit)
-                                                                .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                            
-                                                            // 2. Background circle (middle layer)
-                                                            Circle()
-                                                                .fill(Color.black.opacity(0.7))
-                                                                .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                                .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                                .overlay(
-                                                                    Circle()
-                                                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                                )
-                                                            
-                                                            Image(systemName: "bubble.left.fill")
-                                                                .font(Theme.bodyFont)
-                                                                .foregroundColor(Theme.textColor)
-                                                                .padding(.top, 1)
-                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                        HStack(spacing: 12) {
+                                                            ZStack {
+                                                                Circle()
+                                                                    .fill(Color.white)
+                                                                    .blur(radius: 15)
+                                                                    .opacity(0.9)
+                                                                
+                                                                Circle()
+                                                                    .fill(
+                                                                        RadialGradient(
+                                                                            gradient: Gradient(colors: [
+                                                                                Color.white.opacity(0.3),
+                                                                                Color.black.opacity(0.8)
+                                                                            ]),
+                                                                            center: .center,
+                                                                            startRadius: 0,
+                                                                            endRadius: 25
+                                                                        )
+                                                                    )
+                                                                    .frame(width: 36, height: 36)
+                                                                
+                                                                Image(systemName: "bubble.left.fill")
+                                                                    .font(.system(size: 16))
+                                                                    .foregroundColor(Color.white)
+                                                            }
+                                                            .frame(width: 26, height: 25)
                                                         }
+                                                        .frame(maxWidth: .infinity)
+                                                        .padding(.horizontal, 12)
+                                                        .padding(.vertical, 10)
                                                     }
                                                     .buttonStyle(PlainButtonStyle())
                                                     .contentShape(Circle())
@@ -390,12 +392,10 @@ import SwiftUI
                                             }
                                         }
                                         if !selectedNPC.isUnknown {
+                                            // Start intimidation
                                             VStack {
                                                 ZStack {
                                                     Button(action: {
-                                                        withAnimation(.easeInOut(duration: 0.1)) {
-                                                            // Add scale animation
-                                                        }
                                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                             withAnimation(.spring()) {
                                                                 handleNPCAction(.startIntimidation(selectedNPC))
@@ -403,27 +403,36 @@ import SwiftUI
                                                             }
                                                         }
                                                     }) {
-                                                        ZStack {
-                                                            Image("iconFrameAlt")
-                                                                .resizable()
-                                                                .aspectRatio(contentMode: .fit)
-                                                                .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                            
-                                                            Circle()
-                                                                .fill(Color.black.opacity(0.7))
-                                                                .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                                .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                                .overlay(
-                                                                    Circle()
-                                                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                                )
-                                                            
-                                                            Image(systemName: "moon.stars")
-                                                                .font(Theme.bodyFont)
-                                                                .foregroundColor(.blue)
-                                                                .padding(.top, 1)
-                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                        HStack(spacing: 12) {
+                                                            ZStack {
+                                                                Circle()
+                                                                    .fill(Color.cyan)
+                                                                    .blur(radius: 15)
+                                                                    .opacity(0.9)
+                                                                
+                                                                Circle()
+                                                                    .fill(
+                                                                        RadialGradient(
+                                                                            gradient: Gradient(colors: [
+                                                                                Color.cyan.opacity(0.3),
+                                                                                Color.black.opacity(0.8)
+                                                                            ]),
+                                                                            center: .center,
+                                                                            startRadius: 0,
+                                                                            endRadius: 25
+                                                                        )
+                                                                    )
+                                                                    .frame(width: 36, height: 36)
+                                                                
+                                                                Image(systemName: "moon.stars")
+                                                                    .font(.system(size: 16))
+                                                                    .foregroundColor(Color.cyan)
+                                                            }
+                                                            .frame(width: 26, height: 25)
                                                         }
+                                                        .frame(maxWidth: .infinity)
+                                                        .padding(.horizontal, 12)
+                                                        .padding(.vertical, 10)
                                                     }
                                                     .buttonStyle(PlainButtonStyle())
                                                     .contentShape(Circle())
@@ -435,12 +444,10 @@ import SwiftUI
                                         
                                         if !selectedNPC.isVampire {
                                             if !selectedNPC.isUnknown {
+                                                // Feed
                                                 VStack {
                                                     ZStack {
                                                         Button(action: {
-                                                            withAnimation(.easeInOut(duration: 0.1)) {
-                                                                // Add scale animation
-                                                            }
                                                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                                                 withAnimation(.spring()) {
                                                                     handleNPCAction(.feed(selectedNPC))
@@ -448,27 +455,36 @@ import SwiftUI
                                                                 }
                                                             }
                                                         }) {
-                                                            ZStack {
-                                                                Image("iconFrameAlt")
-                                                                    .resizable()
-                                                                    .aspectRatio(contentMode: .fit)
-                                                                    .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                                
-                                                                Circle()
-                                                                    .fill(Color.black.opacity(0.7))
-                                                                    .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                                    .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                                    .overlay(
-                                                                        Circle()
-                                                                            .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                                    )
-                                                                
-                                                                Image(systemName: "drop.halffull")
-                                                                    .font(Theme.bodyFont)
-                                                                    .foregroundColor(Theme.primaryColor)
-                                                                    .padding(.top, 1)
-                                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                            HStack(spacing: 12) {
+                                                                ZStack {
+                                                                    Circle()
+                                                                        .fill(Theme.bloodProgressColor)
+                                                                        .blur(radius: 15)
+                                                                        .opacity(0.9)
+                                                                    
+                                                                    Circle()
+                                                                        .fill(
+                                                                            RadialGradient(
+                                                                                gradient: Gradient(colors: [
+                                                                                    Theme.bloodProgressColor.opacity(0.3),
+                                                                                    Color.black.opacity(0.8)
+                                                                                ]),
+                                                                                center: .center,
+                                                                                startRadius: 0,
+                                                                                endRadius: 25
+                                                                            )
+                                                                        )
+                                                                        .frame(width: 36, height: 36)
+                                                                    
+                                                                    Image(systemName: "drop.halffull")
+                                                                        .font(.system(size: 16))
+                                                                        .foregroundColor(Theme.bloodProgressColor)
+                                                                }
+                                                                .frame(width: 26, height: 25)
                                                             }
+                                                            .frame(maxWidth: .infinity)
+                                                            .padding(.horizontal, 12)
+                                                            .padding(.vertical, 10)
                                                         }
                                                         .buttonStyle(PlainButtonStyle())
                                                         .contentShape(Circle())
@@ -477,7 +493,7 @@ import SwiftUI
                                                     .shadow(color: .black, radius: 3, x: 0, y: 2)
                                                 }
                                             }
-                                            
+                                            // Empty blood
                                             VStack {
                                                 ZStack {
                                                     Button(action: {
@@ -491,27 +507,36 @@ import SwiftUI
                                                             }
                                                         }
                                                     }) {
-                                                        ZStack {
-                                                            Image("iconFrameAlt")
-                                                                .resizable()
-                                                                .aspectRatio(contentMode: .fit)
-                                                                .frame(width: 40 * 1.1, height: 40 * 1.1)
-                                                            
-                                                            Circle()
-                                                                .fill(Color.black.opacity(0.7))
-                                                                .frame(width: 40 * 0.85, height: 40 * 0.85)
-                                                                .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                                                                .overlay(
-                                                                    Circle()
-                                                                        .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                                                                )
-                                                            
-                                                            Image(systemName: "drop.fill")
-                                                                .font(Theme.bodyFont)
-                                                                .foregroundColor(Theme.primaryColor)
-                                                                .padding(.top, 1)
-                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                        HStack(spacing: 12) {
+                                                            ZStack {
+                                                                Circle()
+                                                                    .fill(Theme.bloodProgressColor)
+                                                                    .blur(radius: 15)
+                                                                    .opacity(0.9)
+                                                                
+                                                                Circle()
+                                                                    .fill(
+                                                                        RadialGradient(
+                                                                            gradient: Gradient(colors: [
+                                                                                Theme.bloodProgressColor.opacity(0.3),
+                                                                                Color.black.opacity(0.8)
+                                                                            ]),
+                                                                            center: .center,
+                                                                            startRadius: 0,
+                                                                            endRadius: 25
+                                                                        )
+                                                                    )
+                                                                    .frame(width: 36, height: 36)
+                                                                
+                                                                Image(systemName: "drop.fill")
+                                                                    .font(.system(size: 16))
+                                                                    .foregroundColor(Theme.bloodProgressColor)
+                                                            }
+                                                            .frame(width: 26, height: 25)
                                                         }
+                                                        .frame(maxWidth: .infinity)
+                                                        .padding(.horizontal, 12)
+                                                        .padding(.vertical, 10)
                                                     }
                                                     .buttonStyle(PlainButtonStyle())
                                                     .contentShape(Circle())
@@ -525,6 +550,7 @@ import SwiftUI
                                 }
                                 .frame(width: 25)
                                 .frame(maxHeight: .infinity, alignment: .top)
+                                
                             }
                             .padding(.horizontal, -10)
                         }
@@ -588,7 +614,7 @@ import SwiftUI
             npcManager.playerInteracted(with: npc)
         case .investigate(let npc):
             viewModel.investigateNPC(npc)
-            npcManager.playerInteracted(with: npc)
+            npcManager.select(with: npc)
         }
     }
     
@@ -599,20 +625,8 @@ import SwiftUI
     
     func setDefaultHideoutButtonScale(hideoutType: HidingCell) {
         switch hideoutType {
-        case .basement:
-            basementHideoutScale = 1
-            break
-        case .grave:
-            graveHideoutScale = 1
-            break
-        case .roof:
-            roofHideoutScale = 1
-            break
-        case .attic:
-            atticHideoutScale = 1
-            break
-        case .sewers:
-            sewerHideoutScale = 1
+        case .shadow:
+            shadowHideoutScale = 1
             break
         default:
             noneHideoutScale = 1
@@ -621,20 +635,8 @@ import SwiftUI
     
     func reduceHideoutButtonScale(hideoutType: HidingCell) {
         switch hideoutType {
-        case .basement:
-            basementHideoutScale = 0.9
-            break
-        case .grave:
-            graveHideoutScale = 0.9
-            break
-        case .roof:
-            roofHideoutScale = 0.9
-            break
-        case .attic:
-            atticHideoutScale = 0.9
-            break
-        case .sewers:
-            sewerHideoutScale = 0.9
+        case .shadow:
+            shadowHideoutScale = 0.9
             break
         default:
             noneHideoutScale = 0.9
@@ -643,18 +645,10 @@ import SwiftUI
     
     func getHideoutButtonScale(hideoutType: HidingCell) -> CGFloat {
         switch hideoutType {
-        case .basement:
-            return basementHideoutScale
-        case .grave:
-            return graveHideoutScale
-        case .roof:
-            return roofHideoutScale
-        case .attic:
-            return atticHideoutScale
+        case .shadow:
+            return shadowHideoutScale
         case .none:
             return noneHideoutScale
-        case .sewers:
-            return sewerHideoutScale
         }
     }
 }

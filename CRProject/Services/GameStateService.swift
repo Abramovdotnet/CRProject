@@ -194,9 +194,7 @@ class GameStateService : ObservableObject, GameService{
         if player.hiddenAt == .none {
             vampireNatureRevealService.increaseAwareness(amount: 2)
         } else {
-            if gameTime.currentHour % 3 == 0 {
-                vampireNatureRevealService.decreaseAwareness(amount: 1)
-            }
+            vampireNatureRevealService.decreaseAwareness(amount: 1)
         }
 
         var currentPlayerBlood = player.bloodMeter.currentBlood

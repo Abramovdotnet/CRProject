@@ -138,11 +138,8 @@ struct ChatMessageView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 2) {
+        VStack(alignment: .leading, spacing: 1) {
             // Time and Location
-            HStack(spacing: 4) {
-          
-            }
             HStack(spacing: 4) {
                 if !message.message.isEmpty {
                     if !message.message.isEmpty {
@@ -180,22 +177,80 @@ struct ChatMessageView: View {
                             }
                         }
                     } else {
-                        if let primaryNPC = message.primaryNPC {
-                            Text("\(message.timestampHourString) \(message.primaryNPC?.name ?? "")")
-                                .font(Theme.smallFont)
-                                .foregroundColor(Theme.textColor)
-                        }
-                        
-                        if let interactionType = message.interactionType {
-                            InteractionIconView(
-                                type: interactionType,
-                                hasSuccess: message.hasSuccess,
-                                isSuccess: message.isSuccess
-                            )
-                        }
-                        
-                        if let secondaryNPC = message.secondaryNPC {
-                            NPCIconView(npc: secondaryNPC)
+                        HStack(spacing: 4) {
+                            if message.primaryNPC != nil {
+                                if let interactionType = message.interactionType {
+                                    if message.secondaryNPC != nil {
+                                        if message.hasSuccess {
+                                            Text("\(message.timestampHourString) \(message.primaryNPC?.name ?? "") ")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(Theme.textColor)
+                                            +
+                                            Text("[\(message.isSuccess == true ? "Successfuly" : "Unsuccessfuly")] ")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(message.isSuccess == true ? Color.green : Color.red)
+                                            +
+                                            Text(Image(systemName: interactionType.icon))
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(interactionType.color)
+                                            +
+                                            Text(" [\(interactionType.description.capitalized)] ")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(interactionType.color)
+                                            +
+                                            Text("\(message.secondaryNPC?.name ?? "")")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(Theme.textColor)
+                                        } else {
+                                            Text("\(message.timestampHourString) \(message.primaryNPC?.name ?? "") ")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(Theme.textColor)
+                                            +
+                                            Text(Image(systemName: interactionType.icon))
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(interactionType.color)
+                                            +
+                                            Text(" [\(interactionType.description.capitalized)] ")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(interactionType.color)
+                                            +
+                                            Text("\(message.secondaryNPC?.name ?? "")")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(Theme.textColor)
+                                        }
+                                    } else {
+                                        if message.hasSuccess {
+                                            Text("\(message.timestampHourString) \(message.primaryNPC?.name ?? "") ")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(Theme.textColor)
+                                            +
+                                            Text("[\(message.isSuccess == true ? "Successfuly" : "Unsuccessfuly")] ")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(message.isSuccess == true ? Color.green : Color.red)
+                                            +
+                                            Text(Image(systemName: interactionType.icon))
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(interactionType.color)
+                                            +
+                                            Text(" [\(interactionType.description.capitalized)] ")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(interactionType.color)
+                                        } else {
+                                            Text("\(message.timestampHourString) \(message.primaryNPC?.name ?? "") ")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(Theme.textColor)
+                                            +
+                                            Text(Image(systemName: interactionType.icon))
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(interactionType.color)
+                                            +
+                                            Text(" [\(interactionType.description.capitalized)]")
+                                                .font(Theme.smallFont)
+                                                .foregroundColor(interactionType.color)
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -227,16 +282,6 @@ struct ChatHistoryView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Header
-            HStack {
-                Text("History")
-                    .font(Theme.bodyFont)
-                    .foregroundColor(.white.opacity(0.9))
-            }
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .background(Color.black.opacity(0.4))
-            
             // Messages List
             ScrollViewReader { proxy in
                 ScrollView {
@@ -250,7 +295,7 @@ struct ChatHistoryView: View {
                                 ))
                         }
                     }
-                    .padding(.vertical, 6)
+                    .padding(.vertical, 4)
                     .padding(.horizontal, 8)
                 }
                 .onChange(of: eventsBus.messages.count) { _ in

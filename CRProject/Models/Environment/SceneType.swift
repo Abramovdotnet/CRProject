@@ -74,54 +74,54 @@ enum SceneType: String, CaseIterable {
             switch self {
             // Religious Buildings
             case .cathedral, .cloister:
-                return [.basement, .attic, .grave]
+                return [.shadow]
                 
             case .cemetery:
-                return [.grave, .basement]
+                return [.shadow]
                 
             // Administrative
             case .manor:
-                return [.basement, .attic, .roof]
+                return [.shadow]
                 
             case .military:
-                return [.basement, .roof]
+                return [.shadow]
                 
             // Commercial
             case .blacksmith:
-                return [.basement]
+                return [.shadow]
                 
             case .alchemistShop:
-                return [.basement, .attic]
+                return [.shadow]
                 
             case .warehouse:
-                return [.basement, .roof]
+                return [.shadow]
                 
             case .bookstore:
-                return [.basement]
+                return [.shadow]
                 
             // Entertainment
             case .tavern:
-                return [.basement, .attic]
+                return [.shadow]
                 
             case .brothel:
-                return [.basement, .attic]
+                return [.shadow]
                 
             case .bathhouse:
-                return [.basement]
+                return [.shadow]
                 
             // Public Spaces
             case .square:
-                return [.sewers]
+                return [.shadow]
                 
             case .docks:
-                return [.sewers]
+                return [.shadow]
                 
             case .road:
                 return [.none]
                 
             // Residential
             case .house:
-                return [.basement, .attic, .roof]
+                return [.shadow]
                 
             // General/Districts
             case .town, .district:
@@ -134,25 +134,13 @@ enum SceneType: String, CaseIterable {
 }
 
 enum HidingCell: String, Codable, CaseIterable {
-    case basement = "basement"
-    case attic = "attic"
-    case grave = "grave"
-    case roof = "roof"
-    case sewers = "sewer"
+    case shadow = "hide"
     case none = "none"
     
     var iconName: String {
         switch self {
-        case .basement:
+        case .shadow:
             return "square.stack.3d.down.right.fill"
-        case .attic:
-            return "clock.fill"
-        case .grave:
-            return "cross.fill"
-        case .roof:
-            return "house.fill"
-        case .sewers:
-            return "aqi.medium"
         case .none:
             return "xmark.circle.fill"
         }
