@@ -102,53 +102,52 @@ struct NPCSGridView: View {
     
     // Extracted ScrollView
     private func npcScrollView(proxy: ScrollViewProxy) -> some View {
-        ScrollView(.vertical, showsIndicators: false) {
-            LazyVGrid(columns: [
-                GridItem(.flexible()),
-                GridItem(.flexible()),
-            ], spacing: 2) {
-                // Add a scroll position anchor view at the very start
-                Color.clear
-                    .frame(height: 1)
-                    .id("scrollAnchor")
-                
-                ForEach(prepareNPCData()) { data in
-                    NPCGridButton(
-                        npc: data.npc,
-                        isSelected: data.isSelected,
-                        isDisabled: data.isDisabled,
-                        onTap: {
-                            // First select the NPC
-                            npcManager.select(with: data.npc)
-                            
-                            // Then scroll to center with animation
-                            withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                proxy.scrollTo(data.id, anchor: .center)
-                            }
-                        },
-                        onAction: onAction
-                    )
-                    .scrollTransition(.interactive) { content, phase in
-                        let opacityValue = 1.0 - abs(phase.value) * 1.0
-                        let scaleValue = 1.0 - abs(phase.value) * 0.2
-                        let rotationValue = phase.value * -20
-                        
-                        return content
-                            .opacity(opacityValue)
-                            .scaleEffect(scaleValue)
-                            .rotation3DEffect(
-                                .degrees(rotationValue),
-                                axis: (x: 1, y: 0, z: 0)
-                            )
+        GeometryReader { geometry in
+            ScrollView(.vertical, showsIndicators: false) {
+                LazyVGrid(columns: [
+                    GridItem(.flexible(), spacing: 1), // Reduce horizontal spacing between columns
+                    GridItem(.flexible(), spacing: 1)
+                ], spacing: 10) { // Increase vertical spacing between rows
+                    ForEach(prepareNPCData()) { data in
+                        NPCGridButton(
+                            npc: data.npc,
+                            isSelected: data.isSelected,
+                            isDisabled: data.isDisabled,
+                            onTap: {
+                                // First select the NPC
+                                npcManager.select(with: data.npc)
+                                
+                                // Calculate the row index for centering
+                                let index = prepareNPCData().firstIndex(where: { $0.id == data.id }) ?? 0
+                                let rowIndex = index / 2 // Since we have 2 columns
+                                
+                                // Calculate the offset for centering
+                                let cardHeight: CGFloat = 280 // Height of NPCGridButton
+                                let spacing: CGFloat = 1 // Spacing between rows
+                                let totalRowHeight = cardHeight + spacing
+                                let yOffset = CGFloat(rowIndex) * totalRowHeight
+                                
+                                // Calculate the position that will center the row in the visible area
+                                let scrollPosition = max(0, yOffset - (geometry.size.height - cardHeight) / 2)
+                                
+                                // Then scroll with animation
+                                withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                                    // Create a custom anchor point based on the calculated position
+                                    let anchorPoint = UnitPoint(x: 0.5, y: CGFloat(rowIndex) / CGFloat(prepareNPCData().count / 2))
+                                    proxy.scrollTo(data.id, anchor: anchorPoint)
+                                }
+                            },
+                            onAction: onAction
+                        )
+                        .id(data.id)
+                        .frame(height: 280) // Explicit height for consistent row heights
                     }
-                    .shadow(color: data.isSelected ? data.npc.isUnknown ? Color.white.opacity(0.8) : data.npc.currentActivity.color.opacity(0.5) : .black.opacity(0.5), radius: data.isSelected ? 15 : 10)
-                    .id(data.id)
                 }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
             }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
+            .frame(maxHeight: .infinity)
         }
-        .frame(maxHeight: .infinity)
         .background(
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.clear.opacity(0.7))
@@ -158,10 +157,11 @@ struct NPCSGridView: View {
         .clipShape(RoundedRectangle(cornerRadius: 12))
         .mask(edgeMask)
         .onChange(of: npcManager.lastInteractionActionTimestamp) { _ in 
-            guard npcManager.lastInteractionActionTimestamp != nil else { return }
+            guard npcManager.lastInteractionActionTimestamp != nil,
+                  let firstNPC = prepareNPCData().first else { return }
             
             withAnimation(.easeOut(duration: 0.3)) {
-                proxy.scrollTo("scrollAnchor", anchor: .top)
+                proxy.scrollTo(firstNPC.id, anchor: .top)
             }
         }
     }
@@ -204,6 +204,7 @@ struct NPCGridButton: View {
                     }
                 }
                 VibrationService.shared.regularTap()
+                onTap() // Call onTap first to center the view
                 onAction(.investigate(npc))
             } else {
                 // Single tap - select
@@ -216,7 +217,7 @@ struct NPCGridButton: View {
                     }
                 }
                 VibrationService.shared.lightTap()
-                //onTap()
+                onTap()
             }
             lastTapTime = now
         }) {
@@ -497,7 +498,8 @@ struct NPCGridButton: View {
 
 struct HorizontalNPCGridButton: View {
     let npc: NPC
-
+    @StateObject private var npcManager = NPCInteractionManager.shared
+    
     var body: some View {
         ZStack(alignment: .top) {
             RoundedRectangle(cornerRadius: 12)
@@ -641,6 +643,9 @@ struct HorizontalNPCGridButton: View {
                 .offset(y: 2)
         )
         .shadow(color: npc.currentActivity.color.opacity(0.5), radius: 15)
+        .onChange(of: npcManager.npcStateChanged) { _ in
+            // Force view update when NPC state changes
+        }
     }
     
     private func getNPCImage() -> Image {

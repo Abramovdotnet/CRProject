@@ -7,6 +7,7 @@ class NPCInteractionManager: ObservableObject {
     @Published var selectedNPC: NPC?
     @Published var isShowingDialogue = false
     @Published var lastInteractionActionTimestamp: Date? // Timestamp for actual interactions
+    @Published var npcStateChanged = false // Add publisher for NPC state changes
     
     private init() {}
     
@@ -25,5 +26,6 @@ class NPCInteractionManager: ObservableObject {
     func playerInteracted(with npc: NPC) {
         npc.lastPlayerInteractionDate = Date()
         lastInteractionActionTimestamp = Date() // Update timestamp to trigger scroll
+        npcStateChanged.toggle() // Toggle to trigger view updates
     }
 }
