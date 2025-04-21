@@ -191,7 +191,10 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return }
         guard let player = player else { return }
         
-        if player.hiddenAt == .none {
+        let activeNpcs = scene.getNPCs()
+            .filter( { $0.isAlive && !$0.isSpecialBehaviorSet && $0.currentActivity != .sleep})
+        
+        if player.hiddenAt == .none && activeNpcs.count > 0 {
             vampireNatureRevealService.increaseAwareness(amount: 2)
         } else {
             vampireNatureRevealService.decreaseAwareness(amount: 1)

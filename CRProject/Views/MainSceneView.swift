@@ -1,5 +1,6 @@
 import SwiftUI
- struct MainSceneView: View {
+
+struct MainSceneView: View {
     @ObservedObject var viewModel: MainSceneViewModel
     @StateObject private var npcManager = NPCInteractionManager.shared
     @StateObject private var gameStateService: GameStateService = DependencyManager.shared.resolve()
@@ -91,466 +92,129 @@ import SwiftUI
                         
                         GeometryReader { geometry in
                             HStack(spacing: 10) {
-                                // Left section: NPCSGridView
+                                VStack(alignment: .leading, spacing: 4) {
+                                    // Advance time
+                                    MainSceneActionButton(
+                                        icon: "hourglass.bottomhalf.fill",
+                                        color: .blue,
+                                        action: {
+                                            viewModel.advanceTime()
+                                        }
+                                    )
+                                    
+                                    if !isPlayerHidden {
+                                        // Show navigation
+                                        MainSceneActionButton(
+                                            icon: "map.fill",
+                                            color: .green,
+                                            action: {
+                                                showingNavigation = true
+                                            }
+                                        )
+                                    }
+                                    
+                                    // Hide
+                                    if viewModel.getPlayer().hiddenAt == .none {
+                                        ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
+                                            MainSceneActionButton(
+                                                icon: "eye.fill",
+                                                color: .purple,
+                                                action: {
+                                                    showSmokeEffect = true
+                                                    viewModel.getGameStateService().movePlayerThroughHideouts(to: hideout)
+                                                    
+                                                    // Reset smoke effect after animation
+                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                                                        showSmokeEffect = false
+                                                    }
+                                                }
+                                            )
+                                        }
+                                    } else {
+                                        MainSceneActionButton(
+                                            icon: "eye.slash",
+                                            color: .red,
+                                            action: {
+                                                viewModel.getGameStateService().movePlayerThroughHideouts(to: .none)
+                                            }
+                                        )
+                                        .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
+                                    }
+                                    Spacer()
+                                }
+                                .frame(width: 50)
+                                Spacer()
                                 NPCSGridView(
                                     npcs: viewModel.npcs,
                                     onAction: handleNPCAction
                                 )
-                                VStack {
-                                    NPCInfoView(npc: npcManager.selectedNPC, onAction: handleNPCAction)
-                                        .id(npcManager.selectedNPC?.id ?? 0)
-                                    
-                                    if npcManager.selectedNPC != nil {
-                                        HorizontalNPCGridButton(npc: npcManager.selectedNPC!)
-                                    }
-                               
-                                    // Chat History
-                                    ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
-                                        .frame(maxWidth: .infinity)
-                                }
-                                .frame(width: geometry.size.width * 0.4)
-                            
-                                VStack(alignment: .leading, spacing: 6) {
-                                    // Advance time
+                                Spacer()
+                                HStack(spacing: 10) {
                                     VStack {
-                                        ZStack {
-                                            Button(action: {
-                                                withAnimation(.easeInOut(duration: 0.1)) {
-                                                    watchScale = 0.9
-                                                }
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                    withAnimation(.spring()) {
-                                                        watchScale = 1.0
-                                                        viewModel.advanceTime()
-                                                        VibrationService.shared.lightTap()
-                                                    }
-                                                }
-                                            }) {
-                                                HStack(spacing: 12) {
-                                                    ZStack {
-                                                        Circle()
-                                                            .fill(Color.blue)
-                                                            .blur(radius: 15)
-                                                            .opacity(0.9)
-                                                        
-                                                        Circle()
-                                                            .fill(
-                                                                RadialGradient(
-                                                                    gradient: Gradient(colors: [
-                                                                        Color.blue.opacity(0.3),
-                                                                        Color.black.opacity(0.8)
-                                                                    ]),
-                                                                    center: .center,
-                                                                    startRadius: 0,
-                                                                    endRadius: 25
-                                                                )
-                                                            )
-                                                            .frame(width: 36, height: 36)
-                                                        
-                                                        Image(systemName: "hourglass.bottomhalf.fill")
-                                                            .font(.system(size: 16))
-                                                            .foregroundColor(Color.blue)
-                                                    }
-                                                    .frame(width: 26, height: 25)
-                                                }
-                                                .frame(maxWidth: .infinity)
-                                                .padding(.horizontal, 12)
-                                                .padding(.vertical, 10)
-                                                .scaleEffect(watchScale)
-                                            }
-                                            .buttonStyle(PlainButtonStyle())
-                                            .contentShape(Circle())
-                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                        }
-                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                    }
-                                    
-                                    if !isPlayerHidden {
-                                        // Show navigation
-                                        VStack {
-                                            ZStack {
-                                                Button(action: {
-                                                    withAnimation(.easeInOut(duration: 0.1)) {
-                                                        compassScale = 0.9
-                                                    }
-                                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                        withAnimation(.spring()) {
-                                                            compassScale = 1.0
-                                                            showingNavigation = true
-                                                            VibrationService.shared.lightTap()
-                                                        }
-                                                    }
-                                                }) {
-                                                    HStack(spacing: 12) {
-                                                        ZStack {
-                                                            Circle()
-                                                                .fill(Color.green)
-                                                                .blur(radius: 15)
-                                                                .opacity(0.9)
-                                                            
-                                                            Circle()
-                                                                .fill(
-                                                                    RadialGradient(
-                                                                        gradient: Gradient(colors: [
-                                                                            Color.green.opacity(0.3),
-                                                                            Color.black.opacity(0.8)
-                                                                        ]),
-                                                                        center: .center,
-                                                                        startRadius: 0,
-                                                                        endRadius: 25
-                                                                    )
-                                                                )
-                                                                .frame(width: 36, height: 36)
-                                                            
-                                                            Image(systemName: "map.fill")
-                                                                .font(.system(size: 16))
-                                                                .foregroundColor(Color.green)
-                                                        }
-                                                        .frame(width: 26, height: 25)
-                                                    }
-                                                    .frame(maxWidth: .infinity)
-                                                    .padding(.horizontal, 12)
-                                                    .padding(.vertical, 10)
-                                                    .scaleEffect(compassScale)
-                                                }
-                                                .buttonStyle(PlainButtonStyle())
-                                                .contentShape(Circle())
-                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                            }
-                                            .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                        }
-                                    }
-                                    // Hide
-                                            if viewModel.getPlayer().hiddenAt == .none {
-                                                ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
-                                                    VStack {
-                                                        ZStack {
-                                                            Button(action: {
-                                                                withAnimation(.easeInOut(duration: 0.1)) {
-                                                                    reduceHideoutButtonScale(hideoutType: hideout)
-                                                                }
-                                                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                                    withAnimation(.spring()) {
-                                                                        setDefaultHideoutButtonScale(hideoutType: hideout)
-                                                                        showSmokeEffect = true
-                                                                        viewModel.getGameStateService().movePlayerThroughHideouts(to: hideout)
-                                                                        VibrationService.shared.lightTap()
-                                                                        
-                                                                        // Reset smoke effect after animation
-                                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                                                                            showSmokeEffect = false
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }) {
-                                                                ZStack {
-                                                                    HStack(spacing: 12) {
-                                                                        ZStack {
-                                                                            Circle()
-                                                                                .fill(Color.purple)
-                                                                                .blur(radius: 15)
-                                                                                .opacity(0.9)
-                                                                            
-                                                                            Circle()
-                                                                                .fill(
-                                                                                    RadialGradient(
-                                                                                        gradient: Gradient(colors: [
-                                                                                            Color.purple.opacity(0.3),
-                                                                                            Color.black.opacity(0.8)
-                                                                                        ]),
-                                                                                        center: .center,
-                                                                                        startRadius: 0,
-                                                                                        endRadius: 25
-                                                                                    )
-                                                                                )
-                                                                                .frame(width: 36, height: 36)
-                                                                            
-                                                                            Image(systemName: "eye.fill")
-                                                                                .font(.system(size: 16))
-                                                                                .foregroundColor(Color.purple)
-                                                                        }
-                                                                        .frame(width: 26, height: 25)
-                                                                    }
-                                                                    .frame(maxWidth: .infinity)
-                                                                    .padding(.horizontal, 12)
-                                                                    .padding(.vertical, 10)
-                                                                    .scaleEffect(getHideoutButtonScale(hideoutType: hideout))
-                                                                }
-                                                                .buttonStyle(PlainButtonStyle())
-                                                                .contentShape(Circle())
-                                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                            }
-                                                        }
-                                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                    }
-                                                }
-                                            } else {
-                                                VStack {
-                                                    ZStack {
-                                                        Button(action: {
-                                                            withAnimation(.easeInOut(duration: 0.1)) {
-                                                                noneHideoutScale = 0.9
-                                                            }
-                                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                                withAnimation(.spring()) {
-                                                                    noneHideoutScale = 1.0
-                                                                    viewModel.getGameStateService().movePlayerThroughHideouts(to: .none)
-                                                                    VibrationService.shared.lightTap()
-                                                                }
-                                                            }
-                                                        }) {
-                                                            HStack(spacing: 12) {
-                                                                ZStack {
-                                                                    Circle()
-                                                                        .fill(Color.red)
-                                                                        .blur(radius: 15)
-                                                                        .opacity(0.9)
-                                                                    
-                                                                    Circle()
-                                                                        .fill(
-                                                                            RadialGradient(
-                                                                                gradient: Gradient(colors: [
-                                                                                    Color.red.opacity(0.3),
-                                                                                    Color.black.opacity(0.8)
-                                                                                ]),
-                                                                                center: .center,
-                                                                                startRadius: 0,
-                                                                                endRadius: 25
-                                                                            )
-                                                                        )
-                                                                        .frame(width: 36, height: 36)
-                                                                    
-                                                                    Image(systemName: "eye.slash")
-                                                                        .font(.system(size: 16))
-                                                                        .foregroundColor(Color.red)
-                                                                }
-                                                                .frame(width: 26, height: 25)
-                                                            }
-                                                            .frame(maxWidth: .infinity)
-                                                            .padding(.horizontal, 12)
-                                                            .padding(.vertical, 10)
-                                                            .scaleEffect(noneHideoutScale)
-                                                        }
-                                                        .buttonStyle(PlainButtonStyle())
-                                                        .contentShape(Circle())
-                                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                    }
-                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                }
-                                        .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
-                                    }
-                                    
-                                    if let selectedNPC = npcManager.selectedNPC {
-                                        if selectedNPC.isAlive {
-                                            // Start conversation
-                                            VStack {
-                                                ZStack {
-                                                    Button(action: {
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                            withAnimation(.spring()) {
-                                                                handleNPCAction(.startConversation(selectedNPC))
-                                                                VibrationService.shared.lightTap()
-                                                            }
-                                                        }
-                                                    }) {
-                                                        HStack(spacing: 12) {
-                                                            ZStack {
-                                                                Circle()
-                                                                    .fill(Color.white)
-                                                                    .blur(radius: 15)
-                                                                    .opacity(0.9)
-                                                                
-                                                                Circle()
-                                                                    .fill(
-                                                                        RadialGradient(
-                                                                            gradient: Gradient(colors: [
-                                                                                Color.white.opacity(0.3),
-                                                                                Color.black.opacity(0.8)
-                                                                            ]),
-                                                                            center: .center,
-                                                                            startRadius: 0,
-                                                                            endRadius: 25
-                                                                        )
-                                                                    )
-                                                                    .frame(width: 36, height: 36)
-                                                                
-                                                                Image(systemName: "bubble.left.fill")
-                                                                    .font(.system(size: 16))
-                                                                    .foregroundColor(Color.white)
-                                                            }
-                                                            .frame(width: 26, height: 25)
-                                                        }
-                                                        .frame(maxWidth: .infinity)
-                                                        .padding(.horizontal, 12)
-                                                        .padding(.vertical, 10)
-                                                    }
-                                                    .buttonStyle(PlainButtonStyle())
-                                                    .contentShape(Circle())
-                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                }
-                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                            }
-                                        }
-                                        if !selectedNPC.isUnknown {
-                                            // Start intimidation
-                                            VStack {
-                                                ZStack {
-                                                    Button(action: {
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                            withAnimation(.spring()) {
-                                                                handleNPCAction(.startIntimidation(selectedNPC))
-                                                                VibrationService.shared.lightTap()
-                                                            }
-                                                        }
-                                                    }) {
-                                                        HStack(spacing: 12) {
-                                                            ZStack {
-                                                                Circle()
-                                                                    .fill(Color.cyan)
-                                                                    .blur(radius: 15)
-                                                                    .opacity(0.9)
-                                                                
-                                                                Circle()
-                                                                    .fill(
-                                                                        RadialGradient(
-                                                                            gradient: Gradient(colors: [
-                                                                                Color.cyan.opacity(0.3),
-                                                                                Color.black.opacity(0.8)
-                                                                            ]),
-                                                                            center: .center,
-                                                                            startRadius: 0,
-                                                                            endRadius: 25
-                                                                        )
-                                                                    )
-                                                                    .frame(width: 36, height: 36)
-                                                                
-                                                                Image(systemName: "moon.stars")
-                                                                    .font(.system(size: 16))
-                                                                    .foregroundColor(Color.cyan)
-                                                            }
-                                                            .frame(width: 26, height: 25)
-                                                        }
-                                                        .frame(maxWidth: .infinity)
-                                                        .padding(.horizontal, 12)
-                                                        .padding(.vertical, 10)
-                                                    }
-                                                    .buttonStyle(PlainButtonStyle())
-                                                    .contentShape(Circle())
-                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                }
-                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                            }
-                                        }
+                                        NPCInfoView(npc: npcManager.selectedNPC, onAction: handleNPCAction)
+                                            .id(npcManager.selectedNPC?.id ?? 0)
                                         
-                                        if !selectedNPC.isVampire {
+                                        if npcManager.selectedNPC != nil {
+                                            HorizontalNPCGridButton(npc: npcManager.selectedNPC!)
+                                        }
+                                   
+                                        // Chat History
+                                        ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
+                                            .frame(maxWidth: .infinity)
+                                    }
+                                    .frame(maxWidth: .infinity)
+                
+                                    // Actions
+                                    VStack(alignment: .leading, spacing: 4) {
+                                        if let selectedNPC = npcManager.selectedNPC {
+                                            if selectedNPC.isAlive {
+                                                // Start conversation
+                                                MainSceneActionButton(
+                                                    icon: "bubble.left.fill",
+                                                    color: .white,
+                                                    action: {
+                                                        handleNPCAction(.startConversation(selectedNPC))
+                                                    }
+                                                )
+                                            }
+                                            
                                             if !selectedNPC.isUnknown {
-                                                // Feed
-                                                VStack {
-                                                    ZStack {
-                                                        Button(action: {
-                                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                                withAnimation(.spring()) {
-                                                                    handleNPCAction(.feed(selectedNPC))
-                                                                    VibrationService.shared.regularTap()
-                                                                }
-                                                            }
-                                                        }) {
-                                                            HStack(spacing: 12) {
-                                                                ZStack {
-                                                                    Circle()
-                                                                        .fill(Theme.bloodProgressColor)
-                                                                        .blur(radius: 15)
-                                                                        .opacity(0.9)
-                                                                    
-                                                                    Circle()
-                                                                        .fill(
-                                                                            RadialGradient(
-                                                                                gradient: Gradient(colors: [
-                                                                                    Theme.bloodProgressColor.opacity(0.3),
-                                                                                    Color.black.opacity(0.8)
-                                                                                ]),
-                                                                                center: .center,
-                                                                                startRadius: 0,
-                                                                                endRadius: 25
-                                                                            )
-                                                                        )
-                                                                        .frame(width: 36, height: 36)
-                                                                    
-                                                                    Image(systemName: "drop.halffull")
-                                                                        .font(.system(size: 16))
-                                                                        .foregroundColor(Theme.bloodProgressColor)
-                                                                }
-                                                                .frame(width: 26, height: 25)
-                                                            }
-                                                            .frame(maxWidth: .infinity)
-                                                            .padding(.horizontal, 12)
-                                                            .padding(.vertical, 10)
-                                                        }
-                                                        .buttonStyle(PlainButtonStyle())
-                                                        .contentShape(Circle())
-                                                        .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                // Start intimidation
+                                                MainSceneActionButton(
+                                                    icon: "bolt.heart.fill",
+                                                    color: .purple,
+                                                    action: {
+                                                        handleNPCAction(.startIntimidation(selectedNPC))
                                                     }
-                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
+                                                )
+                                                
+                                                if !selectedNPC.isVampire {
+                                                    // Feed
+                                                    MainSceneActionButton(
+                                                        icon: "drop.halffull",
+                                                        color: Theme.bloodProgressColor,
+                                                        action: {
+                                                            handleNPCAction(.feed(selectedNPC))
+                                                        }
+                                                    )
+                                                    
+                                                    // Empty blood
+                                                    MainSceneActionButton(
+                                                        icon: "drop.fill",
+                                                        color: Theme.bloodProgressColor,
+                                                        action: {
+                                                            handleNPCAction(.drain(selectedNPC))
+                                                        }
+                                                    )
                                                 }
-                                            }
-                                            // Empty blood
-                                            VStack {
-                                                ZStack {
-                                                    Button(action: {
-                                                        withAnimation(.easeInOut(duration: 0.1)) {
-                                                            // Add scale animation
-                                                        }
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                                            withAnimation(.spring()) {
-                                                                handleNPCAction(.drain(selectedNPC))
-                                                                VibrationService.shared.successVibration()
-                                                            }
-                                                        }
-                                                    }) {
-                                                        HStack(spacing: 12) {
-                                                            ZStack {
-                                                                Circle()
-                                                                    .fill(Theme.bloodProgressColor)
-                                                                    .blur(radius: 15)
-                                                                    .opacity(0.9)
-                                                                
-                                                                Circle()
-                                                                    .fill(
-                                                                        RadialGradient(
-                                                                            gradient: Gradient(colors: [
-                                                                                Theme.bloodProgressColor.opacity(0.3),
-                                                                                Color.black.opacity(0.8)
-                                                                            ]),
-                                                                            center: .center,
-                                                                            startRadius: 0,
-                                                                            endRadius: 25
-                                                                        )
-                                                                    )
-                                                                    .frame(width: 36, height: 36)
-                                                                
-                                                                Image(systemName: "drop.fill")
-                                                                    .font(.system(size: 16))
-                                                                    .foregroundColor(Theme.bloodProgressColor)
-                                                            }
-                                                            .frame(width: 26, height: 25)
-                                                        }
-                                                        .frame(maxWidth: .infinity)
-                                                        .padding(.horizontal, 12)
-                                                        .padding(.vertical, 10)
-                                                    }
-                                                    .buttonStyle(PlainButtonStyle())
-                                                    .contentShape(Circle())
-                                                    .shadow(color: .black, radius: 3, x: 0, y: 2)
-                                                }
-                                                .shadow(color: .black, radius: 3, x: 0, y: 2)
                                             }
                                         }
-                                        
                                     }
+                                    .frame(width: 60)
+                                    .frame(maxHeight: .infinity, alignment: .top)
+                                    .padding(.trailing, 10)
                                 }
-                                .frame(width: 25)
-                                .frame(maxHeight: .infinity, alignment: .top)
-                                
+                                .frame(width: 420)
                             }
                             .padding(.horizontal, -10)
                         }
@@ -678,5 +342,68 @@ private struct BottomWidgetView: View {
         }
         .padding(.top, 5)
         .padding(.bottom, 5)
+    }
+}
+
+
+struct MainSceneActionButton: View {
+    let icon: String
+    let color: Color
+    let action: () -> Void
+    @State private var scale: CGFloat = 1.0
+    
+    var body: some View {
+        VStack {
+            ZStack {
+                Button(action: {
+                    withAnimation(.easeInOut(duration: 0.1)) {
+                        scale = 0.9
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        withAnimation(.spring()) {
+                            scale = 1.0
+                            action()
+                            VibrationService.shared.lightTap()
+                        }
+                    }
+                }) {
+                    HStack(spacing: 12) {
+                        ZStack {
+                            Circle()
+                                .fill(color)
+                                .blur(radius: 15)
+                                .opacity(0.9)
+                            
+                            Circle()
+                                .fill(
+                                    RadialGradient(
+                                        gradient: Gradient(colors: [
+                                            color.opacity(0.3),
+                                            Color.black.opacity(0.8)
+                                        ]),
+                                        center: .center,
+                                        startRadius: 0,
+                                        endRadius: 25
+                                    )
+                                )
+                                .frame(width: 60, height: 60)
+                            
+                            Image(systemName: icon)
+                                .font(.system(size: 16))
+                                .foregroundColor(color)
+                        }
+                        .frame(width: 45, height: 45)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 10)
+                    .scaleEffect(scale)
+                }
+                .buttonStyle(PlainButtonStyle())
+                .contentShape(Circle())
+                .shadow(color: .black, radius: 3, x: 0, y: 2)
+            }
+            .shadow(color: .black, radius: 3, x: 0, y: 2)
+        }
     }
 }

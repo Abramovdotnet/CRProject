@@ -104,10 +104,7 @@ struct NPCSGridView: View {
     private func npcScrollView(proxy: ScrollViewProxy) -> some View {
         GeometryReader { geometry in
             ScrollView(.vertical, showsIndicators: false) {
-                LazyVGrid(columns: [
-                    GridItem(.flexible(), spacing: 1), // Reduce horizontal spacing between columns
-                    GridItem(.flexible(), spacing: 1)
-                ], spacing: 10) { // Increase vertical spacing between rows
+                VStack(spacing: 30) {
                     ForEach(prepareNPCData()) { data in
                         NPCGridButton(
                             npc: data.npc,
@@ -117,34 +114,30 @@ struct NPCSGridView: View {
                                 // First select the NPC
                                 npcManager.select(with: data.npc)
                                 
-                                // Calculate the row index for centering
+                                // Calculate the position for centering
                                 let index = prepareNPCData().firstIndex(where: { $0.id == data.id }) ?? 0
-                                let rowIndex = index / 2 // Since we have 2 columns
-                                
-                                // Calculate the offset for centering
-                                let cardHeight: CGFloat = 280 // Height of NPCGridButton
-                                let spacing: CGFloat = 1 // Spacing between rows
+                                let cardHeight: CGFloat = 320 // Updated to match actual card height
+                                let spacing: CGFloat = 30
                                 let totalRowHeight = cardHeight + spacing
-                                let yOffset = CGFloat(rowIndex) * totalRowHeight
+                                let yOffset = CGFloat(index) * totalRowHeight
                                 
-                                // Calculate the position that will center the row in the visible area
+                                // Calculate the position that will center the card in the visible area
                                 let scrollPosition = max(0, yOffset - (geometry.size.height - cardHeight) / 2)
                                 
                                 // Then scroll with animation
                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
-                                    // Create a custom anchor point based on the calculated position
-                                    let anchorPoint = UnitPoint(x: 0.5, y: CGFloat(rowIndex) / CGFloat(prepareNPCData().count / 2))
-                                    proxy.scrollTo(data.id, anchor: anchorPoint)
+                                    proxy.scrollTo(data.id, anchor: .center)
                                 }
                             },
                             onAction: onAction
                         )
                         .id(data.id)
-                        .frame(height: 280) // Explicit height for consistent row heights
+                        .frame(height: 320)
                     }
                 }
+                .frame(maxWidth: .infinity)
                 .padding(.horizontal, 20)
-                .padding(.vertical, 10)
+                .padding(.vertical, 20)
             }
             .frame(maxHeight: .infinity)
         }
@@ -186,7 +179,7 @@ struct NPCGridButton: View {
     private let queue = OperationQueue()
     
     private let parallaxIntensity: CGFloat = 8 // Adjust sensitivity
-    private let buttonWidth: CGFloat = 160
+    private let buttonWidth: CGFloat = 180
 
     var body: some View {
         Button(action: {
@@ -249,18 +242,18 @@ struct NPCGridButton: View {
                                 lineWidth: 0.5
                             )
                     )
-                
-                Color.black.opacity(0.9)
+                    .frame(width: buttonWidth, height: 320)
                 
                 // Content (Image and Text)
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading, spacing: 0) {
                     // Image container with parallax
                     ZStack {
                         getNPCImage()
                             .resizable()
-                            .scaledToFill()
-                            .frame(width: buttonWidth, height: 160)
+                            .aspectRatio(contentMode: .fill)
+                            .frame(width: buttonWidth, height: 180)
                             .offset(x: parallaxOffset.width, y: parallaxOffset.height)
+                            .clipped() // Add clipping after the frame
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
                         
@@ -298,7 +291,8 @@ struct NPCGridButton: View {
                             )
                         }
                     }
-                    .frame(width: buttonWidth, height: 160)
+                    .frame(width: buttonWidth, height: 180)
+                    .background(Color.black.opacity(0.5))
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     
                     // Text details (rest of the card)
@@ -395,28 +389,27 @@ struct NPCGridButton: View {
                 
                 if isSelected {
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(npc.isUnknown ? .white.opacity(0.8) : npc.currentActivity.color.opacity(0.8), lineWidth: 2)
+                        .stroke(npc.currentActivity.color.opacity(0.8), lineWidth: 2)
                         .background(Color.white.opacity(0.05))
                         .blur(radius: 0.5)
                 }
                 
             }
-            .cornerRadius(12)
-            .frame(width: buttonWidth)
-            .frame(height: 280)
-      
+            .frame(width: buttonWidth, height: 320)
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.black.opacity(0.3))
+                    .fill(Color.black.opacity(0.9))
                     .blur(radius: 2)
                     .offset(y: 2)
             )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
             .scaleEffect(tappedScale)
         }
         .buttonStyle(PlainButtonStyle())
         .opacity(npc.isAlive ? (isDisabled ? 0.5 : 1) : 0.7)
         .disabled(isDisabled)
         .animation(.easeInOut(duration: 0.3), value: isSelected)
+        .frame(width: buttonWidth, height: 320)
         .onAppear {
             startMotionUpdates()
             if npc.currentActivity == .sleep {

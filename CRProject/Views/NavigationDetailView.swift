@@ -80,7 +80,7 @@ struct NavigationWebView: View {
         Color.clear
             .overlay(
                 ZStack {
-                    Image("MainSceneBackground")
+                    Image(uiImage: UIImage(named: "location\(viewModel.currentScene!.id.description)") ?? UIImage(named: "MainSceneBackground")!)
                         .resizable()
                         .ignoresSafeArea()
                     
