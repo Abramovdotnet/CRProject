@@ -368,7 +368,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
         case .askForProtection:
             return "asked for protection"
         case .trade:
-            return "make a deal with"
+            return "made a deal with"
         case .gameOver:
             return "figure.meditation"
         // standalone actions

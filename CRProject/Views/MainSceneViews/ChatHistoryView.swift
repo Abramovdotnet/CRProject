@@ -20,6 +20,7 @@ struct ChatMessage: Identifiable {
     let message: String
     let type: MessageType
     let location: String?
+    let player: Player?
     let primaryNPC: NPC?
     let secondaryNPC: NPC?
     let interactionType: NPCInteraction?
@@ -38,6 +39,7 @@ struct ChatMessage: Identifiable {
         message: String?,
         type: MessageType,
         location: String? = nil,
+        player: Player? = nil,
         primaryNPC: NPC? = nil,
         secondaryNPC: NPC? = nil,
         interactionType: NPCInteraction? = nil,
@@ -55,6 +57,7 @@ struct ChatMessage: Identifiable {
         self.message = message ?? ""
         self.type = type
         self.location = location
+        self.player = player
         self.primaryNPC = primaryNPC
         self.secondaryNPC = secondaryNPC
         self.interactionType = interactionType
@@ -73,14 +76,6 @@ struct NPCIconView: View {
     
     var body: some View {
         HStack(spacing: 4) {
-            /*Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                .font(Theme.smallFont)
-                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)*/
- 
-            /*Image(systemName: npc.profession.icon)
-                .font(Theme.smallFont)
-                .foregroundColor(npc.profession.color)*/
-            
             Text(npc.name)
                 .font(Theme.smallFont)
                 .foregroundColor(Theme.textColor)
@@ -204,10 +199,82 @@ struct ChatMessageView: View {
         }
     }
     
+    private func buildPlayerMessageText() -> Text {
+        let timestampText = Text("\(message.timestampHourString) ")
+            .font(Theme.smallFont)
+            .foregroundColor(Theme.textColor)
+
+        if !message.message.isEmpty {
+            return timestampText + Text(message.message)
+                .font(Theme.smallFont)
+                .foregroundColor(typeColor)
+        } else if message.isDiscussion, let interactionType = message.rumorInteractionType {
+            let baseText = timestampText + Text("\(message.player?.name ?? "") discussed with \(message.secondaryNPC?.name ?? "") how \(message.rumorPrimaryNPC?.name ?? "") ")
+                .font(Theme.smallFont)
+                .foregroundColor(Theme.textColor)
+
+            let interactionIconText = Text(Image(systemName: interactionType.icon))
+                .font(Theme.smallFont)
+                .foregroundColor(interactionType.color)
+
+            let interactionDescText = Text(" [\(interactionType.description.capitalized)] ")
+                .font(Theme.smallFont)
+                .foregroundColor(interactionType.color)
+
+            let secondaryRumorText = Text("\(message.rumorSecondaryNPC?.name ?? "") at ")
+                .font(Theme.smallFont)
+                .foregroundColor(Theme.textColor)
+
+            let locationText = Text("\(message.messageLocation ?? "")")
+                .font(Theme.smallFont)
+                .foregroundColor(.yellow)
+
+            return baseText + interactionIconText + interactionDescText + secondaryRumorText + locationText
+        } else if let interactionType = message.interactionType {
+            var combinedText = timestampText + Text("\(message.player?.name ?? "") ")
+                .font(Theme.smallFont)
+                .foregroundColor(Theme.textColor)
+
+            if message.hasSuccess {
+                combinedText = combinedText + Text("[\(message.isSuccess == true ? "Successfully" : "Unsuccessfully")] ")
+                    .font(Theme.smallFont)
+                    .foregroundColor(message.isSuccess == true ? Color.green : Color.red)
+            }
+
+            if interactionType.hasCoinsExchange {
+                combinedText = combinedText + Text(Image(systemName: "cedisign"))
+                    .font(Theme.smallFont)
+                    .foregroundColor(Color.green) + Text(" ")
+            }
+
+            combinedText = combinedText + Text(Image(systemName: interactionType.icon))
+                .font(Theme.smallFont)
+                .foregroundColor(interactionType.color)
+
+            combinedText = combinedText + Text(" [\(interactionType.description.capitalized)] ")
+                .font(Theme.smallFont)
+                .foregroundColor(interactionType.color)
+
+            if let secondaryNPC = message.secondaryNPC {
+                combinedText = combinedText + Text(secondaryNPC.name)
+                    .font(Theme.smallFont)
+                    .foregroundColor(Theme.textColor)
+            }
+            return combinedText
+        } else {
+            return timestampText
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
-            buildMessageText()
-                .fixedSize(horizontal: false, vertical: true)
+            if message.player != nil {
+                buildPlayerMessageText()
+                    .fixedSize(horizontal: false, vertical: true)
+            } else {
+                buildMessageText()
+                    .fixedSize(horizontal: false, vertical: true)
+            }
         }
         .padding(.vertical, 2)
         .padding(.horizontal, 8)

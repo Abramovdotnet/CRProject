@@ -26,7 +26,9 @@ struct DialogueView: View {
                     .opacity(0.9)
                     .ignoresSafeArea()
                 
-         
+                DustEmitterView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                       .edgesIgnoringSafeArea(.all)
               
                 // Blood mist effect
                 EnhancedBloodMistEffect()

@@ -36,6 +36,10 @@ struct VampireGazeView: View {
                     .opacity(0.9)
                     .ignoresSafeArea()
                 
+                DustEmitterView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                       .edgesIgnoringSafeArea(.all)
+                
                 // Blood moon effect
                 BloodMoonEffect(phase: moonPhase)
                     .opacity(backgroundOpacity * 0.8)

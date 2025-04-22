@@ -46,6 +46,8 @@ class NPC: Character {
     var npcsRelationship: [NPCRelationship] = []
     var alliedWithNPC: NPC?
     
+    var items: [Item] = []
+    
     var lastPlayerInteractionDate: Date = Date()
     
     var currentInteractionNPC: NPC? = nil

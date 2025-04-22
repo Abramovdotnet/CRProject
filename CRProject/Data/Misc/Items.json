@@ -1,0 +1,1444 @@
+{
+    "items": [
+        {
+            "id": 1,
+            "type": "weapon",
+            "name": "Iron Longsword",
+            "cost": 180
+        },
+        {
+            "id": 2,
+            "type": "weapon",
+            "name": "Steel Dagger",
+            "cost": 60
+        },
+        {
+            "id": 3,
+            "type": "weapon",
+            "name": "Oak Longbow",
+            "cost": 120
+        },
+        {
+            "id": 4,
+            "type": "weapon",
+            "name": "Battle Axe",
+            "cost": 144
+        },
+        {
+            "id": 5,
+            "type": "weapon",
+            "name": "War Hammer",
+            "cost": 156
+        },
+        {
+            "id": 6,
+            "type": "weapon",
+            "name": "Crossbow",
+            "cost": 240
+        },
+        {
+            "id": 7,
+            "type": "weapon",
+            "name": "Spear",
+            "cost": 96
+        },
+        {
+            "id": 8,
+            "type": "weapon",
+            "name": "Mace",
+            "cost": 108
+        },
+        {
+            "id": 9,
+            "type": "weapon",
+            "name": "Rapier",
+            "cost": 192
+        },
+        {
+            "id": 10,
+            "type": "weapon",
+            "name": "Halberd",
+            "cost": 168
+        },
+        {
+            "id": 11,
+            "type": "weapon",
+            "name": "Short Sword",
+            "cost": 120
+        },
+        {
+            "id": 12,
+            "type": "weapon",
+            "name": "Bastard Sword",
+            "cost": 210
+        },
+        {
+            "id": 13,
+            "type": "weapon",
+            "name": "Greatsword",
+            "cost": 300
+        },
+        {
+            "id": 14,
+            "type": "weapon",
+            "name": "Scimitar",
+            "cost": 150
+        },
+        {
+            "id": 15,
+            "type": "weapon",
+            "name": "Falchion",
+            "cost": 135
+        },
+        {
+            "id": 16,
+            "type": "weapon",
+            "name": "Katana",
+            "cost": 240
+        },
+        {
+            "id": 17,
+            "type": "weapon",
+            "name": "Claymore",
+            "cost": 270
+        },
+        {
+            "id": 18,
+            "type": "weapon",
+            "name": "Estoc",
+            "cost": 180
+        },
+        {
+            "id": 19,
+            "type": "weapon",
+            "name": "Flail",
+            "cost": 165
+        },
+        {
+            "id": 20,
+            "type": "weapon",
+            "name": "Morning Star",
+            "cost": 150
+        },
+        {
+            "id": 21,
+            "type": "armor",
+            "name": "Chainmail Hauberk",
+            "cost": 360
+        },
+        {
+            "id": 22,
+            "type": "armor",
+            "name": "Plate Cuirass",
+            "cost": 600
+        },
+        {
+            "id": 23,
+            "type": "armor",
+            "name": "Leather Jerkin",
+            "cost": 96
+        },
+        {
+            "id": 24,
+            "type": "armor",
+            "name": "Steel Helmet",
+            "cost": 180
+        },
+        {
+            "id": 25,
+            "type": "armor",
+            "name": "Knight's Gauntlets",
+            "cost": 144
+        },
+        {
+            "id": 26,
+            "type": "armor",
+            "name": "Shield",
+            "cost": 120
+        },
+        {
+            "id": 27,
+            "type": "armor",
+            "name": "Greaves",
+            "cost": 216
+        },
+        {
+            "id": 28,
+            "type": "armor",
+            "name": "Pauldrons",
+            "cost": 240
+        },
+        {
+            "id": 29,
+            "type": "armor",
+            "name": "Gambeson",
+            "cost": 72
+        },
+        {
+            "id": 30,
+            "type": "armor",
+            "name": "Brigandine",
+            "cost": 300
+        },
+        {
+            "id": 31,
+            "type": "armor",
+            "name": "Scale Armor",
+            "cost": 420
+        },
+        {
+            "id": 32,
+            "type": "armor",
+            "name": "Splint Mail",
+            "cost": 480
+        },
+        {
+            "id": 33,
+            "type": "armor",
+            "name": "Lamellar Armor",
+            "cost": 540
+        },
+        {
+            "id": 34,
+            "type": "armor",
+            "name": "Ring Mail",
+            "cost": 240
+        },
+        {
+            "id": 35,
+            "type": "armor",
+            "name": "Studded Leather",
+            "cost": 120
+        },
+        {
+            "id": 36,
+            "type": "armor",
+            "name": "Full Plate Armor",
+            "cost": 1200
+        },
+        {
+            "id": 37,
+            "type": "armor",
+            "name": "Half Plate",
+            "cost": 840
+        },
+        {
+            "id": 38,
+            "type": "armor",
+            "name": "Breastplate",
+            "cost": 300
+        },
+        {
+            "id": 39,
+            "type": "armor",
+            "name": "Cuirass",
+            "cost": 360
+        },
+        {
+            "id": 40,
+            "type": "armor",
+            "name": "Vambraces",
+            "cost": 180
+        },
+        {
+            "id": 41,
+            "type": "clothing",
+            "name": "Woolen Tunic",
+            "cost": 36
+        },
+        {
+            "id": 42,
+            "type": "clothing",
+            "name": "Linen Shirt",
+            "cost": 30
+        },
+        {
+            "id": 43,
+            "type": "clothing",
+            "name": "Leather Boots",
+            "cost": 60
+        },
+        {
+            "id": 44,
+            "type": "clothing",
+            "name": "Woolen Cloak",
+            "cost": 48
+        },
+        {
+            "id": 45,
+            "type": "clothing",
+            "name": "Silk Doublet",
+            "cost": 120
+        },
+        {
+            "id": 46,
+            "type": "clothing",
+            "name": "Cotton Hose",
+            "cost": 24
+        },
+        {
+            "id": 47,
+            "type": "clothing",
+            "name": "Fur-lined Coat",
+            "cost": 180
+        },
+        {
+            "id": 48,
+            "type": "clothing",
+            "name": "Leather Belt",
+            "cost": 18
+        },
+        {
+            "id": 49,
+            "type": "clothing",
+            "name": "Woolen Cap",
+            "cost": 12
+        },
+        {
+            "id": 50,
+            "type": "clothing",
+            "name": "Silk Scarf",
+            "cost": 54
+        },
+        {
+            "id": 51,
+            "type": "clothing",
+            "name": "Velvet Doublet",
+            "cost": 150
+        },
+        {
+            "id": 52,
+            "type": "clothing",
+            "name": "Woolen Gown",
+            "cost": 90
+        },
+        {
+            "id": 53,
+            "type": "clothing",
+            "name": "Silk Gloves",
+            "cost": 60
+        },
+        {
+            "id": 54,
+            "type": "clothing",
+            "name": "Leather Gloves",
+            "cost": 36
+        },
+        {
+            "id": 55,
+            "type": "clothing",
+            "name": "Woolen Socks",
+            "cost": 12
+        },
+        {
+            "id": 56,
+            "type": "clothing",
+            "name": "Linen Undergarments",
+            "cost": 18
+        },
+        {
+            "id": 57,
+            "type": "clothing",
+            "name": "Silk Stockings",
+            "cost": 48
+        },
+        {
+            "id": 58,
+            "type": "clothing",
+            "name": "Leather Vest",
+            "cost": 72
+        },
+        {
+            "id": 59,
+            "type": "clothing",
+            "name": "Woolen Mantle",
+            "cost": 84
+        },
+        {
+            "id": 60,
+            "type": "clothing",
+            "name": "Silk Robe",
+            "cost": 180
+        },
+        {
+            "id": 61,
+            "type": "drink",
+            "name": "Mead",
+            "cost": 6
+        },
+        {
+            "id": 62,
+            "type": "drink",
+            "name": "Ale",
+            "cost": 3
+        },
+        {
+            "id": 63,
+            "type": "drink",
+            "name": "Wine",
+            "cost": 9
+        },
+        {
+            "id": 64,
+            "type": "drink",
+            "name": "Herbal Tea",
+            "cost": 2
+        },
+        {
+            "id": 65,
+            "type": "drink",
+            "name": "Spiced Cider",
+            "cost": 4
+        },
+        {
+            "id": 66,
+            "type": "drink",
+            "name": "Mulled Wine",
+            "cost": 7
+        },
+        {
+            "id": 67,
+            "type": "drink",
+            "name": "Honey Water",
+            "cost": 1
+        },
+        {
+            "id": 68,
+            "type": "drink",
+            "name": "Fruit Juice",
+            "cost": 2
+        },
+        {
+            "id": 69,
+            "type": "drink",
+            "name": "Herbal Infusion",
+            "cost": 3
+        },
+        {
+            "id": 70,
+            "type": "drink",
+            "name": "Spiced Rum",
+            "cost": 12
+        },
+        {
+            "id": 71,
+            "type": "drink",
+            "name": "Brandy",
+            "cost": 15
+        },
+        {
+            "id": 72,
+            "type": "drink",
+            "name": "Whiskey",
+            "cost": 18
+        },
+        {
+            "id": 73,
+            "type": "drink",
+            "name": "Gin",
+            "cost": 12
+        },
+        {
+            "id": 74,
+            "type": "drink",
+            "name": "Vodka",
+            "cost": 9
+        },
+        {
+            "id": 75,
+            "type": "drink",
+            "name": "Cider",
+            "cost": 3
+        },
+        {
+            "id": 76,
+            "type": "drink",
+            "name": "Perry",
+            "cost": 4
+        },
+        {
+            "id": 77,
+            "type": "drink",
+            "name": "Kvass",
+            "cost": 2
+        },
+        {
+            "id": 78,
+            "type": "drink",
+            "name": "Small Beer",
+            "cost": 1
+        },
+        {
+            "id": 79,
+            "type": "drink",
+            "name": "Spiced Ale",
+            "cost": 4
+        },
+        {
+            "id": 80,
+            "type": "drink",
+            "name": "Honey Mead",
+            "cost": 7
+        },
+        {
+            "id": 81,
+            "type": "food",
+            "name": "Fresh Bread",
+            "cost": 2
+        },
+        {
+            "id": 82,
+            "type": "food",
+            "name": "Cheese Wheel",
+            "cost": 9
+        },
+        {
+            "id": 83,
+            "type": "food",
+            "name": "Smoked Ham",
+            "cost": 14
+        },
+        {
+            "id": 84,
+            "type": "food",
+            "name": "Dried Fruits",
+            "cost": 6
+        },
+        {
+            "id": 85,
+            "type": "food",
+            "name": "Honey",
+            "cost": 12
+        },
+        {
+            "id": 86,
+            "type": "food",
+            "name": "Fresh Apples",
+            "cost": 1
+        },
+        {
+            "id": 87,
+            "type": "food",
+            "name": "Roasted Nuts",
+            "cost": 3
+        },
+        {
+            "id": 88,
+            "type": "food",
+            "name": "Dried Fish",
+            "cost": 7
+        },
+        {
+            "id": 89,
+            "type": "food",
+            "name": "Sausage",
+            "cost": 4
+        },
+        {
+            "id": 90,
+            "type": "food",
+            "name": "Fresh Vegetables",
+            "cost": 2
+        },
+        {
+            "id": 91,
+            "type": "food",
+            "name": "Smoked Salmon",
+            "cost": 18
+        },
+        {
+            "id": 92,
+            "type": "food",
+            "name": "Dried Meat",
+            "cost": 12
+        },
+        {
+            "id": 93,
+            "type": "food",
+            "name": "Fresh Berries",
+            "cost": 3
+        },
+        {
+            "id": 94,
+            "type": "food",
+            "name": "Dried Herbs",
+            "cost": 4
+        },
+        {
+            "id": 95,
+            "type": "food",
+            "name": "Fresh Milk",
+            "cost": 2
+        },
+        {
+            "id": 96,
+            "type": "food",
+            "name": "Butter",
+            "cost": 6
+        },
+        {
+            "id": 97,
+            "type": "food",
+            "name": "Eggs",
+            "cost": 3
+        },
+        {
+            "id": 98,
+            "type": "food",
+            "name": "Fresh Fish",
+            "cost": 9
+        },
+        {
+            "id": 99,
+            "type": "food",
+            "name": "Game Meat",
+            "cost": 15
+        },
+        {
+            "id": 100,
+            "type": "food",
+            "name": "Fresh Poultry",
+            "cost": 12
+        },
+        {
+            "id": 101,
+            "type": "artefact",
+            "name": "Ancient Scroll",
+            "cost": 240
+        },
+        {
+            "id": 102,
+            "type": "artefact",
+            "name": "Crystal Ball",
+            "cost": 600
+        },
+        {
+            "id": 103,
+            "type": "artefact",
+            "name": "Rune Stone",
+            "cost": 360
+        },
+        {
+            "id": 104,
+            "type": "artefact",
+            "name": "Dragon Bone",
+            "cost": 1200
+        },
+        {
+            "id": 105,
+            "type": "artefact",
+            "name": "Mystic Amulet",
+            "cost": 960
+        },
+        {
+            "id": 106,
+            "type": "artefact",
+            "name": "Ancient Tome",
+            "cost": 480
+        },
+        {
+            "id": 107,
+            "type": "artefact",
+            "name": "Elven Relic",
+            "cost": 720
+        },
+        {
+            "id": 108,
+            "type": "artefact",
+            "name": "Dwarven Rune",
+            "cost": 540
+        },
+        {
+            "id": 109,
+            "type": "artefact",
+            "name": "Mystic Orb",
+            "cost": 840
+        },
+        {
+            "id": 110,
+            "type": "artefact",
+            "name": "Ancient Coin",
+            "cost": 300
+        },
+        {
+            "id": 111,
+            "type": "artefact",
+            "name": "Phoenix Feather",
+            "cost": 900
+        },
+        {
+            "id": 112,
+            "type": "artefact",
+            "name": "Unicorn Horn",
+            "cost": 1200
+        },
+        {
+            "id": 113,
+            "type": "artefact",
+            "name": "Dragon Scale",
+            "cost": 960
+        },
+        {
+            "id": 114,
+            "type": "artefact",
+            "name": "Mystic Crystal",
+            "cost": 720
+        },
+        {
+            "id": 115,
+            "type": "artefact",
+            "name": "Ancient Tablet",
+            "cost": 600
+        },
+        {
+            "id": 116,
+            "type": "artefact",
+            "name": "Elven Crystal",
+            "cost": 840
+        },
+        {
+            "id": 117,
+            "type": "artefact",
+            "name": "Dwarven Artifact",
+            "cost": 660
+        },
+        {
+            "id": 118,
+            "type": "artefact",
+            "name": "Mystic Tome",
+            "cost": 780
+        },
+        {
+            "id": 119,
+            "type": "artefact",
+            "name": "Ancient Relic",
+            "cost": 540
+        },
+        {
+            "id": 120,
+            "type": "artefact",
+            "name": "Mystic Scroll",
+            "cost": 420
+        },
+        {
+            "id": 121,
+            "type": "picture",
+            "name": "Portrait of the King",
+            "cost": 360
+        },
+        {
+            "id": 122,
+            "type": "picture",
+            "name": "Landscape Painting",
+            "cost": 180
+        },
+        {
+            "id": 123,
+            "type": "picture",
+            "name": "Battle Scene",
+            "cost": 240
+        },
+        {
+            "id": 124,
+            "type": "picture",
+            "name": "Religious Icon",
+            "cost": 300
+        },
+        {
+            "id": 125,
+            "type": "picture",
+            "name": "Noble Family Portrait",
+            "cost": 480
+        },
+        {
+            "id": 126,
+            "type": "picture",
+            "name": "Mythological Scene",
+            "cost": 420
+        },
+        {
+            "id": 127,
+            "type": "picture",
+            "name": "Castle Sketch",
+            "cost": 120
+        },
+        {
+            "id": 128,
+            "type": "picture",
+            "name": "Heraldic Banner",
+            "cost": 216
+        },
+        {
+            "id": 129,
+            "type": "picture",
+            "name": "Still Life",
+            "cost": 144
+        },
+        {
+            "id": 130,
+            "type": "picture",
+            "name": "Historical Map",
+            "cost": 264
+        },
+        {
+            "id": 131,
+            "type": "picture",
+            "name": "Religious Fresco",
+            "cost": 540
+        },
+        {
+            "id": 132,
+            "type": "picture",
+            "name": "Court Scene",
+            "cost": 360
+        },
+        {
+            "id": 133,
+            "type": "picture",
+            "name": "Hunting Scene",
+            "cost": 300
+        },
+        {
+            "id": 134,
+            "type": "picture",
+            "name": "Mythological Tapestry",
+            "cost": 480
+        },
+        {
+            "id": 135,
+            "type": "picture",
+            "name": "Religious Manuscript",
+            "cost": 420
+        },
+        {
+            "id": 136,
+            "type": "picture",
+            "name": "Noble Crest",
+            "cost": 240
+        },
+        {
+            "id": 137,
+            "type": "picture",
+            "name": "Battle Standard",
+            "cost": 300
+        },
+        {
+            "id": 138,
+            "type": "picture",
+            "name": "Religious Banner",
+            "cost": 360
+        },
+        {
+            "id": 139,
+            "type": "picture",
+            "name": "Court Portrait",
+            "cost": 420
+        },
+        {
+            "id": 140,
+            "type": "picture",
+            "name": "Historical Document",
+            "cost": 300
+        },
+        {
+            "id": 141,
+            "type": "kitchen_stuff",
+            "name": "Iron Pot",
+            "cost": 36
+        },
+        {
+            "id": 142,
+            "type": "kitchen_stuff",
+            "name": "Wooden Spoon",
+            "cost": 6
+        },
+        {
+            "id": 143,
+            "type": "kitchen_stuff",
+            "name": "Ceramic Bowl",
+            "cost": 9
+        },
+        {
+            "id": 144,
+            "type": "kitchen_stuff",
+            "name": "Cutting Board",
+            "cost": 12
+        },
+        {
+            "id": 145,
+            "type": "kitchen_stuff",
+            "name": "Iron Skillet",
+            "cost": 30
+        },
+        {
+            "id": 146,
+            "type": "kitchen_stuff",
+            "name": "Wooden Plate",
+            "cost": 7
+        },
+        {
+            "id": 147,
+            "type": "kitchen_stuff",
+            "name": "Copper Kettle",
+            "cost": 48
+        },
+        {
+            "id": 148,
+            "type": "kitchen_stuff",
+            "name": "Mortar and Pestle",
+            "cost": 18
+        },
+        {
+            "id": 149,
+            "type": "kitchen_stuff",
+            "name": "Wooden Cup",
+            "cost": 4
+        },
+        {
+            "id": 150,
+            "type": "kitchen_stuff",
+            "name": "Iron Ladle",
+            "cost": 14
+        },
+        {
+            "id": 151,
+            "type": "kitchen_stuff",
+            "name": "Copper Pot",
+            "cost": 42
+        },
+        {
+            "id": 152,
+            "type": "kitchen_stuff",
+            "name": "Wooden Bowl",
+            "cost": 8
+        },
+        {
+            "id": 153,
+            "type": "kitchen_stuff",
+            "name": "Iron Spatula",
+            "cost": 12
+        },
+        {
+            "id": 154,
+            "type": "kitchen_stuff",
+            "name": "Wooden Tray",
+            "cost": 9
+        },
+        {
+            "id": 155,
+            "type": "kitchen_stuff",
+            "name": "Copper Pan",
+            "cost": 36
+        },
+        {
+            "id": 156,
+            "type": "kitchen_stuff",
+            "name": "Iron Fork",
+            "cost": 7
+        },
+        {
+            "id": 157,
+            "type": "kitchen_stuff",
+            "name": "Wooden Knife",
+            "cost": 6
+        },
+        {
+            "id": 158,
+            "type": "kitchen_stuff",
+            "name": "Copper Mug",
+            "cost": 15
+        },
+        {
+            "id": 159,
+            "type": "kitchen_stuff",
+            "name": "Iron Tongs",
+            "cost": 10
+        },
+        {
+            "id": 160,
+            "type": "kitchen_stuff",
+            "name": "Wooden Spatula",
+            "cost": 4
+        },
+        {
+            "id": 161,
+            "type": "jewelery",
+            "name": "Gold Ring",
+            "cost": 240
+        },
+        {
+            "id": 162,
+            "type": "jewelery",
+            "name": "Silver Necklace",
+            "cost": 180
+        },
+        {
+            "id": 163,
+            "type": "jewelery",
+            "name": "Pearl Earrings",
+            "cost": 360
+        },
+        {
+            "id": 164,
+            "type": "jewelery",
+            "name": "Ruby Brooch",
+            "cost": 600
+        },
+        {
+            "id": 165,
+            "type": "jewelery",
+            "name": "Emerald Pendant",
+            "cost": 480
+        },
+        {
+            "id": 166,
+            "type": "jewelery",
+            "name": "Sapphire Bracelet",
+            "cost": 540
+        },
+        {
+            "id": 167,
+            "type": "jewelery",
+            "name": "Diamond Tiara",
+            "cost": 1200
+        },
+        {
+            "id": 168,
+            "type": "jewelery",
+            "name": "Amethyst Ring",
+            "cost": 300
+        },
+        {
+            "id": 169,
+            "type": "jewelery",
+            "name": "Topaz Earrings",
+            "cost": 216
+        },
+        {
+            "id": 170,
+            "type": "jewelery",
+            "name": "Garnet Necklace",
+            "cost": 264
+        },
+        {
+            "id": 171,
+            "type": "jewelery",
+            "name": "Opal Brooch",
+            "cost": 420
+        },
+        {
+            "id": 172,
+            "type": "jewelery",
+            "name": "Aquamarine Ring",
+            "cost": 360
+        },
+        {
+            "id": 173,
+            "type": "jewelery",
+            "name": "Citrine Pendant",
+            "cost": 240
+        },
+        {
+            "id": 174,
+            "type": "jewelery",
+            "name": "Peridot Earrings",
+            "cost": 180
+        },
+        {
+            "id": 175,
+            "type": "jewelery",
+            "name": "Onyx Bracelet",
+            "cost": 300
+        },
+        {
+            "id": 176,
+            "type": "jewelery",
+            "name": "Turquoise Necklace",
+            "cost": 240
+        },
+        {
+            "id": 177,
+            "type": "jewelery",
+            "name": "Lapis Lazuli Ring",
+            "cost": 360
+        },
+        {
+            "id": 178,
+            "type": "jewelery",
+            "name": "Moonstone Pendant",
+            "cost": 420
+        },
+        {
+            "id": 179,
+            "type": "jewelery",
+            "name": "Jade Brooch",
+            "cost": 480
+        },
+        {
+            "id": 180,
+            "type": "jewelery",
+            "name": "Coral Earrings",
+            "cost": 300
+        },
+        {
+            "id": 181,
+            "type": "tools",
+            "name": "Blacksmith's Hammer",
+            "cost": 60
+        },
+        {
+            "id": 182,
+            "type": "tools",
+            "name": "Carpenter's Saw",
+            "cost": 45
+        },
+        {
+            "id": 183,
+            "type": "tools",
+            "name": "Mason's Chisel",
+            "cost": 36
+        },
+        {
+            "id": 184,
+            "type": "tools",
+            "name": "Farmer's Scythe",
+            "cost": 48
+        },
+        {
+            "id": 185,
+            "type": "tools",
+            "name": "Woodcutter's Axe",
+            "cost": 42
+        },
+        {
+            "id": 186,
+            "type": "tools",
+            "name": "Miner's Pick",
+            "cost": 54
+        },
+        {
+            "id": 187,
+            "type": "tools",
+            "name": "Fisher's Net",
+            "cost": 30
+        },
+        {
+            "id": 188,
+            "type": "tools",
+            "name": "Leatherworker's Needle",
+            "cost": 12
+        },
+        {
+            "id": 189,
+            "type": "tools",
+            "name": "Tailor's Scissors",
+            "cost": 24
+        },
+        {
+            "id": 190,
+            "type": "tools",
+            "name": "Cobbler's Last",
+            "cost": 36
+        },
+        {
+            "id": 191,
+            "type": "tools",
+            "name": "Cooper's Adze",
+            "cost": 42
+        },
+        {
+            "id": 192,
+            "type": "tools",
+            "name": "Wheelwright's Spoke Shave",
+            "cost": 48
+        },
+        {
+            "id": 193,
+            "type": "tools",
+            "name": "Rope Maker's Twister",
+            "cost": 30
+        },
+        {
+            "id": 194,
+            "type": "tools",
+            "name": "Basket Weaver's Knife",
+            "cost": 18
+        },
+        {
+            "id": 195,
+            "type": "tools",
+            "name": "Potter's Wheel",
+            "cost": 72
+        },
+        {
+            "id": 196,
+            "type": "tools",
+            "name": "Glassblower's Pipe",
+            "cost": 60
+        },
+        {
+            "id": 197,
+            "type": "tools",
+            "name": "Tanner's Knife",
+            "cost": 24
+        },
+        {
+            "id": 198,
+            "type": "tools",
+            "name": "Weaver's Loom",
+            "cost": 120
+        },
+        {
+            "id": 199,
+            "type": "tools",
+            "name": "Dyer's Vat",
+            "cost": 54
+        },
+        {
+            "id": 200,
+            "type": "tools",
+            "name": "Cooper's Hoop Driver",
+            "cost": 36
+        },
+        {
+            "id": 201,
+            "type": "tools",
+            "name": "Shipwright's Adze",
+            "cost": 66
+        },
+        {
+            "id": 202,
+            "type": "tools",
+            "name": "Cartwright's Spoke Shave",
+            "cost": 48
+        },
+        {
+            "id": 203,
+            "type": "tools",
+            "name": "Rope Maker's Hook",
+            "cost": 24
+        },
+        {
+            "id": 204,
+            "type": "tools",
+            "name": "Basket Weaver's Awl",
+            "cost": 18
+        },
+        {
+            "id": 205,
+            "type": "tools",
+            "name": "Potter's Kiln",
+            "cost": 150
+        },
+        {
+            "id": 206,
+            "type": "tools",
+            "name": "Glassblower's Furnace",
+            "cost": 180
+        },
+        {
+            "id": 207,
+            "type": "tools",
+            "name": "Tanner's Beam",
+            "cost": 60
+        },
+        {
+            "id": 208,
+            "type": "tools",
+            "name": "Weaver's Shuttle",
+            "cost": 30
+        },
+        {
+            "id": 209,
+            "type": "tools",
+            "name": "Dyer's Paddle",
+            "cost": 24
+        },
+        {
+            "id": 210,
+            "type": "tools",
+            "name": "Cooper's Croze",
+            "cost": 36
+        },
+        {
+            "id": 211,
+            "type": "alchemy",
+            "name": "Herbal Healing Tonic",
+            "cost": 60
+        },
+        {
+            "id": 212,
+            "type": "alchemy",
+            "name": "Energy Restoring Tonic",
+            "cost": 75
+        },
+        {
+            "id": 213,
+            "type": "alchemy",
+            "name": "Strength Enhancing Tonic",
+            "cost": 90
+        },
+        {
+            "id": 214,
+            "type": "alchemy",
+            "name": "Camouflage Oil",
+            "cost": 150
+        },
+        {
+            "id": 215,
+            "type": "alchemy",
+            "name": "Heat Protection Salve",
+            "cost": 120
+        },
+        {
+            "id": 216,
+            "type": "alchemy",
+            "name": "Cold Protection Salve",
+            "cost": 120
+        },
+        {
+            "id": 217,
+            "type": "alchemy",
+            "name": "Poison Antidote",
+            "cost": 45
+        },
+        {
+            "id": 218,
+            "type": "alchemy",
+            "name": "Night Vision Tonic",
+            "cost": 105
+        },
+        {
+            "id": 219,
+            "type": "alchemy",
+            "name": "Stamina Elixir",
+            "cost": 90
+        },
+        {
+            "id": 220,
+            "type": "alchemy",
+            "name": "Wound Healing Salve",
+            "cost": 135
+        },
+        {
+            "id": 221,
+            "type": "alchemy",
+            "name": "Pain Relief Tonic",
+            "cost": 180
+        },
+        {
+            "id": 222,
+            "type": "alchemy",
+            "name": "Focus Enhancing Tonic",
+            "cost": 240
+        },
+        {
+            "id": 223,
+            "type": "alchemy",
+            "name": "Disguise Kit",
+            "cost": 210
+        },
+        {
+            "id": 224,
+            "type": "alchemy",
+            "name": "Protection Salve",
+            "cost": 165
+        },
+        {
+            "id": 225,
+            "type": "alchemy",
+            "name": "Truth Serum",
+            "cost": 120
+        },
+        {
+            "id": 226,
+            "type": "alchemy",
+            "name": "Sleeping Draught",
+            "cost": 45
+        },
+        {
+            "id": 227,
+            "type": "alchemy",
+            "name": "Awakening Tonic",
+            "cost": 60
+        },
+        {
+            "id": 228,
+            "type": "alchemy",
+            "name": "Memory Enhancing Tonic",
+            "cost": 150
+        },
+        {
+            "id": 229,
+            "type": "alchemy",
+            "name": "Love Potion",
+            "cost": 180
+        },
+        {
+            "id": 230,
+            "type": "alchemy",
+            "name": "Disease Cure",
+            "cost": 90
+        },
+        {
+            "id": 231,
+            "type": "alchemy",
+            "name": "Youth Preserving Elixir",
+            "cost": 300
+        },
+        {
+            "id": 232,
+            "type": "alchemy",
+            "name": "Growth Stimulant",
+            "cost": 120
+        },
+        {
+            "id": 233,
+            "type": "alchemy",
+            "name": "Size Reducing Tonic",
+            "cost": 120
+        },
+        {
+            "id": 234,
+            "type": "alchemy",
+            "name": "Herbal Insect Repellent",
+            "cost": 150
+        },
+        {
+            "id": 235,
+            "type": "alchemy",
+            "name": "Plant Growth Stimulant",
+            "cost": 90
+        },
+        {
+            "id": 236,
+            "type": "alchemy",
+            "name": "Weather Protection Oil",
+            "cost": 240
+        },
+        {
+            "id": 237,
+            "type": "alchemy",
+            "name": "Time Perception Tonic",
+            "cost": 300
+        },
+        {
+            "id": 238,
+            "type": "alchemy",
+            "name": "Fortune Tonic",
+            "cost": 180
+        },
+        {
+            "id": 239,
+            "type": "alchemy",
+            "name": "Curse Removal Tonic",
+            "cost": 210
+        },
+        {
+            "id": 240,
+            "type": "alchemy",
+            "name": "Performance Enhancing Tonic",
+            "cost": 270
+        }
+    ]
+} 

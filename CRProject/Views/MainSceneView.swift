@@ -12,6 +12,7 @@ struct MainSceneView: View {
     @State private var shadowHideoutScale: CGFloat = 1.0
     @State private var showSmokeEffect = false
     @State private var showingVampireGaze = false
+    @State private var showingTrade = false
     
     init(viewModel: MainSceneViewModel) {
         self.viewModel = viewModel
@@ -155,7 +156,7 @@ struct MainSceneView: View {
                                             .id(npcManager.selectedNPC?.id ?? 0)
                                         
                                         if npcManager.selectedNPC != nil {
-                                            HorizontalNPCGridButton(npc: npcManager.selectedNPC!)
+                                            HorizontalNPCWidget(npc: npcManager.selectedNPC!)
                                         }
                                    
                                         // Chat History
@@ -185,6 +186,15 @@ struct MainSceneView: View {
                                                     color: .purple,
                                                     action: {
                                                         handleNPCAction(.startIntimidation(selectedNPC))
+                                                    }
+                                                )
+                                                
+                                                // Trade
+                                                MainSceneActionButton(
+                                                    icon: "cart.fill",
+                                                    color: .yellow,
+                                                    action: {
+                                                        showingTrade = true
                                                     }
                                                 )
                                                 
@@ -256,6 +266,11 @@ struct MainSceneView: View {
             .sheet(isPresented: $showingVampireGaze) {
                 if let npc = npcManager.selectedNPC {
                     VampireGazeView(npc: npc, isPresented: $showingVampireGaze, mainViewModel: viewModel)
+                }
+            }
+            .sheet(isPresented: $showingTrade) {
+                if let npc = npcManager.selectedNPC {
+                    TradeView(player: gameStateService.player!, npc: npc, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
                 }
             }
             .withDebugOverlay(viewModel: viewModel)

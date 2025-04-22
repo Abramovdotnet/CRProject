@@ -28,6 +28,7 @@ class Player: Character, Codable {
     var homeLocationId: Int = 0
     var currentLocationId: Int = 0
     var hiddenAt: HidingCell = .none
+    var items: [Item] = []
     
     var desiredVictim: DesiredVictim = DesiredVictim()
 

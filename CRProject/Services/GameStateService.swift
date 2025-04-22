@@ -73,6 +73,9 @@ class GameStateService : ObservableObject, GameService{
                 self?.endGame()
             }
             .store(in: &cancellables)
+        
+        CoinsManagementService.shared.updateWorldEconomy()
+        ItemsManagementService.shared.distributeDailyItems()
     }
     
     func setPlayer(_ player: Player) {
@@ -178,6 +181,7 @@ class GameStateService : ObservableObject, GameService{
         vampireNatureRevealService.decreaseAwareness(amount: 8)
         
         CoinsManagementService.shared.updateWorldEconomy()
+        ItemsManagementService.shared.distributeDailyItems()
     }
     
     private func handleSafeTimeAdvanced() {

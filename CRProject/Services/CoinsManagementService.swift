@@ -15,6 +15,20 @@ class CoinsManagementService : GameService {
         }
     }
     
+    func moveCoins(from: Player, to: NPC, amount: Int) {
+        if from.coins.couldRemove(amount) {
+            from.coins.remove(amount)
+            to.coins.add(amount)
+        }
+    }
+    
+    func moveCoins(from: NPC, to: Player, amount: Int) {
+        if from.coins.couldRemove(amount) {
+            from.coins.remove(amount)
+            to.coins.add(amount)
+        }
+    }
+    
     func updateWorldEconomy() {
         var npcs = NPCReader.getNPCs()
         
