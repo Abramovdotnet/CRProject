@@ -106,7 +106,7 @@ struct MainSceneView: View {
                                         // Show navigation
                                         MainSceneActionButton(
                                             icon: "map.fill",
-                                            color: .green,
+                                            color: Theme.textColor,
                                             action: {
                                                 showingNavigation = true
                                             }

@@ -100,17 +100,22 @@ class GameStateService : ObservableObject, GameService{
         let newLocation = try LocationReader.getRuntimeLocation(by: locationId)
         DebugLogService.shared.log("Found new location: \(newLocation.name)", category: "Location")
         
-        // Update current scene
-        currentScene = newLocation
-        DebugLogService.shared.log("Current scene set to: \(currentScene?.name ?? "None")", category: "Location")
-        
-        // Update related locations
-        updateRelatedLocations(for: locationId)
-        
-        npcManager.selectedNPC = nil
-        
-        // Advance time when changing location
-        gameTime.advanceTime()
+        if !newLocation.isLocked {
+            // Update current scene
+            currentScene = newLocation
+            DebugLogService.shared.log("Current scene set to: \(currentScene?.name ?? "None")", category: "Location")
+            
+            // Update related locations
+            updateRelatedLocations(for: locationId)
+            
+            npcManager.selectedNPC = nil
+            
+            // Advance time when changing location
+            gameTime.advanceTime()
+        } else {
+            DebugLogService.shared.log("Cannot travel to locked location", category: "Location")
+            gameEventsBus.addDangerMessage(message: "*I cannot move to this location*")
+        }
     }
     
     private func updateRelatedLocations(for locationId: Int) {

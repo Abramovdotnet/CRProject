@@ -17,6 +17,11 @@ struct TopWidgetView: View {
                 .font(Theme.smallFont)
                 .padding(.leading, -5)
             
+            if viewModel.currentScene?.isLocked == true {
+                    Image(systemName: "lock.fill")
+                         .foregroundColor(Theme.accentColor)
+                         .font(Theme.smallFont)
+                }
             Image(systemName: viewModel.currentScene?.sceneType.iconName ?? "")
                 .font(Theme.smallFont)
                 .foregroundColor(Theme.textColor)

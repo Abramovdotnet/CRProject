@@ -530,7 +530,7 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func isLocationAccessible(_ scene: Scene) -> Bool {
-        return gameTime.isNightTime
+        return gameTime.isNightTime && !scene.isLocked
     }
     
     func toggleDebugOverlay() {

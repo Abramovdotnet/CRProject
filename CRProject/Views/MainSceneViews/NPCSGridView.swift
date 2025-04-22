@@ -324,7 +324,7 @@ struct NPCGridButton: View {
                                 }
                                 
                                 GradientProgressBar(value: Float(abs(npc.playerRelationship.value)), barColor: npc.playerRelationship.value >= 0 ? Color.green : Color.red, backgroundColor: Theme.textColor.opacity(0.3))
-                                    .frame(width: 140, height: 5)
+                                    .frame(height: 5)
                                     .shadow(color: Color.green.opacity(0.3), radius: 2)
                             }
                             .padding(.top, 8)
@@ -341,7 +341,7 @@ struct NPCGridButton: View {
                                 }
                                 
                                 ProgressBar(value: Double(npc.bloodMeter.currentBlood / 100), color: Theme.bloodProgressColor, height: 6)
-                                    .frame(width: 140)
+                   
                                     .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
                             }
                             .padding(.top, 8)

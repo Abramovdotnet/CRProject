@@ -41,10 +41,11 @@ class NPCInteractionService : GameService {
         // Use lazy collections and early filtering
         let scenes = LocationReader.getLocations()
             .lazy
-            .filter { $0.npcCount() > 1 }
-        
+
         for scene in scenes {
             let npcs = scene.getNPCs().filter { $0.currentActivity != .sleep}
+            
+            scene.evaluateIsLocked(isNight: gameTimeService.isNightTime)
             
             for npc in npcs {
                 // Skip if already interacting
@@ -308,9 +309,9 @@ enum NPCInteraction : String, CaseIterable, Codable {
         case .patrol:
             return "stopped"
         case .drunkFight:
-            return "fights with"
+            return "drunk fights with"
         case .gambleFight:
-            return "fights with"
+            return "gamble fights with"
         case .observing:
             return "observing"
         case .prostitution:

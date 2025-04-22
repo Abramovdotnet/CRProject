@@ -112,83 +112,66 @@ class LocationReader : GameService {
         }
     }
     
-    static func getChildLocations(for parentId: Int) -> [Scene] {
-        loadLocations()
-        
-        //DebugLogService.shared.log("Searching for child locations of parent ID: \(parentId)", category: "Location")
-        let childLocations = locations
-            .filter { 
-                if let parentSceneId = $0["parentSceneId"] as? Int {
-                    let isMatch = parentSceneId == parentId
-                    if isMatch {
-                        //DebugLogService.shared.log("Found child location: \($0["name"] as? String ?? "Unknown") with parent ID: \(parentSceneId)", category: "Location")
-                    }
-                    return isMatch
-                }
-                return false
-            }
-            .compactMap { try? createScene(from: $0) }
-        
-        //DebugLogService.shared.log("Found \(childLocations.count) child locations", category: "Location")
-        return childLocations
-    }
-    
     static func getSiblingLocations(for locationId: Int) -> [Scene] {
         loadLocations()
-        
-        //DebugLogService.shared.log("Searching for sibling locations of location ID: \(locationId)", category: "Location")
-        
-        // First find the current location and its parent ID
-        guard let location = locations.first(where: {
-            if let id = $0["id"] as? Int {
-                return id == locationId
-            }
-            return false
-        }),
-        let parentId = location["parentSceneId"] as? Int else { return [] }
-        
-        //DebugLogService.shared.log("Found parent ID: \(parentId)", category: "Location")
-        
-        // Find all locations with the same parent ID (excluding the current location)
-        let siblings = locations
-            .filter { 
-                if let id = $0["id"] as? Int,
-                   let siblingParentId = $0["parentSceneId"] as? Int {
-                    let isSibling = siblingParentId == parentId && id != locationId
-                    if isSibling {
-                        //DebugLogService.shared.log("Found sibling location: \($0["name"] as? String ?? "Unknown")", category: "Location")
-                    }
-                    return isSibling
-                }
-                return false
-            }
-            .compactMap { try? createScene(from: $0) }
-        
-        //ebugLogService.shared.log("Found \(siblings.count) sibling locations", category: "Location")
+        // Ensure the pool is populated (might happen in loadLocations or elsewhere)
+        guard !locationsPool.isEmpty else {
+            DebugLogService.shared.log("Error: locationsPool is empty in getSiblingLocations.", category: "LocationError")
+            // Optionally call loadLocations() here if appropriate, or ensure it's called earlier.
+            // loadLocations() // Or ensure loadLocations creates/populates locationsPool
+            return []
+        }
+
+        // Find the current location *from the pool* to get its parentId
+        guard let currentLocation = locationsPool.first(where: { $0.id == locationId }) else {
+            DebugLogService.shared.log("Error: Current location ID \(locationId) not found in locationsPool.", category: "LocationError")
+            return []
+        }
+        let parentId = currentLocation.parentSceneId
+
+        // If parentId is 0 or invalid, there are no siblings
+        guard parentId != 0 else { return [] }
+
+        // Find all locations *in the pool* with the same parent ID (excluding the current location)
+        let siblings = locationsPool.filter { scene in
+            return scene.parentSceneId == parentId && scene.id != locationId
+        }
+
+        // DebugLogService.shared.log("Found \(siblings.count) sibling locations for ID \(locationId) in locationsPool", category: "Location")
         return siblings
     }
     
+    // Modify getParentLocation to use the pool
     static func getParentLocation(for locationId: Int) -> Scene? {
         loadLocations()
-        
-        // First find the current location
-        guard let location = locations.first(where: {
-            if let id = $0["id"] as? Int {
-                return id == locationId
-            }
-            return false
-        }),
-        let parentId = location["parentSceneId"] as? Int,
-        let parentData = locations.first(where: {
-            if let id = $0["id"] as? Int {
-                return id == parentId
-            }
-            return false
-        }) else {
+        guard let currentLocation = locationsPool.first(where: { $0.id == locationId }),
+            currentLocation.parentSceneId != 0 else {
             return nil
         }
-        
-        return try? createScene(from: parentData)
+        return locationsPool.first { $0.id == currentLocation.parentSceneId }
+    }
+
+    // Modify getChildLocations to use the pool
+    static func getChildLocations(for locationId: Int) -> [Scene] {
+        loadLocations()
+       guard let currentLocation = locationsPool.first(where: { $0.id == locationId }) else {
+           return []
+       }
+       // Assuming childSceneIds holds the IDs
+       return currentLocation.childSceneIds.compactMap { childId in
+           locationsPool.first { $0.id == childId }
+       }
+    }
+
+    // Add getHubLocations if needed, using the pool
+    static func getHubLocations(for locationId: Int) -> [Scene] {
+        guard let currentLocation = locationsPool.first(where: { $0.id == locationId }) else {
+            return []
+        }
+        // Assuming hubSceneIds holds the IDs
+        return currentLocation.hubSceneIds.compactMap { hubId in
+            locationsPool.first { $0.id == hubId }
+        }
     }
     
     static func getLocations(by ids: [Int]) throws -> [Scene] {

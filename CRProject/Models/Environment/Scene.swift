@@ -69,6 +69,34 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
         return _characters.count
     }
     
+    func evaluateIsLocked(isNight: Bool) {
+        var characters = _characters.values.compactMap { $0 as? NPC }
+        
+        // First, determine if this is a lockable building type
+        let isLockableBuilding = (sceneType != .district &&
+                                 sceneType != .square &&
+                                 sceneType != .road &&
+                                 sceneType != .town &&
+                                 sceneType != .tavern &&
+                                 sceneType != .brothel)
+        
+        if isLockableBuilding {
+            if characters == nil ||  characters.count == 0 {
+                // Empty houses should be locked
+                isLocked = true
+            } else if isNight {
+                // At night, lock if anyone is sleeping
+                isLocked = characters.contains { $0.currentActivity == .sleep }
+            } else {
+                // During day, lock if everyone is sleeping
+                isLocked = characters.allSatisfy { $0.currentActivity == .sleep }
+            }
+        } else {
+            // Public places are never locked
+            isLocked = false
+        }
+    }
+    
     func addCharacter(_ character: any Character) {
         _characters[character.id] = character
         character.currentLocationId = self.id

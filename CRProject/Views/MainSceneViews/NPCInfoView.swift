@@ -18,6 +18,17 @@ struct NPCInfoView: View {
             VStack {
                 // Desires
                 HStack {
+                    ZStack {
+                        Circle()
+                            .fill(Theme.bloodProgressColor)
+                            .blur(radius: 7)
+                            .opacity(0.3)
+                        
+                        Image(systemName: "drop.fill")
+                            .font(Theme.smallFont)
+                            .foregroundColor(Theme.bloodProgressColor)
+                    }
+                    .frame(width: 45, height: 45)
                     Text("Desires: ")
                         .font(Theme.smallFont)
                         .foregroundColor(Theme.bloodProgressColor)

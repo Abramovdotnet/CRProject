@@ -225,11 +225,12 @@ struct LocationNodeData {
     
     let onSelected: () -> Void
 }
+
 struct LocationNode: View {
     let data: LocationNodeData
     
     private var isAccessible: Bool {
-        return GameTimeService.shared.isNightTime
+        return GameTimeService.shared.isNightTime && !data.location.isLocked
     }
     
     private var relationshipIcon: String {
@@ -278,6 +279,12 @@ struct LocationNode: View {
                         Text(data.location.name)
                             .font(Theme.captionFont)
                             .foregroundColor(Theme.textColor)
+                        
+                        if data.location.isLocked {
+                            Image(systemName: "lock.fill")
+                                 .foregroundColor(Theme.accentColor)
+                                 .font(Theme.smallFont)
+                        }
  
                         if needToShowNavigateIcon() {
                             HStack {

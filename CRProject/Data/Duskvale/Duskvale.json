@@ -116,7 +116,7 @@
         "parentSceneId": 29,
         "hubSceneIds": [12, 115, 33, 89],
         "isIndoor": true,
-        "sceneType": "warehouse"
+        "sceneType": "square"
     },
     {
         "id": 16,
