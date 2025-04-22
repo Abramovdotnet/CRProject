@@ -12,6 +12,7 @@ struct CRProjectApp: App {
         dependencyManager.register(StatisticsService())
         dependencyManager.register(GameTimeService())
         dependencyManager.register(GameEventsBusService())
+        dependencyManager.register(CoinsManagementService())
         dependencyManager.register(NPCInteractionEventsService())
         
         // Then register other services

@@ -137,124 +137,77 @@ struct ChatMessageView: View {
         }
     }
     
+    private func buildMessageText() -> Text {
+        let timestampText = Text("\(message.timestampHourString) ")
+            .font(Theme.smallFont)
+            .foregroundColor(Theme.textColor)
+
+        if !message.message.isEmpty {
+            return timestampText + Text(message.message)
+                .font(Theme.smallFont)
+                .foregroundColor(typeColor)
+        } else if message.isDiscussion, let interactionType = message.rumorInteractionType {
+            let baseText = timestampText + Text("\(message.primaryNPC?.name ?? "") discussed with \(message.secondaryNPC?.name ?? "") how \(message.rumorPrimaryNPC?.name ?? "") ")
+                .font(Theme.smallFont)
+                .foregroundColor(Theme.textColor)
+
+            let interactionIconText = Text(Image(systemName: interactionType.icon))
+                .font(Theme.smallFont)
+                .foregroundColor(interactionType.color)
+
+            let interactionDescText = Text(" [\(interactionType.description.capitalized)] ")
+                .font(Theme.smallFont)
+                .foregroundColor(interactionType.color)
+
+            let secondaryRumorText = Text("\(message.rumorSecondaryNPC?.name ?? "") at ")
+                .font(Theme.smallFont)
+                .foregroundColor(Theme.textColor)
+
+            let locationText = Text("\(message.messageLocation ?? "")")
+                .font(Theme.smallFont)
+                .foregroundColor(.yellow)
+
+            return baseText + interactionIconText + interactionDescText + secondaryRumorText + locationText
+        } else if let interactionType = message.interactionType {
+            var combinedText = timestampText + Text("\(message.primaryNPC?.name ?? "") ")
+                .font(Theme.smallFont)
+                .foregroundColor(Theme.textColor)
+
+            if message.hasSuccess {
+                combinedText = combinedText + Text("[\(message.isSuccess == true ? "Successfully" : "Unsuccessfully")] ")
+                    .font(Theme.smallFont)
+                    .foregroundColor(message.isSuccess == true ? Color.green : Color.red)
+            }
+
+            if interactionType.hasCoinsExchange {
+                combinedText = combinedText + Text(Image(systemName: "cedisign"))
+                    .font(Theme.smallFont)
+                    .foregroundColor(Color.green) + Text(" ")
+            }
+
+            combinedText = combinedText + Text(Image(systemName: interactionType.icon))
+                .font(Theme.smallFont)
+                .foregroundColor(interactionType.color)
+
+            combinedText = combinedText + Text(" [\(interactionType.description.capitalized)] ")
+                .font(Theme.smallFont)
+                .foregroundColor(interactionType.color)
+
+            if let secondaryNPC = message.secondaryNPC {
+                combinedText = combinedText + Text(secondaryNPC.name)
+                    .font(Theme.smallFont)
+                    .foregroundColor(Theme.textColor)
+            }
+            return combinedText
+        } else {
+            return timestampText
+        }
+    }
+    
     var body: some View {
         VStack(alignment: .leading, spacing: 1) {
-            // Time and Location
-            HStack(spacing: 4) {
-                if !message.message.isEmpty {
-                    if !message.message.isEmpty {
-                        Text("\(message.timestampHourString) ")
-                            .font(Theme.smallFont)
-                            .foregroundColor(Theme.textColor)
-                        +
-                        Text(message.message)
-                            .font(Theme.smallFont)
-                            .foregroundColor(typeColor)
-                    }
-                } else {
-                    if message.isDiscussion {
-                        if let interactionType = message.rumorInteractionType {
-                            HStack(spacing: 4) {
-                                Text("\(message.timestampHourString) \(message.primaryNPC?.name ?? "") discussed with \(message.secondaryNPC?.name ?? "") how \(message.rumorPrimaryNPC?.name ?? "") ")
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(Theme.textColor)
-                                +
-                                Text(Image(systemName: interactionType.icon))
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(interactionType.color)
-                                +
-                                Text(" [\(interactionType.description.capitalized)] ")
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(interactionType.color)
-                                +
-                                Text("\(message.rumorSecondaryNPC?.name ?? "") at ")
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(Theme.textColor)
-                                +
-                                Text("\(message.messageLocation ?? "")")
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(.yellow)
-                            }
-                        }
-                    } else {
-                        HStack(spacing: 4) {
-                            if message.primaryNPC != nil {
-                                if let interactionType = message.interactionType {
-                                    if message.secondaryNPC != nil {
-                                        if message.hasSuccess {
-                                            Text("\(message.timestampHourString) \(message.primaryNPC?.name ?? "") ")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.textColor)
-                                            +
-                                            Text("[\(message.isSuccess == true ? "Successfuly" : "Unsuccessfuly")] ")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(message.isSuccess == true ? Color.green : Color.red)
-                                            +
-                                            Text(Image(systemName: interactionType.icon))
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(interactionType.color)
-                                            +
-                                            Text(" [\(interactionType.description.capitalized)] ")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(interactionType.color)
-                                            +
-                                            Text("\(message.secondaryNPC?.name ?? "")")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.textColor)
-                                        } else {
-                                            Text("\(message.timestampHourString) \(message.primaryNPC?.name ?? "") ")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.textColor)
-                                            +
-                                            Text(Image(systemName: interactionType.icon))
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(interactionType.color)
-                                            +
-                                            Text(" [\(interactionType.description.capitalized)] ")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(interactionType.color)
-                                            +
-                                            Text("\(message.secondaryNPC?.name ?? "")")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.textColor)
-                                        }
-                                    } else {
-                                        if message.hasSuccess {
-                                            Text("\(message.timestampHourString) \(message.primaryNPC?.name ?? "") ")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.textColor)
-                                            +
-                                            Text("[\(message.isSuccess == true ? "Successfuly" : "Unsuccessfuly")] ")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(message.isSuccess == true ? Color.green : Color.red)
-                                            +
-                                            Text(Image(systemName: interactionType.icon))
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(interactionType.color)
-                                            +
-                                            Text(" [\(interactionType.description.capitalized)] ")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(interactionType.color)
-                                        } else {
-                                            Text("\(message.timestampHourString) \(message.primaryNPC?.name ?? "") ")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.textColor)
-                                            +
-                                            Text(Image(systemName: interactionType.icon))
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(interactionType.color)
-                                            +
-                                            Text(" [\(interactionType.description.capitalized)]")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(interactionType.color)
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+            buildMessageText()
+                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.vertical, 2)
         .padding(.horizontal, 8)

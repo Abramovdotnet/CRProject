@@ -18,6 +18,7 @@ class Player: Character, Codable {
         get { _bloodMeter }
         set { _bloodMeter = newValue }
     }
+    var coins: Coins = Coins()
     var isVampire: Bool { true }
     var isAlive: Bool { bloodMeter.currentBlood > 0 }
     var isUnknown: Bool = false

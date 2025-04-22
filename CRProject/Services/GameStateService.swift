@@ -176,6 +176,8 @@ class GameStateService : ObservableObject, GameService{
         player?.desiredVictim.updateDesiredVictim()
         
         vampireNatureRevealService.decreaseAwareness(amount: 8)
+        
+        CoinsManagementService.shared.updateWorldEconomy()
     }
     
     private func handleSafeTimeAdvanced() {

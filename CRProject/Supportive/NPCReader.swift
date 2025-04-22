@@ -27,6 +27,8 @@ class NPCReader : GameService {
             for npc in convertedNPCs {
                 npc.index = index
                 index += 1
+                
+                npc.coins.add(Int.random(in: 1...2000))
             }
             DebugLogService.shared.log("getNPCs returning \(convertedNPCs.count) NPCs", category: "NPC")
             

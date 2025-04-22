@@ -17,6 +17,7 @@ extension Optional where Wrapped == String {
 
 class GameEventsBusService: GameService, ObservableObject {
     @Published private(set) var messages: [ChatMessage] = []
+    static let shared: GameEventsBusService = DependencyManager.shared.resolve()
     private let gameTimeService: GameTimeService
     private let maxMessages = 50
     private var cancellables = Set<AnyCancellable>()

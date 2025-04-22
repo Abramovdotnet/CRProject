@@ -15,7 +15,8 @@ class NPC: Character {
     var sex: Sex = .male
     var age: Int = 0
     var profession: Profession = .adventurer
-    let bloodMeter: BloodMeter = BloodMeter(initialBlood: 100.0)
+    var bloodMeter: BloodMeter = BloodMeter(initialBlood: 100.0)
+    var coins: Coins = Coins()
     var morality: Morality = .neutral
     var motivation: Motivation = .community
     var isVampire: Bool = false
