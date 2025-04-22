@@ -13,6 +13,7 @@ struct MainSceneView: View {
     @State private var showSmokeEffect = false
     @State private var showingVampireGaze = false
     @State private var showingTrade = false
+    @State private var showingInventory = false
     
     init(viewModel: MainSceneViewModel) {
         self.viewModel = viewModel
@@ -141,6 +142,15 @@ struct MainSceneView: View {
                                         )
                                         .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
                                     }
+                                    
+                                    MainSceneActionButton(
+                                        icon: "duffle.bag.fill",
+                                        color: .brown,
+                                        action: {
+                                            showingInventory = true
+                                        }
+                                    )
+                                    .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
                                     Spacer()
                                 }
                                 .frame(width: 50)
@@ -272,6 +282,9 @@ struct MainSceneView: View {
                 if let npc = npcManager.selectedNPC {
                     TradeView(player: gameStateService.player!, npc: npc, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
                 }
+            }
+            .sheet(isPresented: $showingInventory) {
+                CharacterInventoryView(character: gameStateService.player!, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
             }
             .withDebugOverlay(viewModel: viewModel)
         }

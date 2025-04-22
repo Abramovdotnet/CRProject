@@ -17,6 +17,7 @@ protocol Character: Identifiable, ObservableObject, Codable {
     var isAlive: Bool { get }
     var bloodMeter: BloodMeter { get }
     var coins: Coins { get }
+    var items: [Item] { get set }
     var isUnknown: Bool { get set }
     var isIntimidated: Bool { get set }
     var intimidationDay: Int { get set }
