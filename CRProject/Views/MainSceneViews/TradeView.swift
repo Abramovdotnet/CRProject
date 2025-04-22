@@ -70,9 +70,9 @@ struct TradeView: View {
                                     ForEach(player.items, id: \.id) { item in
                                         ItemRowView(
                                             item: item,
-                                            isSelected: selectedPlayerItems.contains { $0.id == item.id },
+                                            isSelected: selectedPlayerItems.contains { $0.index == item.index },
                                             onTap: {
-                                                if let index = selectedPlayerItems.firstIndex(where: { $0.id == item.id }) {
+                                                if let index = selectedPlayerItems.firstIndex(where: { $0.index == item.index }) {
                                                     selectedPlayerItems.remove(at: index)
                                                 } else {
                                                     selectedPlayerItems.append(item)
@@ -118,7 +118,7 @@ struct TradeView: View {
                                                 item: item,
                                                 isSelected: true,
                                                 onTap: {
-                                                    if let index = selectedPlayerItems.firstIndex(where: { $0.id == item.id }) {
+                                                    if let index = selectedPlayerItems.firstIndex(where: { $0.index == item.index }) {
                                                         selectedPlayerItems.remove(at: index)
                                                         updateDealTotal()
                                                     }
@@ -137,7 +137,7 @@ struct TradeView: View {
                                                 item: item,
                                                 isSelected: true,
                                                 onTap: {
-                                                    if let index = selectedNPCItems.firstIndex(where: { $0.id == item.id }) {
+                                                    if let index = selectedNPCItems.firstIndex(where: { $0.index == item.index }) {
                                                         selectedNPCItems.remove(at: index)
                                                         updateDealTotal()
                                                     }
@@ -156,7 +156,6 @@ struct TradeView: View {
                             // Deal button
                             Button(action: {
                                 makeADeal()
-                                dismiss()
                             }) {
                                 Text("Make Deal")
                                     .font(Theme.smallFont)
@@ -178,9 +177,9 @@ struct TradeView: View {
                                     ForEach(npc.items, id: \.id) { item in
                                         ItemRowView(
                                             item: item,
-                                            isSelected: selectedNPCItems.contains { $0.id == item.id },
+                                            isSelected: selectedNPCItems.contains { $0.index == item.index },
                                             onTap: {
-                                                if let index = selectedNPCItems.firstIndex(where: { $0.id == item.id }) {
+                                                if let index = selectedNPCItems.firstIndex(where: { $0.index == item.index }) {
                                                     selectedNPCItems.remove(at: index)
                                                 } else {
                                                     selectedNPCItems.append(item)

@@ -22,99 +22,46 @@ struct DialogueView: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack {
-                Color.black
-                    .opacity(0.9)
+                Image(uiImage: UIImage(named: "location\(GameStateService.shared.currentScene!.id.description)") ?? UIImage(named: "MainSceneBackground")!)
+                    .resizable()
                     .ignoresSafeArea()
                 
                 DustEmitterView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                        .edgesIgnoringSafeArea(.all)
-              
-                // Blood mist effect
-                EnhancedBloodMistEffect()
-                    .opacity(0.4)
-                    .ignoresSafeArea()
                     
                 // Dialogue Content
                 ScrollView {
                     VStack(spacing: 16) {
                         // Current Dialogue Text
+                        HStack {
+                            HorizontalPlayerWidget(player: GameStateService.shared.player!)
+                            Spacer()
+                            HorizontalNPCWidget(npc: viewModel.npc)
+                        }
                         VStack {
                             HStack(spacing: 12) {
                                 if !viewModel.currentDialogueText.isEmpty {
-                                    Text(viewModel.currentDialogueText)
-                                        .font(Theme.captionFont)
-                                
+                                    Text("\(viewModel.npc.name): \(viewModel.currentDialogueText)")
+                                        .font(Theme.smallFont)
                                 }
                                 Spacer()
                                 
                                 Image(systemName: viewModel.npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                    .font(Theme.bodyFont)
+                                    .font(Theme.smallFont)
                                     .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                                
-                                // Character icon and blood meter
-                                if viewModel.npc.isUnknown {
-                                    Text(viewModel.npc.isVampire ? "Vampire" : "Mortal")
-                                        .font(Theme.bodyFont)
-                                        .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : .green)
-                                } else {
-                                    
-                                    Text(viewModel.npc.name)
-                                        .font(Theme.bodyFont)
-                                        .foregroundColor(.white)
-                                        .lineLimit(1)
-                          
-                                    Text(viewModel.npc.profession.rawValue)
-                                        .font(Theme.bodyFont)
-                                        .foregroundColor(viewModel.npc.profession.color)
-                                        .lineLimit(1)
-
-                                    HStack(spacing: 8) {
-                                        if viewModel.npc.currentActivity == .sleep {
-                                            Image(systemName: "moon.zzz.fill")
-                                                .foregroundColor(.blue)
-                                                .font(Theme.bodyFont)
-                                        }
-                                        if viewModel.npc.isIntimidated {
-                                            Image(systemName: "heart.fill")
-                                                .foregroundColor(Theme.bloodProgressColor)
-                                                .font(Theme.bodyFont)
-                                        }
-                                        
-                                        Image(systemName: "waveform.path.ecg")
-                                            .font(Theme.bodyFont)
-                                            .foregroundColor(viewModel.npc.isAlive ? .green : Theme.primaryColor)
-                                        
-                                        HStack(spacing: 1) {
-                                            ForEach(0..<5) { index in
-                                                let segmentValue = Double(viewModel.npc.bloodMeter.currentBlood) / 100.0
-                                                let segmentThreshold = Double(index + 1) / 5.0
-                                                
-                                                Rectangle()
-                                                    .fill(segmentValue >= segmentThreshold ?
-                                                          Theme.bloodProgressColor : Color.black.opacity(0.3))
-                                                    .frame(height: 2)
-                                            }
-                                        }
-                                        .frame(width: 30)
-                                        
-                                        Text(viewModel.npc.isVampire ? "Vampire" : "Mortal")
-                                            .font(Theme.bodyFont)
-                                            .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : .green)
-                                    }
-                                }
                             }
                             .padding()
                         }
                         .frame(maxWidth: .infinity, alignment: .trailing)
-                        .background(.black.opacity(0.5))
+                        .background(.black.opacity(0.9))
                         .cornerRadius(8)
                         
                         // Options
                         if !viewModel.options.isEmpty {
                             VStack {
                                 ForEach(viewModel.options) { option in
-                                    DialogueOptionButton(option: option) {
+                                    DialogueOptionButton(character: GameStateService.shared.player!, option: option) {
                                         viewModel.selectOption(option)
                                     }
                                 }
@@ -174,14 +121,15 @@ struct DialogueView: View {
 }
 
 private struct DialogueOptionButton: View {
+    let character: any Character
     let option: DialogueOption
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
             HStack {
-                Text(option.text)
-                    .font(Theme.captionFont)
+                Text("\(character.name): \(option.text)")
+                    .font(Theme.smallFont)
                     .multilineTextAlignment(.leading)
                 
                 Spacer()
@@ -194,7 +142,7 @@ private struct DialogueOptionButton: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.black.opacity(0.5))
+                    .fill(Color.black.opacity(0.9))
                     .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
                     .opacity(0.9)
                 )

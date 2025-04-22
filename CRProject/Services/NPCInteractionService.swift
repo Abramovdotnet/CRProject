@@ -466,9 +466,9 @@ enum NPCInteraction : String, CaseIterable, Codable {
         case .flirt:
             return 0
         case .smithingCraft:
-            return 250
+            return 100
         case .alchemyCraft:
-            return 150
+            return 70
         case .awareAboutVampire:
             return 0
         case .awareAboutCasualty:
@@ -715,7 +715,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             availableInteractions.append(.suspicioning)
         }
         
-        if currentNPC.coins.value > 0 {
+        if currentNPC.coins.value > 500 {
             availableInteractions.append(.checkingCoins)
         }
         
@@ -771,7 +771,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
                 && (otherNPC.currentActivity == .drink || otherNPC.currentActivity == .eat) {
                 
                 if otherNPC.coins.couldRemove(NPCInteraction.service.interactionBaseCost) {
-                    var wouldOfferService = Int.random(in: 0...100) > 20
+                    var wouldOfferService = Int.random(in: 0...100) > 30
                     
                     if wouldOfferService {
                         CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: NPCInteraction.service.interactionBaseCost)
@@ -812,7 +812,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             
             // Flirt
             if currentNPC.profession != .priest && otherNPC.profession != .priest && currentNPC.sex != otherNPC.sex && currentNPC.age < 50 && otherNPC.age < 50 {
-                var entertainCap = gameTimeService.isNightTime ? 90 : 95
+                var entertainCap = gameTimeService.isNightTime ? 70 : 90
           
                 var wouldFlirt = Int.random(in: 0...100) > entertainCap
                 
@@ -825,12 +825,17 @@ enum NPCInteraction : String, CaseIterable, Codable {
             if currentNPC.profession == .blacksmith && otherNPC.profession != .blacksmith && otherNPC.profession != .apprentice {
                 if currentScene.sceneType == .blacksmith && !gameTimeService.isNightTime {
                     
-                    if otherNPC.coins.couldRemove(NPCInteraction.smithingCraft.interactionBaseCost) {
-                        var wouldExecuteOrder = Int.random(in: 0...100) > 30
-        
-                        if wouldExecuteOrder {
-                            CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: NPCInteraction.smithingCraft.interactionBaseCost)
-                            availableInteractions.append(.smithingCraft)
+                    let itemToTrade = currentNPC.items.first(where: { $0.type == .armor || $0.type == .weapon })
+                    
+                    if itemToTrade != nil {
+                        if otherNPC.coins.couldRemove(NPCInteraction.smithingCraft.interactionBaseCost + itemToTrade!.cost) {
+                            var wouldExecuteOrder = Int.random(in: 0...100) > 30
+            
+                            if wouldExecuteOrder {
+                                CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: NPCInteraction.smithingCraft.interactionBaseCost + itemToTrade!.cost)
+                                ItemsManagementService.shared.moveItem(item: itemToTrade!, from: currentNPC, to: otherNPC)
+                                availableInteractions.append(.smithingCraft)
+                            }
                         }
                     }
                 }
@@ -840,12 +845,17 @@ enum NPCInteraction : String, CaseIterable, Codable {
             if currentNPC.profession == .alchemist && otherNPC.profession != .alchemist && otherNPC.profession != .apprentice {
                 if currentScene.sceneType == .alchemistShop && !gameTimeService.isNightTime {
                     
-                    if otherNPC.coins.couldRemove(NPCInteraction.alchemyCraft.interactionBaseCost) {
-                        var wouldExecuteOrder = Int.random(in: 0...100) > 30
-                        
-                        if wouldExecuteOrder {
-                            CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: NPCInteraction.alchemyCraft.interactionBaseCost)
-                            availableInteractions.append(.alchemyCraft)
+                    let itemToTrade = currentNPC.items.first(where: { $0.type == .alchemy || $0.type == .drink })
+                    
+                    if itemToTrade != nil {
+                        if otherNPC.coins.couldRemove(NPCInteraction.alchemyCraft.interactionBaseCost + itemToTrade!.cost) {
+                            var wouldExecuteOrder = Int.random(in: 0...100) > 30
+                            
+                            if wouldExecuteOrder {
+                                CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: NPCInteraction.alchemyCraft.interactionBaseCost + itemToTrade!.cost)
+                                ItemsManagementService.shared.moveItem(item: itemToTrade!, from: currentNPC, to: otherNPC)
+                                availableInteractions.append(.alchemyCraft)
+                            }
                         }
                     }
                 }
@@ -853,7 +863,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             
             // Conversation
             if (currentNPC.currentActivity == otherNPC.currentActivity  ){
-                var wouldConversate = Int.random(in: 0...100) > 90
+                var wouldConversate = Int.random(in: 0...100) > 95
                 
                 if wouldConversate {
                     var currentRelationship = currentNPC.getNPCRelationshipValue(of: otherNPC)
@@ -882,15 +892,21 @@ enum NPCInteraction : String, CaseIterable, Codable {
             if currentNPC.currentActivity == .sell {
                 if (currentScene.sceneType == .blacksmith || currentScene.sceneType == .alchemistShop || currentScene.sceneType == .bookstore
                     || currentNPC.profession == .merchant) && !gameTimeService.isNightTime {
-                    var wouldTrade = Int.random(in: 0...100) > 20
                     
-                    if wouldTrade {
-                        let dealCost = Int(Double.random(in: 0.3...7.2) * 50.0)
-                        let buyer = Int.random(in: 0...1) == 0 ? currentNPC : otherNPC
-                        
-                        if buyer.coins.couldRemove(dealCost) {
-                            CoinsManagementService.shared.moveCoins(from: buyer, to: otherNPC, amount: dealCost)
-                            availableInteractions.append(.trade)
+                    let buyer = Int.random(in: 0...1) == 0 ? currentNPC : otherNPC
+                    let seller = currentNPC.id == buyer.id ? otherNPC : currentNPC
+                    
+                    let itemToTrade = seller.items.randomElement()
+                    
+                    if itemToTrade == nil {
+                        if buyer.coins.couldRemove(itemToTrade!.cost) {
+                            var wouldTrade = Int.random(in: 0...100) > 70
+                            
+                            if wouldTrade {
+                                CoinsManagementService.shared.moveCoins(from: buyer, to: seller, amount: itemToTrade!.cost)
+                                ItemsManagementService.shared.moveItem(item: itemToTrade!, from: seller, to: buyer)
+                                availableInteractions.append(.trade)
+                            }
                         }
                     }
                 }

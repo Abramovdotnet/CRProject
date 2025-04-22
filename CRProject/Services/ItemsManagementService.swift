@@ -9,44 +9,44 @@ class ItemsManagementService : GameService {
     static let shared = ItemsManagementService()
     
     func moveItem(item: Item ,from: NPC, to: NPC) {
-        if from.items.contains(where: { $0.id == item.id}) {
-            from.items.removeAll { $0.id == item.id }
+        if from.items.contains(where: { $0.index == item.index}) {
+            from.items.removeAll { $0.index == item.index }
             to.items.append(item)
         }
     }
     
-    func moveItem(itemId: Int, from: NPC, to: NPC) {
-        if from.items.contains(where: { $0.id == itemId}) {
-            from.items.removeAll { $0.id == itemId }
-            to.items.append(ItemReader.shared.getItem(by: itemId)!)
+    func moveItem(itemIndex: Int, from: NPC, to: NPC) {
+        if from.items.contains(where: { $0.index == itemIndex}) {
+            from.items.removeAll { $0.index == itemIndex }
+            to.items.append(ItemReader.shared.getItemByIndex(by: itemIndex)!)
         }
     }
     
     func moveItem(item: Item, from: Player, to: NPC) {
-        if from.items.contains(where: { $0.id == item.id}) {
-            from.items.removeAll { $0.id == item.id }
+        if from.items.contains(where: { $0.index == item.index}) {
+            from.items.removeAll { $0.index == item.index }
             to.items.append(item)
         }
     }
     
-    func moveItem(itemId: Int, from: Player, to: NPC) {
-        if from.items.contains(where: { $0.id == itemId}) {
-            from.items.removeAll { $0.id == itemId }
-            to.items.append(ItemReader.shared.getItem(by: itemId)!)
+    func moveItem(itemIndex: Int, from: Player, to: NPC) {
+        if from.items.contains(where: { $0.index == itemIndex}) {
+            from.items.removeAll { $0.index == itemIndex }
+            to.items.append(ItemReader.shared.getItemByIndex(by: itemIndex)!)
         }
     }
     
     func moveItem(item: Item, from: NPC, to: Player) {
-        if from.items.contains(where: { $0.id == item.id}) {
-            from.items.removeAll { $0.id == item.id }
+        if from.items.contains(where: { $0.index == item.index}) {
+            from.items.removeAll { $0.index == item.index }
             to.items.append(item)
         }
     }
     
-    func moveItem(itemId: Int, from: NPC, to: Player) {
-        if from.items.contains(where: { $0.id == itemId}) {
-            from.items.removeAll { $0.id == itemId }
-            to.items.append(ItemReader.shared.getItem(by: itemId)!)
+    func moveItem(itemIndex: Int, from: NPC, to: Player) {
+        if from.items.contains(where: { $0.index == itemIndex}) {
+            from.items.removeAll { $0.index == itemIndex }
+            to.items.append(ItemReader.shared.getItemByIndex(by: itemIndex)!)
         }
     }
     
@@ -135,6 +135,25 @@ class ItemsManagementService : GameService {
                 for _ in 0..<armorCount {
                     if let randomArmor = armor.randomElement() {
                         npc.items.append(randomArmor)
+                    }
+                }
+            
+            case .tavernKeeper, .barmaid:
+                // Add food and drink
+                let foods = allItems.filter { $0.type == .food }
+                let drinks = allItems.filter { $0.type == .drink }
+                
+                let foodCount = Int.random(in: 4...7)
+                for _ in 0..<foodCount {
+                    if let randomFood = foods.randomElement() {
+                        npc.items.append(randomFood)
+                    }
+                }
+                
+                let drinkCount = Int.random(in: 6...11)
+                for _ in 0..<drinkCount {
+                    if let randomDrink = drinks.randomElement() {
+                        npc.items.append(randomDrink)
                     }
                 }
                 

@@ -199,14 +199,16 @@ struct MainSceneView: View {
                                                     }
                                                 )
                                                 
-                                                // Trade
-                                                MainSceneActionButton(
-                                                    icon: "cart.fill",
-                                                    color: .yellow,
-                                                    action: {
-                                                        showingTrade = true
-                                                    }
-                                                )
+                                                if selectedNPC.currentActivity != .sleep {
+                                                    // Trade
+                                                    MainSceneActionButton(
+                                                        icon: "cart.fill",
+                                                        color: .yellow,
+                                                        action: {
+                                                            showingTrade = true
+                                                        }
+                                                    )
+                                                }
                                                 
                                                 if !selectedNPC.isVampire {
                                                     // Feed

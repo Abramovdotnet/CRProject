@@ -86,10 +86,10 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
                 isLocked = true
             } else if isNight {
                 // At night, lock if anyone is sleeping
-                isLocked = characters.contains { $0.currentActivity == .sleep }
+                isLocked = characters.contains { $0.currentActivity == .sleep } && !characters.contains { $0.playerRelationship.state != .friend }
             } else {
                 // During day, lock if everyone is sleeping
-                isLocked = characters.allSatisfy { $0.currentActivity == .sleep }
+                isLocked = characters.allSatisfy { $0.currentActivity == .sleep } && !characters.contains { $0.playerRelationship.state != .friend } 
             }
         } else {
             // Public places are never locked

@@ -26,6 +26,13 @@ class ItemReader {
             let decoder = JSONDecoder()
             let container = try decoder.decode(ItemContainer.self, from: data)
             items = container.items
+            
+            var index = 0
+            
+            for item in items {
+                item.index = index
+                index += 1
+            }
         } catch {
             print("Error loading items: \(error)")
         }
@@ -37,6 +44,10 @@ class ItemReader {
     
     func getItem(by id: Int) -> Item? {
         return items.first { $0.id == id }
+    }
+    
+    func getItemByIndex(by index: Int) -> Item? {
+        return items.first { $0.index == index }
     }
 }
 

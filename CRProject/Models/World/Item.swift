@@ -12,6 +12,11 @@ class Item : Codable {
     var type: ItemType = .food
     var name: String = "Food"
     var cost: Int = 0
+    var index: Int = 0
+    
+    private enum CodingKeys: String, CodingKey {
+        case id, type, name, cost
+    }
     
     func icon() -> String {
         switch type {

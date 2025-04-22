@@ -699,7 +699,7 @@
         {
             "id": 117,
             "type": "artefact",
-            "name": "Dwarven Artifact",
+            "name": "Dwarven artefact",
             "cost": 660
         },
         {
@@ -1439,6 +1439,246 @@
             "type": "alchemy",
             "name": "Performance Enhancing Tonic",
             "cost": 270
+        },
+        {
+            "id": 241,
+            "type": "weapon",
+            "name": "Throwing Knives",
+            "cost": 45
+        },
+        {
+            "id": 242,
+            "type": "weapon",
+            "name": "Quarterstaff",
+            "cost": 30
+        },
+        {
+            "id": 243,
+            "type": "weapon",
+            "name": "War Scythe",
+            "cost": 85
+        },
+        {
+            "id": 244,
+            "type": "weapon",
+            "name": "Hunting Bow",
+            "cost": 95
+        },
+        {
+            "id": 245,
+            "type": "weapon",
+            "name": "Pike",
+            "cost": 75
+        },
+        {
+            "id": 246,
+            "type": "armor",
+            "name": "Padded Coif",
+            "cost": 25
+        },
+        {
+            "id": 247,
+            "type": "armor",
+            "name": "Leather Bracers",
+            "cost": 35
+        },
+        {
+            "id": 248,
+            "type": "armor",
+            "name": "Mail Skirt",
+            "cost": 120
+        },
+        {
+            "id": 249,
+            "type": "armor",
+            "name": "Studded Vest",
+            "cost": 85
+        },
+        {
+            "id": 250,
+            "type": "armor",
+            "name": "Reinforced Boots",
+            "cost": 45
+        },
+        {
+            "id": 251,
+            "type": "clothing",
+            "name": "Merchant's Robe",
+            "cost": 65
+        },
+        {
+            "id": 252,
+            "type": "clothing",
+            "name": "Traveler's Cloak",
+            "cost": 40
+        },
+        {
+            "id": 253,
+            "type": "clothing",
+            "name": "Leather Belt",
+            "cost": 15
+        },
+        {
+            "id": 254,
+            "type": "clothing",
+            "name": "Wool Scarf",
+            "cost": 12
+        },
+        {
+            "id": 255,
+            "type": "clothing",
+            "name": "Fur-lined Gloves",
+            "cost": 25
+        },
+        {
+            "id": 256,
+            "type": "drink",
+            "name": "Blackberry Wine",
+            "cost": 35
+        },
+        {
+            "id": 257,
+            "type": "drink",
+            "name": "Spiced Cider",
+            "cost": 18
+        },
+        {
+            "id": 258,
+            "type": "drink",
+            "name": "Honey Mead",
+            "cost": 28
+        },
+        {
+            "id": 259,
+            "type": "drink",
+            "name": "Dark Ale",
+            "cost": 15
+        },
+        {
+            "id": 260,
+            "type": "drink",
+            "name": "Mulled Wine",
+            "cost": 32
+        },
+        {
+            "id": 261,
+            "type": "food",
+            "name": "Smoked Fish",
+            "cost": 12
+        },
+        {
+            "id": 262,
+            "type": "food",
+            "name": "Dried Fruits",
+            "cost": 8
+        },
+        {
+            "id": 263,
+            "type": "food",
+            "name": "Salted Pork",
+            "cost": 18
+        },
+        {
+            "id": 264,
+            "type": "food",
+            "name": "Fresh Bread",
+            "cost": 5
+        },
+        {
+            "id": 265,
+            "type": "food",
+            "name": "Hard Cheese",
+            "cost": 10
+        },
+        {
+            "id": 266,
+            "type": "artefact",
+            "name": "Ancient Coin",
+            "cost": 150
+        },
+        {
+            "id": 267,
+            "type": "artefact",
+            "name": "Carved Stone",
+            "cost": 85
+        },
+        {
+            "id": 268,
+            "type": "artefact",
+            "name": "Old Scroll",
+            "cost": 120
+        },
+        {
+            "id": 269,
+            "type": "artefact",
+            "name": "Bronze Figurine",
+            "cost": 95
+        },
+        {
+            "id": 270,
+            "type": "artefact",
+            "name": "Ritual Bowl",
+            "cost": 110
+        },
+        {
+            "id": 271,
+            "type": "tools",
+            "name": "Fishing Rod",
+            "cost": 25
+        },
+        {
+            "id": 272,
+            "type": "tools",
+            "name": "Woodworking Set",
+            "cost": 45
+        },
+        {
+            "id": 273,
+            "type": "tools",
+            "name": "Mason's Tools",
+            "cost": 55
+        },
+        {
+            "id": 274,
+            "type": "tools",
+            "name": "Lockpicks",
+            "cost": 75
+        },
+        {
+            "id": 275,
+            "type": "tools",
+            "name": "Rope and Hook",
+            "cost": 35
+        },
+        {
+            "id": 276,
+            "type": "alchemy",
+            "name": "Healing Herbs",
+            "cost": 30
+        },
+        {
+            "id": 277,
+            "type": "alchemy",
+            "name": "Bandages",
+            "cost": 15
+        },
+        {
+            "id": 278,
+            "type": "alchemy",
+            "name": "Antidote",
+            "cost": 45
+        },
+        {
+            "id": 279,
+            "type": "alchemy",
+            "name": "Smelling Salts",
+            "cost": 25
+        },
+        {
+            "id": 280,
+            "type": "alchemy",
+            "name": "Pain Relief Poultice",
+            "cost": 35
         }
     ]
 } 

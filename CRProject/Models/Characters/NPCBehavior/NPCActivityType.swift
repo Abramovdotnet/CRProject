@@ -89,7 +89,7 @@ extension NPCActivityType {
         case .study: return ["bookstore", "cathedral"]
         case .drink: return ["tavern", "brothel", "house", "road"]
         case .gamble: return ["tavern", "brothel"]
-        case .bathe: return ["bathhouse", "house", "tavern"]
+        case .bathe: return ["bathhouse", "house", "tavern", "brothel"]
         case .explore: return ["tavern", "market", "manor", "brothel", "blacksmith", "alchemistShop", "bookstore", "road", "square", "military", "bathhouse"] // Exploration sites
         
         // Special
@@ -134,7 +134,7 @@ extension NPCActivityType {
         case .pray:
             return time == .earlyMorning ? ["cathedral"] : ["monastery"]
         case .socialize:
-            return time == .evening ? ["tavern"] : ["square", "market"]
+            return time == .evening ? ["tavern"] : ["square", "market", "brothel", "bathhouse"]
         case .sleep:
             return time == .lateNight ? ["house", "cottage"] : ["barracks"] // Guards sleep in barracks
         case .bathe:
@@ -270,7 +270,7 @@ extension Profession {
         case .herbalist: return [.harvest, .research, .sell, .research]
         
         // Military/Security
-        case .guardman: return [.guardPost, .patrol]
+        case .guardman: return [.guardPost, .patrol, .train]
         case .cityGuard: return [.guardPost, .patrol, .train]
         case .militaryOfficer: return [.manage, .train, .patrol]
         
@@ -323,7 +323,7 @@ extension Profession {
     private var leisureActivities: [NPCActivityType] {
         switch self {
         // Nobility/High Status
-        case .lordLady: return [.drink, .gamble, .bathe, .entertain, .explore]
+        case .lordLady: return [.drink, .gamble, .bathe, .explore]
         case .courtesan: return [.drink, .bathe, .entertain, .explore]
         
         // Entertainment Industry
