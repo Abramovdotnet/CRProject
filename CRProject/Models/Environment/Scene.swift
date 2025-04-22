@@ -69,7 +69,7 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
         return _characters.count
     }
     
-    func evaluateIsLocked(isNight: Bool) {
+    func closeOpenLock(isNight: Bool) {
         var characters = _characters.values.compactMap { $0 as? NPC }
         
         // First, determine if this is a lockable building type

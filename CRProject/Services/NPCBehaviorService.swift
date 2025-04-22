@@ -46,7 +46,7 @@ class NPCBehaviorService: GameService {
         
         // Process NPCs in parallel where possible
         npcsToHandle.forEach { npc in
-            handleNPCBehavior(npc: npc, gameTimeService: gameTimeService)
+            handleNPCMovementBehavior(npc: npc, gameTimeService: gameTimeService)
         }
         
         npcInteractionService.handleNPCInteractionsBehavior()
@@ -66,7 +66,7 @@ class NPCBehaviorService: GameService {
         }
     }
     
-    private func handleNPCBehavior(npc: NPC, gameTimeService: GameTimeService) {
+    private func handleNPCMovementBehavior(npc: NPC, gameTimeService: GameTimeService) {
         let newActivity = npc.isBeasyByPlayerAction || npc.isSpecialBehaviorSet || npc.isNpcInteractionBehaviorSet
             ? NPCActivityManager.shared.getSpecialBehaviorActivity(for: npc)
             : NPCActivityManager.shared.getActivity(for: npc)
@@ -84,7 +84,7 @@ class NPCBehaviorService: GameService {
         }
         
         if newActivity == .protect {
-            var target = NPCReader.getRuntimeNPC(by: npc.npcInteractionTargetNpcId)
+            let target = NPCReader.getRuntimeNPC(by: npc.npcInteractionTargetNpcId)
             
             if target != nil {
                 sendAfterNPC(follower: npc, target: target!)
@@ -95,10 +95,10 @@ class NPCBehaviorService: GameService {
         }
         
         if newActivity == .meet {
-            var friendId = npc.npcsRelationship.first { $0.state == .friend || $0.state == .ally }
+            let friendId = npc.npcsRelationship.first { $0.state == .friend || $0.state == .ally }
             
             if friendId != nil {
-                var friend = NPCReader.getRuntimeNPC(by: friendId!.npcId)!
+                let friend = NPCReader.getRuntimeNPC(by: friendId!.npcId)!
                 
                 sendAfterNPC(follower: npc, target: friend)
                 activitiesAssigned.append(assignedActivity(isStay: false, activity: newActivity))

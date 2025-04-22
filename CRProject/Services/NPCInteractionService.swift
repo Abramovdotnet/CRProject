@@ -45,7 +45,8 @@ class NPCInteractionService : GameService {
         for scene in scenes {
             let npcs = scene.getNPCs().filter { $0.currentActivity != .sleep}
             
-            scene.evaluateIsLocked(isNight: gameTimeService.isNightTime)
+            // Close / Open doors
+            scene.closeOpenLock(isNight: gameTimeService.isNightTime)
             
             for npc in npcs {
                 // Skip if already interacting
@@ -59,7 +60,7 @@ class NPCInteractionService : GameService {
                     continue
                 }
                 
-                // Find potential targets using a more efficient filter
+                // Find potential targets
                 let potentialTargets = npcs.filter { otherNPC in
                     otherNPC.id != npc.id &&
                     otherNPC.currentInteractionNPC == nil &&
@@ -95,6 +96,16 @@ class NPCInteractionService : GameService {
                otherNPC.currentActivity != .fleeing
     }
     
+    private func triggerStandaloneInteractionEvent(scene: Scene, currentNPC: NPC) {
+        let interaction = NPCInteraction.getPossibleStandaloneInteraction(
+            currentNPC: currentNPC,
+            gameTimeService: gameTimeService,
+            currentScene: scene
+        )
+        
+        NPCInteractionEventsService.shared.addEvent(interactionType: interaction, currentNPC: currentNPC, otherNPC: nil, scene: scene, day: gameTimeService.currentDay, hour: gameTimeService.currentHour)
+    }
+    
     private func triggerInteractionEvent(scene: Scene, currentNPC: NPC, otherNPC: NPC) {
         let interaction = NPCInteraction.getPossibleInteraction(
             currentNPC: currentNPC,
@@ -103,7 +114,14 @@ class NPCInteractionService : GameService {
             currentScene: scene
         )
         
-        guard interaction != .observing else { return }
+        if interaction == .observing {
+            let wouldBroadcastStandaloneEvent = Int.random(in: 1...10) > 7
+            
+            if wouldBroadcastStandaloneEvent {
+                triggerStandaloneInteractionEvent(scene: scene, currentNPC: currentNPC)
+            }
+            return
+        }
         
         /*
         if let (message, icon, color) = interactionMessages[interaction] {
@@ -280,6 +298,7 @@ class NPCInteractionService : GameService {
 }
 
 enum NPCInteraction : String, CaseIterable, Codable {
+    // couple action
     case conversation = "conversation"
     case argue = "argue"
     case service = "service"
@@ -297,9 +316,27 @@ enum NPCInteraction : String, CaseIterable, Codable {
     case askForProtection = "askForProtection"
     case trade = "trade"
     case gameOver = "gameOver"
+    // standalone actions
+    case cleaning = "cleans"
+    case drinking = "drinks"
+    case eating = "eats"
+    case lookingAtMirror = "looking at mirror"
+    case suspicioning = "suspicioning"
+    case learning = "learning"
+    case reading = "reading"
+    case praying = "praying"
+    case tossingCards = "tossing cards"
+    case workingOnSmithingOrder = "working on smithing order"
+    case workingOnAlchemyPotion = "working on alchemy potion"
+    case checkingCoins = "checking coins"
+    case moans = "moans"
+    case harvestingFlowers = "harvesting flowers"
+    case cleaningWeapon = "cleaning weapon"
+    case bathing = "taking a bath"
     
     var description: String {
         switch self {
+        // couple action
         case .conversation:
             return "share humors with"
         case .argue:
@@ -334,6 +371,39 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return "make a deal with"
         case .gameOver:
             return "figure.meditation"
+        // standalone actions
+        case .cleaning:
+            return "cleaning"
+        case .drinking:
+            return "drinking"
+        case .eating:
+            return "eating"
+        case .lookingAtMirror:
+            return "looking at mirror"
+        case .suspicioning:
+            return "suspicioning"
+        case .learning:
+            return "learning"
+        case .reading:
+            return "reading"
+        case .praying:
+            return "praying"
+        case .tossingCards:
+            return "tossing cards"
+        case .workingOnSmithingOrder:
+            return "working on smithing order"
+        case .workingOnAlchemyPotion:
+            return "working on alchemy potion"
+        case .checkingCoins:
+            return "checking coins"
+        case .moans:
+            return "moans"
+        case .harvestingFlowers:
+            return "harvesting flowers"
+        case .cleaningWeapon:
+            return "cleaning weapon"
+        case .bathing:
+            return "taking a bath"
         }
     }
     
@@ -350,8 +420,33 @@ enum NPCInteraction : String, CaseIterable, Codable {
         }
     }
     
+    var isStandalone: Bool {
+        switch self {
+        case .cleaning,
+                .drinking,
+                .eating,
+                .lookingAtMirror,
+                .suspicioning,
+                .learning,
+                .reading,
+                .praying,
+                .tossingCards,
+                .workingOnAlchemyPotion,
+                .workingOnSmithingOrder,
+                .checkingCoins,
+                .moans,
+                .harvestingFlowers,
+                .cleaningWeapon,
+                .bathing:
+            return true
+        default:
+            return false
+        }
+    }
+    
     var interactionBaseCost: Int {
         switch self {
+        // couple action
         case .conversation:
             return 0
         case .argue:
@@ -386,11 +481,45 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return 0
         case .gameOver:
             return 0
+        // standalone actions
+        case .cleaning:
+            return 0
+        case .drinking:
+            return 0
+        case .eating:
+            return 0
+        case .lookingAtMirror:
+            return 0
+        case .suspicioning:
+            return 0
+        case .learning:
+            return 0
+        case .reading:
+            return 0
+        case .praying:
+            return 0
+        case .tossingCards:
+            return 0
+        case .workingOnSmithingOrder:
+            return 0
+        case .workingOnAlchemyPotion:
+            return 0
+        case .checkingCoins:
+            return 0
+        case .moans:
+            return 0
+        case .harvestingFlowers:
+            return 0
+        case .cleaningWeapon:
+            return 0
+        case .bathing:
+            return 0
         }
     }
     
     var icon: String {
         switch self {
+        // couple action
         case .conversation:
             return NPCActivityType.socialize.icon
         case .argue:
@@ -425,12 +554,46 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return NPCActivityType.sell.icon
         case .gameOver:
             return "figure.meditation"
+        // standalone actions
+        case .cleaning:
+            return NPCActivityType.clean.icon
+        case .drinking:
+            return NPCActivityType.drink.icon
+        case .eating:
+            return NPCActivityType.eat.icon
+        case .lookingAtMirror:
+            return "inset.filled.oval.portrait"
+        case .suspicioning:
+            return NPCActivityType.eat.icon
+        case .learning:
+            return NPCActivityType.study.icon
+        case .reading:
+            return NPCActivityType.study.icon
+        case .praying:
+            return NPCActivityType.pray.icon
+        case .tossingCards:
+            return NPCActivityType.gamble.icon
+        case .workingOnSmithingOrder:
+            return NPCActivityType.craft.icon
+        case .workingOnAlchemyPotion:
+            return NPCActivityType.craft.icon
+        case .checkingCoins:
+            return "cedisign"
+        case .moans:
+            return "person.wave.2.fill"
+        case .harvestingFlowers:
+            return NPCActivityType.harvest.icon
+        case .cleaningWeapon:
+            return "figure.fencing"
+        case .bathing:
+            return NPCActivityType.bathe.icon
         }
     }
     
     
     var color: Color {
         switch self {
+        // couple action
         case .conversation:
             return NPCActivityType.socialize.color
         case .argue:
@@ -465,7 +628,112 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return NPCActivityType.sell.color
         case .gameOver:
             return Theme.bloodProgressColor
+        // standalone actions
+        case .cleaning:
+            return NPCActivityType.clean.color
+        case .drinking:
+            return NPCActivityType.drink.color
+        case .eating:
+            return NPCActivityType.eat.color
+        case .lookingAtMirror:
+            return Color.purple
+        case .suspicioning:
+            return Theme.awarenessProgressColor
+        case .learning:
+            return NPCActivityType.study.color
+        case .reading:
+            return NPCActivityType.study.color
+        case .praying:
+            return NPCActivityType.pray.color
+        case .tossingCards:
+            return NPCActivityType.gamble.color
+        case .workingOnSmithingOrder:
+            return NPCActivityType.craft.color
+        case .workingOnAlchemyPotion:
+            return Color.green
+        case .checkingCoins:
+            return Color.yellow
+        case .moans:
+            return Color.red
+        case .harvestingFlowers:
+            return NPCActivityType.harvest.color
+        case .cleaningWeapon:
+            return Color.red
+        case .bathing:
+            return NPCActivityType.bathe.color
         }
+    }
+    
+    static func getPossibleStandaloneInteraction(currentNPC: NPC, gameTimeService: GameTimeService, currentScene: Scene) -> NPCInteraction {
+        var result = NPCInteraction.observing
+        
+        var availableInteractions: [NPCInteraction] = []
+        /*
+         case moans = "moans"
+         */
+        
+        if currentNPC.currentActivity == .clean {
+            availableInteractions.append(.cleaning)
+        }
+        
+        if currentNPC.currentActivity == .drink {
+            availableInteractions.append(.drinking)
+        }
+        
+        if currentNPC.currentActivity == .eat {
+            availableInteractions.append(.eating)
+        }
+        
+        if currentNPC.currentActivity == .study {
+            availableInteractions.append(.learning)
+            availableInteractions.append(.reading)
+        }
+        
+        if currentNPC.currentActivity == .pray {
+            availableInteractions.append(.praying)
+        }
+        
+        if currentNPC.currentActivity == .gamble {
+            availableInteractions.append(.tossingCards)
+        }
+        
+        if currentNPC.currentActivity == .craft {
+            if currentNPC.profession == .blacksmith && currentScene.sceneType == .blacksmith {
+                availableInteractions.append(.workingOnSmithingOrder)
+            } else if currentNPC.profession == .alchemist && currentScene.sceneType == .alchemistShop {
+                availableInteractions.append(.workingOnAlchemyPotion)
+            }
+        }
+        
+        if currentScene.sceneType == .brothel || currentScene.sceneType == .tavern {
+            if currentNPC.sex == .female || currentNPC.profession == .courtesan {
+                availableInteractions.append(.lookingAtMirror)
+            }
+        }
+        
+        if VampireNatureRevealService.shared.getAwareness() > 40 {
+            availableInteractions.append(.suspicioning)
+        }
+        
+        if currentNPC.coins.value > 0 {
+            availableInteractions.append(.checkingCoins)
+        }
+        
+        if currentNPC.currentActivity == .harvest && !currentScene.isIndoor {
+            availableInteractions.append(.harvestingFlowers)
+        }
+        
+        if currentNPC.isMilitary || currentNPC.profession == .mercenary {
+            availableInteractions.append(.cleaningWeapon)
+        }
+        
+        if currentNPC.currentActivity == .bathe {
+            availableInteractions.append(.bathing)
+        }
+        
+        result = availableInteractions.randomElement() ?? .observing
+        
+        return result
     }
     
     static func getPossibleInteraction(currentNPC: NPC, otherNPC: NPC, gameTimeService: GameTimeService, currentScene: Scene) -> NPCInteraction {
@@ -642,7 +910,6 @@ enum NPCInteraction : String, CaseIterable, Codable {
                 return .awareAboutCasualty
             }
         }
-        
         
         return result
     }

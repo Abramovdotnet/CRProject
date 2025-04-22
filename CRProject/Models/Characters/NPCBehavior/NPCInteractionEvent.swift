@@ -14,7 +14,7 @@ class NPCInteractionEvent {
     var hour: Int
     var hasSuccess: Bool = false
     var isSuccess: Bool = false
-    var isSignleNpcEvent: Bool { get { otherNPC == nil }}
+    var isSignleNpcEvent: Bool { get { otherNPC == nil && interactionType.isStandalone }}
     var isDiscussed = false
     
     init(interactionType: NPCInteraction, currentNPC: NPC, otherNPC: NPC? = nil, scene: Scene, day: Int, hour: Int, hasSuccess: Bool = false, isSuccess: Bool = false) {

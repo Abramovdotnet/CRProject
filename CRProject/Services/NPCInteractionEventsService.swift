@@ -27,7 +27,7 @@ class NPCInteractionEventsService : GameService {
         
         if isCurrentScene {
             if event.interactionType == .conversation {
-                var randomNotConversationEvent = npcInteractionEvents.filter {
+                let randomNotConversationEvent = npcInteractionEvents.filter {
                     $0.scene.id != currentScene.id
                     && !$0.isDiscussed
                     && $0.interactionType != .conversation
@@ -62,6 +62,18 @@ class NPCInteractionEventsService : GameService {
                 hasSuccess: currentEvent.hasSuccess,
                 isSuccess: currentEvent.isSuccess
             )
+        } else {
+            if currentEvent.isSignleNpcEvent {
+                gameEventBusService.addMessageWithIcon(
+                    type: .common,
+                    location: currentEvent.scene.name,
+                    primaryNPC: currentEvent.currentNPC,
+                    secondaryNPC: nil,
+                    interactionType: currentEvent.interactionType,
+                    hasSuccess: currentEvent.hasSuccess,
+                    isSuccess: currentEvent.isSuccess
+                )
+            }
         }
     }
     
