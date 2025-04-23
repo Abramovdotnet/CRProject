@@ -14,12 +14,12 @@ class MainSceneViewModel: ObservableObject {
     @Published var desiredSex: Sex?
     @Published var desiredAge: String?
     @Published var desiredMorality: Morality?
-    @Published var desiredMotivation: Motivation?
     @Published var currentDay: Int = 1
     @Published var currentHour: Int = 0
     @Published var isNight: Bool = false
     @Published var isGameEnd: Bool = false
     @Published var sceneSplit: Int = 0
+    @Published var selectedItemIndex: Int = 0
     @Published private(set) var locationPositions: [Int: CGPoint]?
     @Published private(set) var visibleLocations: Set<Int> = []
     @Published var isDebugOverlayVisible = false

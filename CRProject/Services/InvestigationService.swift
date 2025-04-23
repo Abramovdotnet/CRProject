@@ -5,6 +5,7 @@ class InvestigationService: GameService {
     private let gameTime: GameTimeService
     private let statisticsService: StatisticsService
     private let gameEventsBus: GameEventsBusService
+    static let shared: InvestigationService = DependencyManager.shared.resolve()
     
     init(bloodService: BloodManagementService = DependencyManager.shared.resolve(),
          gameTime: GameTimeService = DependencyManager.shared.resolve(),
@@ -19,11 +20,6 @@ class InvestigationService: GameService {
     func canInvestigate(inspector: any Character, investigationObject: any Character) -> Bool {
         // Check if object is already investigated
         guard investigationObject.isUnknown else { return false }
-        
-        // For vampires, check if they have enough blood
-        if inspector.isVampire {
-            return inspector.bloodMeter.bloodPercentage >= 10.0
-        }
         
         return true
     }

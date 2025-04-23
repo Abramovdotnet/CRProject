@@ -66,15 +66,6 @@ struct NPCInfoView: View {
                             .font(Theme.smallFont)
                             .foregroundColor(desiredMorality.color)
                     }
-                    
-                    if let desiredMotivation = player.desiredVictim.desiredMotivation {
-                        Text(desiredMotivation.description)
-                            .font(Theme.smallFont)
-                            .foregroundColor(desiredMotivation.color)
-                        Image(systemName: desiredMotivation.icon)
-                            .font(Theme.smallFont)
-                            .foregroundColor(desiredMotivation.color)
-                    }
                 }
             }
             

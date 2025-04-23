@@ -82,7 +82,7 @@ class ItemsManagementService : GameService {
             // Add random food items
             for _ in 0..<basicFoodCount {
                 if let randomFood = foodItems.randomElement() {
-                    npc.items.append(randomFood)
+                    npc.items.append(Item.createUnique(randomFood))
                 }
             }
             
@@ -90,7 +90,7 @@ class ItemsManagementService : GameService {
             let drinkCount = Int.random(in: 1...2)
             for _ in 0..<drinkCount {
                 if let randomDrink = drinkItems.randomElement() {
-                    npc.items.append(randomDrink)
+                    npc.items.append(Item.createUnique(randomDrink))
                 }
             }
             
@@ -105,15 +105,26 @@ class ItemsManagementService : GameService {
                 let toolCount = Int.random(in: 2...3)
                 for _ in 0..<toolCount {
                     if let randomTool = tools.randomElement() {
-                        npc.items.append(randomTool)
+                        npc.items.append(Item.createUnique(randomTool))
                     }
                 }
                 
                 // Add 1-2 weapons
-                let weaponCount = Int.random(in: 7...20)
+                let weaponCount = Int.random(in: 7...32)
                 for _ in 0..<weaponCount {
                     if let randomWeapon = weapons.randomElement() {
-                        npc.items.append(randomWeapon)
+                        npc.items.append(Item.createUnique(randomWeapon))
+                    }
+                }
+                
+            case .tailor:
+                // Add clothing
+                let clothing = allItems.filter { $0.type == .clothing }
+                
+                let clothingCount = Int.random(in: 7...25)
+                for _ in 0..<clothingCount {
+                    if let randomClothing = clothing.randomElement() {
+                        npc.items.append(Item.createUnique(randomClothing))
                     }
                 }
                 
@@ -126,7 +137,7 @@ class ItemsManagementService : GameService {
                 let weaponCount = Int.random(in: 1...2)
                 for _ in 0..<weaponCount {
                     if let randomWeapon = weapons.randomElement() {
-                        npc.items.append(randomWeapon)
+                        npc.items.append(Item.createUnique(randomWeapon))
                     }
                 }
                 
@@ -134,7 +145,7 @@ class ItemsManagementService : GameService {
                 let armorCount = Int.random(in: 1...2)
                 for _ in 0..<armorCount {
                     if let randomArmor = armor.randomElement() {
-                        npc.items.append(randomArmor)
+                        npc.items.append(Item.createUnique(randomArmor))
                     }
                 }
             
@@ -146,14 +157,14 @@ class ItemsManagementService : GameService {
                 let foodCount = Int.random(in: 4...7)
                 for _ in 0..<foodCount {
                     if let randomFood = foods.randomElement() {
-                        npc.items.append(randomFood)
+                        npc.items.append(Item.createUnique(randomFood))
                     }
                 }
                 
                 let drinkCount = Int.random(in: 6...11)
                 for _ in 0..<drinkCount {
                     if let randomDrink = drinks.randomElement() {
-                        npc.items.append(randomDrink)
+                        npc.items.append(Item.createUnique(randomDrink))
                     }
                 }
                 
@@ -163,10 +174,10 @@ class ItemsManagementService : GameService {
                 let tools = allItems.filter { $0.type == .tools && $0.name.contains("Potter") }
                 
                 // Add 2-3 alchemy items
-                let alchemyCount = Int.random(in: 5...18)
+                let alchemyCount = Int.random(in: 11...34)
                 for _ in 0..<alchemyCount {
                     if let randomAlchemy = alchemyItems.randomElement() {
-                        npc.items.append(randomAlchemy)
+                        npc.items.append(Item.createUnique(randomAlchemy))
                     }
                 }
                 
@@ -174,17 +185,17 @@ class ItemsManagementService : GameService {
                 let toolCount = Int.random(in: 1...2)
                 for _ in 0..<toolCount {
                     if let randomTool = tools.randomElement() {
-                        npc.items.append(randomTool)
+                        npc.items.append(Item.createUnique(randomTool))
                     }
                 }
                 
             case .merchant:
                 // Add various items for trading
                 let randomItems = allItems.filter { $0.type != .food && $0.type != .drink }
-                let itemCount = Int.random(in: 4...27)
+                let itemCount = Int.random(in: 8...27)
                 for _ in 0..<itemCount {
                     if let randomItem = randomItems.randomElement() {
-                        npc.items.append(randomItem)
+                        npc.items.append(Item.createUnique(randomItem))
                     }
                 }
                 
@@ -198,7 +209,7 @@ class ItemsManagementService : GameService {
                     let jewelryCount = Int.random(in: 1...2)
                     for _ in 0..<jewelryCount {
                         if let randomJewelry = jewelry.randomElement() {
-                            npc.items.append(randomJewelry)
+                            npc.items.append(Item.createUnique(randomJewelry))
                         }
                     }
                 }
@@ -207,7 +218,7 @@ class ItemsManagementService : GameService {
                 let clothingCount = Int.random(in: 1...2)
                 for _ in 0..<clothingCount {
                     if let randomClothing = clothing.randomElement() {
-                        npc.items.append(randomClothing)
+                        npc.items.append(Item.createUnique(randomClothing))
                     }
                 }
                 
@@ -217,14 +228,14 @@ class ItemsManagementService : GameService {
                 let itemCount = Int.random(in: 1...2)
                 for _ in 0..<itemCount {
                     if let randomItem = randomItems.randomElement() {
-                        npc.items.append(randomItem)
+                        npc.items.append(Item.createUnique(randomItem))
                     }
                 }
             }
             
-            // Ensure NPC doesn't have too many items (max 8)
-            if npc.items.count > 8 {
-                npc.items = Array(npc.items.prefix(8))
+            // Ensure NPC doesn't have too many items (max 40)
+            if npc.items.count > 40 {
+                npc.items = Array(npc.items.prefix(40))
             }
         }
     }

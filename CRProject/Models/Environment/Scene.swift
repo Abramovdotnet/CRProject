@@ -70,7 +70,7 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
     }
     
     func closeOpenLock(isNight: Bool) {
-        var characters = _characters.values.compactMap { $0 as? NPC }
+        let characters = _characters.values.compactMap { $0 as? NPC }
         
         // First, determine if this is a lockable building type
         let isLockableBuilding = (sceneType != .district &&
@@ -81,12 +81,12 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
                                  sceneType != .brothel)
         
         if isLockableBuilding {
-            if characters == nil ||  characters.count == 0 {
+            if characters.count == 0 {
                 // Empty houses should be locked
                 isLocked = true
             } else if isNight {
                 // At night, lock if anyone is sleeping
-                isLocked = characters.contains { $0.currentActivity == .sleep } && !characters.contains { $0.playerRelationship.state != .friend }
+                isLocked = characters.contains { $0.currentActivity == .sleep } || !characters.contains { $0.playerRelationship.state != .friend }
             } else {
                 // During day, lock if everyone is sleeping
                 isLocked = characters.allSatisfy { $0.currentActivity == .sleep } && !characters.contains { $0.playerRelationship.state != .friend } 

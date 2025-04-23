@@ -19,8 +19,6 @@ class NPCInteractionEventsService : GameService {
             npcInteractionEvents.removeFirst()
         }
         
-        /*print("Event added: \(event.happenedAtCurrentScene ? "[CURRENT SCENE]" : "") \(event.interactionType.rawValue) between \(event.currentNPC.name) and \(event.otherNPC?.name ?? ""). At \(event.scene.name) on \(event.day). \(event.hour) \(!event.hasSuccess ? "" : event.isSuccess ? "Success" : "Fail")")*/
-        
         guard let currentScene = GameStateService.shared.currentScene else { return }
         
         let isCurrentScene = currentScene.id == event.scene.id

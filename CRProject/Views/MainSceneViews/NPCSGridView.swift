@@ -52,23 +52,28 @@ struct NPCSGridView: View {
     
     // Add edge gradient mask
     private var edgeMask: some View {
-        HStack(spacing: 0) {
-            LinearGradient(
-                gradient: Gradient(colors: [.clear, .black]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(width: 10)
-            
-            Rectangle()
-                .fill(Color.black)
-            
-            LinearGradient(
-                gradient: Gradient(colors: [.black, .clear]),
-                startPoint: .top,
-                endPoint: .bottom
-            )
-            .frame(width: 10)
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                // Top fade
+                LinearGradient(
+                    gradient: Gradient(colors: [.clear, .black]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 40)
+                
+                // Middle section
+                Rectangle()
+                    .fill(Color.black)
+                
+                // Bottom fade
+                LinearGradient(
+                    gradient: Gradient(colors: [.black, .clear]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 40)
+            }
         }
     }
     
@@ -79,7 +84,8 @@ struct NPCSGridView: View {
                 blurredBackgroundEdges
                 
                 // Call the extracted ScrollView
-                    npcScrollView(proxy: proxy)
+                npcScrollView(proxy: proxy)
+                    .mask(edgeMask)
             }
         }
     }
@@ -104,7 +110,10 @@ struct NPCSGridView: View {
     private func npcScrollView(proxy: ScrollViewProxy) -> some View {
         GeometryReader { geometry in
             ScrollView(.vertical, showsIndicators: false) {
-                VStack(spacing: 30) {
+                VStack(spacing: 50) {
+                    // Add spacer at the top to ensure proper initial positioning
+                    Color.clear.frame(height: geometry.size.height / 2 - 160)
+                    
                     ForEach(prepareNPCData()) { data in
                         NPCGridButton(
                             npc: data.npc,
@@ -114,17 +123,7 @@ struct NPCSGridView: View {
                                 // First select the NPC
                                 npcManager.select(with: data.npc)
                                 
-                                // Calculate the position for centering
-                                let index = prepareNPCData().firstIndex(where: { $0.id == data.id }) ?? 0
-                                let cardHeight: CGFloat = 320 // Updated to match actual card height
-                                let spacing: CGFloat = 30
-                                let totalRowHeight = cardHeight + spacing
-                                let yOffset = CGFloat(index) * totalRowHeight
-                                
-                                // Calculate the position that will center the card in the visible area
-                                let scrollPosition = max(0, yOffset - (geometry.size.height - cardHeight) / 2)
-                                
-                                // Then scroll with animation
+                                // Scroll to center with animation
                                 withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                                     proxy.scrollTo(data.id, anchor: .center)
                                 }
@@ -134,12 +133,27 @@ struct NPCSGridView: View {
                         .id(data.id)
                         .frame(height: 320)
                     }
+                    
+                    // Add spacer at the bottom to allow scrolling last item to center
+                    Color.clear.frame(height: geometry.size.height / 2 - 160)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 20)
-                .padding(.vertical, 20)
             }
             .frame(maxHeight: .infinity)
+            .onAppear {
+                // On appear, scroll to the selected NPC if exists, otherwise to the first NPC
+                if let selectedNPC = npcManager.selectedNPC,
+                   let selectedData = prepareNPCData().first(where: { $0.npc.id == selectedNPC.id }) {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        proxy.scrollTo(selectedData.id, anchor: .center)
+                    }
+                } else if let firstNPC = prepareNPCData().first {
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        proxy.scrollTo(firstNPC.id, anchor: .center)
+                    }
+                }
+            }
         }
         .background(
             RoundedRectangle(cornerRadius: 12)
@@ -148,13 +162,12 @@ struct NPCSGridView: View {
                 .blur(radius: 2)
         )
         .clipShape(RoundedRectangle(cornerRadius: 12))
-        .mask(edgeMask)
         .onChange(of: npcManager.lastInteractionActionTimestamp) { _ in 
             guard npcManager.lastInteractionActionTimestamp != nil,
                   let firstNPC = prepareNPCData().first else { return }
             
             withAnimation(.easeOut(duration: 0.3)) {
-                proxy.scrollTo(firstNPC.id, anchor: .top)
+                proxy.scrollTo(firstNPC.id, anchor: .center)
             }
         }
     }
@@ -172,13 +185,7 @@ struct NPCGridButton: View {
     @State private var activityOpacity: Double = 0.7
     @State private var tappedScale: CGFloat = 1.0
     @State private var lastTapTime: Date = Date()
-    @State private var parallaxOffset: CGSize = .zero // Keep parallax offset
     
-    // Core Motion properties
-    private let motionManager = CMMotionManager()
-    private let queue = OperationQueue()
-    
-    private let parallaxIntensity: CGFloat = 8 // Adjust sensitivity
     private let buttonWidth: CGFloat = 180
 
     var body: some View {
@@ -252,7 +259,6 @@ struct NPCGridButton: View {
                             .resizable()
                             .aspectRatio(contentMode: .fill)
                             .frame(width: buttonWidth, height: 180)
-                            .offset(x: parallaxOffset.width, y: parallaxOffset.height)
                             .clipped() // Add clipping after the frame
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                             .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
@@ -410,58 +416,7 @@ struct NPCGridButton: View {
         .disabled(isDisabled)
         .animation(.easeInOut(duration: 0.3), value: isSelected)
         .frame(width: buttonWidth, height: 320)
-        .onAppear {
-            startMotionUpdates()
-            if npc.currentActivity == .sleep {
-                withAnimation(Animation.easeInOut(duration: 1.5).repeatForever()) {
-                    moonOpacity = 1.0
-                }
-            }
-            if npc.isIntimidated {
-                withAnimation(Animation.easeInOut(duration: 1.0).repeatForever()) {
-                    heartOpacity = 1.0
-                }
-            }
-        }
-        .onDisappear {
-            stopMotionUpdates()
-        }
-    }
-    
-    // Start motion updates
-    private func startMotionUpdates() {
-        guard motionManager.isDeviceMotionAvailable else { return }
-        
-        motionManager.deviceMotionUpdateInterval = 1/60 // 60 Hz
-        motionManager.startDeviceMotionUpdates(to: queue) { (data, error) in
-            guard let data = data else { return }
-            
-            // Get attitude (roll, pitch)
-            let roll = data.attitude.roll
-            let pitch = data.attitude.pitch
-            
-            // Calculate offset based on tilt (SWAPPED MAPPING)
-            // Pitch (vertical tilt) controls offsetX
-            // Roll (horizontal tilt) controls offsetY
-            let offsetX = CGFloat(pitch) * parallaxIntensity // Use pitch for X
-            let offsetY = CGFloat(roll) * parallaxIntensity  // Use roll for Y
-            
-            // Update on main thread
-            DispatchQueue.main.async {
-                withAnimation(.easeOut(duration: 0.1)) {
-                     // Clamp the offset to avoid extreme movement
-                    self.parallaxOffset = CGSize(
-                        width: max(-10, min(10, offsetX)), 
-                        height: max(-10, min(10, offsetY))
-                    )
-                }
-            }
-        }
-    }
-    
-    // Stop motion updates
-    private func stopMotionUpdates() {
-        motionManager.stopDeviceMotionUpdates()
+        .shadow(color: npc.currentActivity.color.opacity(0.5), radius: 15)
     }
     
     private func getNPCImage() -> Image {

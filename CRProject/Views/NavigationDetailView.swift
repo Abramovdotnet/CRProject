@@ -84,6 +84,10 @@ struct NavigationWebView: View {
                         .resizable()
                         .ignoresSafeArea()
                     
+                    DustEmitterView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                           .edgesIgnoringSafeArea(.all)
+                    
                     // Map content in a ZStack with content scaled and offset
                     ZStack {
                         // Connection lines

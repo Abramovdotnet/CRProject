@@ -40,22 +40,30 @@ struct DialogueView: View {
                             HorizontalNPCWidget(npc: viewModel.npc)
                         }
                         VStack {
-                            HStack(spacing: 12) {
-                                if !viewModel.currentDialogueText.isEmpty {
-                                    Text("\(viewModel.npc.name): \(viewModel.currentDialogueText)")
-                                        .font(Theme.smallFont)
-                                }
-                                Spacer()
+                            ZStack {
+                                RoundedRectangle(cornerRadius: 8)
+                                    .fill(Theme.awarenessProgressColor.opacity(0.3))
+                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                    .padding(8)
+                                    .cornerRadius(12)
                                 
-                                Image(systemName: viewModel.npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                                HStack(spacing: 12) {
+                                    if !viewModel.currentDialogueText.isEmpty {
+                                        Text("\(viewModel.npc.name): \(viewModel.currentDialogueText)")
+                                            .font(Theme.smallFont)
+                                    }
+                                    Spacer()
+                                    
+                                    Image(systemName: viewModel.npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                                        .font(Theme.smallFont)
+                                        .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : Theme.textColor)
+                                }
+                                .padding()
                             }
-                            .padding()
                         }
                         .frame(maxWidth: .infinity, alignment: .trailing)
                         .background(.black.opacity(0.9))
-                        .cornerRadius(8)
+                        .cornerRadius(12)
                         
                         // Options
                         if !viewModel.options.isEmpty {
@@ -81,7 +89,7 @@ struct DialogueView: View {
                             .foregroundColor(viewModel.actionResultSuccess ? .green : .red)
                             .padding()
                             .background(Theme.secondaryColor)
-                            .cornerRadius(8)
+                            .cornerRadius(12)
                     }
                     .transition(.scale.combined(with: .opacity))
                     .animation(.easeInOut, value: viewModel.showActionResult)

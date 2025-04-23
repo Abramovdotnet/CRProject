@@ -13,9 +13,23 @@ class Item : Codable {
     var name: String = "Food"
     var cost: Int = 0
     var index: Int = 0
+    private static var runtimeIndex: Int = 0
     
     private enum CodingKeys: String, CodingKey {
         case id, type, name, cost
+    }
+    
+    static func createUnique(_ item: Item) -> Item {
+        Item.runtimeIndex += 1
+        
+        let instance = Item()
+        instance.id = item.id
+        instance.type = item.type
+        instance.name = item.name
+        instance.cost = item.cost
+        instance.index = Item.runtimeIndex
+        
+        return instance
     }
     
     func icon() -> String {

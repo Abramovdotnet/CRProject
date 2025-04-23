@@ -39,7 +39,7 @@ class NPCInteractionService : GameService {
     
     func handleNPCInteractionsBehavior() {
         // Use lazy collections and early filtering
-        let scenes = LocationReader.getLocations()
+        let scenes = LocationReader.getCurrentHierarchyLocations(GameStateService.shared.currentScene?.parentSceneId ?? -1)
             .lazy
 
         for scene in scenes {
@@ -715,7 +715,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             availableInteractions.append(.suspicioning)
         }
         
-        if currentNPC.coins.value > 500 {
+        if currentNPC.coins.value > 1000 {
             availableInteractions.append(.checkingCoins)
         }
         
@@ -748,21 +748,12 @@ enum NPCInteraction : String, CaseIterable, Codable {
             }
             
             // Drunk Fight
-            if currentNPC.currentActivity == .drink && (!currentNPC.isMilitary && !otherNPC.isMilitary) ||
+            if currentNPC.currentActivity == .drink || currentNPC.currentActivity == .gamble && (!currentNPC.isMilitary && !otherNPC.isMilitary) ||
                 (currentNPC.isMilitary && otherNPC.isMilitary){
                 var wouldFight = Int.random(in: 0...100) > 95
                 
                 if wouldFight {
-                    availableInteractions.append(.drunkFight)
-                }
-            }
-            // Gamble Fight
-            if currentNPC.currentActivity == .gamble && otherNPC.currentActivity == .gamble && (!currentNPC.isMilitary && !otherNPC.isMilitary) ||
-                (currentNPC.isMilitary && otherNPC.isMilitary){
-                var wouldFight = Int.random(in: 0...100) > 95
-                
-                if wouldFight {
-                    availableInteractions.append(.gambleFight)
+                    availableInteractions.append(Int.random(in: 0...1) > 0 ? .drunkFight : .gambleFight)
                 }
             }
             
@@ -863,11 +854,11 @@ enum NPCInteraction : String, CaseIterable, Codable {
             
             // Conversation
             if (currentNPC.currentActivity == otherNPC.currentActivity  ){
-                var wouldConversate = Int.random(in: 0...100) > 95
+                var wouldConversate = Int.random(in: 0...100) >= 20
                 
                 if wouldConversate {
                     var currentRelationship = currentNPC.getNPCRelationshipValue(of: otherNPC)
-                    var argueCap = (currentRelationship >= 0 ? (currentRelationship + 70) : (70 - abs(currentRelationship)))
+                    var argueCap = currentRelationship > 0 ? 98 : 92
                     
                     var wouldArgue = Int.random(in: 0...100) > Int(argueCap)
                     

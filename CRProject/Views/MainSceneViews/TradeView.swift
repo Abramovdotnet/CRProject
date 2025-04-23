@@ -67,7 +67,7 @@ struct TradeView: View {
                         VStack(spacing: 2) {
                             ScrollView {
                                 VStack(spacing: 8) {
-                                    ForEach(player.items, id: \.id) { item in
+                                    ForEach(player.items, id: \.index) { item in
                                         ItemRowView(
                                             item: item,
                                             isSelected: selectedPlayerItems.contains { $0.index == item.index },
@@ -113,7 +113,7 @@ struct TradeView: View {
                                             .font(Theme.smallFont)
                                             .foregroundColor(Theme.textColor)
                                         
-                                        ForEach(selectedPlayerItems, id: \.id) { item in
+                                        ForEach(selectedPlayerItems, id: \.index) { item in
                                             ItemRowView(
                                                 item: item,
                                                 isSelected: true,
@@ -156,6 +156,7 @@ struct TradeView: View {
                             // Deal button
                             Button(action: {
                                 makeADeal()
+                                dismiss()
                             }) {
                                 Text("Make Deal")
                                     .font(Theme.smallFont)
@@ -174,7 +175,7 @@ struct TradeView: View {
                         VStack(spacing: 2) {
                             ScrollView {
                                 VStack(spacing: 8) {
-                                    ForEach(npc.items, id: \.id) { item in
+                                    ForEach(npc.items, id: \.index) { item in
                                         ItemRowView(
                                             item: item,
                                             isSelected: selectedNPCItems.contains { $0.index == item.index },
@@ -230,7 +231,7 @@ struct TradeView: View {
     private func updateDealTotal() {
         let playerItemsTotal = selectedPlayerItems.reduce(0) { $0 + $1.cost }
         let npcItemsTotal = selectedNPCItems.reduce(0) { $0 + $1.cost }
-        dealTotal = npcItemsTotal - playerItemsTotal
+        dealTotal = playerItemsTotal - npcItemsTotal
     }
     
     private func couldMakeADeal() -> Bool {
@@ -241,28 +242,26 @@ struct TradeView: View {
         let playerItemsTotal = selectedPlayerItems.reduce(0) { $0 + $1.cost }
         let npcItemsTotal = selectedNPCItems.reduce(0) { $0 + $1.cost }
         
-        // If player is receiving more value than giving (dealTotal > 0)
-        if dealTotal > 0 {
-            return player.coins.value >= dealTotal // Check if player has enough coins
+        if dealTotal < 0 {
+            return player.coins.value >= dealTotal
         }
-        // If NPC is receiving more value than giving (dealTotal < 0)
-        else if dealTotal < 0 {
-            return npc.coins.value >= abs(dealTotal) // Check if NPC has enough coins
+
+        else if dealTotal > 0 {
+            return npc.coins.value >= abs(dealTotal)
         }
-        
-        // If values are equal, deal is always possible
+    
         return true
     }
     
     func makeADeal() {
         for item in selectedPlayerItems {
             CoinsManagementService.shared.moveCoins(from: npc, to: player, amount: item.cost)
-            ItemsManagementService.shared.giveItem(item: item, to: npc)
+            ItemsManagementService.shared.moveItem(item: item, from: player, to: npc)
         }
         
         for item in selectedNPCItems {
             CoinsManagementService.shared.moveCoins(from: player, to: npc, amount: item.cost)
-            ItemsManagementService.shared.giveItem(item: item, to: player)
+            ItemsManagementService.shared.moveItem(item: item, from: npc, to: player)
         }
         
         selectedPlayerItems.removeAll()
@@ -281,6 +280,8 @@ struct TradeView: View {
             hasSuccess: false,
             isSuccess: nil
         )
+        
+        GameTimeService.shared.advanceTime()
     }
 }
 

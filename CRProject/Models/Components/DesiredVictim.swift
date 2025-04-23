@@ -39,7 +39,6 @@ class DesiredVictim {
     private(set) var desiredMorality: Morality?
     private(set) var desiredAgeRange: AgeRange?
     private(set) var desiredSex: Sex?
-    private(set) var desiredMotivation: Motivation?
     
     init() {
         updateDesiredVictim()
@@ -58,7 +57,6 @@ class DesiredVictim {
         desiredMorality = nil
         desiredAgeRange = nil
         desiredSex = nil
-        desiredMotivation = nil
         
         // Create array of available characteristic types
         var characteristicTypes = [
@@ -82,8 +80,6 @@ class DesiredVictim {
                 desiredAgeRange = AgeRange.allCases.randomElement()
             case "sex":
                 desiredSex = Sex.allCases.randomElement()
-            case "motivation":
-                desiredMotivation = Motivation.allCases.randomElement()
             default:
                 break
             }
@@ -112,11 +108,6 @@ class DesiredVictim {
         
         if let desiredSex = desiredSex,
            npc.sex != desiredSex {
-            return false
-        }
-        
-        if let desiredMotivation = desiredMotivation,
-           npc.motivation != desiredMotivation {
             return false
         }
         
@@ -150,10 +141,6 @@ class DesiredVictim {
         
         if let morality = desiredMorality {
             descriptions.append(morality.rawValue.lowercased())
-        }
-        
-        if let motivation = desiredMotivation {
-            descriptions.append("motivated by \(motivation.rawValue.lowercased())")
         }
         
         return descriptions.joined(separator: ", ")

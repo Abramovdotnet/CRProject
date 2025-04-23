@@ -83,6 +83,12 @@ class LocationReader : GameService {
         }
     }
     
+    static func getCurrentHierarchyLocations(_ parentSceneId: Int) -> [Scene] {
+        loadLocations()
+        
+        return locationsPool.filter { $0.parentSceneId == parentSceneId }
+    }
+    
     static func getLocation(by id: Int) throws -> Scene {
         loadLocations()
         

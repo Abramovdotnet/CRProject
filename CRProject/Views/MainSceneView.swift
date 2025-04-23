@@ -150,7 +150,6 @@ struct MainSceneView: View {
                                             showingInventory = true
                                         }
                                     )
-                                    .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
                                     Spacer()
                                 }
                                 .frame(width: 50)
@@ -199,7 +198,7 @@ struct MainSceneView: View {
                                                     }
                                                 )
                                                 
-                                                if selectedNPC.currentActivity != .sleep {
+                                                if selectedNPC.currentActivity != .sleep || selectedNPC.currentActivity != .fleeing && selectedNPC.currentActivity != .bathe {
                                                     // Trade
                                                     MainSceneActionButton(
                                                         icon: "cart.fill",

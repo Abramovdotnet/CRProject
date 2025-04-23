@@ -22,6 +22,9 @@ class DialogueViewModel: ObservableObject {
     private let investigationService: InvestigationService = DependencyManager.shared.resolve()
     
     init(npc: NPC, player: Player) {
+        if npc.isUnknown {
+            InvestigationService.shared.investigate(inspector: player, investigationObject: npc)
+        }
         self.npc = npc
         self.dialogueProcessor = DialogueProcessor(
             dialogueSystem: DialogueSystem.load(),
