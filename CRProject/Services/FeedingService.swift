@@ -34,18 +34,18 @@ class FeedingService: GameService {
         
         try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
         
-        var awarenessIncreaseValue: Float = 20.0;
+        var awarenessIncreaseValue: Float = 90.0;
         
         if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
-            awarenessIncreaseValue -= 12
+            awarenessIncreaseValue -= 82
         }
         
         if prey.currentActivity == .sleep {
-            awarenessIncreaseValue -= 16
+            awarenessIncreaseValue -= 86
         }
         
         if vampire.desiredVictim.isDesiredVictim(npc: prey){
-            vampire.bloodMeter.addBlood(100.0)
+            vampire.bloodMeter.addBlood(amount * 3)
             vampire.desiredVictim.updateDesiredVictim()
             
             gameEventsBus.addDangerMessage(message: "Player consumed DESIRED victims blood.")
@@ -59,7 +59,7 @@ class FeedingService: GameService {
         gameEventsBus.addDangerMessage(message: "Player consumed \(prey.name) blood.")
         
         if !prey.isAlive {
-            gameEventsBus.addDangerMessage(message: "* I just killed \(prey.name)! Feel satisfied... *")
+            gameEventsBus.addWarningMessage("* I just killed \(prey.name)! Feel satisfied... *")
             // Double awareness increase if killing victim
             vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
         }

@@ -3,6 +3,7 @@ import SwiftUI
 
 struct HorizontalNPCWidget: View {
     let npc: NPC
+    var showCurrentActivity: Bool = true
     @StateObject private var npcManager = NPCInteractionManager.shared
     
     var body: some View {
@@ -120,13 +121,16 @@ struct HorizontalNPCWidget: View {
                         Text(npc.age.description)
                             .font(Theme.smallFont)
                             .foregroundColor(Color.yellow)
-                        Image(systemName: npc.currentActivity.icon)
-                            .foregroundColor(npc.currentActivity.color)
-                            .font(Theme.smallFont)
-                            .padding(.leading, 3)
-                        Text(npc.currentActivity.description)
-                            .font(Theme.smallFont)
-                            .foregroundColor(npc.currentActivity.color)
+                        
+                        if showCurrentActivity {
+                            Image(systemName: npc.currentActivity.icon)
+                                .foregroundColor(npc.currentActivity.color)
+                                .font(Theme.smallFont)
+                                .padding(.leading, 3)
+                            Text(npc.currentActivity.description)
+                                .font(Theme.smallFont)
+                                .foregroundColor(npc.currentActivity.color)
+                        }
                         
                         if npc.isSpecialBehaviorSet {
                             Text(getSpecialBehaviorProgress())

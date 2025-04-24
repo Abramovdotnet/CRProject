@@ -57,7 +57,7 @@ struct TradeView: View {
                         .frame(maxWidth: 100)
                         
                         // NPC info
-                        HorizontalNPCWidget(npc: npc)
+                        HorizontalNPCWidget(npc: npc, showCurrentActivity: false)
                             .frame(maxWidth: .infinity)
                     }
                     

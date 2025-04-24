@@ -60,7 +60,7 @@ struct NPCSGridView: View {
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                .frame(height: 40)
+                .frame(height: 20)
                 
                 // Middle section
                 Rectangle()
@@ -72,7 +72,7 @@ struct NPCSGridView: View {
                     startPoint: .top,
                     endPoint: .bottom
                 )
-                .frame(height: 40)
+                .frame(height: 20)
             }
         }
     }
@@ -115,7 +115,7 @@ struct NPCSGridView: View {
                     Color.clear.frame(height: geometry.size.height / 2 - 160)
                     
                     ForEach(prepareNPCData()) { data in
-                        NPCGridButton(
+                        NPCWidget(
                             npc: data.npc,
                             isSelected: data.isSelected,
                             isDisabled: data.isDisabled,
@@ -173,10 +173,11 @@ struct NPCSGridView: View {
     }
 }
 
-struct NPCGridButton: View {
+struct NPCWidget: View {
     let npc: NPC
     let isSelected: Bool
     let isDisabled: Bool
+    var showCurrentActivity: Bool = true
     let onTap: () -> Void
     let onAction: (NPCAction) -> Void
     
@@ -371,13 +372,15 @@ struct NPCGridButton: View {
                                 .lineLimit(1)
                             Spacer()
                             
-                            Image(systemName: npc.isAlive ? npc.currentActivity.icon : "xmark.circle.fill")
-                                .foregroundColor(npc.isAlive ? npc.currentActivity.color : Theme.bloodProgressColor)
-                                .font(Theme.smallFont)
-                            Text(npc.isAlive ? npc.currentActivity.description : "Dead")
-                                .foregroundColor(npc.isAlive ? Theme.textColor : Theme.bloodProgressColor)
-                                .font(Theme.smallFont)
-                                .padding(.leading, -5)
+                            if showCurrentActivity {
+                                Image(systemName: npc.isAlive ? npc.currentActivity.icon : "xmark.circle.fill")
+                                    .foregroundColor(npc.isAlive ? npc.currentActivity.color : Theme.bloodProgressColor)
+                                    .font(Theme.smallFont)
+                                Text(npc.isAlive ? npc.currentActivity.description : "Dead")
+                                    .foregroundColor(npc.isAlive ? Theme.textColor : Theme.bloodProgressColor)
+                                    .font(Theme.smallFont)
+                                    .padding(.leading, -5)
+                            }
                         }
                     }
                     .padding(.bottom, 6)

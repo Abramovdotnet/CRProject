@@ -87,11 +87,14 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func movePlayerThroughHideouts(to: HidingCell) {
+        let locationChange =  player?.hiddenAt == to
         player?.hiddenAt = to
         
-        if player?.hiddenAt != nil && player?.hiddenAt != HidingCell.none {
+        if player?.hiddenAt != nil {
             npcManager.selectedNPC = nil
-            
+        }
+             
+        if !locationChange {
             // Get active NPCs
             guard let npcs = currentScene?.getNPCs().filter( { $0.currentActivity != .sleep && $0.currentActivity != .bathe && $0.currentActivity != .fleeing && $0.isSpecialBehaviorSet == false }) else { return }
             
@@ -100,7 +103,7 @@ class GameStateService : ObservableObject, GameService{
             if npcCount > 0 {
                 let awarenessIncrease = 4 * npcCount
                 vampireNatureRevealService.increaseAwareness(amount: Float(awarenessIncrease))
-                gameEventsBus.addWarningMessage("* \(npcCount) just saw by strange disappearance!*")
+                gameEventsBus.addWarningMessage("* \(npcCount) characters just saw by strange \(to == .none ? "appearance" : "disappearance")! *")
             }
         }
     }
@@ -182,7 +185,7 @@ class GameStateService : ObservableObject, GameService{
         if player.hiddenAt == HidingCell.none {
             player.hiddenAt = scene.sceneType.possibleHidingCells().randomElement() ?? .none
             
-            gameEventsBus.addDangerMessage(message: "*My blood boiling under direct sunlight!*")
+            gameEventsBus.addWarningMessage("* My blood boiling under direct sunlight!*" )
         }
     }
     
@@ -225,7 +228,7 @@ class GameStateService : ObservableObject, GameService{
         var currentPlayerBlood = player.bloodMeter.currentBlood
         
         if currentPlayerBlood <= 30 {
-            gameEventsBus.addDangerMessage(message: "* I feel huge lack of blood!*")
+            gameEventsBus.addWarningMessage("* I feel huge lack of blood! *")
         }
         
         if currentPlayerBlood <= 10 {
@@ -242,7 +245,7 @@ class GameStateService : ObservableObject, GameService{
         }
         
         if player.hiddenAt != .none {
-            gameEventsBus.addDangerMessage(message: "* Madness forces player get out from hideout *")
+            gameEventsBus.addWarningMessage("* Thirst madness forces me get out from hideout! *")
             movePlayerThroughHideouts(to: .none)
         }
         
@@ -252,7 +255,7 @@ class GameStateService : ObservableObject, GameService{
         let randomVictim = npcs.randomElement()
 
         if let randomVictim = randomVictim {
-            gameEventsBus.addDangerMessage(message: "* Relentless blood thirst!*")
+            gameEventsBus.addWarningMessage("* Relentless blood thirst! *")
             try? FeedingService.shared.emptyBlood(vampire: player, prey: randomVictim, in: scene.id)
             
             VibrationService.shared.errorVibration()

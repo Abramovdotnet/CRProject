@@ -23,6 +23,9 @@ class MainSceneViewModel: ObservableObject {
     @Published private(set) var locationPositions: [Int: CGPoint]?
     @Published private(set) var visibleLocations: Set<Int> = []
     @Published var isDebugOverlayVisible = false
+    @Published var player: Player?
+    @Published var playerCoinsValue: Int = 0
+    @Published var activeDialogueViewModel: DialogueViewModel? = nil
     
     private var cancellables = Set<AnyCancellable>()
     let gameStateService: GameStateService
@@ -32,21 +35,7 @@ class MainSceneViewModel: ObservableObject {
     private let bloodManagementService: BloodManagementService
     private let gameTime: GameTimeService
     
-    @StateObject private var npcManager = NPCInteractionManager.shared
-    
-    var playerName: String {
-        gameStateService.getPlayer()?.name ?? "Unknown"
-    }
-    
-    var playerStatus: String {
-        guard let player = gameStateService.getPlayer() else { return "Unknown" }
-        return player.isAlive ? "Alive" : "Dead"
-    }
-    
-    func adjustScene()
-    {
-        sceneSplit = sceneSplit + 1
-    }
+    @ObservedObject private var npcManager = NPCInteractionManager.shared
     
     init(gameStateService: GameStateService = DependencyManager.shared.resolve(),
          vampireNatureRevealService: VampireNatureRevealService = DependencyManager.shared.resolve(),
@@ -62,10 +51,26 @@ class MainSceneViewModel: ObservableObject {
         self.gameTime = gameTime
         
         // Create and set player
-        let player = NPCGenerator.createPlayer()
-        player.coins.add(1000)
-        gameStateService.setPlayer(player)
-        ItemsManagementService.shared.giveItem(itemId: 1, to: player)
+        let initialPlayer = NPCGenerator.createPlayer()
+        initialPlayer.coins.add(1000)
+        gameStateService.setPlayer(initialPlayer)
+        ItemsManagementService.shared.giveItem(itemId: 1, to: initialPlayer)
+        
+        // Assign player to the published property
+        self.player = initialPlayer
+        
+        // Initialize playerCoinsValue
+        self.playerCoinsValue = initialPlayer.coins.value
+        
+        // Subscribe to player's coins value changes
+        initialPlayer.coins.$value
+            .sink { [weak self] newValue in
+                // Update the ViewModel's published property on the main thread
+                DispatchQueue.main.async {
+                    self?.playerCoinsValue = newValue
+                }
+            }
+            .store(in: &cancellables)
         
         updatePlayerBloodPercentage()
         resetDesires()
@@ -162,8 +167,6 @@ class MainSceneViewModel: ObservableObject {
         
         // Create initial scene using LocationReader
         do {
-
-            
             let initialScene = try LocationReader.getRuntimeLocation(by: 2)
             try gameStateService.changeLocation(to: initialScene.id)
             
@@ -289,14 +292,19 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func resetDesires() {
-        GameStateService.shared.player?.desiredVictim.updateDesiredVictim()
-        
-        guard let desires = GameStateService.shared.player?.desiredVictim else { return }
-        
-        desiredAge = desires.desiredAgeRange?.rangeDescription
-        desiredSex = desires.desiredSex
-        desiredMorality = desires.desiredMorality
-        desiredProfession = desires.desiredProfession
+        if let player = self.player {
+            player.desiredVictim.updateDesiredVictim()
+            
+            desiredAge = player.desiredVictim.desiredAgeRange?.rangeDescription
+            desiredSex = player.desiredVictim.desiredSex
+            desiredMorality = player.desiredVictim.desiredMorality
+            desiredProfession = player.desiredVictim.desiredProfession
+        } else {
+            desiredProfession = nil
+            desiredSex = nil
+            desiredAge = nil
+            desiredMorality = nil
+        }
     }
     
     // MARK: - Blood Management
@@ -359,9 +367,10 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func updatePlayerBloodPercentage() {
-        withAnimation(.easeInOut(duration: 0.3)) {
-            guard let player = gameStateService.getPlayer() else { return }
-            self.playerBloodPercentage = bloodManagementService.getBloodPercentage(of: player)
+        if let player = self.player {
+            playerBloodPercentage = player.bloodMeter.bloodPercentage
+        } else {
+            playerBloodPercentage = 0
         }
     }
     
@@ -554,12 +563,43 @@ class MainSceneViewModel: ObservableObject {
         return (currentScene?.sceneType.possibleHidingCells())!
     }
     
-    func getPlayer() -> Player {
-        return gameStateService.getPlayer()!
+    func getPlayer() -> Player? {
+        return player
     }
     
     func getGameStateService() -> GameStateService {
         return gameStateService
+    }
+    
+    // MARK: - NPC Interaction Handling (Moved from MainSceneView)
+    // Consider moving handleNPCAction here if appropriate
+    func handleNPCAction(_ action: NPCAction) {
+        switch action {
+        case .startConversation(let npc):
+            guard let player = self.player else { return }
+            // Create and store the ViewModel
+            self.activeDialogueViewModel = DialogueViewModel(npc: npc, player: player)
+            // Now trigger the sheet presentation (using the existing mechanism)
+            npcManager.startConversation(with: npc) // Assuming this sets npcManager.isShowingDialogue = true
+        case .startIntimidation(let npc): // Keep other cases if handled here
+             showVampireGaze(npc: npc)
+        case .feed(let npc):
+            feedOnCharacter(npc)
+            npcManager.playerInteracted(with: npc)
+        case .drain(let npc):
+            emptyBloodFromCharacter(npc)
+            npcManager.playerInteracted(with: npc)
+        case .investigate(let npc):
+            investigateNPC(npc)
+            npcManager.select(with: npc)
+        }
+    }
+    
+    // Make sure supporting methods are also in the ViewModel
+    private func showVampireGaze(npc: NPC) {
+        npcManager.selectedNPC = npc // Or handle selection differently
+        // Need a way to present the gaze view, maybe another Published var?
+        // For now, assuming this is handled elsewhere or needs adjustment
     }
 }
 

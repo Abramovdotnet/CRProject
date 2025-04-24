@@ -7,33 +7,38 @@
 
 import Foundation
 
-class DesiredVictim {
-    enum AgeRange: CaseIterable {
-        case young      // 18-30
-        case middleAge  // 31-50
-        case mature     // 51-70
-        
-        var range: ClosedRange<Int> {
-            switch self {
-            case .young: return 18...30
-            case .middleAge: return 31...50
-            case .mature: return 51...70
-            }
-        }
-        
-        var rangeDescription: String {
-            switch self {
-            case .young: return "18-30"
-            case .middleAge: return "31-50"
-            case .mature: return "51-70"
-            }
-        }
-        
-        static func getRange(for age: Int) -> AgeRange? {
-            return AgeRange.allCases.first { $0.range.contains(age) }
+// Make nested enum Codable as well
+enum DesiredVictimAgeRange: String, CaseIterable, Codable {
+    case young      // 18-30
+    case middleAge  // 31-50
+    case mature     // 51-70
+    
+    var range: ClosedRange<Int> {
+        switch self {
+        case .young: return 18...30
+        case .middleAge: return 31...50
+        case .mature: return 51...70
         }
     }
     
+    var rangeDescription: String {
+        switch self {
+        case .young: return "18-30"
+        case .middleAge: return "31-50"
+        case .mature: return "51-70"
+        }
+    }
+    
+    static func getRange(for age: Int) -> DesiredVictimAgeRange? {
+        return DesiredVictimAgeRange.allCases.first { $0.range.contains(age) }
+    }
+}
+
+// Conform DesiredVictim to Codable
+class DesiredVictim: Codable {
+    // Renamed internal enum to avoid conflict
+    typealias AgeRange = DesiredVictimAgeRange
+
     // Desired characteristics
     private(set) var desiredProfession: Profession?
     private(set) var desiredMorality: Morality?
@@ -43,6 +48,33 @@ class DesiredVictim {
     init() {
         updateDesiredVictim()
     }
+    
+    // --- Codable Conformance ---
+    enum CodingKeys: String, CodingKey {
+        case desiredProfession
+        case desiredMorality
+        case desiredAgeRange
+        case desiredSex
+    }
+
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        // Use decodeIfPresent for optional properties
+        desiredProfession = try container.decodeIfPresent(Profession.self, forKey: .desiredProfession)
+        desiredMorality = try container.decodeIfPresent(Morality.self, forKey: .desiredMorality)
+        desiredAgeRange = try container.decodeIfPresent(AgeRange.self, forKey: .desiredAgeRange)
+        desiredSex = try container.decodeIfPresent(Sex.self, forKey: .desiredSex)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        // Use encodeIfPresent for optional properties
+        try container.encodeIfPresent(desiredProfession, forKey: .desiredProfession)
+        try container.encodeIfPresent(desiredMorality, forKey: .desiredMorality)
+        try container.encodeIfPresent(desiredAgeRange, forKey: .desiredAgeRange)
+        try container.encodeIfPresent(desiredSex, forKey: .desiredSex)
+    }
+    // --- End Codable --- 
     
     /// Sets random characteristics for the desired victim
     func updateDesiredVictim() {
@@ -63,8 +95,7 @@ class DesiredVictim {
             "profession",
             "morality",
             "ageRange",
-            "sex",
-            "motivation"
+            "sex"
         ].shuffled()
         
         // Select random characteristics based on the number chosen

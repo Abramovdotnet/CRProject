@@ -894,7 +894,7 @@
     "age": 26,
     "id": 6243,
     "isVampire": false,
-    "homeLocationId": 71,
+    "homeLocationId": 3,
     "morality": "True neutral",
     "motivation": "Independence",
     "background": "Philippa Schmidt's life at The Velvet Veil is one of careful calculation and strategic independence. Arriving in Duskvale as a young woman with few prospects, she quickly learned that charm and wit could be as valuable as gold. Over the years, she has built a comfortable life through careful management of her resources and relationships. Her ability to read people and understand their desires has made her one of the most sought-after courtesans in the establishment. She maintains strict professional boundaries, never allowing personal attachments to cloud her judgment. Her quarters are tastefully decorated with the fruits of her labor, each piece carefully chosen to reflect her refined tastes. She has used her earnings to invest in various businesses throughout the city, ensuring she will have income even when her current profession is no longer viable. Her story is one of self-determination and careful planning, proving that even in a world dominated by men, a woman can carve out her own path to security and respect."
@@ -1395,10 +1395,10 @@
     "name": "Joan MacLean",
     "profession": "Courtesan",
     "sex": "female",
-    "age": 20,
+    "age": 24,
     "id": 6248,
     "isVampire": false,
-    "homeLocationId": 94,
+    "homeLocationId": 3,
     "morality": "True neutral",
     "motivation": "Independence",
     "background": "Joan MacLean's entry into the life of a courtesan was a carefully calculated decision to secure her independence. Despite her youth, she has quickly developed a reputation for her intelligence and discretion as much as her charm. She maintains strict professional boundaries while creating an atmosphere of warmth and sophistication for her clients. Her quarters are tastefully decorated with art and books, reflecting her interest in culture and current events. She invests her earnings wisely, with clear plans for her future. Though some might judge her profession, she takes pride in her ability to provide companionship and conversation while building a secure future for herself. Her natural empathy and quick wit have made her particularly skilled at helping her clients feel both heard and understood."

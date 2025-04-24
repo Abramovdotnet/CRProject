@@ -21,110 +21,150 @@ struct DialogueView: View {
     // MARK: - Body
     var body: some View {
         GeometryReader { geometry in
+            let centralColumnWidth = geometry.size.width * 0.5
+            let bubbleMaxWidth = centralColumnWidth * 0.95 // Max width for bubbles
+
             ZStack {
-                Image(uiImage: UIImage(named: "location\(GameStateService.shared.currentScene!.id.description)") ?? UIImage(named: "MainSceneBackground")!)
-                    .resizable()
-                    .ignoresSafeArea()
-                
-                DustEmitterView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                       .edgesIgnoringSafeArea(.all)
+                // Background ZStack (Covers entire area)
+                ZStack {
+                    Image(uiImage: UIImage(named: "location\(GameStateService.shared.currentScene!.id.description)") ?? UIImage(named: "MainSceneBackground")!)
+                        .resizable()
+                        .ignoresSafeArea()
                     
-                // Dialogue Content
-                ScrollView {
-                    VStack(spacing: 16) {
-                        // Current Dialogue Text
-                        HStack {
-                            HorizontalPlayerWidget(player: GameStateService.shared.player!)
-                            Spacer()
-                            HorizontalNPCWidget(npc: viewModel.npc)
-                        }
-                        VStack {
-                            ZStack {
-                                RoundedRectangle(cornerRadius: 8)
-                                    .fill(Theme.awarenessProgressColor.opacity(0.3))
-                                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                    .padding(8)
-                                    .cornerRadius(12)
-                                
-                                HStack(spacing: 12) {
-                                    if !viewModel.currentDialogueText.isEmpty {
-                                        Text("\(viewModel.npc.name): \(viewModel.currentDialogueText)")
-                                            .font(Theme.smallFont)
-                                    }
-                                    Spacer()
-                                    
-                                    Image(systemName: viewModel.npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                        .font(Theme.smallFont)
-                                        .foregroundColor(viewModel.npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                                }
-                                .padding()
-                            }
-                        }
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .background(.black.opacity(0.9))
-                        .cornerRadius(12)
-                        
-                        // Options
-                        if !viewModel.options.isEmpty {
-                            VStack {
-                                ForEach(viewModel.options) { option in
-                                    DialogueOptionButton(character: GameStateService.shared.player!, option: option) {
-                                        viewModel.selectOption(option)
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    .padding()
+                    DustEmitterView()
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        .edgesIgnoringSafeArea(.all)
                 }
-                .opacity(contentOpacity)
-                .padding(.top, 10)
                 
-                // Action Result Overlay
+                // Main Layout HStack (Player | Spacer | Dialogue | Spacer | NPC)
+                HStack(alignment: .top, spacing: 0) {
+                    // Player Widget (Left Side)
+                    PlayerWidget(player: GameStateService.shared.player!)
+                        .frame(width: geometry.size.width * 0.23) // Adjusted width
+                        .padding(.leading)
+                        .padding(.top, 40) 
+
+                    Spacer() // Pushes Dialogue View towards center
+                        
+                    // Dialogue ScrollView (Center)
+                    ScrollView {
+                        VStack(spacing: 12) { // Adjust spacing as needed
+                            // NPC Text Bubble
+                            if !viewModel.currentDialogueText.isEmpty {
+                                HStack(alignment: .top, spacing: 8) { // NPC Bubble Content
+                                    getNPCImage(npc: viewModel.npc)
+                                        .resizable().frame(width: 30, height: 30).clipShape(RoundedRectangle(cornerRadius: 8)).shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text("\(viewModel.npc.name):").font(Theme.smallFont.weight(.semibold))
+                                        Text(viewModel.currentDialogueText)
+                                            .font(Theme.smallFont)
+                                            .multilineTextAlignment(.leading)
+                                    }
+                                    .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .padding(12)
+                                .background(Color.black.opacity(0.8))
+                                .cornerRadius(12)
+                                // Apply max width first
+                                .frame(maxWidth: bubbleMaxWidth)
+                                // THEN align the sized bubble left
+                                .frame(maxWidth: .infinity, alignment: .leading) 
+                                .transition(.opacity.combined(with: .scale(scale: 0.9))) 
+                                .id("npc_text_" + viewModel.currentDialogueText) 
+                            }
+                            
+                            // Player Options
+                            ForEach(viewModel.options) { option in
+                                DialogueOptionButton(character: GameStateService.shared.player!, option: option) {
+                                    viewModel.selectOption(option)
+                                }
+                                .frame(maxWidth: bubbleMaxWidth)
+                                .frame(maxWidth: .infinity, alignment: .trailing)
+                                .transition(.opacity.combined(with: .scale(scale: 0.9)))
+                                .id("option_\(option.id)") 
+                                // Add padding below each button for vertical spacing
+                            }
+                        }
+                       .padding(.horizontal, 10) 
+                       .padding(.vertical, 20) 
+                       .animation(.easeInOut(duration: 0.4), value: viewModel.currentDialogueText)
+                       .animation(.easeInOut(duration: 0.4), value: viewModel.options.map { $0.id })
+
+                    }
+                    .opacity(contentOpacity)
+                    .frame(width: centralColumnWidth) 
+                    .padding(.top, 20)
+                    
+                    Spacer() 
+                    
+                    // NPC Widget (Right Side)
+                    NPCWidget(npc: viewModel.npc, isSelected: false, isDisabled: false, showCurrentActivity: false, onTap: { Void() }, onAction: { _ in Void ()})
+                        .frame(width: geometry.size.width * 0.23) // Adjusted width
+                        .padding(.trailing)
+                        .padding(.top, 40) 
+                    
+                }
+                .padding(.top, geometry.safeAreaInsets.top + 5)
+                .padding(.bottom, geometry.safeAreaInsets.bottom + 10)
+                
+                // Action Result Overlay (Centered on top)
                 if viewModel.showActionResult {
                     VStack {
                         Text(viewModel.actionResultMessage)
                             .font(Theme.headingFont)
                             .foregroundColor(viewModel.actionResultSuccess ? .green : .red)
                             .padding()
-                            .background(Theme.secondaryColor)
+                            .background(Theme.secondaryColor.opacity(0.9))
                             .cornerRadius(12)
+                            .shadow(radius: 5)
                     }
+                    .zIndex(1) // Ensure it's above the main layout but below top widget/love scene
                     .transition(.scale.combined(with: .opacity))
                     .animation(.easeInOut, value: viewModel.showActionResult)
+                    .padding(.top, 50) // Position below TopWidget
                 }
                 
-                // Hypnosis Game Overlay
-                if viewModel.showHypnosisGame {
-                    /*HypnosisGameView(onComplete: { score in
-                        viewModel.onHypnosisGameComplete(score: score)
-                    }, npc: viewModel.npc)
-                    .transition(.opacity.animation(.linear(duration: 0.2)))
-                    .zIndex(2)
-                    .ignoresSafeArea()*/
+                // Top Widget - Rendered below Love Scene if active
+                TopWidgetView(viewModel: mainViewModel)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                    .padding(.top, geometry.safeAreaInsets.top)
+                    .foregroundColor(Theme.textColor)
+                    .opacity(viewModel.showLoveScene ? 0 : 1) // Hide if LoveScene is shown
+                    .zIndex(2) // Above Action Result
+
+                // Love Scene Overlay - Now covers everything including TopWidget
+                if viewModel.showLoveScene {
+                    LoveScene()
+                        .transition(.opacity.combined(with: .scale))
+                        .animation(.easeInOut(duration: 0.5), value: viewModel.showLoveScene)
+                        .zIndex(3) // Ensure it's on top
+                        .ignoresSafeArea() // Cover entire screen
                 }
             }
-            .foregroundColor(Theme.textColor)
+            .foregroundColor(Theme.textColor) // Apply default text color to ZStack
             .interactiveDismissDisabled(viewModel.showHypnosisGame)
-            
-            
-            TopWidgetView(viewModel: mainViewModel)
-                .frame(maxWidth: .infinity)
-                .padding(.top, geometry.safeAreaInsets.top)
-                .foregroundColor(Theme.textColor)
+            .onAppear {
+                withAnimation(.easeIn(duration: 0.3)) {
+                    backgroundOpacity = 1
+                }
+                withAnimation(.easeIn(duration: 0.4).delay(0.3)) {
+                    contentOpacity = 1
+                }
+                withAnimation(.easeInOut(duration: 2.0).repeatForever()) {
+                    moonPhase = 1
+                }
+            }
+            // Add onChange to handle dismissal
+            .onChange(of: viewModel.shouldDismiss) { newValue in
+                if newValue {
+                    dismiss()
+                }
+            }
         }
-        .onAppear {
-            withAnimation(.easeIn(duration: 0.3)) {
-                backgroundOpacity = 1
-            }
-            withAnimation(.easeIn(duration: 0.4).delay(0.3)) {
-                contentOpacity = 1
-            }
-            withAnimation(.easeInOut(duration: 2.0).repeatForever()) {
-                moonPhase = 1
-            }
-        }
+    }
+    
+    private func getNPCImage(npc: NPC) -> Image {
+        return Image(uiImage: UIImage(named: "npc\(npc.id.description)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")!)
     }
 }
 
@@ -135,25 +175,36 @@ private struct DialogueOptionButton: View {
     
     var body: some View {
         Button(action: action) {
-            HStack {
-                Text("\(character.name): \(option.text)")
-                    .font(Theme.smallFont)
-                    .multilineTextAlignment(.leading)
+            // Ensure top alignment for consistency with NPC bubble
+            HStack(alignment: .top, spacing: 8) {
+                getCharacterImage()
+                    .resizable()
+                    .frame(width: 30, height: 30)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
                 
-                Spacer()
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("\(character.name):")
+                        .font(Theme.smallFont.weight(.semibold))
+                    
+                    Text(option.text)
+                        .font(Theme.smallFont)
+                        .multilineTextAlignment(.leading)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
                 
                 if option.type != .normal {
+                    Spacer()
                     getInteractionIcon()
                         .foregroundColor(option.type == .intimidate ? .red : .pink)
                 }
             }
-            .padding()
+            .padding(12) 
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.black.opacity(0.9))
+                    .fill(Color.black.opacity(0.8))
                     .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
-                    .opacity(0.9)
-                )
+            )
         }
         .buttonStyle(PlainButtonStyle())
     }
@@ -172,6 +223,14 @@ private struct DialogueOptionButton: View {
             return Image(systemName: "heart.fill")
         case .loveForSail:
             return Image(systemName: "heart.fill")
+        }
+    }
+    
+    private func getCharacterImage() -> Image {
+        if character is Player {
+            return Image("player1")
+        } else {
+            return Image(uiImage: UIImage(named: "npc\(character.id.description)") ?? UIImage(named: character.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")!)
         }
     }
 }

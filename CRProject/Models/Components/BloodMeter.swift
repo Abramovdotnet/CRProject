@@ -8,12 +8,15 @@
 import Foundation
 
 class BloodMeter : ObservableObject, Codable {
-    private var _currentBlood: Float
+    @Published private var _currentBlood: Float
     private var maxBlood: Float = 100
     
     var currentBlood: Float {
         get { _currentBlood }
-        set { _currentBlood = min(max(newValue, 0), maxBlood) }
+        set {
+            objectWillChange.send()
+            _currentBlood = min(max(newValue, 0), maxBlood)
+        }
     }
     
     var bloodPercentage: Float {
@@ -26,12 +29,13 @@ class BloodMeter : ObservableObject, Codable {
     
     func addBlood(_ amount: Float) {
         guard amount > 0 else { return }
+        objectWillChange.send()
         _currentBlood = min(_currentBlood + amount, maxBlood)
     }
     
     func useBlood(_ amount: Float) {
         guard amount > 0 else { return }
-        
+        objectWillChange.send()
         if _currentBlood <= amount {
             _currentBlood = 0
         } else {
@@ -44,6 +48,7 @@ class BloodMeter : ObservableObject, Codable {
     }
     
     func emptyBlood() -> Float {
+        objectWillChange.send()
         let availableBlood = _currentBlood
         _currentBlood = 0
         return availableBlood
@@ -51,5 +56,17 @@ class BloodMeter : ObservableObject, Codable {
     
     enum CodingKeys: String, CodingKey {
         case _currentBlood, maxBlood
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        _currentBlood = try container.decode(Float.self, forKey: ._currentBlood)
+        maxBlood = try container.decode(Float.self, forKey: .maxBlood)
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(_currentBlood, forKey: ._currentBlood)
+        try container.encode(maxBlood, forKey: .maxBlood)
     }
 }

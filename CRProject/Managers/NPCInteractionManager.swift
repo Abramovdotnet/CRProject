@@ -26,6 +26,6 @@ class NPCInteractionManager: ObservableObject {
     func playerInteracted(with npc: NPC) {
         npc.lastPlayerInteractionDate = Date()
         lastInteractionActionTimestamp = Date() // Update timestamp to trigger scroll
-        npcStateChanged.toggle() // Toggle to trigger view updates
+        // npcStateChanged.toggle() // Temporarily commented out for debugging
     }
 }

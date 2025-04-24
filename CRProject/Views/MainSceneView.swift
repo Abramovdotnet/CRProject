@@ -116,7 +116,7 @@ struct MainSceneView: View {
                                     }
                                     
                                     // Hide
-                                    if viewModel.getPlayer().hiddenAt == .none {
+                                    if let player = viewModel.getPlayer(), player.hiddenAt == .none {
                                         ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
                                             MainSceneActionButton(
                                                 icon: "eye.fill",
@@ -156,12 +156,12 @@ struct MainSceneView: View {
                                 Spacer()
                                 NPCSGridView(
                                     npcs: viewModel.npcs,
-                                    onAction: handleNPCAction
+                                    onAction: viewModel.handleNPCAction
                                 )
                                 Spacer()
                                 HStack(spacing: 10) {
                                     VStack {
-                                        NPCInfoView(npc: npcManager.selectedNPC, onAction: handleNPCAction)
+                                        NPCInfoView(npc: npcManager.selectedNPC, onAction: viewModel.handleNPCAction)
                                             .id(npcManager.selectedNPC?.id ?? 0)
                                         
                                         if npcManager.selectedNPC != nil {
@@ -183,7 +183,7 @@ struct MainSceneView: View {
                                                     icon: "bubble.left.fill",
                                                     color: .white,
                                                     action: {
-                                                        handleNPCAction(.startConversation(selectedNPC))
+                                                        viewModel.handleNPCAction(.startConversation(selectedNPC))
                                                     }
                                                 )
                                             }
@@ -194,7 +194,7 @@ struct MainSceneView: View {
                                                     icon: "bolt.heart.fill",
                                                     color: .purple,
                                                     action: {
-                                                        handleNPCAction(.startIntimidation(selectedNPC))
+                                                        viewModel.handleNPCAction(.startIntimidation(selectedNPC))
                                                     }
                                                 )
                                                 
@@ -215,7 +215,7 @@ struct MainSceneView: View {
                                                         icon: "drop.halffull",
                                                         color: Theme.bloodProgressColor,
                                                         action: {
-                                                            handleNPCAction(.feed(selectedNPC))
+                                                            viewModel.handleNPCAction(.feed(selectedNPC))
                                                         }
                                                     )
                                                     
@@ -224,7 +224,7 @@ struct MainSceneView: View {
                                                         icon: "drop.fill",
                                                         color: Theme.bloodProgressColor,
                                                         action: {
-                                                            handleNPCAction(.drain(selectedNPC))
+                                                            viewModel.handleNPCAction(.drain(selectedNPC))
                                                         }
                                                     )
                                                 }
@@ -237,9 +237,8 @@ struct MainSceneView: View {
                                 }
                                 .frame(width: 420)
                             }
-                            .padding(.horizontal, -10)
+                            .frame(maxHeight: .infinity)
                         }
-                        .frame(maxHeight: .infinity)
                     }
                 }
                 
@@ -268,10 +267,11 @@ struct MainSceneView: View {
                     .background(Color.black.edgesIgnoringSafeArea(.all))
                 }
             }
-            .sheet(isPresented: $npcManager.isShowingDialogue) {
-                if let npc = npcManager.selectedNPC,
-                   let player = viewModel.gameStateService.getPlayer() {
-                    DialogueView(viewModel: DialogueViewModel(npc: npc, player: player), mainViewModel: viewModel)
+            .sheet(isPresented: $npcManager.isShowingDialogue, onDismiss: { viewModel.activeDialogueViewModel = nil }) {
+                if let dialogueViewModel = viewModel.activeDialogueViewModel {
+                    DialogueView(viewModel: dialogueViewModel, mainViewModel: viewModel)
+                } else {
+                    Text("Loading Dialogue...")
                 }
             }
             .sheet(isPresented: $showingVampireGaze) {
@@ -288,26 +288,6 @@ struct MainSceneView: View {
                 CharacterInventoryView(character: gameStateService.player!, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
             }
             .withDebugOverlay(viewModel: viewModel)
-        }
-    }
-    
-    private func handleNPCAction(_ action: NPCAction) {
-        switch action {
-        case .startConversation(let npc):
-            // Don't call playerInteracted here - it will be called after dialogue completion
-            npcManager.startConversation(with: npc)
-        case .startIntimidation(let npc):
-            // Don't call playerInteracted here - it will be called after gaze completion
-            showVampireGaze(npc: npc)
-        case .feed(let npc):
-            viewModel.feedOnCharacter(npc)
-            npcManager.playerInteracted(with: npc)
-        case .drain(let npc):
-            viewModel.emptyBloodFromCharacter(npc)
-            npcManager.playerInteracted(with: npc)
-        case .investigate(let npc):
-            viewModel.investigateNPC(npc)
-            npcManager.select(with: npc)
         }
     }
     

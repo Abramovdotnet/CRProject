@@ -5,74 +5,109 @@
 //  Created by Abramov Anatoliy on 31.03.2025.
 //
 import Foundation
+import Combine
 
-class Player: Character, Codable {
+class Player: ObservableObject, Character, Codable {
+    // Published properties for UI updates
+    @Published var name: String = ""
+    @Published var age: Int = 0
+    // Assuming BloodMeter is or will be made ObservableObject
+    @Published var bloodMeter: BloodMeter = BloodMeter(initialBlood: 100.0)
+    @Published var coins: Coins = Coins()
+    @Published var currentLocationId: Int = 0
+    @Published var items: [Item] = []
+
+    // Non-Published properties
     var id: Int = 0
     var index : Int = 0
-    var name: String = ""
     var sex: Sex = .male
-    var age: Int = 0
     var profession: Profession = .adventurer
-    private var _bloodMeter: BloodMeter = BloodMeter(initialBlood: 100.0)
-    var bloodMeter: BloodMeter {
-        get { _bloodMeter }
-        set { _bloodMeter = newValue }
-    }
-    var coins: Coins = Coins()
-    var isVampire: Bool { true }
-    var isAlive: Bool { bloodMeter.currentBlood > 0 }
+    var isVampire: Bool { true } // Constant
+    var isAlive: Bool { bloodMeter.currentBlood > 0 } // Derived
     var isUnknown: Bool = false
     var isIntimidated: Bool = false
     var isBeasyByPlayerAction: Bool = false
     var intimidationDay: Int = 0
     var homeLocationId: Int = 0
-    var currentLocationId: Int = 0
     var hiddenAt: HidingCell = .none
-    var items: [Item] = []
-    
+
     var desiredVictim: DesiredVictim = DesiredVictim()
 
+    // --- Initializer ---
     init(name: String, sex: Sex, age: Int, profession: Profession, id: Int) {
         self.name = name
         self.sex = sex
         self.age = age
         self.profession = profession
         self.id = id
+        // Initialization of other properties happens automatically
     }
-    
+
+    // Default initializer might be needed
+    // init() {}
+
+    // --- Methods ---
     func shareBlood(amount: Float, from donor: any Character) {
         if donor.isVampire {
             donor.bloodMeter.useBlood(amount)
         } else {
             let availableBlood = min(amount, donor.bloodMeter.bloodPercentage)
             donor.bloodMeter.useBlood(availableBlood)
-            self.bloodMeter.addBlood(availableBlood)
+            self.bloodMeter.addBlood(availableBlood) // Should trigger update via @Published bloodMeter
         }
     }
-    
+
+    // --- Codable Conformance ---
     enum CodingKeys: String, CodingKey {
-        case id, name, sex, age, profession, isUnknown, isSleeping, _bloodMeter
+        // Include all properties that need saving, published or not
+        case id, index, name, sex, age, profession, bloodMeter, coins, isVampire, isAlive, isUnknown, isIntimidated, isBeasyByPlayerAction, intimidationDay, homeLocationId, currentLocationId, hiddenAt, items, desiredVictim
     }
-    
+
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        // Decode all properties
         id = try container.decode(Int.self, forKey: .id)
+        index = try container.decode(Int.self, forKey: .index)
         name = try container.decode(String.self, forKey: .name)
         sex = try container.decode(Sex.self, forKey: .sex)
         age = try container.decode(Int.self, forKey: .age)
         profession = try container.decode(Profession.self, forKey: .profession)
+        bloodMeter = try container.decode(BloodMeter.self, forKey: .bloodMeter)
+        coins = try container.decode(Coins.self, forKey: .coins)
+        // isVampire is computed, no need to decode
+        // isAlive is computed, no need to decode
         isUnknown = try container.decode(Bool.self, forKey: .isUnknown)
-        _bloodMeter = try container.decode(BloodMeter.self, forKey: ._bloodMeter)
+        isIntimidated = try container.decode(Bool.self, forKey: .isIntimidated)
+        isBeasyByPlayerAction = try container.decode(Bool.self, forKey: .isBeasyByPlayerAction)
+        intimidationDay = try container.decode(Int.self, forKey: .intimidationDay)
+        homeLocationId = try container.decode(Int.self, forKey: .homeLocationId)
+        currentLocationId = try container.decode(Int.self, forKey: .currentLocationId)
+        hiddenAt = try container.decode(HidingCell.self, forKey: .hiddenAt)
+        items = try container.decode([Item].self, forKey: .items)
+        desiredVictim = try container.decode(DesiredVictim.self, forKey: .desiredVictim)
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        // Encode all properties
         try container.encode(id, forKey: .id)
+        try container.encode(index, forKey: .index)
         try container.encode(name, forKey: .name)
         try container.encode(sex, forKey: .sex)
         try container.encode(age, forKey: .age)
         try container.encode(profession, forKey: .profession)
+        try container.encode(bloodMeter, forKey: .bloodMeter)
+        try container.encode(coins, forKey: .coins)
+        // isVampire is computed, no need to encode
+        // isAlive is computed, no need to encode
         try container.encode(isUnknown, forKey: .isUnknown)
-        try container.encode(_bloodMeter, forKey: ._bloodMeter)
+        try container.encode(isIntimidated, forKey: .isIntimidated)
+        try container.encode(isBeasyByPlayerAction, forKey: .isBeasyByPlayerAction)
+        try container.encode(intimidationDay, forKey: .intimidationDay)
+        try container.encode(homeLocationId, forKey: .homeLocationId)
+        try container.encode(currentLocationId, forKey: .currentLocationId)
+        try container.encode(hiddenAt, forKey: .hiddenAt)
+        try container.encode(items, forKey: .items)
+        try container.encode(desiredVictim, forKey: .desiredVictim)
     }
 }
