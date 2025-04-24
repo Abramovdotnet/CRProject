@@ -35,14 +35,7 @@ class GameStateService : ObservableObject, GameService{
         self.gameEventsBus = gameEventsBus
         self.locationReader = locationReader
         self.vampireReader = vampireReader
-        
-        // Initialize LocationEventsService using DependencyManager
-        DependencyManager.shared.register(LocationEventsService(gameEventsBus: gameEventsBus, vampireNatureRevealService: vampireNatureRevealService, gameStateService: self))
-        
-        // Initialize NPCPopulationService using DependencyManager
-        /*DependencyManager.shared.register(NPCPopulationService(gameStateService: self, gameEventsBus: gameEventsBus))
-        self.npcPopulationService = DependencyManager.shared.resolve()*/
-        
+
         // Subscribe to day/night changes
         NotificationCenter.default
             .publisher(for: .nightAppears)

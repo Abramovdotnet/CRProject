@@ -34,6 +34,9 @@ class DialogueViewModel: ObservableObject {
             npc: npc
         )
         
+        // Mark that the player has interacted with this NPC
+        npc.hasInteractedWithPlayer = true
+        
         DebugLogService.shared.log("Initializing dialogue for NPC: \(npc.name), profession: \(npc.profession)", category: "Dialogue")
         loadInitialDialogue()
     }
@@ -50,39 +53,36 @@ class DialogueViewModel: ObservableObject {
             // If we reach here, both profession-specific and general dialogue failed
             DebugLogService.shared.log("Failed to load any dialogue for \(npc.profession.rawValue)", category: "Error")
             currentDialogueText = "..."
-            options = [
-                DialogueOption(
-                    text: "Leave",
-                    type: .normal,
-                    nextNodeId: "end"
-                )
-            ]
+            options = [getEndOption()]
         }
+    }
+    
+    private func getEndOption() -> DialogueOption {
+        let option = DialogueOption()
+        option.type = .normal
+        option.text = "Leave"
+        option.nextNodeId = "end"
+        return option
     }
     
     private func updateDialogue(text: String, options: [DialogueNodeOption]) {
-        DebugLogService.shared.log("Updating dialogue - Text: \(text), Options count: \(options.count)", category: "Dialogue")
-        currentDialogueText = text
+        DebugLogService.shared.log("Updating dialogue VM - Text: \(text), Options count: \(options.count)", category: "DialogueVM")
         
-        // Convert options and reorder if investigate option exists
-        var dialogueOptions = options.map { option in
-            DialogueOption(
-                text: option.text,
-                type: option.type,
-                nextNodeId: option.nextNode
-            )
+        // Update state directly without animation
+        self.currentDialogueText = text
+        
+        var mappedOptions = options.map { option in
+            DialogueOption.create(text: option.text, type: option.type, nextNodeId: option.nextNode)
         }
-        
-        // If there's an investigate option, move it to the beginning
-        if let investigateIndex = dialogueOptions.firstIndex(where: { $0.type == .investigate }) {
-            let investigateOption = dialogueOptions.remove(at: investigateIndex)
-            dialogueOptions.insert(investigateOption, at: 0)
-        }
-        
-        self.options = dialogueOptions
+
+        self.options = mappedOptions
+        DebugLogService.shared.log("Assigned options count: \(self.options.count)", category: "DialogueVM")
     }
     
     func selectOption(_ option: DialogueOption) {
+        DebugLogService.shared.log("Selected option leading to node: \(option.nextNodeId)", category: "DialogueVM")
+        
+        // Use a switch statement for different option types
         switch option.type {
         case .intimidate:
             handleIntimidation(nextNodeId: option.nextNodeId)
@@ -92,10 +92,19 @@ class DialogueViewModel: ObservableObject {
             handleInvestigation(nextNodeId: option.nextNodeId)
         case .loveForSail:
             handleLoveForSail(nextNodeId: option.nextNodeId)
-        case .normal:
-            processNextNode(option.nextNodeId)
-        case .intrigue:
-            processNextNode(option.nextNodeId)
+        case .relationshipIncrease:
+            dialogueProcessor.normalizeRelationshipNode(option.text)
+            handleRelationshipIncrease(nextNodeId: option.nextNodeId)
+        case .relationshipDecrease:
+            dialogueProcessor.normalizeRelationshipNode(option.text)
+            handleRelationshipDecrease(nextNodeId: option.nextNodeId)
+        case .normal, .intrigue:
+            // Process all nodes consistently, including gossip
+            if let (newText, newOptions) = dialogueProcessor.processNode(option.nextNodeId) {
+                updateDialogue(text: newText, options: newOptions)
+            } else {
+                shouldDismiss = true
+            }
         }
     }
     
@@ -106,10 +115,17 @@ class DialogueViewModel: ObservableObject {
         if success {
             VibrationService.shared.lightTap()
             gameStateService.handleTimeAdvanced()
-            processNextNode(nextNodeId)
+            // Process the next node *after* showing the result (or integrate result display differently)
+            if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+                updateDialogue(text: newText, options: newOptions)
+            } else {
+                shouldDismiss = true
+            }
+        } else {
+            // If intimidation fails, do we stay on the same node or go somewhere else?
+            // If staying, no need to call processNode. If going elsewhere, call processNode for that ID.
+             gameStateService.handleTimeAdvanced() // Advance time even on failure?
         }
-        
-        gameStateService.handleTimeAdvanced()
     }
     
     private func handleSeduction(nextNodeId: String) {
@@ -122,7 +138,11 @@ class DialogueViewModel: ObservableObject {
         if let player = gameStateService.player {
             investigationService.investigate(inspector: player, investigationObject: npc)
             VibrationService.shared.lightTap()
-            processNextNode(nextNodeId)
+            if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+                updateDialogue(text: newText, options: newOptions)
+            } else {
+                shouldDismiss = true
+            }
         }
     }
     
@@ -155,7 +175,11 @@ class DialogueViewModel: ObservableObject {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                      // Ensure self is still valid before processing node
                      guard let self = self else { return }
-                     self.processNextNode(nextNodeId)
+                     if let (newText, newOptions) = self.dialogueProcessor.processNode(nextNodeId) {
+                         self.updateDialogue(text: newText, options: newOptions)
+                     } else {
+                         self.shouldDismiss = true
+                     }
                 }
             }
             // --- End Restored Logic ---
@@ -176,6 +200,30 @@ class DialogueViewModel: ObservableObject {
         }
     }
     
+    private func handleRelationshipIncrease(nextNodeId: String) {
+        npc.playerRelationship.increase(amount: 1)
+        GameStateService.shared.player?.processRelationshipDialogueNode(nodeId: dialogueProcessor.currentNodeId ?? "")
+        VibrationService.shared.lightTap()
+        // Directly process the next node
+        if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+            updateDialogue(text: newText, options: newOptions)
+        } else {
+            shouldDismiss = true
+        }
+    }
+    
+    private func handleRelationshipDecrease(nextNodeId: String) {
+        npc.playerRelationship.decrease(amount: 1)
+        GameStateService.shared.player?.processRelationshipDialogueNode(nodeId: dialogueProcessor.currentNodeId ?? "")
+        VibrationService.shared.lightTap()
+        // Directly process the next node
+        if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+            updateDialogue(text: newText, options: newOptions)
+        } else {
+            shouldDismiss = true
+        }
+    }
+    
     func onHypnosisGameComplete(score: Int) {
         hypnosisScore = score
         withAnimation(.linear(duration: 0.2)) {
@@ -187,36 +235,20 @@ class DialogueViewModel: ObservableObject {
             
             if success {
                 npc.isIntimidated = true
-                processNextNode(nodeId)
+                if let (newText, newOptions) = dialogueProcessor.processNode(nodeId) {
+                    updateDialogue(text: newText, options: newOptions)
+                } else {
+                    shouldDismiss = true
+                }
                 showActionResult(success: success, action: "Seduction")
             }
         } else {
             showActionResult(success: false, action: "Seduction")
-            
-            if let currentSceneId = gameStateService.currentScene?.id {
-                vampireNatureRevealService.increaseAwareness(amount: 20)
-            }
+            vampireNatureRevealService.increaseAwareness(amount: 20)
         }
         
         gameStateService.handleTimeAdvanced()
         pendingSeductionNode = nil
-    }
-    
-    private func processNextNode(_ nodeId: String) {
-        DebugLogService.shared.log("Processing node: \(nodeId)", category: "Dialogue")
-        
-        if nodeId == "end" {
-            DebugLogService.shared.log("Node is 'end', setting shouldDismiss = true", category: "Dialogue")
-            shouldDismiss = true
-            return
-        }
-        
-        if let nextDialogue = dialogueProcessor.processNode(nodeId) {
-            DebugLogService.shared.log("DialogueProcessor returned dialogue for node \(nodeId). Text: \(nextDialogue.text)", category: "Dialogue")
-            updateDialogue(text: nextDialogue.text, options: nextDialogue.options)
-        } else {
-            DebugLogService.shared.log("DialogueProcessor returned nil for node \(nodeId). Dialogue state will not change.", category: "Dialogue")
-        }
     }
     
     private func showActionResult(success: Bool, action: String) {
@@ -231,9 +263,18 @@ class DialogueViewModel: ObservableObject {
     }
 }
 
-struct DialogueOption: Identifiable {
-    let id = UUID()
-    let text: String
-    let type: DialogueOptionType
-    let nextNodeId: String
-} 
+class DialogueOption: Identifiable {
+    var id = UUID()
+    var text: String = ""
+    var type: DialogueOptionType = .normal
+    var nextNodeId: String = ""
+    
+    static func create(text: String, type: DialogueOptionType, nextNodeId: String? = nil) -> DialogueOption {
+        var option = DialogueOption()
+        option.id = UUID()
+        option.text = text
+        option.type = type
+        option.nextNodeId = nextNodeId ?? ""
+        return option
+    }
+}

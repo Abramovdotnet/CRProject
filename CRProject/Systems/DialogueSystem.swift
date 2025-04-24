@@ -4,6 +4,7 @@ import Foundation
 class DialogueSystem {
     private var professionDialogues: [String: DialogueTree] = [:]
     private var generalDialogues: DialogueTree?
+    private var uniqueDialogues: [Int: DialogueTree] = [:]
     
     static func load() -> DialogueSystem {
         let system = DialogueSystem()
@@ -12,34 +13,64 @@ class DialogueSystem {
     }
     
     private func loadDialogues() {
+        // Load profession dialogues
         if let url = Bundle.main.url(forResource: "ProfessionDialogues", withExtension: "json"),
            let data = try? Data(contentsOf: url) {
             do {
                 professionDialogues = try JSONDecoder().decode([String: DialogueTree].self, from: data)
+                DebugLogService.shared.log("Successfully loaded profession dialogues", category: "Dialogue")
             } catch {
                 DebugLogService.shared.log("Error loading profession dialogues: \(error)", category: "Error")
             }
+        } else {
+            DebugLogService.shared.log("Could not find ProfessionDialogues.json", category: "Error")
         }
         
+        // Load general dialogues
         if let url = Bundle.main.url(forResource: "GeneralDialogues", withExtension: "json"),
            let data = try? Data(contentsOf: url) {
             do {
                 generalDialogues = try JSONDecoder().decode(DialogueTree.self, from: data)
+                DebugLogService.shared.log("Successfully loaded general dialogues", category: "Dialogue")
             } catch {
                 DebugLogService.shared.log("Error loading general dialogues: \(error)", category: "Error")
             }
+        } else {
+            DebugLogService.shared.log("Could not find GeneralDialogues.json", category: "Error")
         }
+        
+        // Load unique dialogues - using the same pattern as profession dialogues
+        // We'll load them on demand when getDialogueTree is called
     }
     
-    func getDialogueTree(for profession: String) -> DialogueTree? {
-        // First try exact match
+    func getDialogueTree(for profession: String, player: Player, npcId: Int? = nil) -> DialogueTree? {
+        // First check for unique dialogue
+        if let npcId = npcId {
+            DebugLogService.shared.log("Checking for unique dialogue for NPC \(npcId)", category: "Dialogue")
+            let uniqueDialogueFileName = "Dialogue\(npcId)"
+            if let url = Bundle.main.url(forResource: uniqueDialogueFileName, withExtension: "json"),
+               let data = try? Data(contentsOf: url) {
+                do {
+                    let uniqueTree = try JSONDecoder().decode(DialogueTree.self, from: data)
+                    DebugLogService.shared.log("Successfully loaded unique dialogue for NPC \(npcId)", category: "Dialogue")
+                    normalizeProcessedRelationshipNodes(player: player, tree: uniqueTree)
+                    return uniqueTree
+                } catch {
+                    DebugLogService.shared.log("Error loading unique dialogue for NPC \(npcId): \(error)", category: "Error")
+                }
+            }
+        }
+        
+        // Then try profession dialogues
         if let tree = professionDialogues[profession] {
+            normalizeProcessedRelationshipNodes(player: player, tree: tree)
             return tree
         }
         
         // Try matching without parenthetical descriptions
         let normalizedProfession = profession.split(separator: "(").first?.trimmingCharacters(in: .whitespaces) ?? profession
         if let tree = professionDialogues[normalizedProfession] {
+            normalizeProcessedRelationshipNodes(player: player, tree: tree)
             return tree
         }
         
@@ -55,6 +86,18 @@ class DialogueSystem {
     func getGeneralDialogueTree() -> DialogueTree? {
         return generalDialogues
     }
+    
+    func normalizeProcessedRelationshipNodes(player: Player, tree: DialogueTree) {
+        let relationsipNodes = tree.nodes.filter { $0.value.options.contains(where: { $0.type == .relationshipDecrease || $0.type == .relationshipIncrease}) }
+        
+        for node in relationsipNodes {
+            for option in node.value.options {
+                if player.checkIsRelationshipDialogueNodeProcessed(nodeId: node.key) {
+                    option.type = .normal
+                }
+            }
+        }
+    }
 }
 
 // MARK: - Dialogue Tree
@@ -63,25 +106,57 @@ struct DialogueTree: Codable {
     let nodes: [String: DialogueNode]
 }
 
-struct DialogueNode: Codable {
+struct DialogueNode: Codable, Equatable {
     let text: String
     let options: [DialogueNodeOption]
     let requirements: DialogueRequirements?
+    
+    static func == (lhs: DialogueNode, rhs: DialogueNode) -> Bool {
+        return lhs.text == rhs.text &&
+               lhs.options == rhs.options &&
+               lhs.requirements == rhs.requirements
+    }
 }
 
-struct DialogueNodeOption: Codable {
+class DialogueNodeOption: Codable, Equatable {
     let text: String
-    let type: DialogueOptionType
+    var type: DialogueOptionType
     let nextNode: String
     let requirements: DialogueRequirements?
+    
+    init(from text: String, to nextNode: String, type: DialogueOptionType, requirements: DialogueRequirements? = nil) {
+        self.text = text
+        self.type = type
+        self.nextNode = nextNode
+        self.requirements = requirements
+    }
+    
+    static func == (lhs: DialogueNodeOption, rhs: DialogueNodeOption) -> Bool {
+        return lhs.text == rhs.text &&
+               lhs.type == rhs.type &&
+               lhs.nextNode == rhs.nextNode &&
+               lhs.requirements == rhs.requirements
+    }
 }
 
-struct DialogueRequirements: Codable {
+struct DialogueRequirements: Codable, Equatable {
     let minCharisma: Int?
     let minStrength: Int?
     let isNight: Bool?
     let isIndoor: Bool?
     let coins: Int?
+    let minRelationship: Int?
+    let maxRelationship: Int?
+    
+    static func == (lhs: DialogueRequirements, rhs: DialogueRequirements) -> Bool {
+        return lhs.minCharisma == rhs.minCharisma &&
+               lhs.minStrength == rhs.minStrength &&
+               lhs.isNight == rhs.isNight &&
+               lhs.isIndoor == rhs.isIndoor &&
+               lhs.coins == rhs.coins &&
+               lhs.minRelationship == rhs.minRelationship &&
+               lhs.maxRelationship == rhs.maxRelationship
+    }
 }
 
 enum DialogueOptionType: String, Codable {
@@ -91,4 +166,6 @@ enum DialogueOptionType: String, Codable {
     case investigate
     case intrigue
     case loveForSail
+    case relationshipIncrease
+    case relationshipDecrease
 }

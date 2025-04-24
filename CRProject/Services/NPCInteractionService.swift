@@ -371,7 +371,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
         case .alchemyCraft:
             return "boilded potion for"
         case .awareAboutVampire:
-            return "spread vampire treat to"
+            return "spread vampire threat to"
         case .awareAboutCasualty:
             return "told about casualty"
         case .findOutCasualty:

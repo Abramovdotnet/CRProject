@@ -95,19 +95,20 @@ struct PlayerWidget : View {
                 .padding(.horizontal, 8)
                 .padding(.vertical, 2)
             }
-
-            VStack(alignment: .leading) {
+            
+            VStack(alignment: .trailing) {
                 Spacer()
-                HStack {
-                    Image(systemName: player.profession.icon)
-                        .font(Theme.bodyFont)
-                        .foregroundColor(player.profession.color)
-                        .lineLimit(1)
-                    Text("\(player.profession.rawValue)")
-                        .font(Theme.bodyFont)
-                        .foregroundColor(player.profession.color)
-                        .lineLimit(1)
-                    Spacer()
+                VStack {
+                    HStack {
+                        Image(systemName: player.profession.icon)
+                            .font(Theme.bodyFont)
+                            .foregroundColor(player.profession.color)
+                            .lineLimit(1)
+                        Text("\(player.profession.rawValue)")
+                            .font(Theme.bodyFont)
+                            .foregroundColor(player.profession.color)
+                            .lineLimit(1)
+                    }
                 }
             }
             .padding(.bottom, 6)

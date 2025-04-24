@@ -140,8 +140,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "222"
-            endingLineNumber = "222"
+            startingLineNumber = "215"
+            endingLineNumber = "215"
             landmarkName = "advanceWorldState(advanceSafe:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -208,22 +208,6 @@
             endingLineNumber = "99"
             landmarkName = "body"
             landmarkType = "24">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "47AC2E7D-0A73-4571-A3C8-069D9D7C14A9"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/Services/GameStateService.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "40"
-            endingLineNumber = "40"
-            landmarkName = "init(gameTime:vampireNatureRevealService:gameEventsBus:locationReader:vampireReader:)"
-            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -396,8 +380,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
+            startingLineNumber = "70"
+            endingLineNumber = "70"
             landmarkName = "init(gameTime:vampireNatureRevealService:gameEventsBus:locationReader:vampireReader:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -485,22 +469,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "95A619D7-6584-4906-9BD3-9F82CFDD2AAF"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/ViewModels/DialogueViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "84"
-            endingLineNumber = "84"
-            landmarkName = "DialogueViewModel"
-            landmarkType = "3">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "6F85DC18-2C6B-46DA-AC98-255BB6292DEB"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -508,9 +476,9 @@
             filePath = "CRProject/ViewModels/DialogueViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "63"
-            endingLineNumber = "63"
-            landmarkName = "updateDialogue(text:options:)"
+            startingLineNumber = "57"
+            endingLineNumber = "57"
+            landmarkName = "loadInitialDialogue()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -524,9 +492,9 @@
             filePath = "CRProject/ViewModels/DialogueViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "180"
-            endingLineNumber = "180"
-            landmarkName = "onHypnosisGameComplete(score:)"
+            startingLineNumber = "165"
+            endingLineNumber = "165"
+            landmarkName = "handleLoveForSail(nextNodeId:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -540,8 +508,8 @@
             filePath = "CRProject/ViewModels/DialogueViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "174"
-            endingLineNumber = "174"
+            startingLineNumber = "159"
+            endingLineNumber = "159"
             landmarkName = "handleLoveForSail(nextNodeId:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -556,8 +524,8 @@
             filePath = "CRProject/ViewModels/DialogueViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "176"
-            endingLineNumber = "176"
+            startingLineNumber = "161"
+            endingLineNumber = "161"
             landmarkName = "handleLoveForSail(nextNodeId:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -572,8 +540,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "94"
-            endingLineNumber = "94"
+            startingLineNumber = "87"
+            endingLineNumber = "87"
             landmarkName = "movePlayerThroughHideouts(to:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -588,24 +556,8 @@
             filePath = "CRProject/ViewModels/DialogueViewModel.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "100"
-            endingLineNumber = "100"
-            landmarkName = "selectOption(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "97562EBF-5F9A-4FB4-AE0C-C531F642D8BC"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CRProject/ViewModels/DialogueViewModel.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
             landmarkName = "selectOption(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -620,8 +572,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "91"
-            endingLineNumber = "91"
+            startingLineNumber = "84"
+            endingLineNumber = "84"
             landmarkName = "movePlayerThroughHideouts(to:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -636,8 +588,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "97"
-            endingLineNumber = "97"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
             landmarkName = "movePlayerThroughHideouts(to:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -652,8 +604,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
             landmarkName = "movePlayerThroughHideouts(to:)"
             landmarkType = "7">
          </BreakpointContent>

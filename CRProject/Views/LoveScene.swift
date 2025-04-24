@@ -20,7 +20,7 @@ struct LoveScene: View {
             Image("loveSign")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 100, height: 100)
+                .frame(width: 200, height: 200)
                 .foregroundColor(.red)
                 // Read properties from viewModel
                 .scaleEffect(viewModel.scale)

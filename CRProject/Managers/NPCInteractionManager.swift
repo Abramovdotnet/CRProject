@@ -15,6 +15,9 @@ class NPCInteractionManager: ObservableObject {
         // Select NPC and update interaction state
         select(with: npc) 
         isShowingDialogue = true
+        
+        // Mark that the player has interacted with this NPC
+        npc.hasInteractedWithPlayer = true
     }
     
     func select(with npc: NPC){

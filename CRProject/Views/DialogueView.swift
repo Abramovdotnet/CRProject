@@ -69,8 +69,6 @@ struct DialogueView: View {
                                 .frame(maxWidth: bubbleMaxWidth)
                                 // THEN align the sized bubble left
                                 .frame(maxWidth: .infinity, alignment: .leading) 
-                                .transition(.opacity.combined(with: .scale(scale: 0.9))) 
-                                .id("npc_text_" + viewModel.currentDialogueText) 
                             }
                             
                             // Player Options
@@ -80,16 +78,12 @@ struct DialogueView: View {
                                 }
                                 .frame(maxWidth: bubbleMaxWidth)
                                 .frame(maxWidth: .infinity, alignment: .trailing)
-                                .transition(.opacity.combined(with: .scale(scale: 0.9)))
                                 .id("option_\(option.id)") 
-                                // Add padding below each button for vertical spacing
+                                .transition(.opacity)
                             }
                         }
                        .padding(.horizontal, 10) 
                        .padding(.vertical, 20) 
-                       .animation(.easeInOut(duration: 0.4), value: viewModel.currentDialogueText)
-                       .animation(.easeInOut(duration: 0.4), value: viewModel.options.map { $0.id })
-
                     }
                     .opacity(contentOpacity)
                     .frame(width: centralColumnWidth) 
@@ -196,7 +190,7 @@ private struct DialogueOptionButton: View {
                 if option.type != .normal {
                     Spacer()
                     getInteractionIcon()
-                        .foregroundColor(option.type == .intimidate ? .red : .pink)
+                        .foregroundColor(getIconColor())
                 }
             }
             .padding(12) 
@@ -211,7 +205,7 @@ private struct DialogueOptionButton: View {
     
     private func getInteractionIcon() -> Image {
         switch option.type {
-            case .intimidate:
+        case .intimidate:
             return Image(systemName: "exclamationmark.triangle")
         case .investigate:
             return Image(systemName: "person.fill.questionmark")
@@ -223,6 +217,31 @@ private struct DialogueOptionButton: View {
             return Image(systemName: "heart.fill")
         case .loveForSail:
             return Image(systemName: "heart.fill")
+        case .relationshipIncrease:
+            return Image(systemName: "arrow.up.heart.fill")
+        case .relationshipDecrease:
+            return Image(systemName: "arrow.down.heart.fill")
+        }
+    }
+    
+    private func getIconColor() -> Color {
+        switch option.type {
+        case .intimidate:
+            return .red
+        case .investigate:
+            return .blue
+        case .normal:
+            return .white
+        case .seduce:
+            return .pink
+        case .intrigue:
+            return .purple
+        case .loveForSail:
+            return .pink
+        case .relationshipIncrease:
+            return .green
+        case .relationshipDecrease:
+            return .red
         }
     }
     

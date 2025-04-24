@@ -7,7 +7,7 @@
 
 class NPCInteractionEventsService : GameService {
     private var gameEventBusService: GameEventsBusService = DependencyManager.shared.resolve()
-    private var npcInteractionEvents: [NPCInteractionEvent] = []
+    var npcInteractionEvents: [NPCInteractionEvent] = []
     private let maxEvents = 50;
     
     static var shared: NPCInteractionEventsService = DependencyManager.shared.resolve()

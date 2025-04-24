@@ -49,6 +49,7 @@ class NPC: ObservableObject, Character, Codable {
     @Published var items: [Item] = []
     
     @Published var lastPlayerInteractionDate: Date = Date()
+    @Published var hasInteractedWithPlayer: Bool = false
     
     var currentInteractionNPC: NPC? = nil
     
@@ -140,6 +141,10 @@ class NPC: ObservableObject, Character, Codable {
         }
     }
     
+    var isFirstConversation: Bool {
+        return !hasInteractedWithPlayer
+    }
+    
     enum CodingKeys: String, CodingKey {
         case id, index, name, sex, age, profession, bloodMeter, coins, morality, motivation
         case isVampire, isUnknown, isIntimidated, intimidationDay, isBeasyByPlayerAction
@@ -147,7 +152,7 @@ class NPC: ObservableObject, Character, Codable {
         case specialBehaviorTime, isVampireAttackWitness, isCasualtyWitness, casualtyNpcId, isCrimeWitness
         case homeLocationId, currentLocationId, typicalActivities, workActivities, leisureActivities
         case currentActivity, background, playerRelationship, npcsRelationship, items, lastPlayerInteractionDate
-        case deathStatus
+        case deathStatus, hasInteractedWithPlayer
         case alliedWithNPCId
     }
 
@@ -189,6 +194,7 @@ class NPC: ObservableObject, Character, Codable {
         items = try container.decode([Item].self, forKey: .items)
         lastPlayerInteractionDate = try container.decode(Date.self, forKey: .lastPlayerInteractionDate)
         deathStatus = try container.decode(DeathStatus.self, forKey: .deathStatus)
+        hasInteractedWithPlayer = try container.decode(Bool.self, forKey: .hasInteractedWithPlayer)
         
         if let alliedId = try container.decodeIfPresent(Int.self, forKey: .alliedWithNPCId) {
             // Store the ID; resolution to actual NPC object needs to happen elsewhere
@@ -235,6 +241,7 @@ class NPC: ObservableObject, Character, Codable {
         try container.encode(items, forKey: .items)
         try container.encode(lastPlayerInteractionDate, forKey: .lastPlayerInteractionDate)
         try container.encode(deathStatus, forKey: .deathStatus)
+        try container.encode(hasInteractedWithPlayer, forKey: .hasInteractedWithPlayer)
         
         try container.encodeIfPresent(alliedWithNPC?.id, forKey: .alliedWithNPCId)
     }

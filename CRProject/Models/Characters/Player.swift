@@ -16,6 +16,8 @@ class Player: ObservableObject, Character, Codable {
     @Published var coins: Coins = Coins()
     @Published var currentLocationId: Int = 0
     @Published var items: [Item] = []
+    
+    var processedRelationshipDialogueNodes: [String] = []
 
     // Non-Published properties
     var id: Int = 0
@@ -56,11 +58,21 @@ class Player: ObservableObject, Character, Codable {
             self.bloodMeter.addBlood(availableBlood) // Should trigger update via @Published bloodMeter
         }
     }
+    
+    func processRelationshipDialogueNode(nodeId: String) {
+        if !processedRelationshipDialogueNodes.contains(nodeId) {
+            processedRelationshipDialogueNodes.append(nodeId)
+        }
+    }
+    
+    func checkIsRelationshipDialogueNodeProcessed(nodeId: String) -> Bool {
+        return processedRelationshipDialogueNodes.contains(nodeId)
+    }
 
     // --- Codable Conformance ---
     enum CodingKeys: String, CodingKey {
         // Include all properties that need saving, published or not
-        case id, index, name, sex, age, profession, bloodMeter, coins, isVampire, isAlive, isUnknown, isIntimidated, isBeasyByPlayerAction, intimidationDay, homeLocationId, currentLocationId, hiddenAt, items, desiredVictim
+        case id, index, name, sex, age, profession, bloodMeter, coins, isVampire, isAlive, isUnknown, isIntimidated, isBeasyByPlayerAction, intimidationDay, homeLocationId, currentLocationId, hiddenAt, items, desiredVictim, processedRelationshipDialogueNodes
     }
 
     required init(from decoder: Decoder) throws {
