@@ -77,7 +77,7 @@ struct NPCIconView: View {
     var body: some View {
         HStack(spacing: 4) {
             Text(npc.name)
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(Theme.textColor)
         }
     }
@@ -92,27 +92,27 @@ struct InteractionIconView: View {
         HStack(spacing: 4) {
             if hasSuccess {
                 Text("[\(isSuccess == true ? "Successfuly" : "Unsuccessfuly")] ")
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(isSuccess == true ? Color.green : Color.red)
                 +
                 Text(Image(systemName: type.icon))
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(type.color)
                 +
                 Text(" [\(type.description.capitalized)]")
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(type.color)
             } else {
                 Text(Image(systemName: type.icon))
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(type.color)
                 +
                 Text(" [\(type.description.capitalized)]")
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(type.color)
             }
         }
-        .font(Theme.smallFont)
+        .font(Theme.bodyFont)
     }
 }
 
@@ -134,63 +134,63 @@ struct ChatMessageView: View {
     
     private func buildMessageText() -> Text {
         let timestampText = Text("\(message.timestampHourString) ")
-            .font(Theme.smallFont)
+            .font(Theme.bodyFont)
             .foregroundColor(Theme.textColor)
 
         if !message.message.isEmpty {
             return timestampText + Text(message.message)
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(typeColor)
         } else if message.isDiscussion, let interactionType = message.rumorInteractionType {
             let baseText = timestampText + Text("\(message.primaryNPC?.name ?? "") discussed with \(message.secondaryNPC?.name ?? "") how \(message.rumorPrimaryNPC?.name ?? "") ")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(Theme.textColor)
 
             let interactionIconText = Text(Image(systemName: interactionType.icon))
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(interactionType.color)
 
             let interactionDescText = Text(" [\(interactionType.description.capitalized)] ")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(interactionType.color)
 
             let secondaryRumorText = Text("\(message.rumorSecondaryNPC?.name ?? "") at ")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(Theme.textColor)
 
             let locationText = Text("\(message.messageLocation ?? "")")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(.yellow)
 
             return baseText + interactionIconText + interactionDescText + secondaryRumorText + locationText
         } else if let interactionType = message.interactionType {
             var combinedText = timestampText + Text("\(message.primaryNPC?.name ?? "") ")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(Theme.textColor)
 
             if message.hasSuccess {
                 combinedText = combinedText + Text("[\(message.isSuccess == true ? "Successfully" : "Unsuccessfully")] ")
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(message.isSuccess == true ? Color.green : Color.red)
             }
 
             if interactionType.hasCoinsExchange {
                 combinedText = combinedText + Text(Image(systemName: "cedisign"))
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(Color.green) + Text(" ")
             }
 
             combinedText = combinedText + Text(Image(systemName: interactionType.icon))
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(interactionType.color)
 
             combinedText = combinedText + Text(" [\(interactionType.description.capitalized)] ")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(interactionType.color)
 
             if let secondaryNPC = message.secondaryNPC {
                 combinedText = combinedText + Text(secondaryNPC.name)
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(Theme.textColor)
             }
             return combinedText
@@ -201,63 +201,63 @@ struct ChatMessageView: View {
     
     private func buildPlayerMessageText() -> Text {
         let timestampText = Text("\(message.timestampHourString) ")
-            .font(Theme.smallFont)
+            .font(Theme.bodyFont)
             .foregroundColor(Theme.textColor)
 
         if !message.message.isEmpty {
             return timestampText + Text(message.message)
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(typeColor)
         } else if message.isDiscussion, let interactionType = message.rumorInteractionType {
             let baseText = timestampText + Text("\(message.player?.name ?? "") discussed with \(message.secondaryNPC?.name ?? "") how \(message.rumorPrimaryNPC?.name ?? "") ")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(Theme.textColor)
 
             let interactionIconText = Text(Image(systemName: interactionType.icon))
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(interactionType.color)
 
             let interactionDescText = Text(" [\(interactionType.description.capitalized)] ")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(interactionType.color)
 
             let secondaryRumorText = Text("\(message.rumorSecondaryNPC?.name ?? "") at ")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(Theme.textColor)
 
             let locationText = Text("\(message.messageLocation ?? "")")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(.yellow)
 
             return baseText + interactionIconText + interactionDescText + secondaryRumorText + locationText
         } else if let interactionType = message.interactionType {
             var combinedText = timestampText + Text("\(message.player?.name ?? "") ")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(Theme.textColor)
 
             if message.hasSuccess {
                 combinedText = combinedText + Text("[\(message.isSuccess == true ? "Successfully" : "Unsuccessfully")] ")
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(message.isSuccess == true ? Color.green : Color.red)
             }
 
             if interactionType.hasCoinsExchange {
                 combinedText = combinedText + Text(Image(systemName: "cedisign"))
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(Color.green) + Text(" ")
             }
 
             combinedText = combinedText + Text(Image(systemName: interactionType.icon))
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(interactionType.color)
 
             combinedText = combinedText + Text(" [\(interactionType.description.capitalized)] ")
-                .font(Theme.smallFont)
+                .font(Theme.bodyFont)
                 .foregroundColor(interactionType.color)
 
             if let secondaryNPC = message.secondaryNPC {
                 combinedText = combinedText + Text(secondaryNPC.name)
-                    .font(Theme.smallFont)
+                    .font(Theme.bodyFont)
                     .foregroundColor(Theme.textColor)
             }
             return combinedText
@@ -305,7 +305,7 @@ struct ChatHistoryView: View {
             // Messages List
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(alignment: .leading, spacing: 2) {
+                    LazyVStack(alignment: .leading, spacing: 4) {
                         ForEach(eventsBus.messages) { message in
                             ChatMessageView(message: message)
                                 .id(message.id)

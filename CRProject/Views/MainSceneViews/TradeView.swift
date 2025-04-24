@@ -38,24 +38,6 @@ struct TradeView: View {
                         HorizontalPlayerWidget(player: player)
                             .frame(maxWidth: .infinity)
                         
-                        // Deal total in the middle
-                        VStack(spacing: 4) {
-                            Text("Deal Total")
-                                .font(Theme.smallFont)
-                                .foregroundColor(Theme.textColor)
-                            
-                            Text("\(Int(dealTotal))")
-                                .font(Theme.smallFont)
-                                .foregroundColor(dealTotal >= 0 ? .green : .red)
-                            Image(systemName: "cedisign")
-                                .font(Theme.smallFont)
-                                .foregroundColor(.green)
-                        }
-                        .padding()
-                        .background(Color.black.opacity(0.8))
-                        .cornerRadius(12)
-                        .frame(maxWidth: 100)
-                        
                         // NPC info
                         HorizontalNPCWidget(npc: npc, showCurrentActivity: false)
                             .frame(maxWidth: .infinity)
@@ -148,7 +130,7 @@ struct TradeView: View {
                                 }
                                 .padding(.vertical, 8)
                             }
-                            .padding(.vertical, 4)
+                            .padding(.vertical, 2)
                             .frame(maxHeight: .infinity)
                             .background(Color.black.opacity(0.8))
                             .cornerRadius(12)
@@ -158,13 +140,21 @@ struct TradeView: View {
                                 makeADeal()
                                 dismiss()
                             }) {
-                                Text("Make Deal")
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(Theme.textColor)
-                                    .padding()
-                                    .frame(maxWidth: .infinity)
-                                    .background(Color.black.opacity(0.8))
-                                    .cornerRadius(12)
+                                HStack {
+                                    Text("Make Deal")
+                                        .font(Theme.smallFont)
+                                        .foregroundColor(Theme.textColor)
+                                    Text("\(Int(dealTotal))")
+                                        .font(Theme.smallFont)
+                                        .foregroundColor(dealTotal >= 0 ? .green : .red)
+                                    Image(systemName: "cedisign")
+                                        .font(Theme.smallFont)
+                                        .foregroundColor(.green)
+                                }
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.black.opacity(0.8))
+                                .cornerRadius(12)
                             }
                             .opacity(couldMakeADeal() ? 1.0 : 0.3)
                             .disabled(selectedPlayerItems.isEmpty && selectedNPCItems.isEmpty || !couldMakeADeal())

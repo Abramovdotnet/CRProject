@@ -307,14 +307,14 @@ struct NPCWidget: View {
                         VStack(alignment: .leading, spacing: 2) {
                             HStack {
                                 Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
                                 Text(npc.name)
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(Theme.textColor)
                                 Spacer()
                                 Text("Age \(npc.age)")
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(Theme.textColor)
                             }
                             .padding(.top, 4)
@@ -322,11 +322,11 @@ struct NPCWidget: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack {
                                     Text("Relationship ")
-                                        .font(Theme.smallFont)
+                                        .font(Theme.bodyFont)
                                         .foregroundColor(Theme.textColor)
                                     Spacer()
                                     Text(getRelationshipPercentage())
-                                        .font(Theme.smallFont)
+                                        .font(Theme.bodyFont)
                                         .foregroundColor(getRelationshipColor())
                                 }
                                 
@@ -339,11 +339,11 @@ struct NPCWidget: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(alignment: .top) {
                                     Text("Health")
-                                        .font(Theme.smallFont)
+                                        .font(Theme.bodyFont)
                                         .foregroundColor(Theme.textColor)
                                     Spacer()
                                     Text(String(format: "%.1f%%", npc.bloodMeter.currentBlood))
-                                        .font(Theme.smallFont)
+                                        .font(Theme.bodyFont)
                                         .foregroundColor(Theme.bloodProgressColor)
                                 }
                                 
@@ -363,11 +363,11 @@ struct NPCWidget: View {
                         Spacer()
                         HStack {
                             Image(systemName: npc.profession.icon)
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
                                 .lineLimit(1)
                             Text("\(npc.profession.rawValue)")
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(npc.profession.color)
                                 .lineLimit(1)
                             Spacer()
@@ -375,10 +375,10 @@ struct NPCWidget: View {
                             if showCurrentActivity {
                                 Image(systemName: npc.isAlive ? npc.currentActivity.icon : "xmark.circle.fill")
                                     .foregroundColor(npc.isAlive ? npc.currentActivity.color : Theme.bloodProgressColor)
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                 Text(npc.isAlive ? npc.currentActivity.description : "Dead")
                                     .foregroundColor(npc.isAlive ? Theme.textColor : Theme.bloodProgressColor)
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .padding(.leading, -5)
                             }
                         }
@@ -419,7 +419,7 @@ struct NPCWidget: View {
         .disabled(isDisabled)
         .animation(.easeInOut(duration: 0.3), value: isSelected)
         .frame(width: buttonWidth, height: 320)
-        .shadow(color: npc.currentActivity.color.opacity(0.5), radius: 15)
+        .shadow(color: npc.currentActivity.color.opacity(0.5), radius: 10)
     }
     
     private func getNPCImage() -> Image {
@@ -512,11 +512,11 @@ struct NPCGridButtonOld: View {
                         if !npc.isUnknown {
                             HStack(spacing: 4) {
                                 Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
                                     .lineLimit(1)
                                 Image(systemName: npc.profession.icon)
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
                                     .lineLimit(1)
                             }
@@ -580,10 +580,10 @@ struct NPCGridButtonOld: View {
                         HStack {
                             Image(systemName: npc.isAlive ? npc.currentActivity.icon : "xmark.circle.fill")
                                 .foregroundColor(npc.isAlive ? npc.currentActivity.color : Theme.bloodProgressColor)
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                             Text(npc.isAlive ? npc.currentActivity.description : "Dead")
                                 .foregroundColor(npc.isAlive ? Theme.textColor : Theme.bloodProgressColor)
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .padding(.leading, -5)
                         }
                 

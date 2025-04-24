@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct NPCInfoView: View {
+struct DesiresView: View {
     let npc: NPC?
     var onAction: (NPCAction) -> Void
     var player: Player = GameStateService.shared.player!
@@ -25,45 +25,45 @@ struct NPCInfoView: View {
                             .opacity(0.3)
                         
                         Image(systemName: "drop.fill")
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Theme.bloodProgressColor)
                     }
                     .frame(width: 45, height: 45)
                     Text("Desires: ")
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .foregroundColor(Theme.bloodProgressColor)
                     
                     if player.desiredVictim.desiredSex != nil {
                         Text(player.desiredVictim.desiredSex?.rawValue ?? "")
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Theme.textColor)
                         Image(systemName: player.desiredVictim.desiredSex == .female ? "figure.stand.dress" : "figure.wave")
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Color.yellow)
                     }
                     if player.desiredVictim.desiredAgeRange != nil {
                         Text("Age ")
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Theme.textColor)
                         Text((player.desiredVictim.desiredAgeRange?.rangeDescription ?? ""))
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Color.yellow)
                     }
                     if let desiredProfession = player.desiredVictim.desiredProfession {
                         Text(desiredProfession.rawValue)
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(desiredProfession.color)
                         Image(systemName: desiredProfession.icon)
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(desiredProfession.color)
                     }
                     
                     if let desiredMorality = player.desiredVictim.desiredMorality {
                         Text(desiredMorality.description)
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(desiredMorality.color)
                         Image(systemName: desiredMorality.icon)
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(desiredMorality.color)
                     }
                 }
@@ -84,6 +84,7 @@ struct NPCInfoView: View {
         return "\(Float(npc?.specialBehaviorTime ?? 0) / 4.0 * 100)%"
     }
 }
+
 
 private struct ActionButton: View {
     let icon: String

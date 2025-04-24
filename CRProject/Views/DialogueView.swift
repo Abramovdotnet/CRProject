@@ -55,9 +55,9 @@ struct DialogueView: View {
                                     getNPCImage(npc: viewModel.npc)
                                         .resizable().frame(width: 30, height: 30).clipShape(RoundedRectangle(cornerRadius: 8)).shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
                                     VStack(alignment: .leading, spacing: 3) {
-                                        Text("\(viewModel.npc.name):").font(Theme.smallFont.weight(.semibold))
+                                        Text("\(viewModel.npc.name):").font(Theme.bodyFont.weight(.semibold))
                                         Text(viewModel.currentDialogueText)
-                                            .font(Theme.smallFont)
+                                            .font(Theme.bodyFont)
                                             .multilineTextAlignment(.leading)
                                     }
                                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -185,10 +185,10 @@ private struct DialogueOptionButton: View {
                 
                 VStack(alignment: .leading, spacing: 3) {
                     Text("\(character.name):")
-                        .font(Theme.smallFont.weight(.semibold))
+                        .font(Theme.bodyFont.weight(.semibold))
                     
                     Text(option.text)
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .multilineTextAlignment(.leading)
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)

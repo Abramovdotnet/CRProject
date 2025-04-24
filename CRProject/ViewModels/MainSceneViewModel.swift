@@ -26,6 +26,7 @@ class MainSceneViewModel: ObservableObject {
     @Published var player: Player?
     @Published var playerCoinsValue: Int = 0
     @Published var activeDialogueViewModel: DialogueViewModel? = nil
+    @Published var isShowingVampireGazeView = false
     
     private var cancellables = Set<AnyCancellable>()
     let gameStateService: GameStateService
@@ -597,9 +598,8 @@ class MainSceneViewModel: ObservableObject {
     
     // Make sure supporting methods are also in the ViewModel
     private func showVampireGaze(npc: NPC) {
-        npcManager.selectedNPC = npc // Or handle selection differently
-        // Need a way to present the gaze view, maybe another Published var?
-        // For now, assuming this is handled elsewhere or needs adjustment
+        npcManager.selectedNPC = npc
+        isShowingVampireGazeView = true
     }
 }
 

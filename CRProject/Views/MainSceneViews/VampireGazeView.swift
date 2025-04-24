@@ -53,8 +53,8 @@ struct VampireGazeView: View {
                 // Main Content (Horizontal Layout)
                 HStack(alignment: .center, spacing: 20) {
                     // NPC Info Card (Left Side)
-                    npcInfoCard
-                        .frame(width: 160, height: 260)
+                    NPCWidget(npc: npc, isSelected: false, isDisabled: false, onTap: { Void() }, onAction: { _ in Void ()})
+                        .padding(.top, 40)
                     
                     // Power Selection Area (Right Side)
                     VStack(spacing: 15) {
@@ -182,153 +182,6 @@ struct VampireGazeView: View {
             }
         }
     }
-    
-    private var npcInfoCard: some View {
-        ZStack(alignment: .top) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color.black.opacity(0.9),
-                            Color(npc.profession.color).opacity(0.05)
-                        ]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    Color.white.opacity(0.1),
-                                    Color.white.opacity(0.05),
-                                    Color.clear
-                                ]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 0.5
-                        )
-                )
-            
-            Color.black.opacity(0.9)
-            
-            VStack(alignment: .leading) {
-                ZStack {
-                    getNPCImage()
-                        .resizable()
-                        .frame(width: 160, height: 160)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .shadow(color: .black.opacity(0.3), radius: 4, x: 0, y: 2)
-                }
-                
-                if !npc.isUnknown {
-                    VStack(alignment: .leading, spacing: 2) {
-                        HStack {
-                            Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                .font(Theme.smallFont)
-                                .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                            Text(npc.name)
-                                .font(Theme.smallFont)
-                                .foregroundColor(Theme.textColor)
-                            Spacer()
-                            Text("Age \(npc.age)")
-                                .font(Theme.smallFont)
-                                .foregroundColor(Theme.textColor)
-                        }
-                        .padding(.top, 4)
-                        
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack {
-                                Text("Resistance")
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(Theme.textColor)
-                                Spacer()
-                                Text(String(format: "%.1f%%", VampireGaze.shared.calculateNPCResistance(npc: npc)))
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(Theme.bloodProgressColor)
-                            }
-                            
-                            GradientProgressBar(value: VampireGaze.shared.calculateNPCResistance(npc: npc), backgroundColor: npc.currentActivity.color.opacity(0.3))
-                                .frame(width: 140, height: 5)
-                                .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
-                        }
-                        .padding(.top, 4)
-
-                        VStack(alignment: .leading, spacing: 4) {
-                            HStack(alignment: .top) {
-                                Text("Health")
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(Theme.textColor)
-                                Spacer()
-                                Text(String(format: "%.1f%%", npc.bloodMeter.currentBlood))
-                                    .font(Theme.smallFont)
-                                    .foregroundColor(Theme.bloodProgressColor)
-                            }
-                            
-                            ProgressBar(value: Double(npc.bloodMeter.currentBlood / 100), color: Theme.bloodProgressColor, height: 6)
-                                .frame(width: 140)
-                                .shadow(color: Theme.bloodProgressColor.opacity(0.3), radius: 2)
-                        }
-                        .padding(.top, 8)
-                    }
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 2)
-                }
-            }
-            
-            if !npc.isUnknown {
-                VStack(alignment: .leading) {
-                    Spacer()
-                    HStack {
-                        Image(systemName: npc.profession.icon)
-                            .font(Theme.smallFont)
-                            .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
-                            .lineLimit(1)
-                        Text("\(npc.profession.rawValue)")
-                            .font(Theme.smallFont)
-                            .foregroundColor(npc.profession.color)
-                            .lineLimit(1)
-                        Spacer()
-                        
-                        Image(systemName: npc.isAlive ? npc.currentActivity.icon : "xmark.circle.fill")
-                            .foregroundColor(npc.isAlive ? npc.currentActivity.color : Theme.bloodProgressColor)
-                            .font(Theme.smallFont)
-                        Text(npc.isAlive ? npc.currentActivity.description : "Dead")
-                            .foregroundColor(npc.isAlive ? Theme.textColor : Theme.bloodProgressColor)
-                            .font(Theme.smallFont)
-                            .padding(.leading, -5)
-                    }
-                }
-                .padding(.bottom, 6)
-                .padding(.top, 2)
-                .padding(.horizontal, 8)
-            }
-            
-            if npc.isUnknown {
-                Image(systemName: "questionmark.circle")
-                    .font(Theme.superTitleFont)
-                    .foregroundColor(Theme.textColor)
-                    .animation(.easeInOut(duration: 0.3), value: npc.isUnknown)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            }
-            
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(npc.currentActivity.color.opacity(0.8), lineWidth: 2)
-                .background(Color.white.opacity(0.05))
-                .blur(radius: 0.5)
-        }
-        .cornerRadius(12)
-        .frame(width: 160, height: 280)
-        .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.black.opacity(0.3))
-                .blur(radius: 2)
-                .offset(y: 2)
-        )
-        .shadow(color: npc.currentActivity.color.opacity(0.5), radius: 15)
-    }
 }
 
 // MARK: - Enhanced Components
@@ -389,7 +242,7 @@ struct EnhancedPowerButton: View {
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
                         Text(data.power.description)
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(.white)
                             .lineLimit(2)
                             .fixedSize(horizontal: false, vertical: true)
@@ -398,7 +251,7 @@ struct EnhancedPowerButton: View {
                         Spacer()
                         
                         Text("\(Int(data.power.cost))🩸")
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Theme.bloodProgressColor)
                             .padding(.leading, 4)
                     }

@@ -11,7 +11,6 @@ struct MainSceneView: View {
     @State private var noneHideoutScale: CGFloat = 1.0
     @State private var shadowHideoutScale: CGFloat = 1.0
     @State private var showSmokeEffect = false
-    @State private var showingVampireGaze = false
     @State private var showingTrade = false
     @State private var showingInventory = false
     
@@ -152,7 +151,7 @@ struct MainSceneView: View {
                                     )
                                     Spacer()
                                 }
-                                .frame(width: 50)
+                                .frame(width: 15)
                                 Spacer()
                                 NPCSGridView(
                                     npcs: viewModel.npcs,
@@ -161,7 +160,7 @@ struct MainSceneView: View {
                                 Spacer()
                                 HStack(spacing: 10) {
                                     VStack {
-                                        NPCInfoView(npc: npcManager.selectedNPC, onAction: viewModel.handleNPCAction)
+                                        DesiresView(npc: npcManager.selectedNPC, onAction: viewModel.handleNPCAction)
                                             .id(npcManager.selectedNPC?.id ?? 0)
                                         
                                         if npcManager.selectedNPC != nil {
@@ -235,7 +234,7 @@ struct MainSceneView: View {
                                     .frame(maxHeight: .infinity, alignment: .top)
                                     .padding(.trailing, 10)
                                 }
-                                .frame(width: 420)
+                                .frame(width: 460)
                             }
                             .frame(maxHeight: .infinity)
                         }
@@ -274,9 +273,9 @@ struct MainSceneView: View {
                     Text("Loading Dialogue...")
                 }
             }
-            .sheet(isPresented: $showingVampireGaze) {
+            .sheet(isPresented: $viewModel.isShowingVampireGazeView) {
                 if let npc = npcManager.selectedNPC {
-                    VampireGazeView(npc: npc, isPresented: $showingVampireGaze, mainViewModel: viewModel)
+                    VampireGazeView(npc: npc, isPresented: $viewModel.isShowingVampireGazeView, mainViewModel: viewModel)
                 }
             }
             .sheet(isPresented: $showingTrade) {
@@ -289,11 +288,6 @@ struct MainSceneView: View {
             }
             .withDebugOverlay(viewModel: viewModel)
         }
-    }
-    
-    private func showVampireGaze(npc: NPC) {
-        npcManager.selectedNPC = npc
-        showingVampireGaze = true
     }
     
     func setDefaultHideoutButtonScale(hideoutType: HidingCell) {

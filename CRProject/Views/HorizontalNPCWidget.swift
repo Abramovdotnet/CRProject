@@ -52,21 +52,21 @@ struct HorizontalNPCWidget: View {
                         VStack(alignment: .leading, spacing: 2) {
                             HStack {
                                 Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(npc.isVampire ? Theme.primaryColor : Theme.textColor)
                                 Text(npc.name)
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(Theme.textColor)
                                 Image(systemName: npc.profession.icon)
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(npc.profession.color)
                                 Text(npc.profession.rawValue)
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(npc.profession.color)
 
                                 Spacer()
                                 Text("Age \(npc.age)")
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(Theme.textColor)
                             }
                             .padding(.top, 5)
@@ -75,11 +75,11 @@ struct HorizontalNPCWidget: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(alignment: .top) {
                                     Text("Health")
-                                        .font(Theme.smallFont)
+                                        .font(Theme.bodyFont)
                                         .foregroundColor(Theme.textColor)
                                     Spacer()
                                     Text(String(format: "%.1f%%", npc.bloodMeter.currentBlood))
-                                        .font(Theme.smallFont)
+                                        .font(Theme.bodyFont)
                                         .foregroundColor(Theme.bloodProgressColor)
                                 }
                                 
@@ -92,11 +92,11 @@ struct HorizontalNPCWidget: View {
                             VStack(alignment: .leading, spacing: 2) {
                                 HStack {
                                     Text("Relationship ")
-                                        .font(Theme.smallFont)
+                                        .font(Theme.bodyFont)
                                         .foregroundColor(Theme.textColor)
                                     Spacer()
                                     Text(getRelationshipPercentage())
-                                        .font(Theme.smallFont)
+                                        .font(Theme.bodyFont)
                                         .foregroundColor(getRelationshipColor())
                                 }
                                 
@@ -113,42 +113,42 @@ struct HorizontalNPCWidget: View {
                 HStack(spacing: 6) {
                     if !npc.isUnknown {
                         Text(npc.sex.rawValue)
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Theme.textColor)
                         Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Color.yellow)
                         Text(npc.age.description)
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Color.yellow)
                         
                         if showCurrentActivity {
                             Image(systemName: npc.currentActivity.icon)
                                 .foregroundColor(npc.currentActivity.color)
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .padding(.leading, 3)
                             Text(npc.currentActivity.description)
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(npc.currentActivity.color)
                         }
                         
                         if npc.isSpecialBehaviorSet {
                             Text(getSpecialBehaviorProgress())
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(Theme.bloodProgressColor)
                         }
                     }
                     Image(systemName: npc.morality.icon)
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .foregroundColor(npc.morality.color)
                     Text(npc.morality.description)
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .foregroundColor(npc.morality.color)
                     Image(systemName: npc.motivation.icon)
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .foregroundColor(npc.motivation.color)
                     Text(npc.motivation.description)
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .foregroundColor(npc.motivation.color)
                 }
                 .padding(.bottom, 5)
@@ -161,9 +161,8 @@ struct HorizontalNPCWidget: View {
                 .stroke(npc.currentActivity.color.opacity(0.8), lineWidth: 2)
                 .background(Color.white.opacity(0.05))
                 .blur(radius: 0.5)
-                .padding(.horizontal, -2)
         }
-        .frame(height: 100)
+        .frame(height: 120)
         .cornerRadius(12)
         .background(
             RoundedRectangle(cornerRadius: 12)
@@ -186,7 +185,7 @@ struct HorizontalNPCWidget: View {
     }
     
     private func getSpecialBehaviorProgress() -> String {
-        return "\(Float(npc.specialBehaviorTime ?? 0) / 4.0 * 100)%"
+        return "\(Float(npc.specialBehaviorTime) / 4.0 * 100)%"
     }
     
     private func getRelationshipPercentage() -> String {

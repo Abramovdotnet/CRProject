@@ -49,21 +49,21 @@ struct HorizontalPlayerWidget: View {
                     VStack(alignment: .leading, spacing: 2) {
                         HStack {
                             Image(systemName: player.sex == .female ? "figure.stand.dress" : "figure.wave")
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(player.isVampire ? Theme.primaryColor : Theme.textColor)
                             Text(player.name)
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(Theme.textColor)
                             Image(systemName: player.profession.icon)
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(player.profession.color)
                             Text(player.profession.rawValue)
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(player.profession.color)
 
                             Spacer()
                             Text("Age \(player.age)")
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(Theme.textColor)
                         }
                         .padding(5)
@@ -73,13 +73,13 @@ struct HorizontalPlayerWidget: View {
     
                 HStack(spacing: 6) {
                     Text(player.sex.rawValue)
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .foregroundColor(Theme.textColor)
                     Image(systemName: player.sex == .female ? "figure.stand.dress" : "figure.wave")
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .foregroundColor(Color.yellow)
                     Text(player.age.description)
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .foregroundColor(Color.yellow)
                 }
                 .padding(5)
@@ -90,9 +90,8 @@ struct HorizontalPlayerWidget: View {
                 .stroke(Theme.bloodProgressColor.opacity(0.8), lineWidth: 2)
                 .background(Color.white.opacity(0.05))
                 .blur(radius: 0.5)
-                .padding(.horizontal, -2)
         }
-        .frame(height: 100)
+        .frame(height: 120)
         .cornerRadius(12)
         .background(
             RoundedRectangle(cornerRadius: 12)

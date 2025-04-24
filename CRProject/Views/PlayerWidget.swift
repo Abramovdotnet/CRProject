@@ -63,14 +63,14 @@ struct PlayerWidget : View {
                 VStack(alignment: .leading, spacing: 2) {
                     HStack {
                         Image(systemName: player.sex == .female ? "figure.stand.dress" : "figure.wave")
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(player.isVampire ? Theme.primaryColor : Theme.textColor)
                         Text(player.name)
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Theme.textColor)
                         Spacer()
                         Text("Age \(player.age)")
-                            .font(Theme.smallFont)
+                            .font(Theme.bodyFont)
                             .foregroundColor(Theme.textColor)
                     }
                     .padding(.top, 4)
@@ -78,11 +78,11 @@ struct PlayerWidget : View {
                     VStack(alignment: .leading, spacing: 4) {
                         HStack(alignment: .top) {
                             Text("Health")
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(Theme.textColor)
                             Spacer()
                             Text(String(format: "%.1f%%", player.bloodMeter.currentBlood))
-                                .font(Theme.smallFont)
+                                .font(Theme.bodyFont)
                                 .foregroundColor(Theme.bloodProgressColor)
                         }
                         
@@ -100,11 +100,11 @@ struct PlayerWidget : View {
                 Spacer()
                 HStack {
                     Image(systemName: player.profession.icon)
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .foregroundColor(player.profession.color)
                         .lineLimit(1)
                     Text("\(player.profession.rawValue)")
-                        .font(Theme.smallFont)
+                        .font(Theme.bodyFont)
                         .foregroundColor(player.profession.color)
                         .lineLimit(1)
                     Spacer()
@@ -115,7 +115,7 @@ struct PlayerWidget : View {
             .padding(.horizontal, 8)
             
             RoundedRectangle(cornerRadius: 12)
-            .stroke(Theme.bloodProgressColor.opacity(0.8), lineWidth: 2)
+                .stroke(Theme.bloodProgressColor.opacity(0.8), lineWidth: 2)
                 .background(Color.white.opacity(0.05))
                 .blur(radius: 0.5)
         }
