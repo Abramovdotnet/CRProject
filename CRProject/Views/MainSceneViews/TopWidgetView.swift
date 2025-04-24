@@ -70,6 +70,14 @@ struct TopWidgetView: View {
                 .frame(width: 100)
                 .padding(.leading, -5)
             
+            Image(systemName: "cedisign")
+                .font(Theme.smallFont)
+                .foregroundColor(.green)
+            
+            Text("\(viewModel.getPlayer().coins.value)")
+                .font(Theme.smallFont)
+                .foregroundColor(.green)
+            
             Button(action: {
                 viewModel.respawnNPCs()
             }) {

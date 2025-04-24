@@ -151,11 +151,13 @@ class VampireGaze: GameService {
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .seductedByPlayer
                 npc.increasePlayerRelationship(with: 5)
+                StatisticsService.shared.increasePeopleSeducted()
             } else if power == .dominate {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .allyingPlayer
                 npc.increasePlayerRelationship(with: 10)
+                StatisticsService.shared.increasePeopleIntimidated()
             } else if power == .follow {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4

@@ -88,6 +88,8 @@ class DialogueViewModel: ObservableObject {
             handleSeduction(nextNodeId: option.nextNodeId)
         case .investigate:
             handleInvestigation(nextNodeId: option.nextNodeId)
+        case .loveForSail:
+            handleLoveForSail(nextNodeId: option.nextNodeId)
         case .normal:
             processNextNode(option.nextNodeId)
         case .intrigue:
@@ -117,6 +119,15 @@ class DialogueViewModel: ObservableObject {
     private func handleInvestigation(nextNodeId: String) {
         if let player = gameStateService.player {
             investigationService.investigate(inspector: player, investigationObject: npc)
+            VibrationService.shared.lightTap()
+            processNextNode(nextNodeId)
+        }
+    }
+    
+    private func handleLoveForSail(nextNodeId: String) {
+        if let player = gameStateService.player {
+            CoinsManagementService.shared.moveCoins(from: player, to: npc, amount: NPCInteraction.prostitution.interactionBaseCost)
+            npc.playerRelationship.increase(amount: 5)
             VibrationService.shared.lightTap()
             processNextNode(nextNodeId)
         }

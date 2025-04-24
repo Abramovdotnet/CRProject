@@ -268,6 +268,7 @@ struct TradeView: View {
         selectedNPCItems.removeAll()
         
         npc.playerRelationship.increase(amount: 2)
+        StatisticsService.shared.increaseBartersCompleted()
         
         npcManager.playerInteracted(with: npc)
         

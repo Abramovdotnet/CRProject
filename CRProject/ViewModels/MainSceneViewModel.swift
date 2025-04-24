@@ -112,6 +112,16 @@ class MainSceneViewModel: ObservableObject {
                 self.sceneAwareness = 100
             }
             .store(in: &cancellables)
+         
+        // Subscribe to awareness changes
+        NotificationCenter.default
+            .publisher(for: .awarenessIncreased)
+            .sink { [weak self] _ in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self?.updateSceneAwareness()
+                }
+            }
+            .store(in: &cancellables)
         
         // Subscribe to time advancement notifications
         NotificationCenter.default

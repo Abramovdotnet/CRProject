@@ -7,6 +7,23 @@ class StatisticsService: GameService {
     @Published private(set) var victimsDrained: Int = 0
     @Published private(set) var peopleKilled: Int = 0
     @Published private(set) var investigations: Int = 0
+    @Published private(set) var peopleSeducted: Int = 0
+    @Published private(set) var peopleIntimidated: Int = 0
+    @Published private(set) var bartersCompleted: Int = 0
+    
+    static let shared: StatisticsService = DependencyManager.shared.resolve()
+    
+    func increasePeopleSeducted() {
+        peopleSeducted += 1
+    }
+    
+    func increasePeopleIntimidated() {
+        peopleIntimidated += 1
+    }
+    
+    func increaseBartersCompleted() {
+        bartersCompleted += 1
+    }
     
     func incrementDaysSurvived() {
         daysSurvived += 1

@@ -89,8 +89,19 @@ class GameStateService : ObservableObject, GameService{
     func movePlayerThroughHideouts(to: HidingCell) {
         player?.hiddenAt = to
         
-        if player?.hiddenAt != nil {
+        if player?.hiddenAt != nil && player?.hiddenAt != HidingCell.none {
             npcManager.selectedNPC = nil
+            
+            // Get active NPCs
+            guard let npcs = currentScene?.getNPCs().filter( { $0.currentActivity != .sleep && $0.currentActivity != .bathe && $0.currentActivity != .fleeing && $0.isSpecialBehaviorSet == false }) else { return }
+            
+            let npcCount = npcs.count
+            
+            if npcCount > 0 {
+                let awarenessIncrease = 4 * npcCount
+                vampireNatureRevealService.increaseAwareness(amount: Float(awarenessIncrease))
+                gameEventsBus.addWarningMessage("* \(npcCount) just saw by strange disappearance!*")
+            }
         }
     }
     

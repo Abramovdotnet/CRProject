@@ -81,6 +81,7 @@ struct DialogueRequirements: Codable {
     let minStrength: Int?
     let isNight: Bool?
     let isIndoor: Bool?
+    let coins: Int?
 }
 
 enum DialogueOptionType: String, Codable {
@@ -89,4 +90,5 @@ enum DialogueOptionType: String, Codable {
     case seduce
     case investigate
     case intrigue
+    case loveForSail
 }

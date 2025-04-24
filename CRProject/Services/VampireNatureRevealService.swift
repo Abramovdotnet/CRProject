@@ -3,6 +3,7 @@ import Combine
 
 extension Notification.Name {
     static let exposed = Notification.Name("exposed")
+    static let awarenessIncreased = Notification.Name("awarenessIncreased")
 }
 
 class VampireNatureRevealService: ObservableObject, GameService {
@@ -33,6 +34,8 @@ class VampireNatureRevealService: ObservableObject, GameService {
         
         if awarenessLevel >= 100 {
             NotificationCenter.default.post(name: .exposed, object: nil)
+        } else {
+            NotificationCenter.default.post(name: .awarenessIncreased, object: nil)
         }
         
         if awarenessLevel > 70 {

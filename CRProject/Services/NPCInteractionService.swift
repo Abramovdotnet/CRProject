@@ -157,6 +157,8 @@ class NPCInteractionService : GameService {
             handleConversation(currentNPC: currentNPC, otherNPC: otherNPC)
         case .prostitution:
             handleProstitution(currentNPC: currentNPC, otherNPC: otherNPC)
+        case .makingLove:
+            handleMakingLove(currentNPC: currentNPC, otherNPC: otherNPC)
         case .argue:
             handleArgue(currentNPC: currentNPC, otherNPC: otherNPC)
         case .patrol:
@@ -254,6 +256,12 @@ class NPCInteractionService : GameService {
         currentNPC.increaseNPCRelationship(with: 5, of: otherNPC)
         otherNPC.increaseNPCRelationship(with: 5, of: currentNPC)
     }
+    
+    private func handleMakingLove(currentNPC: NPC, otherNPC: NPC)
+    {
+        currentNPC.increaseNPCRelationship(with: 7, of: otherNPC)
+        otherNPC.increaseNPCRelationship(with: 7, of: currentNPC)
+    }
       
     private func handleArgue(currentNPC: NPC, otherNPC: NPC)
     {
@@ -307,6 +315,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
     case gambleFight = "gamble fight"
     case observing = "observing"
     case prostitution = "prostitution"
+    case makingLove = "makingLove"
     case flirt = "flirt"
     case smithingCraft = "smithingCraft"
     case alchemyCraft = "alchemyCraft"
@@ -352,6 +361,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
         case .observing:
             return "observing"
         case .prostitution:
+            return "spent time with"
+        case .makingLove:
             return "made love with"
         case .flirt:
             return "flirted with"
@@ -463,6 +474,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return 0
         case .prostitution:
             return 200
+        case .makingLove:
+            return 0
         case .flirt:
             return 0
         case .smithingCraft:
@@ -535,6 +548,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
         case .observing:
             return "figure.meditation"
         case .prostitution:
+            return NPCActivityType.love.icon
+        case .makingLove:
             return NPCActivityType.love.icon
         case .flirt:
             return NPCActivityType.flirt.icon
@@ -609,6 +624,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
         case .observing:
             return Color.green
         case .prostitution:
+            return NPCActivityType.love.color
+        case .makingLove:
             return NPCActivityType.love.color
         case .flirt:
             return NPCActivityType.flirt.color
@@ -797,6 +814,26 @@ enum NPCInteraction : String, CaseIterable, Codable {
                     if wouldEntertain {
                         CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: NPCInteraction.prostitution.interactionBaseCost)
                         availableInteractions.append(.prostitution)
+                    }
+                }
+            }
+            
+            // MakingLove
+            if currentNPC.sex != otherNPC.sex && currentNPC.currentActivity == otherNPC.currentActivity {
+                if currentNPC.getNPCRelationshipValue(of: otherNPC) > 20 {
+                    if (abs(currentNPC.age - otherNPC.age) < 10) && (currentNPC.age + otherNPC.age < 100) {
+                        var valueCap = gameTimeService.isNightTime ? 40 : 90
+                        var locationMatch = currentScene.sceneType == .house || currentScene.sceneType == .tavern || currentScene.sceneType == .brothel || currentScene.sceneType == .bathhouse
+                        
+                        if locationMatch {
+                            valueCap -= 30
+                        }
+                  
+                        var wouldMakeLove = Int.random(in: 0...100) > valueCap
+                            
+                        if wouldMakeLove {
+                            availableInteractions.append(.makingLove)
+                        }
                     }
                 }
             }

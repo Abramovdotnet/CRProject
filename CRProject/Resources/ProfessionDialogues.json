@@ -359,6 +359,64 @@
             }
         }
     },
+    "Courtesan": {
+        "initialNode": "courtesan_greeting",
+        "nodes": {
+            "courtesan_greeting": {
+                "text": "Hello honey. How you doing?",
+                "options": [
+                    {
+                        "text": "Im just looking for company.",
+                        "type": "normal",
+                        "nextNode": "courtesan_interaction"
+                    },
+                    {
+                        "text": "May I know your name? [Investigate]",
+                        "type": "investigate",
+                        "nextNode": "investigation_intro"
+                    }
+                ]
+            },
+            "courtesan_interaction": {
+                "text": "So, then, let me share pleasure with you... Do you have money?",
+                "options": [
+                    {
+                        "text": "Sure, take it. (200) [Love For Sail]",
+                        "type": "loveForSail",
+                        "nextNode": "courtesan_scene",
+                        "requirements": {
+                            "coins": 200
+                        }
+                    },
+                    {
+                        "text": "Not today, sweety.",
+                        "type": "normal",
+                        "nextNode": "courtesan_end"
+                    }
+                ]
+            },
+            "courtesan_scene": {
+                "text": "That was unbelieveble... Come back to me as soon as you wish.",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            },
+            "courtesan_end": {
+                "text": "Well, please dont waste my time.",
+                "options": [
+                    {
+                        "text": "Leave",
+                        "type": "normal",
+                        "nextNode": "end"
+                    }
+                ]
+            }
+        }
+    },
     "Miller": {
         "initialNode": "miller_greeting",
         "nodes": {

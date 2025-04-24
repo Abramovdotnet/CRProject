@@ -143,7 +143,7 @@ private struct DialogueOptionButton: View {
                 Spacer()
                 
                 if option.type != .normal {
-                    Image(systemName: option.type == .intimidate ? "exclamationmark.triangle" : "person.fill.questionmark")
+                    getInteractionIcon()
                         .foregroundColor(option.type == .intimidate ? .red : .pink)
                 }
             }
@@ -157,4 +157,21 @@ private struct DialogueOptionButton: View {
         }
         .buttonStyle(PlainButtonStyle())
     }
-} 
+    
+    private func getInteractionIcon() -> Image {
+        switch option.type {
+            case .intimidate:
+            return Image(systemName: "exclamationmark.triangle")
+        case .investigate:
+            return Image(systemName: "person.fill.questionmark")
+        case .normal:
+            return Image(systemName: "message.fill")
+        case .seduce:
+            return Image(systemName: "heart.fill")
+        case .intrigue:
+            return Image(systemName: "heart.fill")
+        case .loveForSail:
+            return Image(systemName: "heart.fill")
+        }
+    }
+}
