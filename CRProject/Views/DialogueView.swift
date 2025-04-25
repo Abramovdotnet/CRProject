@@ -68,19 +68,30 @@ struct DialogueView: View {
                                 // Apply max width first
                                 .frame(maxWidth: bubbleMaxWidth)
                                 // THEN align the sized bubble left
-                                .frame(maxWidth: .infinity, alignment: .leading) 
+                                .frame(maxWidth: .infinity, alignment: .leading)
+                                .animation(.easeInOut(duration: 0.3), value: viewModel.currentDialogueText)
                             }
                             
-                            // Player Options
-                            ForEach(viewModel.options) { option in
-                                DialogueOptionButton(character: GameStateService.shared.player!, option: option) {
-                                    viewModel.selectOption(option)
+                            VStack {
+                                // Player Options
+                                ForEach(viewModel.options) { option in
+                                    DialogueOptionButton(character: GameStateService.shared.player!, option: option) {
+                                        viewModel.selectOption(option)
+                                    }
+                                    .frame(maxWidth: bubbleMaxWidth)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .id("option_\(option.id)")
+                                    .transition(.asymmetric(
+                                        insertion: .opacity.animation(.easeIn(duration: 0.3)),
+                                        removal: .opacity.animation(.easeOut(duration: 0.3))
+                                    ))
                                 }
-                                .frame(maxWidth: bubbleMaxWidth)
-                                .frame(maxWidth: .infinity, alignment: .trailing)
-                                .id("option_\(option.id)") 
-                                .transition(.opacity)
                             }
+                            .transition(.asymmetric(
+                                insertion: .opacity.animation(.easeIn(duration: 0.3)),
+                                removal: .opacity.animation(.easeOut(duration: 0.3))
+                            ))
+                            .animation(.easeInOut(duration: 0.3), value: viewModel.currentDialogueText)
                         }
                        .padding(.horizontal, 10) 
                        .padding(.vertical, 20) 

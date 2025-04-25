@@ -33,14 +33,14 @@ class GameEventsBusService: GameService, ObservableObject {
         NotificationCenter.default
             .publisher(for: .nightAppears)
             .sink { [weak self] _ in
-                self?.addSystemMessage("Night falls across the land...")
+                self?.addWarningMessage("Night falls across the land...")
             }
             .store(in: &cancellables)
         
         NotificationCenter.default
             .publisher(for: .dayAppears)
             .sink { [weak self] _ in
-                self?.addSystemMessage("Dawn breaks, a new day begins.")
+                self?.addWarningMessage("Dawn breaks, a new day begins.")
             }
             .store(in: &cancellables)
     }

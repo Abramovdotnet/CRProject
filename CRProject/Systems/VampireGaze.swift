@@ -21,14 +21,14 @@ class VampireGaze: GameService {
         case follow // Force follow
         
         static func availableCases(npc: NPC) -> [GazePower] {
-            if npc.isIntimidated {
-                return npc.currentActivity == .fleeing ? [.mesmerize] : [.scare, .follow]
+            if npc.currentActivity == .seductedByPlayer {
+                return [.mesmerize, .dominate, .scare, .follow]
+            } else if npc.currentActivity == .allyingPlayer {
+                return [.mesmerize, .scare]
+            } else if npc.currentActivity == .followingPlayer {
+                return [.mesmerize, .dominate, .scare, .charm]
             } else {
-                if npc.currentActivity != .fleeing {
-                    return [.charm, .mesmerize, .dominate, .scare, .follow]
-                } else {
-                    return [.charm, .mesmerize, .dominate]
-                }
+                return [.charm, .mesmerize, .dominate, .scare, .follow]
             }
         }
         
@@ -145,18 +145,18 @@ class VampireGaze: GameService {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .fleeing
-                npc.decreasePlayerRelationship(with: 10)
+                npc.decreasePlayerRelationship(with: 5)
             } else if power == .charm {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .seductedByPlayer
-                npc.increasePlayerRelationship(with: 5)
+                npc.increasePlayerRelationship(with: 1)
                 StatisticsService.shared.increasePeopleSeducted()
             } else if power == .dominate {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .allyingPlayer
-                npc.increasePlayerRelationship(with: 10)
+                npc.increasePlayerRelationship(with: 2)
                 StatisticsService.shared.increasePeopleIntimidated()
             } else if power == .follow {
                 npc.isSpecialBehaviorSet = true

@@ -9,11 +9,6 @@
                         "text": "I'd like to ask about your work",
                         "type": "normal",
                         "nextNode": "baker_work"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -74,29 +69,6 @@
                         "nextNode": "baker_greeting"
                     }
                 ]
-            },
-            "investigation_intro": {
-                "text": "Oh, of course! I'm the local baker.",
-                "options": [
-                    {
-                        "text": "Nice to meet you",
-                        "type": "normal",
-                        "nextNode": "investigation_success",
-                        "effects": {
-                            "revealNPCInfo": true
-                        }
-                    }
-                ]
-            },
-            "investigation_success": {
-                "text": "Likewise! Now, what can I help you with?",
-                "options": [
-                    {
-                        "text": "Let's talk about something else",
-                        "type": "normal",
-                        "nextNode": "baker_greeting"
-                    }
-                ]
             }
         }
     },
@@ -110,11 +82,6 @@
                         "text": "What do you sell?",
                         "type": "normal",
                         "nextNode": "merchant_goods"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -172,29 +139,6 @@
                         "nextNode": "merchant_greeting"
                     }
                 ]
-            },
-            "investigation_intro": {
-                "text": "Ah, a curious customer! I'm the local merchant.",
-                "options": [
-                    {
-                        "text": "Nice to meet you",
-                        "type": "normal",
-                        "nextNode": "investigation_success",
-                        "effects": {
-                            "revealNPCInfo": true
-                        }
-                    }
-                ]
-            },
-            "investigation_success": {
-                "text": "The pleasure is mine! Now, about that trade...",
-                "options": [
-                    {
-                        "text": "Let's discuss something else",
-                        "type": "normal",
-                        "nextNode": "merchant_greeting"
-                    }
-                ]
             }
         }
     },
@@ -208,11 +152,6 @@
                         "text": "What's happening here?",
                         "type": "normal",
                         "nextNode": "guard_situation"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -255,29 +194,6 @@
                         "nextNode": "guard_greeting"
                     }
                 ]
-            },
-            "investigation_intro": {
-                "text": "*adjusts armor* I'm on duty here.",
-                "options": [
-                    {
-                        "text": "Nice to meet you",
-                        "type": "normal",
-                        "nextNode": "investigation_success",
-                        "effects": {
-                            "revealNPCInfo": true
-                        }
-                    }
-                ]
-            },
-            "investigation_success": {
-                "text": "Now, if there's nothing else...",
-                "options": [
-                    {
-                        "text": "Let's discuss something else",
-                        "type": "normal",
-                        "nextNode": "guard_greeting"
-                    }
-                ]
             }
         }
     },
@@ -291,11 +207,6 @@
                         "text": "Tell me about your work",
                         "type": "normal",
                         "nextNode": "blacksmith_work"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -369,11 +280,6 @@
                         "text": "Im just looking for company.",
                         "type": "normal",
                         "nextNode": "courtesan_interaction"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -427,11 +333,6 @@
                         "text": "How's business?",
                         "type": "normal",
                         "nextNode": "miller_business"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -505,11 +406,6 @@
                         "text": "Tell me about the church",
                         "type": "normal",
                         "nextNode": "priest_church"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -583,11 +479,6 @@
                         "text": "Tell me about your guests",
                         "type": "normal",
                         "nextNode": "innkeeper_guests"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -661,11 +552,6 @@
                         "text": "What do you sell?",
                         "type": "normal",
                         "nextNode": "alchemist_wares"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -739,11 +625,6 @@
                         "text": "What songs do you know?",
                         "type": "normal",
                         "nextNode": "minstrel_songs"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -817,11 +698,6 @@
                         "text": "What do you write?",
                         "type": "normal",
                         "nextNode": "scribe_writing"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -895,11 +771,6 @@
                         "text": "What do you hunt?",
                         "type": "normal",
                         "nextNode": "hunter_prey"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -973,11 +844,6 @@
                         "text": "What do you sell?",
                         "type": "normal",
                         "nextNode": "apothecary_wares"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -1051,11 +917,6 @@
                         "text": "What's the latest news?",
                         "type": "normal",
                         "nextNode": "herald_news"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },
@@ -1129,11 +990,6 @@
                         "text": "Tell me about your work",
                         "type": "normal",
                         "nextNode": "cooper_work"
-                    },
-                    {
-                        "text": "May I know your name? [Investigate]",
-                        "type": "investigate",
-                        "nextNode": "investigation_intro"
                     }
                 ]
             },

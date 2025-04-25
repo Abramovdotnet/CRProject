@@ -35,19 +35,15 @@ class DialogueProcessor {
             // If no dialogue found, return a basic "Leave" option
             return ("...", [DialogueNodeOption(from: "Leave", to: "end", type: .normal)])
         }
-        
-        // Step 2: If relationship >= 5, merge gossip nodes into the tree
-        if npc.playerRelationship.value >= 5 {
-            tree = mergeGossipNodes(into: tree)
-        }
+   
+        tree = mergeGossipNodes(into: tree)
         
         // Store the complete tree
         self.dialogueTree = tree
         
         // Get initial node
-        let initialNodeId = npc.hasInteractedWithPlayer ? "joan_greeting_return" : tree.initialNode
+        let initialNodeId = tree.initialNode
         if var node = tree.nodes[initialNodeId] {
-            node = filterGeneralOptions(npc: npc, node: node)!
             currentNode = node
             return (node.text, filterAvailableOptions(options: node.options))
         }
@@ -91,12 +87,13 @@ class DialogueProcessor {
         
         // Step 3: Add gossip entry point to all relevant nodes
         for (nodeId, node) in nodes {
-            if nodeId == baseTree.initialNode || nodeId == "joan_greeting_return" {
+            if nodeId == baseTree.initialNode {
                 var options = node.options
                 options.append(DialogueNodeOption(
                     from: "What's new in town?",
                     to: "gossip_0",
-                    type: .normal
+                    type: .normal,
+                    requirements: DialogueRequirements(minCharisma: nil, minStrength: nil, isNight: nil, isIndoor: nil, coins: nil, minRelationship: 5, maxRelationship: nil)
                 ))
                 nodes[nodeId] = DialogueNode(text: node.text, options: options, requirements: node.requirements)
             }
@@ -117,7 +114,6 @@ class DialogueProcessor {
             return nil
         }
         
-        node = filterGeneralOptions(npc: npc, node: node) ?? node
         currentNode = node
         currentNodeId = nodeId
         return (node.text, filterAvailableOptions(options: node.options))
@@ -132,46 +128,6 @@ class DialogueProcessor {
             }
         }
         
-    }
-    
-    func filterGeneralOptions(npc: NPC, node: DialogueNode?) -> DialogueNode? {
-        guard let node = node else { return nil }
-        
-        var filteredOptions = node.options
-        
-        // Filter options based on first conversation
-        if npc.isFirstConversation {
-            filteredOptions = filteredOptions.filter { option in
-                // Only show options that are appropriate for first meeting
-                return option.type == .normal || 
-                       option.type == .investigate || 
-                       option.type == .relationshipIncrease ||
-                       option.type == .relationshipDecrease
-            }
-        }
-        
-        // Filter options for known NPCs
-        if !npc.isUnknown {
-            filteredOptions = filteredOptions.filter { $0.type != .investigate }
-        }
-        
-        // Filter options for intimidated NPCs
-        if npc.isIntimidated {
-            filteredOptions = filteredOptions.filter { $0.type != .intrigue }
-        }
-        // For unknown NPCs, remove seduction and intrigue options
-        else if npc.isUnknown {
-            filteredOptions = filteredOptions.filter { option in 
-                option.type != .intrigue && 
-                option.type != .seduce
-            }
-        }
-        
-        return DialogueNode(
-            text: node.text,
-            options: filteredOptions,
-            requirements: node.requirements
-        )
     }
     
     func attemptIntimidation() -> Bool {

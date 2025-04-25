@@ -17,7 +17,7 @@ class Player: ObservableObject, Character, Codable {
     @Published var currentLocationId: Int = 0
     @Published var items: [Item] = []
     
-    var processedRelationshipDialogueNodes: [String] = []
+    var processedRelationshipDialogueNodeOptions: [String] = []
 
     // Non-Published properties
     var id: Int = 0
@@ -59,14 +59,14 @@ class Player: ObservableObject, Character, Codable {
         }
     }
     
-    func processRelationshipDialogueNode(nodeId: String) {
-        if !processedRelationshipDialogueNodes.contains(nodeId) {
-            processedRelationshipDialogueNodes.append(nodeId)
+    func processRelationshipDialogueNode(option: String) {
+        if !processedRelationshipDialogueNodeOptions.contains(option) {
+            processedRelationshipDialogueNodeOptions.append(option)
         }
     }
     
-    func checkIsRelationshipDialogueNodeProcessed(nodeId: String) -> Bool {
-        return processedRelationshipDialogueNodes.contains(nodeId)
+    func checkIsRelationshipDialogueNodeOptionProcessed(option: String) -> Bool {
+        return processedRelationshipDialogueNodeOptions.contains(option)
     }
 
     // --- Codable Conformance ---

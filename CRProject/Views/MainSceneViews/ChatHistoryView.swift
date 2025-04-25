@@ -152,7 +152,7 @@ struct ChatMessageView: View {
 
             let interactionDescText = Text(" [\(interactionType.description.capitalized)] ")
                 .font(Theme.bodyFont)
-                .foregroundColor(interactionType.color)
+                .foregroundColor(Color.yellow.opacity(0.9))
 
             let secondaryRumorText = Text("\(message.rumorSecondaryNPC?.name ?? "") at ")
                 .font(Theme.bodyFont)
@@ -160,7 +160,7 @@ struct ChatMessageView: View {
 
             let locationText = Text("\(message.messageLocation ?? "")")
                 .font(Theme.bodyFont)
-                .foregroundColor(.yellow)
+                .foregroundColor(Color.yellow.opacity(0.9))
 
             return baseText + interactionIconText + interactionDescText + secondaryRumorText + locationText
         } else if let interactionType = message.interactionType {
@@ -186,7 +186,7 @@ struct ChatMessageView: View {
 
             combinedText = combinedText + Text(" [\(interactionType.description.capitalized)] ")
                 .font(Theme.bodyFont)
-                .foregroundColor(interactionType.color)
+                .foregroundColor(Color.yellow.opacity(0.9))
 
             if let secondaryNPC = message.secondaryNPC {
                 combinedText = combinedText + Text(secondaryNPC.name)
@@ -219,7 +219,7 @@ struct ChatMessageView: View {
 
             let interactionDescText = Text(" [\(interactionType.description.capitalized)] ")
                 .font(Theme.bodyFont)
-                .foregroundColor(interactionType.color)
+                .foregroundColor(Color.yellow.opacity(0.9))
 
             let secondaryRumorText = Text("\(message.rumorSecondaryNPC?.name ?? "") at ")
                 .font(Theme.bodyFont)
@@ -227,7 +227,7 @@ struct ChatMessageView: View {
 
             let locationText = Text("\(message.messageLocation ?? "")")
                 .font(Theme.bodyFont)
-                .foregroundColor(.yellow)
+                .foregroundColor(Color.yellow.opacity(0.9))
 
             return baseText + interactionIconText + interactionDescText + secondaryRumorText + locationText
         } else if let interactionType = message.interactionType {
@@ -253,7 +253,7 @@ struct ChatMessageView: View {
 
             combinedText = combinedText + Text(" [\(interactionType.description.capitalized)] ")
                 .font(Theme.bodyFont)
-                .foregroundColor(interactionType.color)
+                .foregroundColor(Color.yellow.opacity(0.9))
 
             if let secondaryNPC = message.secondaryNPC {
                 combinedText = combinedText + Text(secondaryNPC.name)

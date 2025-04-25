@@ -68,6 +68,8 @@ class DialogueViewModel: ObservableObject {
     private func updateDialogue(text: String, options: [DialogueNodeOption]) {
         DebugLogService.shared.log("Updating dialogue VM - Text: \(text), Options count: \(options.count)", category: "DialogueVM")
         
+        self.currentDialogueText = ""
+        self.options = []
         // Update state directly without animation
         self.currentDialogueText = text
         
@@ -94,10 +96,10 @@ class DialogueViewModel: ObservableObject {
             handleLoveForSail(nextNodeId: option.nextNodeId)
         case .relationshipIncrease:
             dialogueProcessor.normalizeRelationshipNode(option.text)
-            handleRelationshipIncrease(nextNodeId: option.nextNodeId)
+            handleRelationshipIncrease(nextNodeId: option.nextNodeId, option: option.text)
         case .relationshipDecrease:
             dialogueProcessor.normalizeRelationshipNode(option.text)
-            handleRelationshipDecrease(nextNodeId: option.nextNodeId)
+            handleRelationshipDecrease(nextNodeId: option.nextNodeId, option: option.text)
         case .normal, .intrigue:
             // Process all nodes consistently, including gossip
             if let (newText, newOptions) = dialogueProcessor.processNode(option.nextNodeId) {
@@ -154,7 +156,7 @@ class DialogueViewModel: ObservableObject {
         if player.coins.couldRemove(cost) {
             // Sufficient funds: Proceed with transaction and next node
             CoinsManagementService.shared.moveCoins(from: player, to: npc, amount: cost)
-            npc.playerRelationship.increase(amount: 5)
+            npc.playerRelationship.increase(amount: 1)
             
             VibrationService.shared.lightTap()
             
@@ -200,9 +202,9 @@ class DialogueViewModel: ObservableObject {
         }
     }
     
-    private func handleRelationshipIncrease(nextNodeId: String) {
+    private func handleRelationshipIncrease(nextNodeId: String, option: String) {
         npc.playerRelationship.increase(amount: 1)
-        GameStateService.shared.player?.processRelationshipDialogueNode(nodeId: dialogueProcessor.currentNodeId ?? "")
+        GameStateService.shared.player?.processRelationshipDialogueNode(option: option)
         VibrationService.shared.lightTap()
         // Directly process the next node
         if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
@@ -212,9 +214,9 @@ class DialogueViewModel: ObservableObject {
         }
     }
     
-    private func handleRelationshipDecrease(nextNodeId: String) {
+    private func handleRelationshipDecrease(nextNodeId: String, option: String) {
         npc.playerRelationship.decrease(amount: 1)
-        GameStateService.shared.player?.processRelationshipDialogueNode(nodeId: dialogueProcessor.currentNodeId ?? "")
+        GameStateService.shared.player?.processRelationshipDialogueNode(option: option)
         VibrationService.shared.lightTap()
         // Directly process the next node
         if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {

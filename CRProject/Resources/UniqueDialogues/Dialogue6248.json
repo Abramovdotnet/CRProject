@@ -1,58 +1,58 @@
 {
-    "initialNode": "joan_greeting",
+    "initialNode": "6248_greeting",
     "nodes": {
-        "joan_greeting": {
+        "6248_greeting": {
             "text": "Welcome to my establishment. I'm Joan MacLean. Would you care for some conversation, or perhaps you're interested in learning more about our cultural offerings?",
             "options": [
                 {
                     "text": "I'd like to learn more about you and your establishment",
                     "type": "normal",
-                    "nextNode": "joan_background"
+                    "nextNode": "6248_background"
                 },
                 {
-                    "text": "May I know more about you? [Investigate]",
-                    "type": "investigate",
+                    "text": "May I know more about you?",
+                    "type": "normal",
                     "nextNode": "investigation_intro"
                 },
                 {
                     "text": "I'm interested in your... services",
                     "type": "normal",
-                    "nextNode": "joan_company"
+                    "nextNode": "6248_company"
                 }
             ]
         },
-        "joan_background": {
+        "6248_background": {
             "text": "I've chosen this path with careful consideration. While some might judge my profession, I take pride in providing meaningful companionship and intellectual stimulation. My clients appreciate both my discretion and my ability to engage in thoughtful conversation. I've invested in creating an environment that fosters both comfort and culture.",
             "options": [
                 {
                     "text": "Your approach seems quite sophisticated",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_admiration"
+                    "nextNode": "6248_admiration"
                 },
                 {
                     "text": "How do you balance professionalism with personal safety?",
                     "type": "normal",
-                    "nextNode": "joan_safety"
+                    "nextNode": "6248_safety"
                 },
                 {
                     "text": "Let's discuss more... intimate matters",
                     "type": "relationshipDecrease",
-                    "nextNode": "joan_company"
+                    "nextNode": "6248_company"
                 }
             ]
         },
-        "joan_admiration": {
+        "6248_admiration": {
             "text": "Thank you. I believe in creating an atmosphere of refinement and mutual respect. My establishment hosts poetry readings and intellectual discussions, and I take great care in selecting both my staff and my clientele.",
             "options": [
                 {
                     "text": "Tell me more about your cultural events",
                     "type": "normal",
-                    "nextNode": "joan_establishment"
+                    "nextNode": "6248_establishment"
                 },
                 {
                     "text": "You seem like someone who values genuine connection",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_trust"
+                    "nextNode": "6248_trust"
                 },
                 {
                     "text": "I should be going",
@@ -61,13 +61,13 @@
                 }
             ]
         },
-        "joan_trust": {
+        "6248_trust": {
             "text": "Genuine connection is indeed rare in our world. I value those who appreciate both intellect and emotion. It's refreshing to meet someone who understands the importance of meaningful interaction.",
             "options": [
                 {
                     "text": "Perhaps we could develop a deeper connection?",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_friendship",
+                    "nextNode": "6248_friendship",
                     "requirements": {
                         "minRelationship": 3
                     }
@@ -79,13 +79,13 @@
                 }
             ]
         },
-        "joan_friendship": {
+        "6248_friendship": {
             "text": "A deeper connection would be... intriguing. I don't often form personal attachments, but you've shown yourself to be different from the usual clientele.",
             "options": [
                 {
                     "text": "I'd like to get to know you better",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_greeting_return"
+                    "nextNode": "6248_greeting_return"
                 },
                 {
                     "text": "Until next time",
@@ -94,28 +94,28 @@
                 }
             ]
         },
-        "joan_safety": {
+        "6248_safety": {
             "text": "Safety is a matter of careful planning and clear boundaries. I maintain strict professional standards and have cultivated relationships with trustworthy individuals. My reputation for discretion is my best protection.",
             "options": [
                 {
                     "text": "That's a wise approach",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_caution"
+                    "nextNode": "6248_caution"
                 },
                 {
                     "text": "Isn't this profession inherently dangerous?",
                     "type": "relationshipDecrease",
-                    "nextNode": "joan_defensive"
+                    "nextNode": "6248_defensive"
                 }
             ]
         },
-        "joan_caution": {
+        "6248_caution": {
             "text": "Wisdom comes from experience and careful observation. I've learned to read people well and maintain clear boundaries. It's refreshing to meet someone who understands the importance of such precautions.",
             "options": [
                 {
                     "text": "We could look out for each other",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_trust"
+                    "nextNode": "6248_trust"
                 },
                 {
                     "text": "I should be going",
@@ -124,13 +124,13 @@
                 }
             ]
         },
-        "joan_defensive": {
+        "6248_defensive": {
             "text": "Every profession has its risks. I've chosen mine with careful consideration and maintain strict standards. I don't need your judgment on matters you clearly don't understand.",
             "options": [
                 {
                     "text": "I apologize for being presumptuous",
                     "type": "normal",
-                    "nextNode": "joan_greeting"
+                    "nextNode": "6248_greeting"
                 },
                 {
                     "text": "Suit yourself",
@@ -139,36 +139,36 @@
                 }
             ]
         },
-        "joan_company": {
+        "6248_company": {
             "text": "While I maintain professional boundaries, I do offer various forms of companionship. My services include both intellectual and more... intimate interactions, all conducted with the utmost discretion and respect.",
             "options": [
                 {
                     "text": "I understand and respect your professionalism",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_respect"
+                    "nextNode": "6248_respect"
                 },
                 {
                     "text": "What's the point of being a courtesan if not for...",
                     "type": "relationshipDecrease",
-                    "nextNode": "joan_offended"
+                    "nextNode": "6248_offended"
                 },
                 {
                     "text": "I'm interested in your... services (200) [Love For Sail]",
                     "type": "loveForSail",
-                    "nextNode": "joan_scene",
+                    "nextNode": "6248_scene",
                     "requirements": {
                         "coins": 200
                     }
                 }
             ]
         },
-        "joan_respect": {
+        "6248_respect": {
             "text": "Professionalism and mutual respect are the foundation of my establishment. I'm glad you understand that. Perhaps we could engage in more meaningful conversation?",
             "options": [
                 {
                     "text": "I'd like that very much",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_background"
+                    "nextNode": "6248_background"
                 },
                 {
                     "text": "Maybe another time",
@@ -177,17 +177,17 @@
                 }
             ]
         },
-        "joan_offended": {
+        "6248_offended": {
             "text": "I think it's best if you leave now. My establishment maintains certain standards, and it seems you're not interested in respecting them.",
             "options": [
                 {
                     "text": "I apologize for my rudeness",
                     "type": "normal",
-                    "nextNode": "joan_greeting"
+                    "nextNode": "6248_greeting"
                 }
             ]
         },
-        "joan_scene": {
+        "6248_scene": {
             "text": "That was... quite enjoyable. You're welcome to return whenever you wish. My establishment always appreciates... discerning clients.",
             "options": [
                 {
@@ -197,23 +197,23 @@
                 }
             ]
         },
-        "joan_greeting_return": {
+        "6248_greeting_return": {
             "text": "Ah, it's good to see you again. I was just reviewing some new poetry for our next reading. Would you care to join me for some conversation, or perhaps you have something else in mind?",
             "options": [
                 {
                     "text": "I'd love to hear about the poetry",
                     "type": "normal",
-                    "nextNode": "joan_catchup"
+                    "nextNode": "6248_catchup"
                 },
                 {
                     "text": "I was hoping for some... private time",
                     "type": "normal",
-                    "nextNode": "joan_company_return"
+                    "nextNode": "6248_company_return"
                 },
                 {
                     "text": "How are your future plans progressing?",
                     "type": "normal",
-                    "nextNode": "joan_future_update",
+                    "nextNode": "6248_future_update",
                     "requirements": {
                         "minRelationship": 4
                     }
@@ -225,28 +225,28 @@
                 }
             ]
         },
-        "joan_catchup": {
+        "6248_catchup": {
             "text": "It's a collection of modern verse that explores themes of independence and personal growth. I find it quite inspiring. How have you been since our last meeting?",
             "options": [
                 {
                     "text": "Things have been quite interesting",
                     "type": "normal",
-                    "nextNode": "joan_greeting_return"
+                    "nextNode": "6248_greeting_return"
                 },
                 {
                     "text": "Actually, I was hoping for some private time",
                     "type": "normal",
-                    "nextNode": "joan_company_return"
+                    "nextNode": "6248_company_return"
                 }
             ]
         },
-        "joan_company_return": {
+        "6248_company_return": {
             "text": "For someone who has shown such appreciation for my establishment's values, I might make an exception... but my time is still worth 200 coins.",
             "options": [
                 {
                     "text": "That's a fair arrangement (200) [Love For Sail]",
                     "type": "loveForSail",
-                    "nextNode": "joan_scene",
+                    "nextNode": "6248_scene",
                     "requirements": {
                         "coins": 200
                     }
@@ -254,7 +254,7 @@
                 {
                     "text": "Perhaps another time",
                     "type": "normal",
-                    "nextNode": "joan_greeting_return"
+                    "nextNode": "6248_greeting_return"
                 }
             ]
         },
@@ -264,12 +264,12 @@
                 {
                     "text": "Tell me about your background and establishment",
                     "type": "normal",
-                    "nextNode": "joan_background"
+                    "nextNode": "6248_background"
                 },
                 {
                     "text": "What cultural events do you host?",
                     "type": "normal",
-                    "nextNode": "joan_establishment"
+                    "nextNode": "6248_establishment"
                 },
                 {
                     "text": "Thank you for your time",
@@ -278,13 +278,13 @@
                 }
             ]
         },
-        "joan_establishment": {
+        "6248_establishment": {
             "text": "My establishment is more than just a place of entertainment. We host poetry readings, intellectual discussions, and musical performances. I believe in creating an atmosphere that stimulates both the mind and the senses.",
             "options": [
                 {
                     "text": "That sounds fascinating",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_establishment_details"
+                    "nextNode": "6248_establishment_details"
                 },
                 {
                     "text": "Interesting concept",
@@ -294,20 +294,20 @@
                 {
                     "text": "Would you like to discuss your future plans?",
                     "type": "normal",
-                    "nextNode": "joan_future_plans",
+                    "nextNode": "6248_future_plans",
                     "requirements": {
                         "minRelationship": 4
                     }
                 }
             ]
         },
-        "joan_establishment_details": {
+        "6248_establishment_details": {
             "text": "I carefully select both the events and the participants. It's important to maintain an environment where meaningful connections can be made, whether through art, conversation, or... other forms of interaction.",
             "options": [
                 {
                     "text": "Your approach is quite sophisticated",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_admiration"
+                    "nextNode": "6248_admiration"
                 },
                 {
                     "text": "Interesting perspective",
@@ -316,31 +316,31 @@
                 }
             ]
         },
-        "joan_future_plans": {
+        "6248_future_plans": {
             "text": "I'm investing in property and considering opening a cultural center. I want to create a space where art and intellect are valued above all else. It's rare to find someone who understands such ambitions.",
             "options": [
                 {
                     "text": "That's an admirable goal",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_ambitions"
+                    "nextNode": "6248_ambitions"
                 },
                 {
                     "text": "I'd like to help you achieve that",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_partnership",
+                    "nextNode": "6248_partnership",
                     "requirements": {
                         "minRelationship": 5
                     }
                 }
             ]
         },
-        "joan_ambitions": {
+        "6248_ambitions": {
             "text": "Thank you. It's not just about the money, you know. I want to create something meaningful, a legacy that goes beyond my current... profession.",
             "options": [
                 {
                     "text": "You're more than your profession",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_greeting_return"
+                    "nextNode": "6248_greeting_return"
                 },
                 {
                     "text": "I should be going",
@@ -349,13 +349,13 @@
                 }
             ]
         },
-        "joan_partnership": {
+        "6248_partnership": {
             "text": "A partnership? That's... unexpected. I don't usually consider such arrangements, but you've proven yourself to be different. We could discuss this further... in private.",
             "options": [
                 {
                     "text": "I'd like that very much (200) [Love For Sail]",
                     "type": "loveForSail",
-                    "nextNode": "joan_scene_special",
+                    "nextNode": "6248_scene_special",
                     "requirements": {
                         "coins": 200
                     }
@@ -363,17 +363,17 @@
                 {
                     "text": "Perhaps another time",
                     "type": "normal",
-                    "nextNode": "joan_greeting_return"
+                    "nextNode": "6248_greeting_return"
                 }
             ]
         },
-        "joan_scene_special": {
+        "6248_scene_special": {
             "text": "That was... extraordinary. You understand me in ways few others do. I think we could achieve great things together, both professionally and... personally.",
             "options": [
                 {
                     "text": "I look forward to our future together",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_greeting_return"
+                    "nextNode": "6248_greeting_return"
                 },
                 {
                     "text": "Until next time",
@@ -382,13 +382,13 @@
                 }
             ]
         },
-        "joan_future_update": {
+        "6248_future_update": {
             "text": "I've made some promising investments and have been networking with potential patrons. It's encouraging to have someone like you to share these developments with.",
             "options": [
                 {
                     "text": "I'm glad to be part of your journey",
                     "type": "relationshipIncrease",
-                    "nextNode": "joan_greeting_return"
+                    "nextNode": "6248_greeting_return"
                 },
                 {
                     "text": "Keep me updated on your progress",

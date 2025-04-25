@@ -92,7 +92,7 @@ class DialogueSystem {
         
         for node in relationsipNodes {
             for option in node.value.options {
-                if player.checkIsRelationshipDialogueNodeProcessed(nodeId: node.key) {
+                if player.checkIsRelationshipDialogueNodeOptionProcessed(option: option.text) {
                     option.type = .normal
                 }
             }
