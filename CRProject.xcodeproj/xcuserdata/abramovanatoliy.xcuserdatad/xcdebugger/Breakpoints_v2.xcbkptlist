@@ -654,7 +654,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "24"
             endingLineNumber = "24"
-            landmarkName = "loadDialogue(npc:)"
+            landmarkName = "processConditionalText(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -686,7 +686,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "46"
             endingLineNumber = "46"
-            landmarkName = "loadDialogue(npc:)"
+            landmarkName = "processConditionalText(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -702,7 +702,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "48"
             endingLineNumber = "48"
-            landmarkName = "loadDialogue(npc:)"
+            landmarkName = "processConditionalText(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -718,7 +718,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "79"
             endingLineNumber = "79"
-            landmarkName = "mergeGossipNodes(into:)"
+            landmarkName = "loadDialogue(npc:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -734,7 +734,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "89"
             endingLineNumber = "89"
-            landmarkName = "mergeGossipNodes(into:)"
+            landmarkName = "loadDialogue(npc:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -750,7 +750,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "26"
             endingLineNumber = "26"
-            landmarkName = "loadDialogue(npc:)"
+            landmarkName = "processConditionalText(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -766,7 +766,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "62"
             endingLineNumber = "62"
-            landmarkName = "mergeGossipNodes(into:)"
+            landmarkName = "loadDialogue(npc:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -782,7 +782,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "39"
             endingLineNumber = "39"
-            landmarkName = "loadDialogue(npc:)"
+            landmarkName = "processConditionalText(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -798,7 +798,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "59"
             endingLineNumber = "59"
-            landmarkName = "mergeGossipNodes(into:)"
+            landmarkName = "loadDialogue(npc:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -816,50 +816,6 @@
             endingLineNumber = "91"
             landmarkName = "normalizeProcessedRelationshipNodes(player:tree:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9BFF3424-8EA0-4E12-99C1-8C101C524B37 - 2f657777f54d0ed5"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CRProject.DialogueSystem.normalizeProcessedRelationshipNodes(player: CRProject.Player, tree: CRProject.DialogueTree) -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/Systems/DialogueSystem.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "91"
-                  endingLineNumber = "91">
-               </Location>
-               <Location
-                  uuid = "9BFF3424-8EA0-4E12-99C1-8C101C524B37 - 1009730816c9c4bb"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 ((key: Swift.String, value: CRProject.DialogueNode)) -&gt; Swift.Bool in CRProject.DialogueSystem.normalizeProcessedRelationshipNodes(player: CRProject.Player, tree: CRProject.DialogueTree) -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/Systems/DialogueSystem.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "91"
-                  endingLineNumber = "91">
-               </Location>
-               <Location
-                  uuid = "9BFF3424-8EA0-4E12-99C1-8C101C524B37 - 4b9f1e21d6594310"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (CRProject.DialogueNodeOption) -&gt; Swift.Bool in closure #1 ((key: Swift.String, value: CRProject.DialogueNode)) -&gt; Swift.Bool in CRProject.DialogueSystem.normalizeProcessedRelationshipNodes(player: CRProject.Player, tree: CRProject.DialogueTree) -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/Systems/DialogueSystem.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "91"
-                  endingLineNumber = "91">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -876,36 +832,6 @@
             endingLineNumber = "93"
             landmarkName = "normalizeProcessedRelationshipNodes(player:tree:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "62E5AFFB-AD57-49CC-8C8B-17556224B458 - 2f657777f54d0e13"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CRProject.DialogueSystem.normalizeProcessedRelationshipNodes(player: CRProject.Player, tree: CRProject.DialogueTree) -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/Systems/DialogueSystem.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "93"
-                  endingLineNumber = "93">
-               </Location>
-               <Location
-                  uuid = "62E5AFFB-AD57-49CC-8C8B-17556224B458 - 2f657777f54d0e13"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CRProject.DialogueSystem.normalizeProcessedRelationshipNodes(player: CRProject.Player, tree: CRProject.DialogueTree) -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/Systems/DialogueSystem.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "93"
-                  endingLineNumber = "93">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

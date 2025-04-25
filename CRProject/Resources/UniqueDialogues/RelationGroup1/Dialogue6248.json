@@ -2,7 +2,7 @@
     "initialNode": "6248_greeting",
     "nodes": {
         "6248_greeting": {
-            "text": "Welcome to my establishment. I'm Joan MacLean. Would you care for some conversation, or perhaps you're interested in learning more about our cultural offerings?",
+            "text": "{if:first_meeting}Welcome to my establishment. I'm Joan MacLean. {else}It's good to see you again. {endif}Would you care for some conversation, or perhaps you're interested in learning more about our cultural offerings?",
             "options": [
                 {
                     "text": "I'd like to learn more about you and your establishment",

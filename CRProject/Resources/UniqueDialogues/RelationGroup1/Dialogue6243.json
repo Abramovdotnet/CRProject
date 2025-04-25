@@ -1,0 +1,332 @@
+{
+  "initialNode": "6243_greeting",
+  "nodes": {
+    "6243_greeting": {
+      "text": "{if:first_meeting}Welcome. I am Philippa Schmidt. {else}It's good to see you again. {endif}Are you here seeking companionship, or perhaps something more specific?",
+      "options": [
+        {
+          "text": "Could you tell me about yourself?",
+          "type": "normal",
+          "nextNode": "6243_background"
+        },
+        {
+          "text": "What kind of 'companionship' do you offer?",
+          "type": "normal",
+          "nextNode": "6243_services_intro"
+        },
+        {
+          "text": "You seem very... deliberate.",
+          "type": "relationshipIncrease",
+          "nextNode": "6243_calculation_remark"
+        },
+        {
+          "text": "I'm just browsing.",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "6243_background": {
+      "text": "I've chosen this path with careful consideration. While some might judge my profession, I take pride in providing meaningful companionship and intellectual stimulation. My clients appreciate both my discretion and my ability to engage in thoughtful conversation. I've invested in creating an environment that fosters both comfort and culture. A different focus than some others in the city, perhaps.",
+      "options": [
+        {
+          "text": "Admirable self-determination.",
+          "type": "relationshipIncrease",
+          "nextNode": "6243_independence_focus"
+        },
+        {
+          "text": "It sounds very calculated.",
+          "type": "normal",
+          "nextNode": "6243_calculation_remark"
+        },
+        {
+          "text": "Tell me more about your services.",
+          "type": "normal",
+          "nextNode": "6243_services_intro"
+        }
+      ]
+    },
+    "6243_independence_focus": {
+      "text": "Independence isn't granted, it's secured. Through careful management of resources and relationships. You see it in others too, like Brigid – we all navigate this path here. Some aim higher, like Joan MacLean with her cultural ambitions, but security is the foundation.",
+      "options": [
+        {
+          "text": "A sound strategy for life.",
+          "type": "relationshipIncrease",
+          "nextNode": "6243_future_plans_prompt"
+        },
+        {
+            "text": "What services do you manage?",
+            "type": "normal",
+            "nextNode": "6243_services_intro"
+        },
+        {
+          "text": "I must be going.",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "6243_calculation_remark": {
+        "text": "Calculation is necessary for strategic planning. Understanding desires, managing expectations, maintaining boundaries – these are tools for ensuring independence and providing a professional service.",
+        "options": [
+            {
+                "text": "Very practical.",
+                "type": "normal",
+                "nextNode": "6243_independence_focus"
+            },
+            {
+                "text": "Does that leave room for genuine connection?",
+                "type": "relationshipDecrease",
+                "nextNode": "6243_boundaries_crossed"
+            },
+            {
+                "text": "How do you maintain boundaries?",
+                "type": "normal",
+                "nextNode": "6243_boundaries_explain"
+            }
+        ]
+    },
+    "6243_services_intro": {
+      "text": "I offer tailored companionship – understanding desires, engaging conversation, always with the utmost discretion and professionalism. It's the standard here at the Veil, though individual styles may vary.",
+      "options": [
+        {
+          "text": "You must be good at reading people.",
+          "type": "normal",
+          "nextNode": "6243_reading_people"
+        },
+        {
+          "text": "I require your company. (200) [Refined Experience]",
+          "type": "loveForSail",
+          "nextNode": "6243_scene",
+          "requirements": {
+            "coins": 200
+          }
+        },
+        {
+          "text": "Is there no room for personal feelings?",
+          "type": "relationshipDecrease",
+          "nextNode": "6243_boundaries_crossed"
+        }
+      ]
+    },
+    "6243_reading_people": {
+        "text": "Understanding desires is key to providing a satisfactory service. It requires observation and a degree of insight, yes. It ensures clarity and mutual understanding.",
+        "options": [
+           {
+             "text": "A necessary skill in your profession.",
+             "type": "normal",
+             "nextNode": "6243_services_intro"
+           },
+           {
+             "text": "What do you read about me?",
+             "type": "normal",
+             "nextNode": "6243_read_player"
+           }
+        ]
+    },
+     "6243_read_player": {
+        "text": "Perhaps later. For now, professionalism dictates we focus on your needs. Or, if you prefer, we can discuss terms for a more... insightful session.",
+        "options": [
+           {
+             "text": "Let's proceed with the arrangement. (200) [Refined Experience]",
+             "type": "loveForSail",
+             "nextNode": "6243_scene",
+             "requirements": {
+               "coins": 200
+             }
+           },
+           {
+             "text": "Perhaps another topic, then.",
+             "type": "normal",
+             "nextNode": "6243_greeting_return"
+           },
+           {
+             "text": "I'll reconsider.",
+             "type": "normal",
+             "nextNode": "end"
+           }
+        ]
+    },
+    "6243_boundaries_explain": {
+      "text": "Strict professional boundaries are essential. They ensure clarity, prevent misunderstandings, and protect the independence I've worked hard to build. Personal attachments are... inefficient.",
+      "options": [
+        {
+          "text": "That requires discipline. I respect it.",
+          "type": "relationshipIncrease",
+          "nextNode": "6243_independence_focus"
+        },
+        {
+          "text": "'Inefficient'? That sounds cold.",
+          "type": "relationshipDecrease",
+          "nextNode": "6243_boundaries_crossed"
+        }
+      ]
+    },
+    "6243_boundaries_crossed": {
+      "text": "My methods are designed for professional success and personal security. Matters of the heart are not part of the transaction. Shall we return to a more suitable topic?",
+      "options": [
+        {
+          "text": "Forgive my prying. Let's discuss your services.",
+          "type": "normal",
+          "nextNode": "6243_services_intro"
+        },
+        {
+          "text": "Perhaps this isn't for me.",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "6243_future_plans_prompt": {
+        "text": "Security requires foresight. One must always plan for the future. What about you, are you planning effectively?",
+        "options": [
+            {
+                "text": "I'm curious about your plans, if you share such things.",
+                "type": "normal",
+                "nextNode": "6243_future_plans_reveal",
+                "requirements": {
+                    "minRelationship": 3
+                }
+            },
+            {
+                "text": "My plans are my own.",
+                "type": "normal",
+                "nextNode": "6243_greeting_return"
+            },
+            {
+                "text": "My immediate plan involves your company. (200) [Refined Experience]",
+                 "type": "loveForSail",
+                 "nextNode": "6243_scene",
+                 "requirements": {
+                   "coins": 200
+                 }
+            }
+        ]
+    },
+    "6243_future_plans_reveal": {
+      "text": "(Lowers voice slightly) One diversifies. Charm pays the bills now, but savvy investments secure tomorrow. Property, small ventures... building a foundation. Not everyone builds grand establishments like Joan MacLean; sometimes secure, independent ventures are the wiser path.",
+      "options": [
+        {
+          "text": "Very astute. You're building a secure future.",
+          "type": "relationshipIncrease",
+          "nextNode": "6243_future_acknowledged"
+        },
+        {
+          "text": "Are these local investments?",
+          "type": "normal",
+          "nextNode": "6243_future_investor_query"
+        },
+         {
+            "text": "Thank you for the insight.",
+            "type": "normal",
+            "nextNode": "6243_greeting_return"
+        }
+      ]
+    },
+    "6243_future_investor_query": {
+        "text": "My portfolio is private, naturally. Managed for maximum independence. External partners introduce complexities I prefer to avoid.",
+         "options": [
+             {
+                 "text": "Understandable. Prudence is wise.",
+                 "type": "relationshipIncrease",
+                 "nextNode": "6243_greeting_return"
+             },
+             {
+                "text": "A pity. Perhaps another time.",
+                "type": "normal",
+                "nextNode": "6243_greeting_return"
+             }
+         ]
+    },
+     "6243_future_acknowledged": {
+        "text": "Security is the foundation upon which a comfortable life is built. It's gratifying when one's foresight is recognized.",
+         "options": [
+             {
+                 "text": "It was enlightening talking with you.",
+                 "type": "normal",
+                 "nextNode": "6243_greeting_return"
+             },
+             {
+                "text": "I must take my leave.",
+                "type": "normal",
+                "nextNode": "end"
+             }
+         ]
+    },
+    "6243_scene": {
+      "text": "A... well-managed encounter. Professionalism maintained throughout. Should you require similar arrangements in the future, you know where to find me.",
+      "options": [
+        {
+          "text": "Indeed. Until next time.",
+          "type": "normal",
+          "nextNode": "end"
+        },
+        {
+          "text": "Perhaps now you'd share more about your investments?",
+          "type": "normal",
+          "nextNode": "6243_future_plans_prompt",
+           "requirements": {
+              "minRelationship": 3
+           }
+        }
+      ]
+    },
+    "6243_greeting_return": {
+      "text": "Ah, good to see you again. Are you here for conversation, or have you decided on a specific arrangement?",
+      "options": [
+        {
+          "text": "Just checking in. How are things?",
+          "type": "normal",
+          "nextNode": "6243_catchup"
+        },
+        {
+          "text": "I'd like to discuss those future plans again.",
+          "type": "normal",
+          "nextNode": "6243_future_plans_prompt",
+          "requirements": {
+            "minRelationship": 3
+          }
+        },
+        {
+          "text": "I require your company again. (200) [Refined Experience]",
+          "type": "loveForSail",
+          "nextNode": "6243_scene",
+          "requirements": {
+            "coins": 200
+          }
+        },
+        {
+          "text": "Farewell for now.",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "6243_catchup": {
+        "text": "The usual currents of life and business. Plans progress incrementally, as they should. And you, {player_name}? Are your own affairs proceeding strategically?",
+        "options": [
+            {
+                "text": "As well as can be expected.",
+                "type": "normal",
+                "nextNode": "6243_greeting_return"
+            },
+            {
+                "text": "Tell me more about your business strategies.",
+                "type": "normal",
+                "nextNode": "6243_future_plans_prompt",
+                 "requirements": {
+                    "minRelationship": 3
+                 }
+            },
+             {
+                "text": "I was hoping for another arrangement. (200) [Refined Experience]",
+                "type": "loveForSail",
+                "nextNode": "6243_scene",
+                "requirements": {
+                    "coins": 200
+                }
+            }
+        ]
+    }
+  }
+}

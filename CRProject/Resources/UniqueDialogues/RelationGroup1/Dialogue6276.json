@@ -1,0 +1,344 @@
+{
+  "initialNode": "6276_greeting",
+  "nodes": {
+    "6276_greeting": {
+      "text": "{if:first_meeting}Welcome to The Velvet Veil. I'm Brigid Pedersen. {else}Ah, welcome back. {endif}How may I assist you this evening? Perhaps some pleasant company, or are you interested in a specific arrangement?",
+      "options": [
+        {
+          "text": "Tell me about yourself and this place.",
+          "type": "normal",
+          "nextNode": "6276_background"
+        },
+        {
+          "text": "What kind of 'arrangements' do you offer?",
+          "type": "normal",
+          "nextNode": "6276_services_intro"
+        },
+        {
+          "text": "You seem very composed.",
+          "type": "relationshipIncrease",
+          "nextNode": "6276_charm_wit"
+        },
+        {
+          "text": "Just looking around for now.",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "6276_background": {
+      "text": "This establishment offers... companionship. As for myself, I came to Duskvale seeking opportunity. One learns quickly that charm and insight are valuable currencies here. Independence is the goal, wouldn't you agree?",
+      "options": [
+        {
+          "text": "Independence is certainly valuable.",
+          "type": "relationshipIncrease",
+          "nextNode": "6276_independence_focus"
+        },
+        {
+          "text": "It sounds like a calculated approach.",
+          "type": "normal",
+          "nextNode": "6276_calculation_remark"
+        },
+        {
+          "text": "Tell me more about your approach to 'companionship'.",
+          "type": "normal",
+          "nextNode": "6276_services_intro"
+        }
+      ]
+    },
+    "6276_independence_focus": {
+      "text": "Indeed. Security isn't freely given, it must be built, piece by piece. One must be strategic about one's future.",
+      "options": [
+        {
+          "text": "That's a wise perspective.",
+          "type": "relationshipIncrease",
+          "nextNode": "6276_future_plans_prompt"
+        },
+        {
+            "text": "Let's discuss your services instead.",
+            "type": "normal",
+            "nextNode": "6276_services_intro"
+        },
+        {
+          "text": "I should be going.",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "6276_calculation_remark": {
+        "text": "Life requires a degree of calculation, wouldn't you say? Especially when charting one's own course. Understanding desires, maintaining boundaries... it's all part of ensuring one's independence.",
+        "options": [
+            {
+                "text": "You're very pragmatic.",
+                "type": "normal",
+                "nextNode": "6276_independence_focus"
+            },
+            {
+                "text": "Doesn't it get lonely?",
+                "type": "relationshipDecrease",
+                "nextNode": "6276_boundaries_crossed"
+            },
+            {
+                "text": "Tell me about maintaining boundaries.",
+                "type": "normal",
+                "nextNode": "6276_boundaries_explain"
+            }
+        ]
+    },
+    "6276_services_intro": {
+      "text": "My 'arrangements' involve providing engaging company, conversation, and understanding a client's desires. Discretion and professionalism are paramount. It's a service, refined and tailored.",
+      "options": [
+        {
+          "text": "You have a knack for reading people?",
+          "type": "normal",
+          "nextNode": "6276_reading_people"
+        },
+        {
+          "text": "I'm interested in your services. (200) [Discreet Company]",
+          "type": "loveForSail",
+          "nextNode": "6276_scene",
+          "requirements": {
+            "coins": 200
+          }
+        },
+        {
+          "text": "What about personal connection?",
+          "type": "relationshipDecrease",
+          "nextNode": "6276_boundaries_crossed"
+        }
+      ]
+    },
+    "6276_reading_people": {
+        "text": "Observing and understanding people is essential in my line of work... and frankly, in navigating life successfully. It allows for smoother interactions and ensures expectations are met.",
+        "options": [
+           {
+             "text": "A useful skill.",
+             "type": "normal",
+             "nextNode": "6276_services_intro"
+           },
+           {
+             "text": "Could you read me?",
+             "type": "normal",
+             "nextNode": "6276_read_player"
+           }
+        ]
+    },
+     "6276_read_player": {
+        "text": "Perhaps. But a professional reading comes at the usual price. Or perhaps you'd prefer to simply tell me what you desire?",
+        "options": [
+           {
+             "text": "I'm interested in your services. (200) [Discreet Company]",
+             "type": "loveForSail",
+             "nextNode": "6276_scene",
+             "requirements": {
+               "coins": 200
+             }
+           },
+           {
+             "text": "Let's talk about something else.",
+             "type": "normal",
+             "nextNode": "6276_greeting_return"
+           },
+           {
+             "text": "Never mind.",
+             "type": "normal",
+             "nextNode": "end"
+           }
+        ]
+    },
+    "6276_charm_wit": {
+      "text": "Composure is a cultivated asset. Like charm, like wit. They are tools that help maintain... professional distance and ensure smooth interactions.",
+      "options": [
+        {
+          "text": "A practical viewpoint.",
+          "type": "normal",
+          "nextNode": "6276_background"
+        },
+        {
+          "text": "Is it all just an act?",
+          "type": "relationshipDecrease",
+          "nextNode": "6276_boundaries_crossed"
+        }
+      ]
+    },
+    "6276_boundaries_explain": {
+      "text": "Professional boundaries are crucial. Attachments complicate matters and detract from the goal – strategic independence. Clients appreciate the discretion that clear boundaries provide.",
+      "options": [
+        {
+          "text": "I understand and respect that.",
+          "type": "relationshipIncrease",
+          "nextNode": "6276_independence_focus"
+        },
+        {
+          "text": "But isn't connection important?",
+          "type": "relationshipDecrease",
+          "nextNode": "6276_boundaries_crossed"
+        }
+      ]
+    },
+    "6276_boundaries_crossed": {
+      "text": "My personal feelings are not part of the service I offer. Let us maintain a professional tone, shall we?",
+      "options": [
+        {
+          "text": "My apologies. Let's discuss your services.",
+          "type": "normal",
+          "nextNode": "6276_services_intro"
+        },
+        {
+          "text": "Fine. I'll leave.",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "6276_future_plans_prompt": {
+        "text": "Indeed. One plans for the future. Have you given thought to yours?",
+        "options": [
+            {
+                "text": "Tell me about your future plans, if you're comfortable.",
+                "type": "normal",
+                "nextNode": "6276_future_plans_reveal",
+                "requirements": {
+                    "minRelationship": 3
+                }
+            },
+            {
+                "text": "I have my own plans.",
+                "type": "normal",
+                "nextNode": "6276_greeting_return"
+            },
+            {
+                "text": "Perhaps we could discuss my future needs? (200) [Discreet Company]",
+                 "type": "loveForSail",
+                 "nextNode": "6276_scene",
+                 "requirements": {
+                   "coins": 200
+                 }
+            }
+        ]
+    },
+    "6276_future_plans_reveal": {
+      "text": "(Lowers voice slightly) One diversifies. Charm pays the bills now, but savvy investments secure tomorrow. Property, small ventures... building a foundation that doesn't rely on fleeting desires.",
+      "options": [
+        {
+          "text": "That's incredibly smart. You're building an empire.",
+          "type": "relationshipIncrease",
+          "nextNode": "6276_future_acknowledged"
+        },
+        {
+          "text": "Are you looking for investors?",
+          "type": "normal",
+          "nextNode": "6276_future_investor_query"
+        },
+         {
+            "text": "Thank you for sharing.",
+            "type": "normal",
+            "nextNode": "6276_greeting_return"
+        }
+      ]
+    },
+    "6276_future_investor_query": {
+        "text": "My ventures are carefully managed and self-funded at present. Independence, remember? But I appreciate the interest.",
+         "options": [
+             {
+                 "text": "Understood. Admirable.",
+                 "type": "relationshipIncrease",
+                 "nextNode": "6276_greeting_return"
+             },
+             {
+                "text": "Let me know if that changes.",
+                "type": "normal",
+                "nextNode": "6276_greeting_return"
+             }
+         ]
+    },
+     "6276_future_acknowledged": {
+        "text": "One builds what one can. Thank you for understanding the necessity of foresight.",
+         "options": [
+             {
+                 "text": "Always a pleasure speaking with you.",
+                 "type": "normal",
+                 "nextNode": "6276_greeting_return"
+             },
+             {
+                "text": "I should go.",
+                "type": "normal",
+                "nextNode": "end"
+             }
+         ]
+    },
+    "6276_scene": {
+      "text": "That was... a satisfactory arrangement. Conducted with the expected professionalism, of course. Feel free to return should you require further services.",
+      "options": [
+        {
+          "text": "Thank you for your time.",
+          "type": "normal",
+          "nextNode": "end"
+        },
+        {
+          "text": "Perhaps we could discuss your investments now?",
+          "type": "normal",
+          "nextNode": "6276_future_plans_prompt"
+        }
+      ]
+    },
+    "6276_greeting_return": {
+      "text": "Welcome back, {player_name}. Always a pleasure to see a familiar face. Seeking conversation or considering another arrangement?",
+      "options": [
+        {
+          "text": "How have things been?",
+          "type": "normal",
+          "nextNode": "6276_catchup"
+        },
+        {
+          "text": "I'd like to discuss your future plans.",
+          "type": "normal",
+          "nextNode": "6276_future_plans_prompt",
+          "requirements": {
+            "minRelationship": 3
+          }
+        },
+        {
+          "text": "I'm interested in your services again. (200) [Discreet Company]",
+          "type": "loveForSail",
+          "nextNode": "6276_scene",
+          "requirements": {
+            "coins": 200
+          }
+        },
+        {
+          "text": "Just passing through.",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "6276_catchup": {
+        "text": "Business proceeds as planned. Calculated steps towards greater independence. And you, {player_name}? Have your own strategies been fruitful?",
+        "options": [
+            {
+                "text": "Things are progressing.",
+                "type": "normal",
+                "nextNode": "6276_greeting_return"
+            },
+            {
+                "text": "Let's talk about your investments.",
+                "type": "normal",
+                "nextNode": "6276_future_plans_prompt",
+                 "requirements": {
+                    "minRelationship": 3
+                 }
+            },
+             {
+                "text": "Actually, I was hoping for an arrangement. (200) [Discreet Company]",
+                "type": "loveForSail",
+                "nextNode": "6276_scene",
+                "requirements": {
+                    "coins": 200
+                }
+            }
+        ]
+    }
+  }
+}

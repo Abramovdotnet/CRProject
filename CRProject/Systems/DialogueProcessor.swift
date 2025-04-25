@@ -19,6 +19,43 @@ class DialogueProcessor {
         self.gameStateService = DependencyManager.shared.resolve()
     }
     
+    private func processConditionalText(_ text: String) -> String {
+        var processedText = text
+        
+        // Handle first meeting condition
+        if processedText.contains("{if:first_meeting}") {
+            let isFirstMeeting = !npc.hasInteractedWithPlayer
+            
+            // Find the start and end of the conditional block
+            guard let startIndex = processedText.range(of: "{if:first_meeting}"),
+                  let elseIndex = processedText.range(of: "{else}"),
+                  let endIndex = processedText.range(of: "{endif}") else {
+                return processedText // Return original text if tags are malformed
+            }
+            
+            // Extract the text blocks
+            let firstMeetingText = String(processedText[startIndex.upperBound..<elseIndex.lowerBound])
+            let subsequentText = String(processedText[elseIndex.upperBound..<endIndex.lowerBound])
+            
+            // Replace the entire conditional block with the appropriate text
+            let conditionalBlock = String(processedText[startIndex.lowerBound..<endIndex.upperBound])
+            processedText = processedText.replacingOccurrences(
+                of: conditionalBlock,
+                with: isFirstMeeting ? firstMeetingText : subsequentText
+            )
+        }
+        
+        // Handle player name replacement
+        if processedText.contains("{player_name}") {
+            processedText = processedText.replacingOccurrences(
+                of: "{player_name}",
+                with: player.name
+            )
+        }
+        
+        return processedText
+    }
+    
     func loadDialogue(npc: NPC) -> (text: String, options: [DialogueNodeOption])? {
         // Step 1: Load base dialogue tree
         var baseTree: DialogueTree?
@@ -45,7 +82,8 @@ class DialogueProcessor {
         let initialNodeId = tree.initialNode
         if var node = tree.nodes[initialNodeId] {
             currentNode = node
-            return (node.text, filterAvailableOptions(options: node.options))
+            let processedText = processConditionalText(node.text)
+            return (processedText, filterAvailableOptions(options: node.options))
         }
         
         return nil
@@ -93,7 +131,7 @@ class DialogueProcessor {
                     from: "What's new in town?",
                     to: "gossip_0",
                     type: .normal,
-                    requirements: DialogueRequirements(minCharisma: nil, minStrength: nil, isNight: nil, isIndoor: nil, coins: nil, minRelationship: 5, maxRelationship: nil)
+                    requirements: DialogueRequirements(minCharisma: nil, minStrength: nil, isNight: nil, isIndoor: nil, coins: nil, minRelationship: 2, maxRelationship: nil)
                 ))
                 nodes[nodeId] = DialogueNode(text: node.text, options: options, requirements: node.requirements)
             }
@@ -116,7 +154,8 @@ class DialogueProcessor {
         
         currentNode = node
         currentNodeId = nodeId
-        return (node.text, filterAvailableOptions(options: node.options))
+        let processedText = processConditionalText(node.text)
+        return (processedText, filterAvailableOptions(options: node.options))
     }
     
     func normalizeRelationshipNode( _ nodeText: String) {

@@ -18,14 +18,6 @@
                     "text": "Have you noticed anything strange lately?",
                     "type": "normal",
                     "nextNode": "general_strange"
-                },
-                {
-                    "text": "May I ask who you are? [Investigate]",
-                    "type": "investigate",
-                    "nextNode": "investigation_intro",
-                    "requirements": {
-                        "minIntelligence": 2
-                    }
                 }
             ]
         },
@@ -114,11 +106,6 @@
                     "text": "Interesting...",
                     "type": "normal",
                     "nextNode": "end"
-                },
-                {
-                    "text": "You've said too much",
-                    "type": "intimidate",
-                    "nextNode": "general_intimidated"
                 }
             ]
         },
@@ -274,34 +261,6 @@
                     "text": "You're very observant",
                     "type": "normal",
                     "nextNode": "end"
-                }
-            ]
-        },
-        "investigation_intro": {
-            "text": "Oh, just a humble resident of this town. Why do you ask?",
-            "options": [
-                {
-                    "text": "I like to know who I'm talking to",
-                    "type": "normal",
-                    "nextNode": "investigation_success",
-                    "effects": {
-                        "revealNPCInfo": true
-                    }
-                },
-                {
-                    "text": "Never mind",
-                    "type": "normal",
-                    "nextNode": "end"
-                }
-            ]
-        },
-        "investigation_success": {
-            "text": "Well, I suppose there's no harm in introducing myself...",
-            "options": [
-                {
-                    "text": "Let's talk about something else",
-                    "type": "normal",
-                    "nextNode": "general_greeting"
                 }
             ]
         }

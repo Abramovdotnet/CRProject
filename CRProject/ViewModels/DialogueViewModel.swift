@@ -34,11 +34,10 @@ class DialogueViewModel: ObservableObject {
             npc: npc
         )
         
-        // Mark that the player has interacted with this NPC
-        npc.hasInteractedWithPlayer = true
-        
         DebugLogService.shared.log("Initializing dialogue for NPC: \(npc.name), profession: \(npc.profession)", category: "Dialogue")
         loadInitialDialogue()
+        // Mark that the player has interacted with this NPC
+        npc.hasInteractedWithPlayer = true
     }
     
     private func loadInitialDialogue() {
@@ -200,6 +199,8 @@ class DialogueViewModel: ObservableObject {
             showActionResult(success: false, action: "Payment")
             GameEventsBusService.shared.addWarningMessage("* Not enough coins! *")
         }
+        
+        GameTimeService.shared.advanceTime()
     }
     
     private func handleRelationshipIncrease(nextNodeId: String, option: String) {

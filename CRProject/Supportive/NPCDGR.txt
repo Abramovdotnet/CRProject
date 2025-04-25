@@ -1,0 +1,76 @@
+Rules for Generating Unique NPC Dialogue JSON (Derived from Dialogue6248.json Analysis)
+
+1.  **File Convention:** Name the JSON file `Dialogue{NPC_ID}.json`.
+1.1 ** Create file at /Users/abramovanatoliy/Documents/CRProject/CRProject/Resources/UniqueDialogues/RelationGroup{number} folder
+
+2.  **Root Structure:** The JSON root must contain `initialNode` (String) and `nodes` (Object).
+
+3.  **Node ID Convention:** Use `{NPC_ID}_{node_purpose}` for node IDs where practical. Use the reserved `"end"` ID to terminate dialogue branches.
+
+4.  **Character Foundation:** Base ALL dialogue text, options, tone, motivations, and available paths *directly* on the provided NPC Bio. The dialogue should be a direct reflection and exploration of that bio.
+
+5.  **Initial Node (`initialNode`):**
+    *   Must point to a `{NPC_ID}_greeting` node.
+    *   Implement the conditional greeting: `{if:first_meeting} [First meeting text] {else} [Subsequent meeting text, ideally using {player_name}] {endif}`.
+    *   Greeting text must immediately establish the NPC's core role/personality from their bio.
+    *   Initial options should provide broad entry points relevant to the NPC's bio/role.
+
+6.  **Node Structure:** Each node within the `nodes` object must contain:
+    *   `text`: NPC's dialogue, consistent with their bio's voice and personality.
+    *   `options`: An array of player choices.
+    *   (Optional) `requirements`: Conditions to reach the node itself (use sparingly).
+
+7.  **Option Structure:** Each option within the `options` array must contain:
+    *   `text`: Clear, concise player choice text. Include `(Cost)` or `[Action Hint]` if relevant.
+    *   `type`: Assign a type based on effect:
+        - `normal`: Standard dialogue option
+        - `relationshipIncrease`: Improves NPC's relationship with player
+        - `relationshipDecrease`: Worsens NPC's relationship with player
+        - `investigate`: Gathers information about the NPC
+        - `loveForSail`: Special service option (if applicable)
+    *   `nextNode`: The ID of the node to transition to (can be `"end"` or loop back).
+    *   (Optional) `requirements`: An object specifying conditions:
+        - `minRelationship`: Minimum relationship level required
+        - `maxRelationship`: Maximum relationship level allowed
+        - `coins`: Required currency amount
+        - `isNight`: Time-based condition
+        - `isIndoor`: Location-based condition
+
+8.  **Dialogue Flow:**
+    *   Create meaningful branches based on player choices and `requirements`.
+    *   Develop distinct thematic paths relevant to the NPC's bio.
+    *   Implement relationship progression:
+        - Use `relationshipIncrease` for respectful, understanding, or supportive choices
+        - Use `relationshipDecrease` for rude, dismissive, or inappropriate choices
+        - Gate deeper conversations behind `minRelationship` requirements
+        - Include recovery paths after negative relationship changes
+    *   Incorporate loops (`nextNode` pointing to an earlier node) to allow exploration or second chances.
+    *   Ensure all branches eventually lead to `"end"` or a loop.
+
+9.  **Relationship Progression:**
+    *   Plan relationship progression in stages (e.g., 1-5):
+        - Level 1: Initial meeting, basic information
+        - Level 2: Personal details, opinions
+        - Level 3: Deeper conversations, trust building
+        - Level 4: Personal favors, special services
+        - Level 5: Deepest secrets, strongest bonds
+    *   Include specific nodes for relationship milestones:
+        - `{NPC_ID}_greeting_return`: Different greeting after relationship established
+        - `{NPC_ID}_catchup`: Updates on previous conversations
+        - `{NPC_ID}_trust`: Special dialogue for high relationship levels
+    *   Balance relationship changes:
+        - Provide both positive and negative relationship options
+        - Make relationship changes logical based on NPC's personality
+        - Include recovery paths for negative relationship changes
+
+10. **Game Mechanics Integration:**
+    *   Use `requirements` to link dialogue to gameplay systems
+    *   Implement `loveForSail` options with appropriate costs
+    *   Use `investigate` options to gather information
+    *   Include conditional text using `{if:condition}` syntax
+
+11. **World Interconnectivity:**
+    *   Select 1-2 other existing NPCs as reference points
+    *   Incorporate subtle mentions or opinions about other NPCs
+    *   Ensure consistency with established character relationships
+    *   Update related NPC dialogues to maintain consistency 
