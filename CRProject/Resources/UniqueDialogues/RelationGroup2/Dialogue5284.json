@@ -1,0 +1,255 @@
+{
+    "initialNode": "5284_greeting",
+    "nodes": {
+        "5284_greeting": {
+            "text": "{if:first_meeting}Welcome to The Velvet Veil! I'm Elena Schmidt. {else}Good to see you again! {endif}Would you like a drink, or perhaps you'd like to hear about our specials?",
+            "options": [
+                {
+                    "text": "Tell me about your tavern",
+                    "type": "normal",
+                    "nextNode": "5284_background"
+                },
+                {
+                    "text": "What's on the menu today?",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                },
+                {
+                    "text": "How did you come to run this place?",
+                    "type": "normal",
+                    "nextNode": "5284_story"
+                }
+            ]
+        },
+        "5284_background": {
+            "text": "The Velvet Veil is more than just a tavern - it's a gathering place for the community. We pride ourselves on treating everyone with respect, whether they're a noble or a common worker. Our prices are fair, and our atmosphere is welcoming to all.",
+            "options": [
+                {
+                    "text": "That's a noble approach to running a business",
+                    "type": "relationshipIncrease",
+                    "nextNode": "5284_philosophy"
+                },
+                {
+                    "text": "How do you maintain order with such diverse clientele?",
+                    "type": "normal",
+                    "nextNode": "5284_management"
+                },
+                {
+                    "text": "Just give me a drink",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                }
+            ]
+        },
+        "5284_philosophy": {
+            "text": "Thank you. I believe a tavern should be a place where people can come together, share stories, and feel at home. My father taught me that respect and fairness are the foundation of good business. I try to honor that legacy every day.",
+            "options": [
+                {
+                    "text": "Your father would be proud of what you've built",
+                    "type": "relationshipIncrease",
+                    "nextNode": "5284_trust"
+                },
+                {
+                    "text": "Tell me more about your father's teachings",
+                    "type": "normal",
+                    "nextNode": "5284_story"
+                },
+                {
+                    "text": "I should order something",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                }
+            ]
+        },
+        "5284_trust": {
+            "text": "That means a lot to hear. I've worked hard to maintain the standards he set while also putting my own mark on the place. The Velvet Veil has become a second home for many in the community, and that's something I'm very proud of.",
+            "options": [
+                {
+                    "text": "Do you have any plans for the future?",
+                    "type": "relationshipIncrease",
+                    "nextNode": "5284_dreams",
+                    "requirements": {
+                        "minRelationship": 3
+                    }
+                },
+                {
+                    "text": "I'll have a drink now",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                }
+            ]
+        },
+        "5284_dreams": {
+            "text": "I'd love to expand the tavern while keeping its welcoming atmosphere. Maybe add a performance space for local musicians or a private room for important meetings. But any changes would have to maintain the spirit of the place - a home away from home for all.",
+            "options": [
+                {
+                    "text": "That sounds like a wonderful vision",
+                    "type": "relationshipIncrease",
+                    "nextNode": "5284_greeting_return"
+                },
+                {
+                    "text": "Let's talk about that over a drink",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                }
+            ]
+        },
+        "5284_management": {
+            "text": "It's all about setting clear expectations and treating everyone fairly. I have a few simple rules: respect the staff, respect other patrons, and keep disagreements civil. Most people appreciate having a place where they know they'll be treated well.",
+            "options": [
+                {
+                    "text": "That's a wise approach",
+                    "type": "relationshipIncrease",
+                    "nextNode": "5284_caution"
+                },
+                {
+                    "text": "What happens when someone breaks the rules?",
+                    "type": "normal",
+                    "nextNode": "5284_rules"
+                }
+            ]
+        },
+        "5284_caution": {
+            "text": "Thank you. It's not always easy, especially being young and running a place like this. But I've learned that consistency and fairness go a long way. People respect that, even if they don't always agree with every decision.",
+            "options": [
+                {
+                    "text": "You've handled the challenge well",
+                    "type": "relationshipIncrease",
+                    "nextNode": "5284_trust"
+                },
+                {
+                    "text": "Let's get back to the menu",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                }
+            ]
+        },
+        "5284_rules": {
+            "text": "First, a warning. If that doesn't work, they're asked to leave. I've only had to ban a handful of people in all my years here. Most understand when they've crossed a line and apologize. The regulars actually help maintain the atmosphere too - they know what kind of place this is.",
+            "options": [
+                {
+                    "text": "That's impressive for someone your age",
+                    "type": "relationshipIncrease",
+                    "nextNode": "5284_trust"
+                },
+                {
+                    "text": "Let's talk about something more pleasant",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                }
+            ]
+        },
+        "5284_menu": {
+            "text": "Today we have our house ale, a fine selection of wines, and some special mead that just came in. Our kitchen is serving fresh bread, cheese, and a hearty stew. What would you like?",
+            "options": [
+                {
+                    "text": "I'll have the house ale (5) [Purchase]",
+                    "type": "normal",
+                    "nextNode": "5284_serve",
+                    "requirements": {
+                        "coins": 5
+                    }
+                },
+                {
+                    "text": "The special mead sounds interesting (8) [Purchase]",
+                    "type": "normal",
+                    "nextNode": "5284_serve",
+                    "requirements": {
+                        "coins": 8
+                    }
+                },
+                {
+                    "text": "Just the stew, please (10) [Purchase]",
+                    "type": "normal",
+                    "nextNode": "5284_serve",
+                    "requirements": {
+                        "coins": 10
+                    }
+                }
+            ]
+        },
+        "5284_serve": {
+            "text": "Coming right up! Let me know if you need anything else. We're always happy to help our patrons.",
+            "options": [
+                {
+                    "text": "Thank you, I'll enjoy this",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "5284_story": {
+            "text": "I took over The Velvet Veil when I was quite young, after my father fell ill. It was challenging at first - some people doubted a young woman could run a tavern. But I learned quickly, and the regulars were very supportive. They helped me find my footing.",
+            "options": [
+                {
+                    "text": "That's quite an achievement",
+                    "type": "relationshipIncrease",
+                    "nextNode": "5284_trust"
+                },
+                {
+                    "text": "What was the hardest part?",
+                    "type": "normal",
+                    "nextNode": "5284_challenges"
+                },
+                {
+                    "text": "Let's get back to the menu",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                }
+            ]
+        },
+        "5284_challenges": {
+            "text": "Proving myself, definitely. Some customers tried to take advantage of my inexperience at first. But I learned to stand my ground while staying polite. The regulars saw I was serious about maintaining the tavern's standards, and they started supporting me more openly.",
+            "options": [
+                {
+                    "text": "You've clearly succeeded",
+                    "type": "relationshipIncrease",
+                    "nextNode": "5284_trust"
+                },
+                {
+                    "text": "I should try your house ale",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                }
+            ]
+        },
+        "5284_greeting_return": {
+            "text": "Welcome back! I was just checking our new shipment of mead. Would you like to try some, or perhaps you'd prefer to hear about our other offerings?",
+            "options": [
+                {
+                    "text": "Tell me about the new mead",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                },
+                {
+                    "text": "How are your expansion plans coming along?",
+                    "type": "normal",
+                    "nextNode": "5284_progress",
+                    "requirements": {
+                        "minRelationship": 4
+                    }
+                },
+                {
+                    "text": "I'll have my usual",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                }
+            ]
+        },
+        "5284_progress": {
+            "text": "I've been saving up and making some plans. The regulars have been very supportive of the idea of expansion. I'm thinking of starting with a small performance space - we have some talented musicians in the area who could use a proper venue.",
+            "options": [
+                {
+                    "text": "That sounds like a great first step",
+                    "type": "relationshipIncrease",
+                    "nextNode": "5284_greeting_return"
+                },
+                {
+                    "text": "Let's celebrate with a drink",
+                    "type": "normal",
+                    "nextNode": "5284_menu"
+                }
+            ]
+        }
+    }
+} 

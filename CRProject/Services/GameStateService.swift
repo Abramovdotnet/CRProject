@@ -218,7 +218,7 @@ class GameStateService : ObservableObject, GameService{
             vampireNatureRevealService.decreaseAwareness(amount: 1)
         }
 
-        var currentPlayerBlood = player.bloodMeter.currentBlood
+        let currentPlayerBlood = player.bloodMeter.currentBlood
         
         if currentPlayerBlood <= 30 {
             gameEventsBus.addWarningMessage("* I feel huge lack of blood! *")

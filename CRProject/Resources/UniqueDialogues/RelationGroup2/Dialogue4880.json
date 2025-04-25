@@ -1,0 +1,260 @@
+{
+  "initialNode": "4880_greeting",
+  "nodes": {
+    "4880_greeting": {
+      "text": "{if:first_meeting}Welcome to The Moonlit Chalice! I'm Olaf, and I'll be taking care of you today. What can I get you?{else}Ah, good to see you again! The usual, or would you like to try something new?{endif}",
+      "options": [
+        {
+          "text": "Tell me about yourself",
+          "type": "normal",
+          "nextNode": "4880_about_self"
+        },
+        {
+          "text": "What's special about this place?",
+          "type": "normal",
+          "nextNode": "4880_tavern_info"
+        },
+        {
+          "text": "How long have you worked here?",
+          "type": "normal",
+          "nextNode": "4880_experience"
+        },
+        {
+          "text": "Who else works here?",
+          "type": "normal",
+          "nextNode": "4880_colleagues"
+        }
+      ]
+    },
+    "4880_about_self": {
+      "text": "Well, I've been working here since I was 16. Started when my father fell ill and we needed the extra coin. Turns out I've got a knack for remembering faces and drinks - helps keep the regulars happy!",
+      "options": [
+        {
+          "text": "That's impressive dedication",
+          "type": "relationshipIncrease",
+          "nextNode": "4880_family"
+        },
+        {
+          "text": "Must be tough working here",
+          "type": "normal",
+          "nextNode": "4880_work_life"
+        },
+        {
+          "text": "Back to drinks",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        }
+      ]
+    },
+    "4880_tavern_info": {
+      "text": "The Moonlit Chalice has been a gathering place for generations. We've got the best selection of ales this side of the river, and our kitchen staff, led by Gerhard Becker, makes the most amazing stews. You should try one!",
+      "options": [
+        {
+          "text": "Tell me about the food",
+          "type": "normal",
+          "nextNode": "4880_food"
+        },
+        {
+          "text": "Who are the regulars?",
+          "type": "normal",
+          "nextNode": "4880_regulars"
+        },
+        {
+          "text": "Back to drinks",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        }
+      ]
+    },
+    "4880_experience": {
+      "text": "I've been here since I was 16 - started when my father fell ill and we needed the extra coin. I've learned a lot about running a tavern in that time. Actually... I've been thinking about opening my own place someday. Been saving up and learning from the best, like Sigurd Müller over at The Dragon's Hearth.",
+      "options": [
+        {
+          "text": "That's ambitious!",
+          "type": "relationshipIncrease",
+          "nextNode": "4880_dreams"
+        },
+        {
+          "text": "Isn't that risky?",
+          "type": "normal",
+          "nextNode": "4880_risks"
+        },
+        {
+          "text": "Tell me more about your work here",
+          "type": "normal",
+          "nextNode": "4880_work_life"
+        }
+      ]
+    },
+    "4880_colleagues": {
+      "text": "We've got a great team here! Uhtred MacLean from The Golden Scales sometimes helps out during busy nights - he's got a real talent for handling rowdy customers. And our kitchen staff, led by Gerhard Becker, keeps everyone well-fed.",
+      "options": [
+        {
+          "text": "Tell me about Uhtred",
+          "type": "normal",
+          "nextNode": "4880_uhtred"
+        },
+        {
+          "text": "Tell me about the kitchen",
+          "type": "normal",
+          "nextNode": "4880_kitchen"
+        },
+        {
+          "text": "Back to drinks",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        }
+      ]
+    },
+    "4880_family": {
+      "text": "Thanks! My family means everything to me. My mother still runs her weaving business, and I help out when I can. It's tough sometimes, but seeing them happy makes it all worth it.",
+      "options": [
+        {
+          "text": "That's really admirable",
+          "type": "relationshipIncrease",
+          "nextNode": "4880_greeting"
+        },
+        {
+          "text": "Must be hard to balance",
+          "type": "normal",
+          "nextNode": "4880_balance"
+        }
+      ]
+    },
+    "4880_work_life": {
+      "text": "It has its challenges, but I love it! The regulars are like family, and I've learned so much about running a business. Sometimes I even get to chat with Katherine MacIntyre when she stops by for her evening tea - she's got some fascinating stories!",
+      "options": [
+        {
+          "text": "Tell me more about the regulars",
+          "type": "normal",
+          "nextNode": "4880_regulars"
+        },
+        {
+          "text": "Back to drinks",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        }
+      ]
+    },
+    "4880_food": {
+      "text": "Our kitchen is amazing! Gerhard Becker runs a tight ship, and his stews are legendary. He learned from his mother, who ran an inn in the countryside. Sometimes we even get fresh herbs from Katherine MacIntyre's garden - she's a regular here.",
+      "options": [
+        {
+          "text": "That sounds delicious!",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        },
+        {
+          "text": "Tell me about the regulars",
+          "type": "normal",
+          "nextNode": "4880_regulars"
+        }
+      ]
+    },
+    "4880_regulars": {
+      "text": "We get all sorts! Katherine MacIntyre comes by for tea, sometimes with her apprentice. Uhtred MacLean helps out when we're busy. And we get plenty of guards from the barracks - Beatrice Wilson and Niamh Olsen are regulars. They keep the peace and enjoy a good drink after their shifts.",
+      "options": [
+        {
+          "text": "That's quite a mix!",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        },
+        {
+          "text": "Tell me about the guards",
+          "type": "normal",
+          "nextNode": "4880_guards"
+        }
+      ]
+    },
+    "4880_dreams": {
+      "text": "I know it's a big dream, but I'm determined! I've been studying everything - from how Sigurd Müller manages his tavern to how Katherine Larsen runs her blacksmith shop. There's so much to learn about running a business!",
+      "options": [
+        {
+          "text": "You'll make it happen!",
+          "type": "relationshipIncrease",
+          "nextNode": "4880_greeting"
+        },
+        {
+          "text": "That's quite a goal",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        }
+      ]
+    },
+    "4880_risks": {
+      "text": "Sure, it's risky, but I've seen others do it! Look at Katherine Larsen - she built her blacksmith shop from nothing. And Gerhard Becker turned his family recipes into a successful kitchen. I'm learning from the best!",
+      "options": [
+        {
+          "text": "You've got a point",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        },
+        {
+          "text": "Still seems risky",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        }
+      ]
+    },
+    "4880_uhtred": {
+      "text": "Uhtred's great! He used to work at The Golden Scales, but he helps us out when we're busy. He's got this amazing way of calming down rowdy customers - must be from his time working with merchants. He's a good friend too, always ready to lend a hand.",
+      "options": [
+        {
+          "text": "That's nice to hear",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        },
+        {
+          "text": "Tell me about the kitchen",
+          "type": "normal",
+          "nextNode": "4880_kitchen"
+        }
+      ]
+    },
+    "4880_kitchen": {
+      "text": "Our kitchen is run by Gerhard Becker - he's amazing! He learned everything from his mother, who ran an inn in the countryside. His stews are legendary, and he's always experimenting with new recipes. Sometimes he even gets fresh herbs from Katherine MacIntyre's garden!",
+      "options": [
+        {
+          "text": "Sounds delicious!",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        },
+        {
+          "text": "Tell me about Uhtred",
+          "type": "normal",
+          "nextNode": "4880_uhtred"
+        }
+      ]
+    },
+    "4880_balance": {
+      "text": "It is tough sometimes, but I've learned a lot about time management from watching people like Otto Hansen at The Ivory Keep. He runs everything like clockwork! And I've got great support from my colleagues here at the Chalice.",
+      "options": [
+        {
+          "text": "That's impressive",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        },
+        {
+          "text": "Tell me about your work",
+          "type": "normal",
+          "nextNode": "4880_work_life"
+        }
+      ]
+    },
+    "4880_guards": {
+      "text": "The guards are great! Beatrice Wilson is one of our youngest regulars - she's really dedicated to her work. And Niamh Olsen has been around longer - she's got this amazing way of keeping the peace without being too heavy-handed. They're good people to have around!",
+      "options": [
+        {
+          "text": "That's reassuring",
+          "type": "normal",
+          "nextNode": "4880_greeting"
+        },
+        {
+          "text": "Tell me about other regulars",
+          "type": "normal",
+          "nextNode": "4880_regulars"
+        }
+      ]
+    }
+  }
+} 

@@ -1679,6 +1679,144 @@
             "type": "alchemy",
             "name": "Pain Relief Poultice",
             "cost": 35
+        },
+        {
+            "id": 281,
+            "type": "paper",
+            "name": "Weekly Market Bulletin",
+            "cost": 2
+        },
+        {
+            "id": 282,
+            "type": "paper",
+            "name": "Merchant's Price Ledger",
+            "cost": 8
+        },
+        {
+            "id": 283,
+            "type": "paper",
+            "name": "Trade Permit",
+            "cost": 5
+        },
+        {
+            "id": 284,
+            "type": "paper",
+            "name": "Guild Membership Certificate",
+            "cost": 12
+        },
+        {
+            "id": 285,
+            "type": "paper",
+            "name": "Caravan Route Map",
+            "cost": 15
+        },
+        {
+            "id": 286,
+            "type": "paper",
+            "name": "Trade Contract",
+            "cost": 7
+        },
+        {
+            "id": 287,
+            "type": "paper",
+            "name": "Import License",
+            "cost": 10
+        },
+        {
+            "id": 288,
+            "type": "paper",
+            "name": "Warehouse Inventory",
+            "cost": 9
+        },
+        {
+            "id": 289,
+            "type": "paper",
+            "name": "Guild Trade Charter",
+            "cost": 20
+        },
+        {
+            "id": 290,
+            "type": "paper",
+            "name": "Market Stall Permit",
+            "cost": 25
+        },
+        {
+            "id": 291,
+            "type": "paper",
+            "name": "Trade Route Schedule",
+            "cost": 6
+        },
+        {
+            "id": 292,
+            "type": "paper",
+            "name": "Customs Declaration",
+            "cost": 4
+        },
+        {
+            "id": 293,
+            "type": "paper",
+            "name": "Merchant's Guild Rules",
+            "cost": 11
+        },
+        {
+            "id": 294,
+            "type": "paper",
+            "name": "Trade Fair Schedule",
+            "cost": 8
+        },
+        {
+            "id": 295,
+            "type": "paper",
+            "name": "Shipping Manifest",
+            "cost": 9
+        },
+        {
+            "id": 296,
+            "type": "paper",
+            "name": "Trade Agreement Draft",
+            "cost": 6
+        },
+        {
+            "id": 297,
+            "type": "paper",
+            "name": "Market Regulations",
+            "cost": 15
+        },
+        {
+            "id": 298,
+            "type": "paper",
+            "name": "Guild Membership List",
+            "cost": 10
+        },
+        {
+            "id": 299,
+            "type": "paper",
+            "name": "Trade Route Pass",
+            "cost": 18
+        },
+        {
+            "id": 300,
+            "type": "paper",
+            "name": "Daily Price List",
+            "cost": 3
+        },
+        {
+            "id": 301,
+            "type": "tools",
+            "name": "Quil",
+            "cost": 2
+        },
+        {
+            "id": 302,
+            "type": "tools",
+            "name": "Ink",
+            "cost": 4
+        },
+        {
+            "id": 303,
+            "type": "paper",
+            "name": "Scroll",
+            "cost": 1
         }
     ]
 } 

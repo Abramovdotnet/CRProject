@@ -28,7 +28,7 @@ struct DesiresView: View {
                             .font(Theme.bodyFont)
                             .foregroundColor(Theme.bloodProgressColor)
                     }
-                    .frame(width: 45, height: 45)
+                    .frame(width: 25, height: 25)
                     Text("Desires: ")
                         .font(Theme.bodyFont)
                         .foregroundColor(Theme.bloodProgressColor)

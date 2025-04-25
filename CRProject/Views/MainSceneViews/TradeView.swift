@@ -7,6 +7,18 @@
 
 import SwiftUI
 
+// Add this structure after the imports and before TradeView
+struct ItemGroup: Identifiable {
+    var items: [Item]
+    var id: String { items[0].id.description }
+    
+    var name: String { items[0].name }
+    var count: Int { items.count }
+    var cost: Int { items[0].cost }
+    var icon: String { items[0].icon() }
+    var color: Color { items[0].color() }
+}
+
 struct TradeView: View {
     @ObservedObject var player: Player
     @ObservedObject var npc: NPC
@@ -20,6 +32,30 @@ struct TradeView: View {
     @State private var selectedNPCItems: [Item] = []
     @State private var dealTotal: Int = 0
     
+    private var groupedPlayerItems: [ItemGroup] {
+        Dictionary(grouping: player.items, by: { $0.id.description })
+            .map { ItemGroup(items: $0.value) }
+            .sorted { $0.name < $1.name }
+    }
+    
+    private var groupedNPCItems: [ItemGroup] {
+        Dictionary(grouping: npc.items, by: { $0.id.description })
+            .map { ItemGroup(items: $0.value) }
+            .sorted { $0.name < $1.name }
+    }
+    
+    private var selectedPlayerGroups: [ItemGroup] {
+        Dictionary(grouping: selectedPlayerItems, by: { $0.id.description })
+            .map { ItemGroup(items: $0.value) }
+            .sorted { $0.name < $1.name }
+    }
+    
+    private var selectedNPCGroups: [ItemGroup] {
+        Dictionary(grouping: selectedNPCItems, by: { $0.id.description })
+            .map { ItemGroup(items: $0.value) }
+            .sorted { $0.name < $1.name }
+    }
+    
     var body: some View {
         GeometryReader { geometry in
             ZStack {
@@ -29,7 +65,7 @@ struct TradeView: View {
                 
                 DustEmitterView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
-                       .edgesIgnoringSafeArea(.all)
+                    .edgesIgnoringSafeArea(.all)
                 
                 VStack(spacing: 20) {
                     // Top row: Player info, Deal total, NPC info
@@ -49,19 +85,35 @@ struct TradeView: View {
                         VStack(spacing: 2) {
                             ScrollView {
                                 VStack(spacing: 8) {
-                                    ForEach(player.items, id: \.index) { item in
-                                        ItemRowView(
-                                            item: item,
-                                            isSelected: selectedPlayerItems.contains { $0.index == item.index },
-                                            onTap: {
-                                                if let index = selectedPlayerItems.firstIndex(where: { $0.index == item.index }) {
-                                                    selectedPlayerItems.remove(at: index)
-                                                } else {
-                                                    selectedPlayerItems.append(item)
+                                    ForEach(groupedPlayerItems) { group in
+                                        Button(action: {
+                                            handlePlayerItemSelection(group)
+                                        }) {
+                                            HStack {
+                                                HStack {
+                                                    Image(systemName: group.icon)
+                                                        .foregroundColor(group.color)
+                                                        .font(Theme.smallFont)
+                                                    
+                                                    Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
+                                                        .font(Theme.smallFont)
+                                                        .foregroundColor(Theme.textColor)
+                                                    
+                                                    Spacer()
+                                                    
+                                                    Text("\(group.cost)")
+                                                        .font(Theme.smallFont)
+                                                        .foregroundColor(.green)
                                                 }
-                                                updateDealTotal()
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 8)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 8)
+                                                        .fill(selectedPlayerItems.contains(where: { $0.id == group.items[0].id }) ? Theme.awarenessProgressColor.opacity(0.3) : Color.clear)
+                                                )
                                             }
-                                        )
+                                            .padding(.horizontal, 6)
+                                        }
                                     }
                                 }
                                 .padding(.vertical, 8)
@@ -95,17 +147,35 @@ struct TradeView: View {
                                             .font(Theme.smallFont)
                                             .foregroundColor(Theme.textColor)
                                         
-                                        ForEach(selectedPlayerItems, id: \.index) { item in
-                                            ItemRowView(
-                                                item: item,
-                                                isSelected: true,
-                                                onTap: {
-                                                    if let index = selectedPlayerItems.firstIndex(where: { $0.index == item.index }) {
-                                                        selectedPlayerItems.remove(at: index)
-                                                        updateDealTotal()
+                                        ForEach(selectedPlayerGroups) { group in
+                                            Button(action: {
+                                                handleSelectedPlayerItemSelection(group)
+                                            }) {
+                                                HStack {
+                                                    HStack {
+                                                        Image(systemName: group.icon)
+                                                            .foregroundColor(group.color)
+                                                            .font(Theme.smallFont)
+                                                        
+                                                        Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
+                                                            .font(Theme.smallFont)
+                                                            .foregroundColor(Theme.textColor)
+                                                        
+                                                        Spacer()
+                                                        
+                                                        Text("\(group.cost)")
+                                                            .font(Theme.smallFont)
+                                                            .foregroundColor(.green)
                                                     }
+                                                    .padding(.horizontal, 6)
+                                                    .padding(.vertical, 8)
+                                                    .background(
+                                                        RoundedRectangle(cornerRadius: 8)
+                                                            .fill(Theme.awarenessProgressColor.opacity(0.3))
+                                                    )
                                                 }
-                                            )
+                                                .padding(.horizontal, 6)
+                                            }
                                         }
                                     }
                                     
@@ -114,17 +184,35 @@ struct TradeView: View {
                                             .font(Theme.smallFont)
                                             .foregroundColor(Theme.textColor)
                                         
-                                        ForEach(selectedNPCItems, id: \.id) { item in
-                                            ItemRowView(
-                                                item: item,
-                                                isSelected: true,
-                                                onTap: {
-                                                    if let index = selectedNPCItems.firstIndex(where: { $0.index == item.index }) {
-                                                        selectedNPCItems.remove(at: index)
-                                                        updateDealTotal()
+                                        ForEach(selectedNPCGroups) { group in
+                                            Button(action: {
+                                                handleSelectedNPCItemSelection(group)
+                                            }) {
+                                                HStack {
+                                                    HStack {
+                                                        Image(systemName: group.icon)
+                                                            .foregroundColor(group.color)
+                                                            .font(Theme.smallFont)
+                                                        
+                                                        Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
+                                                            .font(Theme.smallFont)
+                                                            .foregroundColor(Theme.textColor)
+                                                        
+                                                        Spacer()
+                                                        
+                                                        Text("\(group.cost)")
+                                                            .font(Theme.smallFont)
+                                                            .foregroundColor(.green)
                                                     }
+                                                    .padding(.horizontal, 6)
+                                                    .padding(.vertical, 8)
+                                                    .background(
+                                                        RoundedRectangle(cornerRadius: 8)
+                                                            .fill(Theme.awarenessProgressColor.opacity(0.3))
+                                                    )
                                                 }
-                                            )
+                                                .padding(.horizontal, 6)
+                                            }
                                         }
                                     }
                                 }
@@ -165,19 +253,35 @@ struct TradeView: View {
                         VStack(spacing: 2) {
                             ScrollView {
                                 VStack(spacing: 8) {
-                                    ForEach(npc.items, id: \.index) { item in
-                                        ItemRowView(
-                                            item: item,
-                                            isSelected: selectedNPCItems.contains { $0.index == item.index },
-                                            onTap: {
-                                                if let index = selectedNPCItems.firstIndex(where: { $0.index == item.index }) {
-                                                    selectedNPCItems.remove(at: index)
-                                                } else {
-                                                    selectedNPCItems.append(item)
+                                    ForEach(groupedNPCItems) { group in
+                                        Button(action: {
+                                            handleNPCItemSelection(group)
+                                        }) {
+                                            HStack {
+                                                HStack {
+                                                    Image(systemName: group.icon)
+                                                        .foregroundColor(group.color)
+                                                        .font(Theme.smallFont)
+                                                    
+                                                    Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
+                                                        .font(Theme.smallFont)
+                                                        .foregroundColor(Theme.textColor)
+                                                    
+                                                    Spacer()
+                                                    
+                                                    Text("\(group.cost)")
+                                                        .font(Theme.smallFont)
+                                                        .foregroundColor(.green)
                                                 }
-                                                updateDealTotal()
+                                                .padding(.horizontal, 6)
+                                                .padding(.vertical, 8)
+                                                .background(
+                                                    RoundedRectangle(cornerRadius: 8)
+                                                        .fill(selectedNPCItems.contains(where: { $0.id == group.items[0].id }) ? Theme.awarenessProgressColor.opacity(0.3) : Color.clear)
+                                                )
                                             }
-                                        )
+                                            .padding(.horizontal, 6)
+                                        }
                                     }
                                 }
                                 .padding(.vertical, 8)
@@ -218,44 +322,95 @@ struct TradeView: View {
         }
     }
     
+    private func handlePlayerItemSelection(_ group: ItemGroup) {
+        guard let firstItem = group.items.first else { return }
+        
+        // When clicking in player's inventory, always move to selected items
+        if let itemToMove = player.items.first(where: { $0.id == firstItem.id }) {
+            if let index = player.items.firstIndex(where: { $0.index == itemToMove.index }) {
+                let item = player.items.remove(at: index)
+                selectedPlayerItems.append(item)
+                updateDealTotal()
+            }
+        }
+    }
+    
+    private func handleSelectedPlayerItemSelection(_ group: ItemGroup) {
+        guard let firstItem = group.items.first else { return }
+        
+        // When clicking in selected items, always move back to player's inventory
+        if let itemToMove = selectedPlayerItems.first(where: { $0.id == firstItem.id }) {
+            if let index = selectedPlayerItems.firstIndex(where: { $0.index == itemToMove.index }) {
+                let item = selectedPlayerItems.remove(at: index)
+                player.items.append(item)
+                updateDealTotal()
+            }
+        }
+    }
+    
+    private func handleNPCItemSelection(_ group: ItemGroup) {
+        guard let firstItem = group.items.first else { return }
+        
+        // When clicking in NPC's inventory, always move to selected items
+        if let itemToMove = npc.items.first(where: { $0.id == firstItem.id }) {
+            if let index = npc.items.firstIndex(where: { $0.index == itemToMove.index }) {
+                let item = npc.items.remove(at: index)
+                selectedNPCItems.append(item)
+                updateDealTotal()
+            }
+        }
+    }
+    
+    private func handleSelectedNPCItemSelection(_ group: ItemGroup) {
+        guard let firstItem = group.items.first else { return }
+        
+        // When clicking in selected items, always move back to NPC's inventory
+        if let itemToMove = selectedNPCItems.first(where: { $0.id == firstItem.id }) {
+            if let index = selectedNPCItems.firstIndex(where: { $0.index == itemToMove.index }) {
+                let item = selectedNPCItems.remove(at: index)
+                npc.items.append(item)
+                updateDealTotal()
+            }
+        }
+    }
+    
     private func updateDealTotal() {
         let playerItemsTotal = selectedPlayerItems.reduce(0) { $0 + $1.cost }
         let npcItemsTotal = selectedNPCItems.reduce(0) { $0 + $1.cost }
-        dealTotal = playerItemsTotal - npcItemsTotal
+        dealTotal = npcItemsTotal - playerItemsTotal
     }
     
     private func couldMakeADeal() -> Bool {
-        if selectedPlayerItems.isEmpty && selectedNPCItems.isEmpty {
-            return false
-        }
-        
         let playerItemsTotal = selectedPlayerItems.reduce(0) { $0 + $1.cost }
         let npcItemsTotal = selectedNPCItems.reduce(0) { $0 + $1.cost }
         
-        if dealTotal < 0 {
+        if dealTotal > 0 {
             return player.coins.value >= dealTotal
-        }
-
-        else if dealTotal > 0 {
+        } else {
             return npc.coins.value >= abs(dealTotal)
         }
-    
-        return true
     }
     
-    func makeADeal() {
-        for item in selectedPlayerItems {
-            CoinsManagementService.shared.moveCoins(from: npc, to: player, amount: item.cost)
-            ItemsManagementService.shared.moveItem(item: item, from: player, to: npc)
+    private func makeADeal() {
+        // Add selected NPC items to player
+        player.items.append(contentsOf: selectedNPCItems)
+        
+        // Add selected player items to NPC
+        npc.items.append(contentsOf: selectedPlayerItems)
+        
+        // Update coins
+        if dealTotal > 0 {
+            player.coins.value -= dealTotal
+            npc.coins.value += dealTotal
+        } else {
+            npc.coins.value -= abs(dealTotal)
+            player.coins.value += abs(dealTotal)
         }
         
-        for item in selectedNPCItems {
-            CoinsManagementService.shared.moveCoins(from: player, to: npc, amount: item.cost)
-            ItemsManagementService.shared.moveItem(item: item, from: npc, to: player)
-        }
-        
+        // Clear selections
         selectedPlayerItems.removeAll()
         selectedNPCItems.removeAll()
+        dealTotal = 0
         
         npc.playerRelationship.increase(amount: 2)
         StatisticsService.shared.increaseBartersCompleted()
@@ -273,40 +428,5 @@ struct TradeView: View {
         )
         
         GameTimeService.shared.advanceTime()
-    }
-}
-
-struct ItemRowView: View {
-    let item: Item
-    let isSelected: Bool
-    let onTap: () -> Void
-    
-    var body: some View {
-        Button(action: onTap) {
-            HStack {
-                HStack {
-                    Image(systemName: item.icon())
-                        .foregroundColor(item.color())
-                        .font(Theme.smallFont)
-                    
-                    Text(item.name)
-                        .font(Theme.smallFont)
-                        .foregroundColor(Theme.textColor)
-                    
-                    Spacer()
-                    
-                    Text("\(Int(item.cost))")
-                        .font(Theme.smallFont)
-                        .foregroundColor(.green)
-                }
-                .padding(.horizontal, 6)
-                .padding(.vertical, 8)
-                .background(
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(isSelected ? Theme.awarenessProgressColor.opacity(0.3) : Color.clear)
-                )
-            }
-            .padding(.horizontal, 6)
-        }
     }
 } 

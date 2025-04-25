@@ -112,7 +112,7 @@ class GossipGeneratorService {
         case .patrol: return "keeping watch"
         case .smithingCraft, .workingOnSmithingOrder: return "hammering away at the forge"
         case .alchemyCraft, .workingOnAlchemyPotion: return "brewing something up"
-        case .awareAboutVampire: return "spreading dire warnings"
+        case .awareAboutVampire: return "spreading dire warnings about mysterious vampire"
         case .findOutCasualty, .awareAboutCasualty: return "involved with that grim discovery"
         case .askForProtection: return "desperately seeking protection"
         case .observing: return "just lurking and observing"

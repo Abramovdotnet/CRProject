@@ -7,6 +7,41 @@
 
 import SwiftUI
 
+struct ItemRowView: View {
+    let item: Item
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            HStack {
+                HStack {
+                    Image(systemName: item.icon())
+                        .foregroundColor(item.color())
+                        .font(Theme.smallFont)
+                    
+                    Text(item.name)
+                        .font(Theme.smallFont)
+                        .foregroundColor(Theme.textColor)
+                    
+                    Spacer()
+                    
+                    Text("\(item.cost)")
+                        .font(Theme.smallFont)
+                        .foregroundColor(.green)
+                }
+                .padding(.horizontal, 6)
+                .padding(.vertical, 8)
+                .background(
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(isSelected ? Theme.awarenessProgressColor.opacity(0.3) : Color.clear)
+                )
+            }
+            .padding(.horizontal, 6)
+        }
+    }
+}
+
 struct CharacterInventoryView: View {
     var character: any Character
     let scene: Scene

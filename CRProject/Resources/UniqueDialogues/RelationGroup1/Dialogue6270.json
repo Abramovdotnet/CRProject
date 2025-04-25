@@ -1,0 +1,277 @@
+{
+    "initialNode": "6270_greeting",
+    "nodes": {
+        "6270_greeting": {
+            "text": "{if:first_meeting}Welcome to The Velvet Veil. I'm Katherine Karlsen. {else}Ah, it's good to see you again. {endif}Would you care for some conversation, or perhaps you're interested in our establishment's offerings?",
+            "options": [
+                {
+                    "text": "I'd like to learn more about you and your establishment",
+                    "type": "normal",
+                    "nextNode": "6270_background"
+                },
+                {
+                    "text": "Tell me about your business ventures",
+                    "type": "normal",
+                    "nextNode": "6270_business"
+                },
+                {
+                    "text": "I'm interested in your... services",
+                    "type": "normal",
+                    "nextNode": "6270_company"
+                }
+            ]
+        },
+        "6270_background": {
+            "text": "I've built my life on careful planning and strategic decisions. While some might focus solely on my current profession, I've used my earnings to invest in various businesses throughout the city. My establishment here at The Velvet Veil is known for its discretion and refined atmosphere.",
+            "options": [
+                {
+                    "text": "Your business acumen is impressive",
+                    "type": "relationshipIncrease",
+                    "nextNode": "6270_admiration"
+                },
+                {
+                    "text": "How do you maintain your independence in this line of work?",
+                    "type": "normal",
+                    "nextNode": "6270_independence"
+                },
+                {
+                    "text": "Let's discuss more... intimate matters",
+                    "type": "relationshipDecrease",
+                    "nextNode": "6270_company"
+                }
+            ]
+        },
+        "6270_admiration": {
+            "text": "Thank you. I believe in creating value in all aspects of life. My investments are carefully chosen, and I take pride in both my professional and business accomplishments. It's refreshing to meet someone who appreciates more than just surface-level interactions.",
+            "options": [
+                {
+                    "text": "Tell me more about your investments",
+                    "type": "normal",
+                    "nextNode": "6270_business"
+                },
+                {
+                    "text": "You seem like someone who values long-term planning",
+                    "type": "relationshipIncrease",
+                    "nextNode": "6270_trust"
+                },
+                {
+                    "text": "I should be going",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "6270_trust": {
+            "text": "Long-term planning is essential in my line of work. I've learned that true success comes from careful consideration and strategic relationships. It's rare to find someone who understands the importance of building something lasting.",
+            "options": [
+                {
+                    "text": "Perhaps we could discuss potential business opportunities?",
+                    "type": "relationshipIncrease",
+                    "nextNode": "6270_partnership",
+                    "requirements": {
+                        "minRelationship": 3
+                    }
+                },
+                {
+                    "text": "I'll see you around",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "6270_partnership": {
+            "text": "Business opportunities? That's an interesting proposition. I'm always open to discussing potential ventures with those who have proven themselves trustworthy.",
+            "options": [
+                {
+                    "text": "I'd like to learn more about your investment strategies",
+                    "type": "relationshipIncrease",
+                    "nextNode": "6270_greeting_return"
+                },
+                {
+                    "text": "Until next time",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "6270_independence": {
+            "text": "Independence comes from maintaining clear boundaries and making strategic choices. I've cultivated relationships with influential individuals who respect my autonomy. My reputation for discretion and professionalism is my greatest asset.",
+            "options": [
+                {
+                    "text": "That's a wise approach to business and life",
+                    "type": "relationshipIncrease",
+                    "nextNode": "6270_caution"
+                },
+                {
+                    "text": "Isn't this profession limiting your options?",
+                    "type": "relationshipDecrease",
+                    "nextNode": "6270_defensive"
+                }
+            ]
+        },
+        "6270_caution": {
+            "text": "Wisdom comes from experience and careful observation. I've learned to navigate complex situations while maintaining my independence. It's refreshing to meet someone who understands the importance of strategic thinking.",
+            "options": [
+                {
+                    "text": "Perhaps we could discuss potential collaborations",
+                    "type": "relationshipIncrease",
+                    "nextNode": "6270_trust"
+                },
+                {
+                    "text": "I should be going",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "6270_defensive": {
+            "text": "My profession has provided me with opportunities and connections that many would envy. I've built a comfortable life through careful planning and strategic relationships. I don't need your judgment on matters you clearly don't understand.",
+            "options": [
+                {
+                    "text": "I apologize for being presumptuous",
+                    "type": "normal",
+                    "nextNode": "6270_greeting"
+                },
+                {
+                    "text": "Suit yourself",
+                    "type": "relationshipDecrease",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "6270_company": {
+            "text": "While I maintain professional boundaries, I do offer various forms of companionship. My services include both intellectual and more... intimate interactions, all conducted with the utmost discretion and respect.",
+            "options": [
+                {
+                    "text": "I understand and respect your professionalism",
+                    "type": "relationshipIncrease",
+                    "nextNode": "6270_respect"
+                },
+                {
+                    "text": "What's the point of being a courtesan if not for...",
+                    "type": "relationshipDecrease",
+                    "nextNode": "6270_offended"
+                },
+                {
+                    "text": "I'm interested in your... services (200) [Love For Sail]",
+                    "type": "loveForSail",
+                    "nextNode": "6270_scene",
+                    "requirements": {
+                        "coins": 200
+                    }
+                }
+            ]
+        },
+        "6270_respect": {
+            "text": "Professionalism and mutual respect are the foundation of my establishment. I'm glad you understand that. Perhaps we could engage in more meaningful conversation?",
+            "options": [
+                {
+                    "text": "I'd like that very much",
+                    "type": "relationshipIncrease",
+                    "nextNode": "6270_background"
+                },
+                {
+                    "text": "Maybe another time",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "6270_offended": {
+            "text": "I think it's best if you leave now. My establishment maintains certain standards, and it seems you're not interested in respecting them.",
+            "options": [
+                {
+                    "text": "I apologize for my rudeness",
+                    "type": "normal",
+                    "nextNode": "6270_greeting"
+                }
+            ]
+        },
+        "6270_scene": {
+            "text": "That was... quite enjoyable. You're welcome to return whenever you wish. My establishment always appreciates... discerning clients.",
+            "options": [
+                {
+                    "text": "I'll be back",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "6270_greeting_return": {
+            "text": "Ah, it's good to see you again. I was just reviewing some investment opportunities. Would you care to join me for some conversation, or perhaps you have something else in mind?",
+            "options": [
+                {
+                    "text": "I'd love to hear about your investment strategies",
+                    "type": "normal",
+                    "nextNode": "6270_catchup"
+                },
+                {
+                    "text": "I was hoping for some... private time",
+                    "type": "normal",
+                    "nextNode": "6270_company_return"
+                },
+                {
+                    "text": "How are your business ventures progressing?",
+                    "type": "normal",
+                    "nextNode": "6270_future_update",
+                    "requirements": {
+                        "minRelationship": 4
+                    }
+                },
+                {
+                    "text": "I should be going",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "6270_catchup": {
+            "text": "I've been exploring some interesting opportunities in the textile trade. The market has been quite promising lately. How have your own ventures been progressing?",
+            "options": [
+                {
+                    "text": "Things have been quite interesting",
+                    "type": "normal",
+                    "nextNode": "6270_greeting_return"
+                },
+                {
+                    "text": "Actually, I was hoping for some private time",
+                    "type": "normal",
+                    "nextNode": "6270_company_return"
+                }
+            ]
+        },
+        "6270_company_return": {
+            "text": "For someone who has shown such appreciation for my establishment's values, I might make an exception... but my time is still worth 200 coins.",
+            "options": [
+                {
+                    "text": "That's a fair arrangement (200) [Love For Sail]",
+                    "type": "loveForSail",
+                    "nextNode": "6270_scene",
+                    "requirements": {
+                        "coins": 200
+                    }
+                },
+                {
+                    "text": "Perhaps another time",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        },
+        "6270_future_update": {
+            "text": "My investments have been performing quite well. I've recently expanded into the textile trade, and the returns have been promising. I'm also considering some new ventures in the city's growing merchant quarter.",
+            "options": [
+                {
+                    "text": "That sounds like an excellent opportunity",
+                    "type": "relationshipIncrease",
+                    "nextNode": "6270_greeting_return"
+                },
+                {
+                    "text": "I should be going",
+                    "type": "normal",
+                    "nextNode": "end"
+                }
+            ]
+        }
+    }
+} 

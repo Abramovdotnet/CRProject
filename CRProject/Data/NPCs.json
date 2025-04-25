@@ -324,18 +324,6 @@
     "background": "Nicole MacPherson's leadership of The Ivory Keep is the result of careful preparation and a deep understanding of both tradition and progress. Born into a noble family, she was raised with a strong sense of duty and responsibility. Her management style combines the wisdom of her ancestors with innovative approaches to estate management. She maintains an open door policy for her staff, believing that good leadership requires understanding the concerns of those one leads. Her decisions are guided by a combination of historical precedent and practical necessity, ensuring that the keep remains both a symbol of tradition and a center of efficient governance. She takes particular pride in maintaining the keep's gardens and libraries, seeing them as vital to both the household's well-being and its cultural legacy. Her leadership has brought stability and prosperity to the keep, proving that wisdom and strength are not limited by gender."
   },
   {
-    "name": "Lawrence MacKay",
-    "age": 47,
-    "homeLocationId": 3,
-    "id": 6361,
-    "profession": "Courtesan",
-    "isVampire": false,
-    "sex": "male",
-    "morality": "True neutral",
-    "motivation": "Survival",
-    "background": "Lawrence MacKay's life at The Velvet Veil began after a series of unfortunate events left him with few options for supporting himself. His journey into the world of courtesanship was one of necessity rather than choice, but he has turned it into an art form. His ability to read people and understand their desires has made him one of the most sought-after courtesans in the establishment. He maintains strict professional boundaries, never allowing personal attachments to cloud his judgment. His quarters are tastefully decorated with the fruits of his labor, each piece carefully chosen to reflect his refined tastes. He has used his earnings to invest in various businesses throughout the city, ensuring he will have income even when his current profession is no longer viable. His story is one of resilience and adaptability, proving that dignity can be maintained even in the most challenging circumstances."
-  },
-  {
     "name": "Marie Bernard",
     "isVampire": false,
     "sex": "female",
@@ -1020,16 +1008,16 @@
     "background": "Nina Wagner's journey into tailoring began when she was just a girl, fascinated by the way her mother could transform simple fabric into beautiful garments. Her apprenticeship at The Velvet Veil has allowed her to develop her skills in creating both practical everyday wear and elaborate formal attire. Her attention to detail and understanding of fabric has made her particularly skilled at creating garments that are both comfortable and stylish. She spends her free time studying historical patterns and experimenting with new techniques, always seeking to improve her craft. Her work is characterized by careful stitching and thoughtful design, ensuring that each piece not only looks good but also serves its purpose well. Though young, her dedication to quality and her willingness to learn from more experienced tailors has earned her respect in her field. She dreams of one day opening her own shop, where she can create unique pieces that combine traditional craftsmanship with modern design."
   },
   {
-    "name": "Fiona Schmidt",
+    "name": "Elena Schmidt",
     "profession": "Tavern keeper",
     "sex": "female",
-    "age": 20,
+    "age": 31,
     "id": 5284,
     "isVampire": false,
-    "homeLocationId": 78,
+    "homeLocationId": 2,
     "morality": "Lawful neutral",
     "motivation": "Community",
-    "background": "Fiona Schmidt's journey into tavern keeping began at an unusually young age, taking over The Velvet Veil after her father's sudden illness. Despite her youth, she has proven herself a capable manager, combining her natural charm with a sharp business mind. Her tavern has become known for its welcoming atmosphere and fair prices, attracting both locals and travelers. She maintains a strict policy of treating all patrons with respect, regardless of their station in life. Her ability to mediate disputes and maintain order has earned her the respect of both her staff and customers. Though young, her dedication to creating a safe and enjoyable environment has made her tavern a cornerstone of the community. She dreams of expanding her establishment while maintaining its reputation as a place where all are welcome."
+    "background": "Elena Schmidt's journey into tavern keeping began at an unusually young age, taking over The Velvet Veil after her father's sudden illness. Despite her youth, she has proven herself a capable manager, combining her natural charm with a sharp business mind. Her tavern has become known for its welcoming atmosphere and fair prices, attracting both locals and travelers. She maintains a strict policy of treating all patrons with respect, regardless of their station in life. Her ability to mediate disputes and maintain order has earned her the respect of both her staff and customers. Though young, her dedication to creating a safe and enjoyable environment has made her tavern a cornerstone of the community. She dreams of expanding her establishment while maintaining its reputation as a place where all are welcome."
   },
   {
     "name": "Bjorn Andersen",

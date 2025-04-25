@@ -159,13 +159,4 @@ struct DialogueRequirements: Codable, Equatable {
     }
 }
 
-enum DialogueOptionType: String, Codable {
-    case normal
-    case intimidate
-    case seduce
-    case investigate
-    case intrigue
-    case loveForSail
-    case relationshipIncrease
-    case relationshipDecrease
-}
+

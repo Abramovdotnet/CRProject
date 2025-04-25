@@ -8,34 +8,7 @@ struct HorizontalNPCWidget: View {
     
     var body: some View {
         ZStack(alignment: .top) {
-            RoundedRectangle(cornerRadius: 12)
-                .fill(
-                    LinearGradient(
-                        gradient: Gradient(colors: [
-                            Color.black.opacity(0.9),
-                            Color(npc.profession.color).opacity(0.05)
-                        ]),
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(
-                            LinearGradient(
-                                gradient: Gradient(colors: [
-                                    Color.white.opacity(0.1),
-                                    Color.white.opacity(0.05),
-                                    Color.clear
-                                ]),
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            ),
-                            lineWidth: 0.5
-                        )
-                )
-            
-            Color.black.opacity(0.9)
+            Color.black.opacity(0.7)
             
             VStack(alignment: .center) {
                 HStack {
@@ -157,10 +130,11 @@ struct HorizontalNPCWidget: View {
             }
             .padding(5)
             
-            RoundedRectangle(cornerRadius: 12)
-                .stroke(npc.currentActivity.color.opacity(0.8), lineWidth: 2)
-                .background(Color.white.opacity(0.05))
-                .blur(radius: 0.5)
+            if !showCurrentActivity {
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Theme.awarenessProgressColor, lineWidth: 1)
+                    .blur(radius: 0.5)
+            }
         }
         .frame(height: 120)
         .cornerRadius(12)
@@ -170,7 +144,6 @@ struct HorizontalNPCWidget: View {
                 .blur(radius: 2)
                 .offset(y: 2)
         )
-        .shadow(color: npc.currentActivity.color.opacity(0.5), radius: 15)
         .onChange(of: npcManager.npcStateChanged) { _ in
             // Force view update when NPC state changes
         }

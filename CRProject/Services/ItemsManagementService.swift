@@ -128,6 +128,39 @@ class ItemsManagementService : GameService {
                     }
                 }
                 
+            case .bookseller:
+                // Add clothing
+                let paper = allItems.filter { $0.type == .paper }
+                
+                let quils = allItems.filter { $0.type == .tools && $0.name.contains("Quil") }
+                let inks = allItems.filter { $0.type == .tools && $0.name.contains("Ink") }
+                let scrolls = allItems.filter { $0.type == .tools && $0.name.contains("Scroll") }
+                
+                let paperCount = Int.random(in: 7...25)
+                for _ in 0..<paperCount {
+                    if let randomPaper = paper.randomElement() {
+                        npc.items.append(Item.createUnique(randomPaper))
+                    }
+                }
+                
+                for _ in 0..<2 {
+                    if let randomQuil = quils.randomElement() {
+                        npc.items.append(Item.createUnique(randomQuil))
+                    }
+                }
+                
+                for _ in 0..<5 {
+                    if let randomInk = inks.randomElement() {
+                        npc.items.append(Item.createUnique(randomInk))
+                    }
+                }
+                
+                for _ in 0..<15 {
+                    if let randomScroll = scrolls.randomElement() {
+                        npc.items.append(Item.createUnique(randomScroll))
+                    }
+                }
+                
             case .guardman, .cityGuard, .mercenary, .militaryOfficer:
                 // Add weapons and armor
                 let weapons = allItems.filter { $0.type == .weapon }

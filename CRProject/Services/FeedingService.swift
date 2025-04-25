@@ -51,8 +51,6 @@ class FeedingService: GameService {
             gameEventsBus.addDangerMessage(message: "Player consumed DESIRED victims blood.")
         }
         
-        setWitnessesIfExists(sceneId: sceneId)
-        
         // Increase awareness in the scene where feeding occurred
         vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
         statisticsService.incrementFeedings()
@@ -65,6 +63,8 @@ class FeedingService: GameService {
         }
         
         NPCInteractionManager.shared.playerInteracted(with: prey)
+        
+        setWitnessesIfExists(sceneId: sceneId)
         
         gameTime.advanceTime()
     }
@@ -88,8 +88,6 @@ class FeedingService: GameService {
             awarenessIncreaseValue -= 70
         }
         
-        setWitnessesIfExists(sceneId: sceneId)
-        
         // Increase awareness in the scene where feeding occurred
         vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
         statisticsService.incrementVictimsDrained()
@@ -98,13 +96,15 @@ class FeedingService: GameService {
         
         NPCInteractionManager.shared.playerInteracted(with: prey)
         
+        setWitnessesIfExists(sceneId: sceneId)
+        
         gameTime.advanceTime()
     }
     
     func setWitnessesIfExists(sceneId: Int) {
-        var scene = try? LocationReader.getRuntimeLocation(by: sceneId)
+        let scene = try? LocationReader.getRuntimeLocation(by: sceneId)
         
-        var npcs = scene?.getNPCs()
+        let npcs = scene?.getNPCs()
             .filter( { $0.isAlive && $0.currentActivity != .sleep && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer })
         
         guard var npcs else { return }
@@ -120,6 +120,8 @@ class FeedingService: GameService {
                 npc.isBeasyByPlayerAction = true
                 npc.decreasePlayerRelationship(with: 100)
             }
+
+            gameEventsBus.addWarningMessage("* \(npcs.count) characters just saw how i consumed victims blood! *")
         }
     }
 }

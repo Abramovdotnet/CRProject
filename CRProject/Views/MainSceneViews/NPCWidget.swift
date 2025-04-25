@@ -245,6 +245,12 @@ struct NPCWidget: View {
                         .blur(radius: 0.5)
                 }
                 
+                if !showCurrentActivity {
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Theme.awarenessProgressColor, lineWidth: 1)
+                        .background(Color.white.opacity(0.05))
+                        .blur(radius: 0.5)
+                }
             }
             .frame(width: buttonWidth, height: 320)
             .background(
@@ -261,7 +267,7 @@ struct NPCWidget: View {
         .disabled(isDisabled)
         .animation(.easeInOut(duration: 0.3), value: isSelected)
         .frame(width: buttonWidth, height: 320)
-        .shadow(color: npc.currentActivity.color.opacity(0.5), radius: 10)
+        .shadow(color: showCurrentActivity ? npc.currentActivity.color.opacity(0.5) : Theme.awarenessProgressColor.opacity(0.5), radius: 10)
     }
     
     private func getNPCImage() -> Image {

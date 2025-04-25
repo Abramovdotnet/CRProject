@@ -56,6 +56,8 @@ class Item : Codable {
             return "wrench"
         case .alchemy:
             return "flask"
+        case .paper:
+            return "books.vertical.fill"
         }
     }
     
@@ -83,6 +85,8 @@ class Item : Codable {
             return .gray
         case .alchemy:
             return .indigo
+        case .paper:
+            return Theme.textColor
         }
     }
 }
@@ -99,4 +103,5 @@ enum ItemType : String, CaseIterable, Codable {
     case jewelery = "jewelery"
     case tools = "tools"
     case alchemy = "alchemy"
+    case paper = "paper"
 }
