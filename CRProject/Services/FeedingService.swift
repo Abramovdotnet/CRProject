@@ -105,7 +105,7 @@ class FeedingService: GameService {
         let scene = try? LocationReader.getRuntimeLocation(by: sceneId)
         
         let npcs = scene?.getNPCs()
-            .filter( { $0.isAlive && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer })
+            .filter( { $0.isAlive && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer && $0.currentActivity != .sleep })
         
         guard var npcs else { return }
         guard let player = GameStateService.shared.player else { return }
@@ -121,7 +121,7 @@ class FeedingService: GameService {
                 npc.decreasePlayerRelationship(with: 100)
             }
 
-            gameEventsBus.addWarningMessage("* \(npcs.count) characters just saw how i consumed victims blood! *")
+            gameEventsBus.addWarningMessage("* \(npcs.count) characters just saw how i consumed blood! *")
         }
     }
 }

@@ -48,24 +48,68 @@ struct SmithingView: View {
     
     func resourcesColumn() -> some View {
         VStack {
-            ScrollView {
-                VStack(spacing: 8) {
-                    Text("Resources")
-                        .font(Theme.bodyFont)
-                        .foregroundColor(Theme.textColor)
-                    
-                    ForEach(viewModel.playerResources) { group in
-                        ResourceRowView(group: group)
-                            .padding(.horizontal, 6)
-                    }
-                }
-                .padding(.vertical, 8)
+            HStack {
+                Text("Resources")
+                    .font(Theme.bodyFont)
+                    .foregroundColor(Theme.textColor)
+                
+                Image(systemName: ItemType.resource.icon)
+                    .font(Theme.bodyFont)
+                    .foregroundColor(ItemType.resource.color)
             }
             .frame(maxWidth: .infinity)
+            .frame(height: 30)
             .background(Color.black.opacity(0.8))
             .cornerRadius(12)
+            .padding(.horizontal, 8)
+            
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 8) {
+                        ForEach(viewModel.playerResources) { group in
+                            ResourceRowView(group: group)
+                                .padding(.horizontal, 6)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+                .frame(maxWidth: .infinity)
+                .background(Color.black.opacity(0.8))
+                .cornerRadius(12)
+            }
+            
+            HStack {
+                Text("Tools")
+                    .font(Theme.bodyFont)
+                    .foregroundColor(Theme.textColor)
+                
+                Image(systemName: ItemType.tools.icon)
+                    .font(Theme.bodyFont)
+                    .foregroundColor(ItemType.tools.color)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 30)
+            .background(Color.black.opacity(0.8))
+            .cornerRadius(12)
+            .padding(.horizontal, 8)
+            
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 8) {
+                        ForEach(viewModel.playerTools) { group in
+                            ResourceRowView(group: group)
+                                .padding(.horizontal, 6)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+                .frame(maxWidth: .infinity)
+                .background(Color.black.opacity(0.8))
+                .cornerRadius(12)
+            }
         }
-        .frame(width: 200)
+        .padding(.top, 10)
+        .frame(width: 250)
     }
     
     private func craftingColumn() -> some View {
@@ -102,43 +146,84 @@ struct SmithingView: View {
     
     private func recipesColumn() -> some View {
         VStack {
-            ScrollView {
-                VStack(spacing: 8) {
-                    Text("Recipes")
-                        .font(Theme.bodyFont)
-                        .foregroundColor(Theme.textColor)
-                    
-                    let sortedRecipes = viewModel.availableRecipes.sorted { lhs, rhs in
-                        let lhsCraftable = viewModel.craftableRecipes.contains(where: { $0.id == lhs.id })
-                        let rhsCraftable = viewModel.craftableRecipes.contains(where: { $0.id == rhs.id })
-                        if lhsCraftable == rhsCraftable {
-                            return lhs.id < rhs.id // fallback order
-                        }
-                        return lhsCraftable && !rhsCraftable
-                    }
-                    ForEach(sortedRecipes) { recipe in
-                        let isCraftable = viewModel.craftableRecipes.contains(where: { $0.id == recipe.id })
-                        
-                        Button(action: {
-                            viewModel.selectRecipe(recipe)
-                        }) {
-                            RecipeRowView(
-                                recipe: recipe,
-                                isSelected: viewModel.selectedRecipe?.id == recipe.id,
-                                isCraftable: isCraftable
-                            )
-                            .padding(.horizontal, 6)
-                        }
-                        .disabled(!isCraftable)
-                        .opacity(isCraftable ? 1 : 0.5)
-                    }
-                }
-                .padding(.vertical, 8)
+            HStack {
+                Text("Recipes")
+                    .font(Theme.bodyFont)
+                    .foregroundColor(Theme.textColor)
+                
+                Image(systemName: ItemType.paper.icon)
+                    .font(Theme.bodyFont)
+                    .foregroundColor(ItemType.paper.color)
             }
             .frame(maxWidth: .infinity)
+            .frame(height: 30)
             .background(Color.black.opacity(0.8))
             .cornerRadius(12)
+            .padding(.horizontal, 8)
+            
+            ZStack {
+                ScrollView {
+                    VStack(spacing: 8) {
+                        
+                        let sortedRecipes = viewModel.availableRecipes.sorted { lhs, rhs in
+                            let lhsCraftable = viewModel.craftableRecipes.contains(where: { $0.id == lhs.id })
+                            let rhsCraftable = viewModel.craftableRecipes.contains(where: { $0.id == rhs.id })
+                            if lhsCraftable == rhsCraftable {
+                                return lhs.id < rhs.id // fallback order
+                            }
+                            return lhsCraftable && !rhsCraftable
+                        }
+                        ForEach(sortedRecipes) { recipe in
+                            let isCraftable = viewModel.craftableRecipes.contains(where: { $0.id == recipe.id })
+                            
+                            Button(action: {
+                                viewModel.selectRecipe(recipe)
+                            }) {
+                                RecipeRowView(
+                                    recipe: recipe,
+                                    isSelected: viewModel.selectedRecipe?.id == recipe.id,
+                                    isCraftable: isCraftable
+                                )
+                                .padding(.horizontal, 6)
+                            }
+                            .disabled(!isCraftable)
+                            .opacity(isCraftable ? 1 : 0.9)
+                        }
+                    }
+                    .padding(.vertical, 8)
+                }
+                .mask(edgeMask)
+                .frame(maxWidth: .infinity)
+
+            }
         }
-        .frame(width: 200)
+        .frame(width: 250)
+        .padding(.top, 10)
     }
-} 
+    
+    private var edgeMask: some View {
+        GeometryReader { geometry in
+            VStack(spacing: 0) {
+                // Top fade
+                LinearGradient(
+                    gradient: Gradient(colors: [.clear, .black]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 10)
+                
+                // Middle section
+                Rectangle()
+                    .fill(Color.black)
+                
+                // Bottom fade
+                LinearGradient(
+                    gradient: Gradient(colors: [.black, .clear]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 10)
+            }
+        }
+    }
+}

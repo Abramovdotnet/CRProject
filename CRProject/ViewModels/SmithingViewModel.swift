@@ -26,6 +26,12 @@ class SmithingViewModel: ObservableObject {
             .sorted { $0.name < $1.name }
     }
     
+    var playerTools: [ItemGroup] {
+        Dictionary(grouping: player.items.filter { $0.type == .tools }, by: { $0.id.description })
+            .map { ItemGroup(items: $0.value) }
+            .sorted { $0.name < $1.name }
+    }
+    
     func craftItem() {
         guard let recipe = selectedRecipe else { return }
         isCrafting = true

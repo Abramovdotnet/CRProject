@@ -40,7 +40,8 @@ class SmithingSystem {
         let levelBonus = Double(player.smithingProgress.level) * 0.1 // 10% per level
         let successChance = min(baseChance + levelBonus, 0.95) // Cap at 95% chance
         
-        let success = Double.random(in: 0...1) < successChance
+        //let success = Double.random(in: 0...1) < successChance
+        let success = true 
         
         if success {
             if let craftedItem = craft(recipeId: recipeId, player: player) {
@@ -74,7 +75,7 @@ class SmithingSystem {
                 }
             }
             
-            result = ItemReader.shared.getItem(by: recipe.resultItemId)!
+            result = Item.createUnique(ItemReader.shared.getItem(by: recipe.resultItemId)!)
         }
         
         return result

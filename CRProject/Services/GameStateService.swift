@@ -213,7 +213,7 @@ class GameStateService : ObservableObject, GameService{
             .filter( { $0.isAlive && !$0.isSpecialBehaviorSet && $0.currentActivity != .sleep})
         
         if player.hiddenAt == .none && activeNpcs.count > 0 {
-            vampireNatureRevealService.increaseAwareness(amount: 2)
+            vampireNatureRevealService.increaseAwareness(amount: 1)
         } else {
             vampireNatureRevealService.decreaseAwareness(amount: 1)
         }
