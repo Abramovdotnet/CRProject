@@ -47,7 +47,7 @@ struct DesiresView: View {
                             .foregroundColor(Theme.textColor)
                         Text((player.desiredVictim.desiredAgeRange?.rangeDescription ?? ""))
                             .font(Theme.bodyFont)
-                            .foregroundColor(Color.yellow)
+                            .foregroundColor(Theme.textColor)
                     }
                     if let desiredProfession = player.desiredVictim.desiredProfession {
                         Text(desiredProfession.rawValue)
@@ -64,7 +64,7 @@ struct DesiresView: View {
                             .foregroundColor(desiredMorality.color)
                         Image(systemName: desiredMorality.icon)
                             .font(Theme.bodyFont)
-                            .foregroundColor(desiredMorality.color)
+                            .foregroundColor(Theme.textColor)
                     }
                 }
             }

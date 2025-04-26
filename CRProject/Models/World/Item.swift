@@ -33,32 +33,7 @@ class Item : Codable {
     }
     
     func icon() -> String {
-        switch type {
-        case .weapon:
-            return "sword"
-        case .armor:
-            return "shield"
-        case .clothing:
-            return "tshirt"
-        case .drink:
-            return "wineglass"
-        case .food:
-            return "fork.knife"
-        case .artefact:
-            return "sparkles"
-        case .picture:
-            return "photo"
-        case .kitchenStuff:
-            return "pot"
-        case .jewelery:
-            return "diamond"
-        case .tools:
-            return "wrench"
-        case .alchemy:
-            return "flask"
-        case .paper:
-            return "books.vertical.fill"
-        }
+        return type.icon
     }
     
     func color() -> Color {
@@ -87,6 +62,8 @@ class Item : Codable {
             return .indigo
         case .paper:
             return Theme.textColor
+        case .resource:
+            return .indigo
         }
     }
 }
@@ -104,4 +81,36 @@ enum ItemType : String, CaseIterable, Codable {
     case tools = "tools"
     case alchemy = "alchemy"
     case paper = "paper"
+    case resource = "resource"
+    
+    var icon: String {
+        switch self {
+        case .weapon:
+            return "figure.baseball"
+        case .armor:
+            return "shield"
+        case .clothing:
+            return "tshirt"
+        case .drink:
+            return "wineglass"
+        case .food:
+            return "fork.knife"
+        case .artefact:
+            return "sparkles"
+        case .picture:
+            return "photo"
+        case .kitchenStuff:
+            return "pot"
+        case .jewelery:
+            return "diamond"
+        case .tools:
+            return "wrench"
+        case .alchemy:
+            return "flask"
+        case .paper:
+            return "books.vertical.fill"
+        case .resource:
+            return "cube.fill"
+        }
+    }
 }

@@ -85,16 +85,6 @@ struct HorizontalNPCWidget: View {
     
                 HStack(spacing: 6) {
                     if !npc.isUnknown {
-                        Text(npc.sex.rawValue)
-                            .font(Theme.bodyFont)
-                            .foregroundColor(Theme.textColor)
-                        Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
-                            .font(Theme.bodyFont)
-                            .foregroundColor(Color.yellow)
-                        Text(npc.age.description)
-                            .font(Theme.bodyFont)
-                            .foregroundColor(Color.yellow)
-                        
                         if showCurrentActivity {
                             Image(systemName: npc.currentActivity.icon)
                                 .foregroundColor(npc.currentActivity.color)
@@ -102,7 +92,7 @@ struct HorizontalNPCWidget: View {
                                 .padding(.leading, 3)
                             Text(npc.currentActivity.description)
                                 .font(Theme.bodyFont)
-                                .foregroundColor(npc.currentActivity.color)
+                                .foregroundColor(Theme.textColor)
                         }
                         
                         if npc.isSpecialBehaviorSet {
@@ -122,7 +112,7 @@ struct HorizontalNPCWidget: View {
                         .foregroundColor(npc.motivation.color)
                     Text(npc.motivation.description)
                         .font(Theme.bodyFont)
-                        .foregroundColor(npc.motivation.color)
+                        .foregroundColor(Theme.textColor)
                 }
                 .padding(.bottom, 5)
                 .padding(.top, 2)

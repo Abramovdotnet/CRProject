@@ -32,8 +32,14 @@ class Player: ObservableObject, Character, Codable {
     var intimidationDay: Int = 0
     var homeLocationId: Int = 0
     var hiddenAt: HidingCell = .none
+    var onCraftingProcess: Bool = false
 
     var desiredVictim: DesiredVictim = DesiredVictim()
+    
+    var smithingProgress: ProfessionProgress = ProfessionProgress()
+    var medicineProgress: ProfessionProgress = ProfessionProgress()
+    var writingProgress: ProfessionProgress = ProfessionProgress()
+    var taloringProgress: ProfessionProgress = ProfessionProgress()
 
     // --- Initializer ---
     init(name: String, sex: Sex, age: Int, profession: Profession, id: Int) {

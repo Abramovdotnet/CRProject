@@ -30,7 +30,7 @@ class CoinsManagementService : GameService {
     }
     
     func updateWorldEconomy() {
-        var npcs = NPCReader.getNPCs()
+        let npcs = NPCReader.getNPCs()
         
         for npc in npcs {
             if npc.coins.value == 0 {

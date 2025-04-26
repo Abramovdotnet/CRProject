@@ -30,19 +30,26 @@ class GameTimeService: GameService {
         return "Day \(currentDay), \(currentHour):00"
     }
     
-    func advanceTime(hours: Int = 1) {
+    func advanceTime() {
         let oldDay = currentDay
-        currentHour = (currentHour + hours) % 24
-        currentDay += (currentHour < hours ? 1 : 0)
+        currentHour = (currentHour + 1) % 24
+        currentDay += (currentHour < 1 ? 1 : 0)
         
         if currentDay > oldDay {
             statisticsService.incrementDaysSurvived()
         }
         
-        currentTime = Calendar.current.date(byAdding: .hour, value: hours, to: currentTime) ?? currentTime
+        currentTime = Calendar.current.date(byAdding: .hour, value: 1, to: currentTime) ?? currentTime
         updateNightTimeStatus()
         NotificationCenter.default.post(name: .timeAdvanced, object: nil)
     }
+    
+    func advanceHours(hours: Int) {
+        for _ in 0..<hours {
+            advanceTime()
+        }
+    }
+    
     func advanceTimeSafe(hours: Int = 1) {
         let oldDay = currentDay
         currentHour = (currentHour + hours) % 24

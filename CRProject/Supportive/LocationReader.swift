@@ -51,16 +51,6 @@ class LocationReader : GameService {
                 DebugLogService.shared.log("Warning: No locations were loaded from any path!", category: "Warning")
             } else {
                 locations = allLocations
-                //DebugLogService.shared.log("Successfully loaded \(locations.count) total locations", category: "Location")
-                
-                // Print location details for debugging
-                for location in locations ?? [] {
-                    if let name = location["name"] as? String,
-                       let id = location["id"] as? String,
-                       let parentId = location["parentSceneId"] as? String {
-                        //DebugLogService.shared.log("Location: \(name), ID: \(id), Parent ID: \(parentId)", category: "Location")
-                    }
-                }
             }
         } else {
             //DebugLogService.shared.log("Locations already loaded, count: \(locations.count ?? 0)", category: "Location")
@@ -78,8 +68,6 @@ class LocationReader : GameService {
             
             locationsPool = convertedLocations
             return locationsPool
-        } catch {
-            DebugLogService.shared.log("Error reading NPCs.json file: \(error)", category: "NPC")
         }
     }
     
@@ -106,8 +94,7 @@ class LocationReader : GameService {
     }
     
     static func getRuntimeLocation(by id: Int) throws -> Scene {
-        getLocations()
-        return locationsPool.first(where: { $0.id == id })!
+        return getLocations().first(where: { $0.id == id })!
     }
     
     static func getLocationById(by id: Int) -> Scene? {

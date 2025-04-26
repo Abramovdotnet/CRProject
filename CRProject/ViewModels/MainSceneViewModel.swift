@@ -168,7 +168,7 @@ class MainSceneViewModel: ObservableObject {
         
         // Create initial scene using LocationReader
         do {
-            let initialScene = try LocationReader.getRuntimeLocation(by: 3)
+            let initialScene = try LocationReader.getRuntimeLocation(by: 19)
             try gameStateService.changeLocation(to: initialScene.id)
             
             // Set default awareness to 0
@@ -377,7 +377,7 @@ class MainSceneViewModel: ObservableObject {
     
     func updateSceneAwareness() {
         withAnimation(.easeInOut(duration: 0.3)) {
-            guard let currentSceneId = currentScene?.id else { return }
+            guard (currentScene?.id) != nil else { return }
             sceneAwareness = vampireNatureRevealService.getAwareness()
         }
     }
@@ -387,7 +387,7 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func canSkipTimeSafe() -> Bool {
-        let canSkipToNight = [.tavern, .brothel, .cemetery, .house ,.warehouse]
+        _ = [.tavern, .brothel, .cemetery, .house ,.warehouse]
             .contains(currentScene?.sceneType)
             && !isNight
         && isAwarenessSafe

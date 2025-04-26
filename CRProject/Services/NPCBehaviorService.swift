@@ -28,7 +28,7 @@ class NPCBehaviorService: GameService {
         DependencyManager.shared.register(npcInteractionService)
     }
     
-    func updateActivity() {
+    func updateNPCsActivities() {
         // Use lazy collections to avoid creating intermediate arrays
         let residentNPCs = npcs.lazy.filter { $0.homeLocationId > 0}
         

@@ -86,7 +86,7 @@ class NPCActivityManager {
     }
     
     func getNoProfessionActivity(for npc: NPC, currentHour: Int, phase: DayPhase) -> NPCActivityType{
-        var leisureActivities = Profession.noProfession.primaryLeisureActivities().filter( { $0 != .sleep } )
+        let leisureActivities = Profession.noProfession.primaryLeisureActivities().filter( { $0 != .sleep } )
         
         let isSleepTime = currentHour >= 22 || currentHour < 6
         let sleepRoll = Int.random(in: 1...100)

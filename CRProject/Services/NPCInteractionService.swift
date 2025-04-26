@@ -233,7 +233,7 @@ class NPCInteractionService : GameService {
     }
     
     private func handleAskForProtection(currentNPC: NPC, otherNPC: NPC) {
-        var protectionTime = Int.random(in: 3...72)
+        let protectionTime = Int.random(in: 3...72)
         otherNPC.isNpcInteractionBehaviorSet = true
         otherNPC.npcInteractionSpecialTime = protectionTime
         otherNPC.npcInteractionTargetNpcId = currentNPC.id
@@ -290,7 +290,7 @@ class NPCInteractionService : GameService {
     }
     
     private func handleFlirtInteraction(currentNPC: NPC, otherNPC: NPC, scene: Scene) -> Bool {
-        var flirtCap = 80 - otherNPC.getNPCRelationshipValue(of: currentNPC)
+        let flirtCap = 80 - otherNPC.getNPCRelationshipValue(of: currentNPC)
         let isSuccessful = Int.random(in: 0...100) > flirtCap
         
         if isSuccessful {
@@ -767,7 +767,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             // Drunk Fight
             if currentNPC.currentActivity == .drink || currentNPC.currentActivity == .gamble && (!currentNPC.isMilitary && !otherNPC.isMilitary) ||
                 (currentNPC.isMilitary && otherNPC.isMilitary){
-                var wouldFight = Int.random(in: 0...100) > 95
+                let wouldFight = Int.random(in: 0...100) > 95
                 
                 if wouldFight {
                     availableInteractions.append(Int.random(in: 0...1) > 0 ? .drunkFight : .gambleFight)
@@ -779,7 +779,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
                 && (otherNPC.currentActivity == .drink || otherNPC.currentActivity == .eat) {
                 
                 if otherNPC.coins.couldRemove(NPCInteraction.service.interactionBaseCost) {
-                    var wouldOfferService = Int.random(in: 0...100) > 30
+                    let wouldOfferService = Int.random(in: 0...100) > 30
                     
                     if wouldOfferService {
                         CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: NPCInteraction.service.interactionBaseCost)
@@ -791,7 +791,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             // Patrol
             if currentNPC.isMilitary && !otherNPC.isMilitary && otherNPC.profession != .lordLady {
                 if currentNPC.currentActivity == .patrol || currentNPC.currentActivity == .guardPost {
-                    var wouldInteract = Int.random(in: 0...100) > (gameTimeService.isNightTime ? 40 : 70)
+                    let wouldInteract = Int.random(in: 0...100) > (gameTimeService.isNightTime ? 40 : 70)
                     
                     if wouldInteract {
                         availableInteractions.append(.patrol)
@@ -802,14 +802,14 @@ enum NPCInteraction : String, CaseIterable, Codable {
             // Prostitution
             if currentNPC.profession == .courtesan && otherNPC.profession != .courtesan && otherNPC.profession != .tavernKeeper {
                 var entertainCap = gameTimeService.isNightTime ? 40 : 90
-                var locationMatch = currentScene.sceneType == .tavern || currentScene.sceneType == .brothel || currentScene.isIndoor == false
+                let locationMatch = currentScene.sceneType == .tavern || currentScene.sceneType == .brothel || currentScene.isIndoor == false
                 
                 if locationMatch {
                     entertainCap -= 30
                 }
           
                 if otherNPC.coins.couldRemove(NPCInteraction.prostitution.interactionBaseCost) {
-                    var wouldEntertain = Int.random(in: 0...100) > entertainCap
+                    let wouldEntertain = Int.random(in: 0...100) > entertainCap
                     
                     if wouldEntertain {
                         CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: NPCInteraction.prostitution.interactionBaseCost)
@@ -823,13 +823,13 @@ enum NPCInteraction : String, CaseIterable, Codable {
                 if currentNPC.getNPCRelationshipValue(of: otherNPC) > 20 {
                     if (abs(currentNPC.age - otherNPC.age) < 10) && (currentNPC.age + otherNPC.age < 100) {
                         var valueCap = gameTimeService.isNightTime ? 40 : 90
-                        var locationMatch = currentScene.sceneType == .house || currentScene.sceneType == .tavern || currentScene.sceneType == .brothel || currentScene.sceneType == .bathhouse
+                        let locationMatch = currentScene.sceneType == .house || currentScene.sceneType == .tavern || currentScene.sceneType == .brothel || currentScene.sceneType == .bathhouse
                         
                         if locationMatch {
                             valueCap -= 30
                         }
                   
-                        var wouldMakeLove = Int.random(in: 0...100) > valueCap
+                        let wouldMakeLove = Int.random(in: 0...100) > valueCap
                             
                         if wouldMakeLove {
                             availableInteractions.append(.makingLove)
@@ -840,9 +840,9 @@ enum NPCInteraction : String, CaseIterable, Codable {
             
             // Flirt
             if currentNPC.profession != .priest && otherNPC.profession != .priest && currentNPC.sex != otherNPC.sex && currentNPC.age < 50 && otherNPC.age < 50 {
-                var entertainCap = gameTimeService.isNightTime ? 70 : 90
+                let entertainCap = gameTimeService.isNightTime ? 70 : 90
           
-                var wouldFlirt = Int.random(in: 0...100) > entertainCap
+                let wouldFlirt = Int.random(in: 0...100) > entertainCap
                 
                 if wouldFlirt {
                     availableInteractions.append(.flirt)
@@ -857,7 +857,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
                     
                     if itemToTrade != nil {
                         if otherNPC.coins.couldRemove(NPCInteraction.smithingCraft.interactionBaseCost + itemToTrade!.cost) {
-                            var wouldExecuteOrder = Int.random(in: 0...100) > 30
+                            let wouldExecuteOrder = Int.random(in: 0...100) > 30
             
                             if wouldExecuteOrder {
                                 CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: NPCInteraction.smithingCraft.interactionBaseCost + itemToTrade!.cost)
@@ -877,7 +877,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
                     
                     if itemToTrade != nil {
                         if otherNPC.coins.couldRemove(NPCInteraction.alchemyCraft.interactionBaseCost + itemToTrade!.cost) {
-                            var wouldExecuteOrder = Int.random(in: 0...100) > 30
+                            let wouldExecuteOrder = Int.random(in: 0...100) > 30
                             
                             if wouldExecuteOrder {
                                 CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: NPCInteraction.alchemyCraft.interactionBaseCost + itemToTrade!.cost)
@@ -891,13 +891,13 @@ enum NPCInteraction : String, CaseIterable, Codable {
             
             // Conversation
             if (currentNPC.currentActivity == otherNPC.currentActivity  ){
-                var wouldConversate = Int.random(in: 0...100) >= 20
+                let wouldConversate = Int.random(in: 0...100) >= 20
                 
                 if wouldConversate {
-                    var currentRelationship = currentNPC.getNPCRelationshipValue(of: otherNPC)
-                    var argueCap = currentRelationship > 0 ? 98 : 92
+                    let currentRelationship = currentNPC.getNPCRelationshipValue(of: otherNPC)
+                    let argueCap = currentRelationship > 0 ? 98 : 92
                     
-                    var wouldArgue = Int.random(in: 0...100) > Int(argueCap)
+                    let wouldArgue = Int.random(in: 0...100) > Int(argueCap)
                     
                     availableInteractions.append(wouldArgue ? .argue : .conversation)
                 }
@@ -906,8 +906,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
             // Looking for protection
             if currentNPC.bloodMeter.currentBlood < 70 && otherNPC.profession == .mercenary && !otherNPC.isNpcInteractionBehaviorSet {
                 if currentNPC.coins.couldRemove(NPCInteraction.askForProtection.interactionBaseCost) {
-                    var protectionCap = 100 - currentNPC.bloodMeter.currentBlood
-                    var wouldAskForProtection = Int.random(in: 0...100) > Int(protectionCap)
+                    let protectionCap = 100 - currentNPC.bloodMeter.currentBlood
+                    let wouldAskForProtection = Int.random(in: 0...100) > Int(protectionCap)
                     
                     if wouldAskForProtection {
                         CoinsManagementService.shared.moveCoins(from: currentNPC, to: otherNPC, amount: NPCInteraction.askForProtection.interactionBaseCost)
@@ -928,7 +928,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
                     
                     if itemToTrade == nil {
                         if buyer.coins.couldRemove(itemToTrade!.cost) {
-                            var wouldTrade = Int.random(in: 0...100) > 70
+                            let wouldTrade = Int.random(in: 0...100) > 70
                             
                             if wouldTrade {
                                 CoinsManagementService.shared.moveCoins(from: buyer, to: seller, amount: itemToTrade!.cost)

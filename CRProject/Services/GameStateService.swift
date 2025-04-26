@@ -151,7 +151,7 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func handleTimeAdvanced() {
-        NPCBehaviorService.shared.updateActivity()
+        NPCBehaviorService.shared.updateNPCsActivities()
         advanceWorldState()
         
         // Reduce player blood pool
@@ -192,7 +192,7 @@ class GameStateService : ObservableObject, GameService{
     }
     
     private func handleSafeTimeAdvanced() {
-        NPCBehaviorService.shared.updateActivity()
+        NPCBehaviorService.shared.updateNPCsActivities()
         advanceWorldState(advanceSafe: true)
         
         // Reset selection if npc left location
@@ -239,6 +239,12 @@ class GameStateService : ObservableObject, GameService{
         
         if player.hiddenAt != .none {
             gameEventsBus.addWarningMessage("* Thirst madness forces me get out from hideout! *")
+            movePlayerThroughHideouts(to: .none)
+        }
+        
+        if player.onCraftingProcess {
+            player.onCraftingProcess = false
+            gameEventsBus.addWarningMessage("* Can't continue work under uncontrollable thirst! *")
             movePlayerThroughHideouts(to: .none)
         }
         

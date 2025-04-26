@@ -74,7 +74,7 @@ class FeedingService: GameService {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
         
-        let drainedBlood = try bloodService.emptyBlood(vampire: vampire, prey: prey)
+        try bloodService.emptyBlood(vampire: vampire, prey: prey)
         
         var awarenessIncreaseValue: Float = 90;
         
@@ -105,7 +105,7 @@ class FeedingService: GameService {
         let scene = try? LocationReader.getRuntimeLocation(by: sceneId)
         
         let npcs = scene?.getNPCs()
-            .filter( { $0.isAlive && $0.currentActivity != .sleep && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer })
+            .filter( { $0.isAlive && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer })
         
         guard var npcs else { return }
         guard let player = GameStateService.shared.player else { return }

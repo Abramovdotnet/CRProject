@@ -34,8 +34,6 @@ class NPCReader : GameService {
             
             npcsPool = convertedNPCs
             return npcsPool
-        } catch {
-            DebugLogService.shared.log("Error reading NPCs.json file: \(error)", category: "NPC")
         }
     }
     
@@ -157,7 +155,7 @@ class NPCReader : GameService {
             profession = .noProfession
         }
         
-        var npc = NPC(name: name, sex: sex, age: age, profession: profession, isVampire: isVampire, id: id)
+        let npc = NPC(name: name, sex: sex, age: age, profession: profession, isVampire: isVampire, id: id)
         npc.homeLocationId = homeLocationId
         npc.background = background
         

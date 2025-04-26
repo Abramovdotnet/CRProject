@@ -44,7 +44,7 @@ class DialogueViewModel: ObservableObject {
         DebugLogService.shared.log("Attempting to load dialogue for NPC: \(npc.name), profession: \(npc.profession.rawValue)", category: "Dialogue")
         
         // Try profession-specific dialogue first
-        if var dialogue = dialogueProcessor.loadDialogue(npc: npc) {
+        if let dialogue = dialogueProcessor.loadDialogue(npc: npc) {
             
             DebugLogService.shared.log("Successfully loaded dialogue for \(npc.profession.rawValue)", category: "Dialogue")
             updateDialogue(text: dialogue.text, options: dialogue.options)
@@ -72,7 +72,7 @@ class DialogueViewModel: ObservableObject {
         // Update state directly without animation
         self.currentDialogueText = text
         
-        var mappedOptions = options.map { option in
+        let mappedOptions = options.map { option in
             DialogueOption.create(text: option.text, type: option.type, nextNodeId: option.nextNode)
         }
 
@@ -273,7 +273,7 @@ class DialogueOption: Identifiable {
     var nextNodeId: String = ""
     
     static func create(text: String, type: DialogueOptionType, nextNodeId: String? = nil) -> DialogueOption {
-        var option = DialogueOption()
+        let option = DialogueOption()
         option.id = UUID()
         option.text = text
         option.type = type

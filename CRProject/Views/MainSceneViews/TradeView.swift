@@ -32,14 +32,20 @@ struct TradeView: View {
     @State private var selectedNPCItems: [Item] = []
     @State private var dealTotal: Int = 0
     
+    // Sorting state
+    @State private var playerSortType: ItemType? = nil
+    @State private var npcSortType: ItemType? = nil
+    
     private var groupedPlayerItems: [ItemGroup] {
-        Dictionary(grouping: player.items, by: { $0.id.description })
+        let items = playerSortType == nil ? player.items : player.items.filter { $0.type == playerSortType }
+        return Dictionary(grouping: items, by: { $0.id.description })
             .map { ItemGroup(items: $0.value) }
             .sorted { $0.name < $1.name }
     }
     
     private var groupedNPCItems: [ItemGroup] {
-        Dictionary(grouping: npc.items, by: { $0.id.description })
+        let items = npcSortType == nil ? npc.items : npc.items.filter { $0.type == npcSortType }
+        return Dictionary(grouping: items, by: { $0.id.description })
             .map { ItemGroup(items: $0.value) }
             .sorted { $0.name < $1.name }
     }
@@ -68,74 +74,88 @@ struct TradeView: View {
                     .edgesIgnoringSafeArea(.all)
                 
                 VStack(spacing: 20) {
-                    // Top row: Player info, Deal total, NPC info
-                    HStack(spacing: 5) {
-                        // Player info
-                        HorizontalPlayerWidget(player: player)
-                            .frame(maxWidth: .infinity)
-                        
-                        // NPC info
-                        HorizontalNPCWidget(npc: npc, showCurrentActivity: false)
-                            .frame(maxWidth: .infinity)
-                    }
-                    
                     // Bottom row: Player items, Trade section, NPC items
                     HStack(spacing: 20) {
-                        // Player's items
-                        VStack(spacing: 2) {
-                            ScrollView {
-                                VStack(spacing: 8) {
-                                    ForEach(groupedPlayerItems) { group in
-                                        Button(action: {
-                                            handlePlayerItemSelection(group)
-                                        }) {
-                                            HStack {
-                                                HStack {
-                                                    Image(systemName: group.icon)
-                                                        .foregroundColor(group.color)
-                                                        .font(Theme.smallFont)
-                                                    
-                                                    Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
-                                                        .font(Theme.smallFont)
-                                                        .foregroundColor(Theme.textColor)
-                                                    
-                                                    Spacer()
-                                                    
-                                                    Text("\(group.cost)")
-                                                        .font(Theme.smallFont)
-                                                        .foregroundColor(.green)
-                                                }
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 8)
-                                                .background(
-                                                    RoundedRectangle(cornerRadius: 8)
-                                                        .fill(selectedPlayerItems.contains(where: { $0.id == group.items[0].id }) ? Theme.awarenessProgressColor.opacity(0.3) : Color.clear)
-                                                )
-                                            }
-                                            .padding(.horizontal, 6)
-                                        }
-                                    }
-                                }
-                                .padding(.vertical, 8)
-                            }
-                            .padding(.vertical, 4)
-                            .background(Color.black.opacity(0.8))
-                            .cornerRadius(12)
-                            .frame(maxWidth: .infinity)
-                            
+                        VStack {
                             HStack(alignment: .top) {
                                 Image(systemName: "cedisign")
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(.green)
                                 Text("\(player.coins.value)")
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(.green)
                                 Spacer()
+                                Image(systemName: player.sex == .female ? "figure.stand.dress" : "figure.wave")
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(player.isVampire ? Theme.primaryColor : Theme.textColor)
+                                Text(player.name)
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(Theme.textColor)
+                                Image(systemName: player.profession.icon)
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(player.profession.color)
                             }
                             .padding(.horizontal, 10)
                             .frame(height: 30)
                             .background(Color.black.opacity(0.8))
                             .cornerRadius(12)
+                            // Player's items
+                            VStack(spacing: 2) {
+                                // Sorting buttons for player
+                                HStack(spacing: 3) {
+                                    Button(action: { playerSortType = nil }) {
+                                        Image(systemName: "tag")
+                                            .font(Theme.bodyFont)
+                                            .foregroundColor(playerSortType == nil ? .yellow : Theme.textColor)
+                                    }
+                                    ForEach(ItemType.allCases, id: \.self) { type in
+                                        Button(action: { playerSortType = type }) {
+                                            Image(systemName: type.icon)
+                                                .font(Theme.bodyFont)
+                                                .foregroundColor(playerSortType == type ? .yellow : Theme.textColor)
+                                        }
+                                    }
+                                }
+                                .frame(height: 30)
+                                .padding(.horizontal, 8)
+                               
+                                ScrollView {
+                                    VStack(spacing: 8) {
+                                        ForEach(groupedPlayerItems) { group in
+                                            Button(action: {
+                                                handlePlayerItemSelection(group)
+                                            }) {
+                                                HStack {
+                                                    HStack {
+                                                        Image(systemName: group.icon)
+                                                            .foregroundColor(group.color)
+                                                            .font(Theme.bodyFont)
+                                                        
+                                                        Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
+                                                            .font(Theme.bodyFont)
+                                                            .foregroundColor(Theme.textColor)
+                                                        
+                                                        Spacer()
+                                                        
+                                                        Text("\(group.cost)")
+                                                            .font(Theme.bodyFont)
+                                                            .foregroundColor(.green)
+                                                    }
+                                                    .padding(.horizontal, 6)
+                                                    .padding(.vertical, 8)
+                                                }
+                                                .padding(.horizontal, 6)
+                                            }
+                                            .padding(.horizontal, 6)
+                                        }
+                                    }
+                                    .padding(.vertical, 8)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                            .background(Color.black.opacity(0.8))
+                            .cornerRadius(12)
+                            .frame(maxWidth: .infinity)
                         }
                         
                         // Middle section with selected items and deal button
@@ -144,7 +164,7 @@ struct TradeView: View {
                                 VStack(spacing: 8) {
                                     if !selectedPlayerItems.isEmpty {
                                         Text("Offering:")
-                                            .font(Theme.smallFont)
+                                            .font(Theme.bodyFont)
                                             .foregroundColor(Theme.textColor)
                                         
                                         ForEach(selectedPlayerGroups) { group in
@@ -155,24 +175,20 @@ struct TradeView: View {
                                                     HStack {
                                                         Image(systemName: group.icon)
                                                             .foregroundColor(group.color)
-                                                            .font(Theme.smallFont)
+                                                            .font(Theme.bodyFont)
                                                         
                                                         Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
-                                                            .font(Theme.smallFont)
+                                                            .font(Theme.bodyFont)
                                                             .foregroundColor(Theme.textColor)
                                                         
                                                         Spacer()
                                                         
                                                         Text("\(group.cost)")
-                                                            .font(Theme.smallFont)
+                                                            .font(Theme.bodyFont)
                                                             .foregroundColor(.green)
                                                     }
                                                     .padding(.horizontal, 6)
                                                     .padding(.vertical, 8)
-                                                    .background(
-                                                        RoundedRectangle(cornerRadius: 8)
-                                                            .fill(Theme.awarenessProgressColor.opacity(0.3))
-                                                    )
                                                 }
                                                 .padding(.horizontal, 6)
                                             }
@@ -181,7 +197,7 @@ struct TradeView: View {
                                     
                                     if !selectedNPCItems.isEmpty {
                                         Text("Requesting:")
-                                            .font(Theme.smallFont)
+                                            .font(Theme.bodyFont)
                                             .foregroundColor(Theme.textColor)
                                         
                                         ForEach(selectedNPCGroups) { group in
@@ -192,24 +208,20 @@ struct TradeView: View {
                                                     HStack {
                                                         Image(systemName: group.icon)
                                                             .foregroundColor(group.color)
-                                                            .font(Theme.smallFont)
+                                                            .font(Theme.bodyFont)
                                                         
                                                         Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
-                                                            .font(Theme.smallFont)
+                                                            .font(Theme.bodyFont)
                                                             .foregroundColor(Theme.textColor)
                                                         
                                                         Spacer()
                                                         
                                                         Text("\(group.cost)")
-                                                            .font(Theme.smallFont)
+                                                            .font(Theme.bodyFont)
                                                             .foregroundColor(.green)
                                                     }
                                                     .padding(.horizontal, 6)
                                                     .padding(.vertical, 8)
-                                                    .background(
-                                                        RoundedRectangle(cornerRadius: 8)
-                                                            .fill(Theme.awarenessProgressColor.opacity(0.3))
-                                                    )
                                                 }
                                                 .padding(.horizontal, 6)
                                             }
@@ -222,90 +234,120 @@ struct TradeView: View {
                             .frame(maxHeight: .infinity)
                             .background(Color.black.opacity(0.8))
                             .cornerRadius(12)
-                            
-                            // Deal button
-                            Button(action: {
-                                makeADeal()
-                                dismiss()
-                            }) {
-                                HStack {
-                                    Text("Make Deal")
-                                        .font(Theme.smallFont)
-                                        .foregroundColor(Theme.textColor)
-                                    Text("\(Int(dealTotal))")
-                                        .font(Theme.smallFont)
-                                        .foregroundColor(dealTotal >= 0 ? .green : .red)
-                                    Image(systemName: "cedisign")
-                                        .font(Theme.smallFont)
-                                        .foregroundColor(.green)
-                                }
-                                .padding()
-                                .frame(maxWidth: .infinity)
-                                .background(Color.black.opacity(0.8))
-                                .cornerRadius(12)
-                            }
-                            .opacity(couldMakeADeal() ? 1.0 : 0.3)
-                            .disabled(selectedPlayerItems.isEmpty && selectedNPCItems.isEmpty || !couldMakeADeal())
                         }
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: 170)
                         
-                        // NPC's items
-                        VStack(spacing: 2) {
-                            ScrollView {
-                                VStack(spacing: 8) {
-                                    ForEach(groupedNPCItems) { group in
-                                        Button(action: {
-                                            handleNPCItemSelection(group)
-                                        }) {
-                                            HStack {
-                                                HStack {
-                                                    Image(systemName: group.icon)
-                                                        .foregroundColor(group.color)
-                                                        .font(Theme.smallFont)
-                                                    
-                                                    Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
-                                                        .font(Theme.smallFont)
-                                                        .foregroundColor(Theme.textColor)
-                                                    
-                                                    Spacer()
-                                                    
-                                                    Text("\(group.cost)")
-                                                        .font(Theme.smallFont)
-                                                        .foregroundColor(.green)
-                                                }
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 8)
-                                                .background(
-                                                    RoundedRectangle(cornerRadius: 8)
-                                                        .fill(selectedNPCItems.contains(where: { $0.id == group.items[0].id }) ? Theme.awarenessProgressColor.opacity(0.3) : Color.clear)
-                                                )
-                                            }
-                                            .padding(.horizontal, 6)
-                                        }
-                                    }
-                                }
-                                .padding(.vertical, 8)
-                            }
-                            .padding(.vertical, 4)
-                            .background(Color.black.opacity(0.8))
-                            .cornerRadius(12)
-                            .frame(maxWidth: .infinity)
-                            
+                        VStack {
                             HStack(alignment: .top) {
+                                Image(systemName: npc.sex == .female ? "figure.stand.dress" : "figure.wave")
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(Theme.textColor)
+                                Text(npc.name)
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(Theme.textColor)
+                                Image(systemName: npc.profession.icon)
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(player.profession.color)
                                 Spacer()
                                 Image(systemName: "cedisign")
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(.green)
                                 Text("\(npc.coins.value)")
-                                    .font(Theme.smallFont)
+                                    .font(Theme.bodyFont)
                                     .foregroundColor(.green)
                             }
                             .padding(.horizontal, 10)
                             .frame(height: 30)
                             .background(Color.black.opacity(0.8))
                             .cornerRadius(12)
+                            // NPC's items
+                            VStack(spacing: 2) {
+                                // Sorting buttons for NPC
+                                HStack(spacing: 3) {
+                                    Button(action: { npcSortType = nil }) {
+                                        Image(systemName: "tag")
+                                            .font(Theme.bodyFont)
+                                            .foregroundColor(npcSortType == nil ? .yellow : Theme.textColor)
+                                    }
+                                    ForEach(ItemType.allCases, id: \.self) { type in
+                                        Button(action: { npcSortType = type }) {
+                                            Image(systemName: type.icon)
+                                                .font(Theme.bodyFont)
+                                                .foregroundColor(npcSortType == type ? .yellow : Theme.textColor)
+                                        }
+                                    }
+                                }
+                                .frame(height: 30)
+                                .padding(.horizontal, 8)
+                                
+                                ScrollView {
+                                    VStack(spacing: 8) {
+                                        ForEach(groupedNPCItems) { group in
+                                            Button(action: {
+                                                handleNPCItemSelection(group)
+                                            }) {
+                                                HStack {
+                                                    HStack {
+                                                        Image(systemName: group.icon)
+                                                            .foregroundColor(group.color)
+                                                            .font(Theme.bodyFont)
+                                                        
+                                                        Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
+                                                            .font(Theme.bodyFont)
+                                                            .foregroundColor(Theme.textColor)
+                                                        
+                                                        Spacer()
+                                                        
+                                                        Text("\(group.cost)")
+                                                            .font(Theme.bodyFont)
+                                                            .foregroundColor(.green)
+                                                    }
+                                                    .padding(.horizontal, 6)
+                                                    .padding(.vertical, 8)
+                                                }
+                                                .padding(.horizontal, 6)
+                                            }
+                                            .padding(.horizontal, 6)
+                                        }
+                                    }
+                                    .padding(.vertical, 8)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                            .background(Color.black.opacity(0.8))
+                            .cornerRadius(12)
+                            .frame(maxWidth: .infinity)
                         }
                     }
+                    
+                    HStack {
+                        Spacer()
+                        // Deal button
+                        Button(action: {
+                            makeADeal()
+                            dismiss()
+                        }) {
+                            HStack {
+                                Text("Make Deal")
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(Theme.textColor)
+                                Text("\(Int(dealTotal))")
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(dealTotal >= 0 ? .green : .red)
+                                Image(systemName: "cedisign")
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(.green)
+                            }
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Color.black.opacity(0.8))
+                            .cornerRadius(12)
+                        }
+                        .opacity(couldMakeADeal() ? 1.0 : 0.3)
+                        .disabled(selectedPlayerItems.isEmpty && selectedNPCItems.isEmpty || !couldMakeADeal())
+                        Spacer()
+                    }
+                    .frame(width: 200)
                 }
                 .padding(.horizontal, 25)
                 .padding(.top, 25)
@@ -381,9 +423,6 @@ struct TradeView: View {
     }
     
     private func couldMakeADeal() -> Bool {
-        let playerItemsTotal = selectedPlayerItems.reduce(0) { $0 + $1.cost }
-        let npcItemsTotal = selectedNPCItems.reduce(0) { $0 + $1.cost }
-        
         if dealTotal > 0 {
             return player.coins.value >= dealTotal
         } else {

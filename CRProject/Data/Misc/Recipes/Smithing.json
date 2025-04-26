@@ -1,0 +1,372 @@
+[
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 4},
+            {"resourceId": 310, "count": 2}
+        ],
+        "professionLevel": 1,
+        "resultItemId": 1
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 2},
+            {"resourceId": 310, "count": 1}
+        ],
+        "professionLevel": 1,
+        "resultItemId": 2
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 304, "count": 3},
+            {"resourceId": 310, "count": 4}
+        ],
+        "professionLevel": 1,
+        "resultItemId": 3
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 3},
+            {"resourceId": 308, "count": 1},
+            {"resourceId": 310, "count": 2}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 4
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 2},
+            {"resourceId": 308, "count": 2},
+            {"resourceId": 310, "count": 3}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 5
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 4},
+            {"resourceId": 310, "count": 6},
+            {"resourceId": 304, "count": 2}
+        ],
+        "professionLevel": 3,
+        "resultItemId": 6
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 2},
+            {"resourceId": 310, "count": 3}
+        ],
+        "professionLevel": 1,
+        "resultItemId": 7
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 3},
+            {"resourceId": 310, "count": 2}
+        ],
+        "professionLevel": 1,
+        "resultItemId": 8
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 3},
+            {"resourceId": 310, "count": 3}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 9
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 2},
+            {"resourceId": 308, "count": 2},
+            {"resourceId": 310, "count": 4}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 10
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 3},
+            {"resourceId": 310, "count": 3}
+        ],
+        "professionLevel": 1,
+        "resultItemId": 11
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 5},
+            {"resourceId": 308, "count": 1},
+            {"resourceId": 310, "count": 3}
+        ],
+        "professionLevel": 3,
+        "resultItemId": 12
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 6},
+            {"resourceId": 310, "count": 6},
+            {"resourceId": 309, "count": 2}
+        ],
+        "professionLevel": 4,
+        "resultItemId": 13
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 3},
+            {"resourceId": 310, "count": 3}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 14
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 2},
+            {"resourceId": 310, "count": 4}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 15
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 309, "count": 4},
+            {"resourceId": 310, "count": 4}
+        ],
+        "professionLevel": 4,
+        "resultItemId": 16
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 309, "count": 5},
+            {"resourceId": 310, "count": 5}
+        ],
+        "professionLevel": 4,
+        "resultItemId": 17
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 4},
+            {"resourceId": 310, "count": 2}
+        ],
+        "professionLevel": 3,
+        "resultItemId": 18
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 3},
+            {"resourceId": 308, "count": 2},
+            {"resourceId": 310, "count": 4}
+        ],
+        "professionLevel": 3,
+        "resultItemId": 19
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 3},
+            {"resourceId": 310, "count": 3}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 20
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 8},
+            {"resourceId": 310, "count": 10}
+        ],
+        "professionLevel": 3,
+        "resultItemId": 21
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 12},
+            {"resourceId": 310, "count": 12}
+        ],
+        "professionLevel": 4,
+        "resultItemId": 22
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 304, "count": 4},
+            {"resourceId": 310, "count": 8}
+        ],
+        "professionLevel": 1,
+        "resultItemId": 23
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 4},
+            {"resourceId": 310, "count": 2}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 24
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 3},
+            {"resourceId": 310, "count": 3}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 25
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 3},
+            {"resourceId": 310, "count": 3}
+        ],
+        "professionLevel": 1,
+        "resultItemId": 26
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 4},
+            {"resourceId": 310, "count": 4}
+        ],
+        "professionLevel": 3,
+        "resultItemId": 27
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 5},
+            {"resourceId": 310, "count": 2}
+        ],
+        "professionLevel": 3,
+        "resultItemId": 28
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 304, "count": 2},
+            {"resourceId": 310, "count": 6}
+        ],
+        "professionLevel": 1,
+        "resultItemId": 29
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 6},
+            {"resourceId": 310, "count": 6}
+        ],
+        "professionLevel": 3,
+        "resultItemId": 30
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 10},
+            {"resourceId": 308, "count": 4},
+            {"resourceId": 310, "count": 8}
+        ],
+        "professionLevel": 4,
+        "resultItemId": 31
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 10},
+            {"resourceId": 310, "count": 10}
+        ],
+        "professionLevel": 4,
+        "resultItemId": 32
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 309, "count": 8},
+            {"resourceId": 310, "count": 10}
+        ],
+        "professionLevel": 5,
+        "resultItemId": 33
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 305, "count": 6},
+            {"resourceId": 310, "count": 6}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 34
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 304, "count": 3},
+            {"resourceId": 310, "count": 6}
+        ],
+        "professionLevel": 1,
+        "resultItemId": 35
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 309, "count": 15},
+            {"resourceId": 308, "count": 10},
+            {"resourceId": 310, "count": 15}
+        ],
+        "professionLevel": 5,
+        "resultItemId": 36
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 309, "count": 10},
+            {"resourceId": 308, "count": 8},
+            {"resourceId": 310, "count": 10}
+        ],
+        "professionLevel": 5,
+        "resultItemId": 37
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 6},
+            {"resourceId": 310, "count": 6}
+        ],
+        "professionLevel": 3,
+        "resultItemId": 38
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 8},
+            {"resourceId": 310, "count": 6}
+        ],
+        "professionLevel": 3,
+        "resultItemId": 39
+    },
+    {
+        "profession": "blacksmith",
+        "requiredResources": [
+            {"resourceId": 308, "count": 4},
+            {"resourceId": 310, "count": 2}
+        ],
+        "professionLevel": 2,
+        "resultItemId": 40
+    }
+]

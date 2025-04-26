@@ -77,7 +77,7 @@ class NPCInteractionEventsService : GameService {
     
     func broadCastEventConversationToCurrentScene(currentEvent: NPCInteractionEvent, discussionEvent: NPCInteractionEvent) {
         if let engagedToEventNpc = currentEvent.otherNPC {
-            if let engagedToDiscussionEvent = discussionEvent.otherNPC {
+            if discussionEvent.otherNPC != nil {
                 gameEventBusService.addMessageWithIcon(
                     type: .common,
                     location: currentEvent.scene.name,

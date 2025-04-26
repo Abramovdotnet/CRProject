@@ -13,6 +13,7 @@ struct MainSceneView: View {
     @State private var showSmokeEffect = false
     @State private var showingTrade = false
     @State private var showingInventory = false
+    @State private var showingSmithing = false
     
     init(viewModel: MainSceneViewModel) {
         self.viewModel = viewModel
@@ -97,17 +98,27 @@ struct MainSceneView: View {
                                     // Advance time
                                     MainSceneActionButton(
                                         icon: "hourglass.bottomhalf.fill",
-                                        color: .blue,
+                                        color: Theme.textColor,
                                         action: {
                                             viewModel.advanceTime()
                                         }
                                     )
                                     
+                                    if viewModel.currentScene?.sceneType == .blacksmith {
+                                        MainSceneActionButton(
+                                            icon: "hammer.fill",
+                                            color: Theme.textColor,
+                                            action: {
+                                                showingSmithing = true
+                                            }
+                                        )
+                                    }
+                                    
                                     if !isPlayerHidden {
                                         // Show navigation
                                         MainSceneActionButton(
                                             icon: "map.fill",
-                                            color: Theme.textColor,
+                                            color: Theme.bloodProgressColor,
                                             action: {
                                                 showingNavigation = true
                                             }
@@ -119,7 +130,7 @@ struct MainSceneView: View {
                                         ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
                                             MainSceneActionButton(
                                                 icon: "eye.fill",
-                                                color: .purple,
+                                                color: Theme.bloodProgressColor,
                                                 action: {
                                                     showSmokeEffect = true
                                                     viewModel.getGameStateService().movePlayerThroughHideouts(to: hideout)
@@ -144,7 +155,7 @@ struct MainSceneView: View {
                                     
                                     MainSceneActionButton(
                                         icon: "duffle.bag.fill",
-                                        color: .brown,
+                                        color: Theme.bloodProgressColor,
                                         action: {
                                             showingInventory = true
                                         }
@@ -176,37 +187,35 @@ struct MainSceneView: View {
                                     // Actions
                                     VStack(alignment: .leading, spacing: 4) {
                                         if let selectedNPC = npcManager.selectedNPC {
-                                            if selectedNPC.isAlive {
-                                                // Start conversation
-                                                MainSceneActionButton(
-                                                    icon: "bubble.left.fill",
-                                                    color: .white,
-                                                    action: {
-                                                        viewModel.handleNPCAction(.startConversation(selectedNPC))
-                                                    }
-                                                )
-                                            }
-                                            
-                                            if !selectedNPC.isUnknown {
-                                                // Start intimidation
-                                                MainSceneActionButton(
-                                                    icon: "bolt.heart.fill",
-                                                    color: .purple,
-                                                    action: {
-                                                        viewModel.handleNPCAction(.startIntimidation(selectedNPC))
-                                                    }
-                                                )
-                                                
-                                                if selectedNPC.currentActivity != .sleep || selectedNPC.currentActivity != .fleeing && selectedNPC.currentActivity != .bathe {
+                                            if !selectedNPC.isUnknown && selectedNPC.isAlive {
+                                                if selectedNPC.currentActivity != .sleep && selectedNPC.currentActivity != .fleeing && selectedNPC.currentActivity != .bathe {
+                                                    // Start conversation
+                                                    MainSceneActionButton(
+                                                        icon: "bubble.left.fill",
+                                                        color: Theme.textColor,
+                                                        action: {
+                                                            viewModel.handleNPCAction(.startConversation(selectedNPC))
+                                                        }
+                                                    )
+                                                    
                                                     // Trade
                                                     MainSceneActionButton(
                                                         icon: "cart.fill",
-                                                        color: .yellow,
+                                                        color: Theme.textColor,
                                                         action: {
                                                             showingTrade = true
                                                         }
                                                     )
                                                 }
+                                                
+                                                // Start intimidation
+                                                MainSceneActionButton(
+                                                    icon: "bolt.heart.fill",
+                                                    color: Theme.bloodProgressColor,
+                                                    action: {
+                                                        viewModel.handleNPCAction(.startIntimidation(selectedNPC))
+                                                    }
+                                                )
                                                 
                                                 if !selectedNPC.isVampire {
                                                     // Feed
@@ -285,6 +294,9 @@ struct MainSceneView: View {
             }
             .sheet(isPresented: $showingInventory) {
                 CharacterInventoryView(character: gameStateService.player!, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+            }
+            .sheet(isPresented: $showingSmithing) {
+                SmithingView(player: gameStateService.player!, mainViewModel: viewModel)
             }
             .withDebugOverlay(viewModel: viewModel)
         }
@@ -389,13 +401,13 @@ struct MainSceneActionButton: View {
                                         endRadius: 25
                                     )
                                 )
-                                .frame(width: 60, height: 60)
+                                .frame(width: 40, height: 40)
                             
                             Image(systemName: icon)
                                 .font(.system(size: 16))
                                 .foregroundColor(color)
                         }
-                        .frame(width: 45, height: 45)
+                        .frame(width: 30, height: 30)
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 12)

@@ -62,6 +62,44 @@ class ItemsManagementService : GameService {
         to.items.append(item)
     }
     
+    func removeItem(itemId: Int, from: Player) {
+        from.items.removeAll { $0.index == itemId }
+    }
+    
+    func removeItem(item: Item, from: NPC) {
+        from.items.removeAll { $0.index == item.index }
+    }
+    
+    func removeItem(itemId: Int, from: NPC) {
+        from.items.removeAll { $0.index == itemId }
+    }
+    
+    func removeItem(item: Item, from: Player) {
+        from.items.removeAll { $0.index == item.index }
+    }
+    
+    func removeItemById(id: Int, from: NPC) {
+        from.items.removeAll { $0.id == id }
+    }
+    
+    func removeItemById(id: Int, from: Player) {
+        from.items.removeAll { $0.id == id }
+    }
+    
+    func removeFirstItemById(id: Int, from: Player) {
+        let item = from.items.first { $0.id == id }
+        if item != nil {
+            from.items.removeAll { $0.index == item!.index }
+        }
+    }
+     
+    func removeFirstItemById(id: Int, from: NPC) {
+        let item = from.items.first { $0.id == id }
+        if item != nil {
+            from.items.removeAll { $0.index == item!.index }
+        }
+    }
+    
     func giveItem(itemId: Int, to: Player) {
         to.items.append(ItemReader.shared.getItem(by: itemId)!)
     }
@@ -99,6 +137,7 @@ class ItemsManagementService : GameService {
             case .blacksmith:
                 // Add tools and weapons
                 let tools = allItems.filter { $0.type == .tools && $0.name.contains("Blacksmith") }
+                let resources = allItems.filter { $0.type == .resource }
                 let weapons = allItems.filter { $0.type == .weapon }
                 
                 // Add 2-3 tools
@@ -114,6 +153,14 @@ class ItemsManagementService : GameService {
                 for _ in 0..<weaponCount {
                     if let randomWeapon = weapons.randomElement() {
                         npc.items.append(Item.createUnique(randomWeapon))
+                    }
+                }
+                
+                // Add various resources
+                let resourcesCount = Int.random(in: 20...100)
+                for _ in 0..<resourcesCount {
+                    if let randomResource = resources.randomElement() {
+                        npc.items.append(Item.createUnique(randomResource))
                     }
                 }
                 
@@ -267,8 +314,8 @@ class ItemsManagementService : GameService {
             }
             
             // Ensure NPC doesn't have too many items (max 40)
-            if npc.items.count > 40 {
-                npc.items = Array(npc.items.prefix(40))
+            if npc.items.count > 200 {
+                npc.items = Array(npc.items.prefix(200))
             }
         }
     }
