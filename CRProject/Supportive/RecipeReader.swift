@@ -42,7 +42,3 @@ class RecipeReader {
         return recipes.filter { $0.profession == profession }
     }
 }
-
-private struct ItemContainer: Codable {
-    let recipes: [Recipe]
-}

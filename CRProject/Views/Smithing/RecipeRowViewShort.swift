@@ -1,13 +1,14 @@
 //
-//  RecipeRowView.swift
+//  RecipeRowViewShort.swift
 //  CRProject
 //
-//  Created by Abramov Anatoliy on 26.04.2025.
+//  Created by Abramov Anatoliy on 27.04.2025.
 //
+
 
 import SwiftUI
 
-struct RecipeRowView: View {
+struct RecipeRowViewShort: View {
     @ObservedObject var recipe: Recipe
     let isSelected: Bool
     let isCraftable: Bool
@@ -62,37 +63,6 @@ struct RecipeRowView: View {
                                 .padding(.leading, 4)
                         }
                     }
-                    
-                    VStack(alignment: .leading, spacing: 4) {
-                        HStack {
-                            // Required Resources
-                            VStack(alignment: .leading, spacing: 6) {
-                                HStack(spacing: 4) {
-                                    Image(systemName: ItemType.tools.icon)
-                                        .foregroundColor(ItemType.tools.color)
-                                        .font(Theme.smallFont)
-                                    Text("Blacksmith's Hammer")
-                                        .foregroundColor(Theme.textColor)
-                                        .font(Theme.smallFont)
-                                }
-                                
-                                ForEach(recipe.requiredResources, id: \.resourceId) { resource in
-                                    if let item = ItemReader.shared.getItem(by: resource.resourceId) {
-                                        HStack(spacing: 4) {
-                                            Image(systemName: item.icon())
-                                                .foregroundColor(item.color())
-                                                .font(Theme.smallFont)
-                                            Text("\(item.name) \(resource.count)/\(resource.availableCount)")
-                                                .font(Theme.smallFont)
-                                                .foregroundColor(Theme.textColor)
-                                        }
-                                    }
-                                }
-                            }
-                            .padding(.leading, 8)
-                        }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 12)

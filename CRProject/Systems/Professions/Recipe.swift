@@ -5,10 +5,13 @@
 //  Created by Abramov Anatoliy on 25.04.2025.
 //
 
-class Recipe : Codable, Identifiable {
+import Foundation
+import Combine
+
+class Recipe : Codable, Identifiable, ObservableObject {
     var id: Int { resultItemId } // Using resultItemId as the unique identifier
     var profession: Profession = .blacksmith
-    var requiredResources: [RecipeResource] = []
+    @Published var requiredResources: [RecipeResource] = []
     var professionLevel: Int = 0
     var resultItemId: Int = 0
     
@@ -41,9 +44,40 @@ class Recipe : Codable, Identifiable {
         professionLevel = try container.decode(Int.self, forKey: .professionLevel)
         resultItemId = try container.decode(Int.self, forKey: .resultItemId)
     }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(profession.rawValue, forKey: .profession)
+        try container.encode(requiredResources, forKey: .requiredResources)
+        try container.encode(professionLevel, forKey: .professionLevel)
+        try container.encode(resultItemId, forKey: .resultItemId)
+    }
 }
 
-class RecipeResource : Codable {
-    var resourceId: Int = 0
-    var count: Int = 0
+class RecipeResource : Codable, ObservableObject {
+    @Published var resourceId: Int = 0
+    @Published var count: Int = 0
+    @Published var availableCount: Int = 0
+    
+    init(resourceId: Int, count: Int) {
+        self.resourceId = resourceId
+        self.count = count
+    }
+    
+    enum CodingKeys: String, CodingKey {
+        case resourceId
+        case count
+    }
+    
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        resourceId = try container.decode(Int.self, forKey: .resourceId)
+        count = try container.decode(Int.self, forKey: .count)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(resourceId, forKey: .resourceId)
+        try container.encode(count, forKey: .count)
+    }
 }

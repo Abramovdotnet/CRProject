@@ -18,20 +18,60 @@ class SmithingSystem {
         let allRecipes = RecipeReader.shared.getRecipes()
         
         // Use the optimized batch-checking function (O(n + m*k) complexity)
-        return checkCouldCraft(recipes: allRecipes, player: player)
+        let craftableRecipes = checkCouldCraft(recipes: allRecipes, player: player)
+        
+        // Calculate available counts for craftable recipes
+        let itemCounts = Dictionary(
+            grouping: player.items,
+            by: \.id
+        ).mapValues { $0.count }
+        
+        // Create new RecipeResource objects with updated counts
+        craftableRecipes.forEach { recipe in
+            recipe.requiredResources = recipe.requiredResources.map { resource in
+                let newResource = RecipeResource(resourceId: resource.resourceId, count: resource.count)
+                newResource.availableCount = itemCounts[resource.resourceId, default: 0]
+                return newResource
+            }
+        }
+        
+        return craftableRecipes
     }
     
     func getAvailableRecipes(player: Player) -> [Recipe] {
-        return RecipeReader.shared.getRecipes().filter { $0.professionLevel <= player.smithingProgress.level }
+        let recipes = RecipeReader.shared.getRecipes().filter { $0.professionLevel <= player.smithingProgress.level }
+        // Calculate available counts for all recipes
+        let itemCounts = Dictionary(
+            grouping: player.items,
+            by: \.id
+        ).mapValues { $0.count }
+        
+        // Create new RecipeResource objects with updated counts
+        recipes.forEach { recipe in
+            recipe.requiredResources = recipe.requiredResources.map { resource in
+                let newResource = RecipeResource(resourceId: resource.resourceId, count: resource.count)
+                newResource.availableCount = itemCounts[resource.resourceId, default: 0]
+                return newResource
+            }
+        }
+        
+        return recipes
     }
     
     func checkCouldCraft(recipe: Recipe, player: Player) -> Bool {
         guard player.smithingProgress.level >= recipe.professionLevel else { return false }
         
+        // Precompute item counts for efficiency
+        let itemCounts = Dictionary(
+            grouping: player.items,
+            by: \.id
+        ).mapValues { $0.count }
+        
         // Check if player has all required resources in sufficient quantities
         let resourcesMatch = recipe.requiredResources.allSatisfy { requirement in
-            let playerResourceCount = player.items.filter { $0.id == requirement.resourceId }.count
-            return playerResourceCount >= requirement.count
+            let availableCount = itemCounts[requirement.resourceId, default: 0]
+            requirement.availableCount = availableCount
+            return availableCount >= requirement.count
         }
         
         return resourcesMatch
@@ -56,7 +96,9 @@ class SmithingSystem {
 
             // Check resources using precomputed counts
             return recipe.requiredResources.allSatisfy { requirement in
-                itemCounts[requirement.resourceId, default: 0] >= requirement.count
+                let availableCount = itemCounts[requirement.resourceId, default: 0]
+                requirement.availableCount = availableCount
+                return availableCount >= requirement.count
             }
         }
     }

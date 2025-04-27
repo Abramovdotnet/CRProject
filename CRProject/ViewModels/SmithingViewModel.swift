@@ -5,6 +5,10 @@ class SmithingViewModel: ObservableObject {
     @Published var craftingResult: String?
     @Published var isCrafting: Bool = false
     @Published var hasHammer: Bool = false
+    @Published var availableRecipes: [Recipe] = []
+    @Published var craftableRecipes: [Recipe] = []
+    @Published private(set) var playerResources: [ItemGroup] = []
+    @Published private(set) var playerTools: [ItemGroup] = []
     
     private let player: Player
     private let smithingSystem = SmithingSystem.shared
@@ -12,24 +16,22 @@ class SmithingViewModel: ObservableObject {
     init(player: Player) {
         self.player = player
         self.hasHammer = player.items.contains(where: { $0.id == 181 })
+        updatePlayerItems()
+        refreshRecipes()
     }
     
-    var availableRecipes: [Recipe] {
-        smithingSystem.getAvailableRecipes(player: player)
+    func refreshRecipes() {
+        availableRecipes = smithingSystem.getAvailableRecipes(player: player)
+        craftableRecipes = smithingSystem.getCraftableRecipes(player: player)
+        updatePlayerItems()
     }
     
-    var craftableRecipes: [Recipe] {
-        smithingSystem.getCraftableRecipes(player: player)
-    }
-    
-    var playerResources: [ItemGroup] {
-        Dictionary(grouping: player.items.filter { $0.type == .resource }, by: { $0.id.description })
+    private func updatePlayerItems() {
+        playerResources = Dictionary(grouping: player.items.filter { $0.type == .resource }, by: { $0.id.description })
             .map { ItemGroup(items: $0.value) }
             .sorted { $0.name < $1.name }
-    }
-    
-    var playerTools: [ItemGroup] {
-        Dictionary(grouping: player.items.filter { $0.type == .tools }, by: { $0.id.description })
+            
+        playerTools = Dictionary(grouping: player.items.filter { $0.type == .tools }, by: { $0.id.description })
             .map { ItemGroup(items: $0.value) }
             .sorted { $0.name < $1.name }
     }
@@ -42,6 +44,9 @@ class SmithingViewModel: ObservableObject {
         craftingResult = "Crafted \(result?.name ?? "Unknown")"
         
         isCrafting = false
+        
+        refreshRecipes()
+        updatePlayerItems()
         
         GameTimeService.shared.advanceTime()
 

@@ -87,16 +87,14 @@ class ItemsManagementService : GameService {
     }
     
     func removeFirstItemById(id: Int, from: Player) {
-        let item = from.items.first { $0.id == id }
-        if item != nil {
-            from.items.removeAll { $0.index == item!.index }
+        if let index = from.items.firstIndex(where: { $0.id == id }) {
+            from.items.remove(at: index)
         }
     }
      
     func removeFirstItemById(id: Int, from: NPC) {
-        let item = from.items.first { $0.id == id }
-        if item != nil {
-            from.items.removeAll { $0.index == item!.index }
+        if let index = from.items.firstIndex(where: { $0.id == id }) {
+            from.items.remove(at: index)
         }
     }
     

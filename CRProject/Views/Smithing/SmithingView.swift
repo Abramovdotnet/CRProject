@@ -24,15 +24,13 @@ struct SmithingView: View {
                 
                 VStack(spacing: 20) {
                     HStack(spacing: 20) {
-                        resourcesColumn()
+                        recipesColumn()
                         Spacer()
                         craftingColumn()
-                        Spacer()
-                        recipesColumn()
                     }
                 }
                 .cornerRadius(12)
-                .padding(25)
+                .padding(.top, 10)
                 
                 VStack(alignment: .leading) {
                     TopWidgetView(viewModel: mainViewModel)
@@ -114,88 +112,82 @@ struct SmithingView: View {
     
     private func craftingColumn() -> some View {
         VStack {
-            if let recipe = viewModel.selectedRecipe {
-                CraftingDetailView(
-                    recipe: recipe,
-                    isCrafting: viewModel.isCrafting,
-                    onCraft: viewModel.craftItem
-                )
-            } else {
-                Text("Select a recipe")
-                    .font(Theme.bodyFont)
-                    .foregroundColor(Theme.textColor.opacity(0.7))
-            }
-            
-            if let result = viewModel.craftingResult {
-                Text(result)
-                    .font(Theme.bodyFont)
-                    .foregroundColor(.green)
-                    .padding()
-                    .background(Color.black.opacity(0.6))
-                    .cornerRadius(8)
-                    .onAppear {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
-                            viewModel.clearResult()
-                        }
+            Spacer()
+            HStack {
+                Spacer()
+                if let recipe = viewModel.selectedRecipe {
+                    if let result = viewModel.craftingResult {
+                        Text(result)
+                            .font(Theme.bodyFont)
+                            .foregroundColor(.green)
+                            .padding()
+                            .background(Color.black.opacity(0.9))
+                            .cornerRadius(8)
+                            .onAppear {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    viewModel.clearResult()
+                                }
+                            }
+                    } else {
+                        CraftingDetailView(
+                            recipe: recipe,
+                            isCrafting: viewModel.isCrafting,
+                            onCraft: viewModel.craftItem
+                        )
                     }
+                } else {
+                    Text("Select a recipe")
+                        .font(Theme.bodyFont)
+                        .foregroundColor(Theme.textColor.opacity(0.7))
+                }
+                Spacer()
             }
+            Spacer()
         }
     }
     
     private func recipesColumn() -> some View {
-        VStack {
-            HStack {
-                Text("Recipes")
-                    .font(Theme.bodyFont)
-                    .foregroundColor(Theme.textColor)
-                
-                Image(systemName: ItemType.paper.icon)
-                    .font(Theme.bodyFont)
-                    .foregroundColor(ItemType.paper.color)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 30)
-            .background(Color.black.opacity(0.8))
-            .cornerRadius(12)
-            .padding(.horizontal, 8)
-            
-            ZStack {
-                ScrollView {
-                    VStack(spacing: 8) {
-                        
-                        let sortedRecipes = viewModel.availableRecipes.sorted { lhs, rhs in
-                            let lhsCraftable = viewModel.craftableRecipes.contains(where: { $0.id == lhs.id })
-                            let rhsCraftable = viewModel.craftableRecipes.contains(where: { $0.id == rhs.id })
-                            if lhsCraftable == rhsCraftable {
-                                return lhs.id < rhs.id // fallback order
-                            }
-                            return lhsCraftable && !rhsCraftable
-                        }
-                        ForEach(sortedRecipes) { recipe in
-                            let isCraftable = viewModel.craftableRecipes.contains(where: { $0.id == recipe.id })
+        ZStack {
+            VStack {
+                ZStack {
+                    ScrollView {
+                        VStack(spacing: 4) {
                             
-                            Button(action: {
-                                viewModel.selectRecipe(recipe)
-                            }) {
-                                RecipeRowView(
-                                    recipe: recipe,
-                                    isSelected: viewModel.selectedRecipe?.id == recipe.id,
-                                    isCraftable: isCraftable
-                                )
-                                .padding(.horizontal, 6)
+                            let sortedRecipes = viewModel.availableRecipes.sorted { lhs, rhs in
+                                let lhsCraftable = viewModel.craftableRecipes.contains(where: { $0.id == lhs.id })
+                                let rhsCraftable = viewModel.craftableRecipes.contains(where: { $0.id == rhs.id })
+                                if lhsCraftable == rhsCraftable {
+                                    return lhs.id < rhs.id // fallback order
+                                }
+                                return lhsCraftable && !rhsCraftable
                             }
-                            .disabled(!isCraftable)
-                            .opacity(isCraftable ? 1 : 0.9)
+                            ForEach(sortedRecipes) { recipe in
+                                let isCraftable = viewModel.craftableRecipes.contains(where: { $0.id == recipe.id })
+                                
+                                Button(action: {
+                                    viewModel.selectRecipe(recipe)
+                                }) {
+                                    RecipeRowViewShort(
+                                        recipe: recipe,
+                                        isSelected: viewModel.selectedRecipe?.id == recipe.id,
+                                        isCraftable: isCraftable
+                                    )
+                                    .padding(.horizontal, 6)
+                                }
+                                .opacity(isCraftable ? 1 : 0.7)
+                                .padding(.top, 10)
+                                .padding(.bottom, -10)
+                            }
                         }
                     }
-                    .padding(.vertical, 8)
-                }
-                .mask(edgeMask)
-                .frame(maxWidth: .infinity)
+                    .mask(edgeMask)
+                    .frame(maxWidth: .infinity)
 
+                }
             }
         }
-        .frame(width: 250)
+        .cornerRadius(12)
+        .frame(width: 280)
         .padding(.top, 10)
     }
     
