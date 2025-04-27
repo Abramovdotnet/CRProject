@@ -101,7 +101,7 @@ class ItemsManagementService : GameService {
     }
     
     func giveItem(itemId: Int, to: Player) {
-        to.items.append(ItemReader.shared.getItem(by: itemId)!)
+        to.items.append(Item.createUnique(ItemReader.shared.getItem(by: itemId)!))
     }
     
     func distributeDailyItems() {

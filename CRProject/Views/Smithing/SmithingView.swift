@@ -115,13 +115,11 @@ struct SmithingView: View {
     private func craftingColumn() -> some View {
         VStack {
             if let recipe = viewModel.selectedRecipe {
-                if SmithingSystem.shared.checkCouldCraft(recipe: recipe, player: GameStateService.shared.player!) {
-                    CraftingDetailView(
-                        recipe: recipe,
-                        isCrafting: viewModel.isCrafting,
-                        onCraft: viewModel.craftItem
-                    )
-                }
+                CraftingDetailView(
+                    recipe: recipe,
+                    isCrafting: viewModel.isCrafting,
+                    onCraft: viewModel.craftItem
+                )
             } else {
                 Text("Select a recipe")
                     .font(Theme.bodyFont)
@@ -131,7 +129,7 @@ struct SmithingView: View {
             if let result = viewModel.craftingResult {
                 Text(result)
                     .font(Theme.bodyFont)
-                    .foregroundColor(result.contains("Successfully") ? .green : .red)
+                    .foregroundColor(.green)
                     .padding()
                     .background(Color.black.opacity(0.6))
                     .cornerRadius(8)

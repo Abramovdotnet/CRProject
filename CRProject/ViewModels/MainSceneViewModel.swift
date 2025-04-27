@@ -56,6 +56,15 @@ class MainSceneViewModel: ObservableObject {
         initialPlayer.coins.add(1000)
         gameStateService.setPlayer(initialPlayer)
         ItemsManagementService.shared.giveItem(itemId: 1, to: initialPlayer)
+        ItemsManagementService.shared.giveItem(itemId: 181, to: initialPlayer)
+        
+        for _ in 0..<100 {
+            ItemsManagementService.shared.giveItem(itemId: 310, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 309, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 308, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 307, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 305, to: initialPlayer)
+        }
         
         // Assign player to the published property
         self.player = initialPlayer

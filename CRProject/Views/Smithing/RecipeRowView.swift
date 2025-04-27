@@ -105,7 +105,7 @@ struct RecipeRowView: View {
                         )
                 )
             }
-            .padding(.horizontal, 10)
+            .padding(.horizontal, 20)
             .shadow(color: isSelected ? resultItem.color().opacity(0.8) : Color.clear, radius: 10)
         }
     }

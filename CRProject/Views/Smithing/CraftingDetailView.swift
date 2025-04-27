@@ -40,12 +40,8 @@ struct CraftingDetailView: View {
                     .foregroundColor(Theme.textColor)
                     .padding()
                     .frame(maxWidth: .infinity)
-                    .background(Color.black.opacity(0.6))
+                    .background(Color.black.opacity(0.8))
                     .cornerRadius(12)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(Theme.primaryColor, lineWidth: 1)
-                    )
                 }
                 .disabled(isCrafting)
             }

@@ -9,7 +9,16 @@ class SmithingSystem {
     static let shared = SmithingSystem()
     
     func getCraftableRecipes(player: Player) -> [Recipe] {
-        return RecipeReader.shared.getRecipes().filter { checkCouldCraft(recipe: $0, player: player) }
+        // Early exit if player doesn't have a hammer (O(n) check, but only once)
+        guard player.items.contains(where: { $0.id == 181 }) else {
+            return []
+        }
+        
+        // Fetch all recipes (assuming RecipeReader.shared.getRecipes() is cached)
+        let allRecipes = RecipeReader.shared.getRecipes()
+        
+        // Use the optimized batch-checking function (O(n + m*k) complexity)
+        return checkCouldCraft(recipes: allRecipes, player: player)
     }
     
     func getAvailableRecipes(player: Player) -> [Recipe] {
@@ -17,7 +26,7 @@ class SmithingSystem {
     }
     
     func checkCouldCraft(recipe: Recipe, player: Player) -> Bool {
-        let levelMatch = player.smithingProgress.level >= recipe.professionLevel
+        guard player.smithingProgress.level >= recipe.professionLevel else { return false }
         
         // Check if player has all required resources in sufficient quantities
         let resourcesMatch = recipe.requiredResources.allSatisfy { requirement in
@@ -25,46 +34,35 @@ class SmithingSystem {
             return playerResourceCount >= requirement.count
         }
         
-        let hasHammer = player.items.contains(where: { $0.id == 181 })
-        
-        return levelMatch && resourcesMatch && hasHammer
+        return resourcesMatch
     }
     
-    func attemptCraft(recipeId: Int, player: Player) -> (Item?, String) {
-        let recipe = RecipeReader.shared.getRecipe(by: recipeId)!
-        var result: Item?
-        var message: String
-        
-        // Calculate success chance based on player's smithing level
-        let baseChance = 0.5 // 50% base chance
-        let levelBonus = Double(player.smithingProgress.level) * 0.1 // 10% per level
-        let successChance = min(baseChance + levelBonus, 0.95) // Cap at 95% chance
-        
-        //let success = Double.random(in: 0...1) < successChance
-        let success = true 
-        
-        if success {
-            if let craftedItem = craft(recipeId: recipeId, player: player) {
-                result = craftedItem
-                message = "Successfully crafted \(craftedItem.name)!"
-                ItemsManagementService.shared.giveItem(item: craftedItem, to: player)
-            } else {
-                message = "Failure"
+    func checkCouldCraft(recipes: [Recipe], player: Player) -> [Recipe] {
+        // Early exit if player has no items
+        guard !player.items.isEmpty else { return [] }
+
+        // Precompute item counts (O(n) - done once)
+        let itemCounts = Dictionary(
+            grouping: player.items,
+            by: \.id
+        ).mapValues { $0.count }
+
+        // Filter recipes by level and resources (O(m * k), where m = recipes, k = requirements)
+        return recipes.filter { recipe in
+            // Check level first (cheapest check)
+            guard player.smithingProgress.level >= recipe.professionLevel else {
+                return false
             }
-        } else {
-            // Resources are still consumed on failure
-            for resource in recipe.requiredResources {
-                for _ in 0..<resource.count {
-                    ItemsManagementService.shared.removeItem(itemId: resource.resourceId, from: player)
-                }
+
+            // Check resources using precomputed counts
+            return recipe.requiredResources.allSatisfy { requirement in
+                itemCounts[requirement.resourceId, default: 0] >= requirement.count
             }
-            message = "Failure"
         }
-        
-        return (result, message)
     }
     
-    private func craft(recipeId: Int, player: Player) -> Item? {
+    
+    func craft(recipeId: Int, player: Player) -> Item? {
         let recipe = RecipeReader.shared.getRecipe(by: recipeId)!
         var result: Item?
         

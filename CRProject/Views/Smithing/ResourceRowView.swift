@@ -23,7 +23,7 @@ struct ResourceRowView: View {
             
             Spacer()
         }
-        .padding(.horizontal, 12)
+        .padding(.horizontal, 20)
 
     }
 }

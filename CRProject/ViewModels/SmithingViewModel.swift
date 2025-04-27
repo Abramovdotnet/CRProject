@@ -4,12 +4,14 @@ class SmithingViewModel: ObservableObject {
     @Published var selectedRecipe: Recipe?
     @Published var craftingResult: String?
     @Published var isCrafting: Bool = false
+    @Published var hasHammer: Bool = false
     
     private let player: Player
     private let smithingSystem = SmithingSystem.shared
     
     init(player: Player) {
         self.player = player
+        self.hasHammer = player.items.contains(where: { $0.id == 181 })
     }
     
     var availableRecipes: [Recipe] {
@@ -36,22 +38,19 @@ class SmithingViewModel: ObservableObject {
         guard let recipe = selectedRecipe else { return }
         isCrafting = true
         
-        let (_, message) = smithingSystem.attemptCraft(recipeId: recipe.resultItemId, player: player)
-        craftingResult = message
+        let result = smithingSystem.craft(recipeId: recipe.resultItemId, player: player)
+        craftingResult = "Crafted \(result?.name ?? "Unknown")"
         
         isCrafting = false
-        let isSuccess = craftingResult?.contains("Successfully")
         
         GameTimeService.shared.advanceTime()
-        
-        if craftingResult?.contains("Successfully") == true {
-            GameEventsBusService.shared.addMessageWithIcon(
-                type: .common,
-                location: GameStateService.shared.currentScene?.name ?? "Unknown",
-                player: player,
-                interactionType: NPCInteraction.workingOnSmithingOrder
-            )
-        }
+
+        GameEventsBusService.shared.addMessageWithIcon(
+            type: .common,
+            location: GameStateService.shared.currentScene?.name ?? "Unknown",
+            player: player,
+            interactionType: NPCInteraction.workingOnSmithingOrder
+        )
     }
     
     func selectRecipe(_ recipe: Recipe) {
