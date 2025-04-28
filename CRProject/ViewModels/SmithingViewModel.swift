@@ -11,6 +11,7 @@ class SmithingViewModel: ObservableObject {
     @Published var selectedItemType: ItemType? = nil
     @Published private(set) var playerResources: [ItemGroup] = []
     @Published private(set) var playerTools: [ItemGroup] = []
+    @Published var showOnlyKnownRecipes: Bool = false
     
     private let player: Player
     private let smithingSystem = SmithingSystem.shared
@@ -52,6 +53,11 @@ class SmithingViewModel: ObservableObject {
             }
         }
         
+        // Filter by known recipes if enabled
+        if showOnlyKnownRecipes {
+            filteredRecipes = filteredRecipes.filter { !$0.isUnknown }
+        }
+        
         return filteredRecipes
     }
     
@@ -69,9 +75,9 @@ class SmithingViewModel: ObservableObject {
         guard let recipe = selectedRecipe else { return }
         isCrafting = true
         
-        let result = smithingSystem.craft(recipeId: recipe.resultItemId, player: player)
+        let (result, newRecipeUnlocked) = smithingSystem.craft(recipeId: recipe.resultItemId, player: player)
         ItemsManagementService.shared.giveItem(item: result!, to: player)
-        craftingResult = "Crafted \(result?.name ?? "Unknown")"
+        craftingResult = newRecipeUnlocked ? "Crafted \(result?.name ?? "Unknown"). New Recipe Unlocked!" : "Crafted \(result?.name ?? "Unknown")"
         
         isCrafting = false
         

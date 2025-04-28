@@ -41,6 +41,11 @@ struct TradeView: View {
     @State private var originalPlayerItems: [Item] = []
     @State private var originalNPCItems: [Item] = []
     
+    @State private var isPlayerDragging = false
+    @State private var isNPCDragging = false
+    @State private var playerDragStart: CGPoint? = nil
+    @State private var npcDragStart: CGPoint? = nil
+    
     private var groupedPlayerItems: [ItemGroup] {
         let items = playerSortType == nil ? tempPlayerItems : tempPlayerItems.filter { $0.type == playerSortType }
         return Dictionary(grouping: items, by: { $0.id.description })
@@ -113,35 +118,42 @@ struct TradeView: View {
                                 ScrollView {
                                     VStack(spacing: 8) {
                                         ForEach(groupedPlayerItems) { group in
-                                            Button(action: {
-                                                moveItemFromPlayerToNPC(group)
-                                            }) {
+                                            HStack {
                                                 HStack {
-                                                    HStack {
-                                                        Image(systemName: group.icon)
-                                                            .foregroundColor(group.color)
-                                                            .font(Theme.bodyFont)
-                                                        
-                                                        Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
-                                                            .font(Theme.bodyFont)
-                                                            .foregroundColor(Theme.textColor)
-                                                        
-                                                        Spacer()
-                                                        
-                                                        Text("\(group.cost)")
-                                                            .font(Theme.bodyFont)
-                                                            .foregroundColor(.green)
-                                                    }
-                                                    .padding(.horizontal, 6)
-                                                    .padding(.vertical, 8)
+                                                    Image(systemName: group.icon)
+                                                        .foregroundColor(group.color)
+                                                        .font(Theme.bodyFont)
+                                                    Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
+                                                        .font(Theme.bodyFont)
+                                                        .foregroundColor(Theme.textColor)
+                                                    Spacer()
+                                                    Text("\(group.cost)")
+                                                        .font(Theme.bodyFont)
+                                                        .foregroundColor(.green)
                                                 }
                                                 .padding(.horizontal, 6)
+                                                .padding(.vertical, 8)
                                             }
                                             .padding(.horizontal, 6)
+                                            .contentShape(Rectangle())
+                                            .onTapGesture {
+                                                if !isPlayerDragging {
+                                                    moveItemFromPlayerToNPC(group)
+                                                }
+                                            }
                                         }
                                     }
                                     .padding(.vertical, 8)
                                 }
+                                .simultaneousGesture(
+                                    DragGesture()
+                                        .onChanged { _ in isPlayerDragging = true }
+                                        .onEnded { _ in
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                isPlayerDragging = false
+                                            }
+                                        }
+                                )
                             }
                             .padding(.vertical, 4)
                             .background(Color.black.opacity(0.8))
@@ -192,35 +204,42 @@ struct TradeView: View {
                                 ScrollView {
                                     VStack(spacing: 8) {
                                         ForEach(groupedNPCItems) { group in
-                                            Button(action: {
-                                                moveItemFromNPCToPlayer(group)
-                                            }) {
+                                            HStack {
                                                 HStack {
-                                                    HStack {
-                                                        Image(systemName: group.icon)
-                                                            .foregroundColor(group.color)
-                                                            .font(Theme.bodyFont)
-                                                        
-                                                        Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
-                                                            .font(Theme.bodyFont)
-                                                            .foregroundColor(Theme.textColor)
-                                                        
-                                                        Spacer()
-                                                        
-                                                        Text("\(group.cost)")
-                                                            .font(Theme.bodyFont)
-                                                            .foregroundColor(.green)
-                                                    }
-                                                    .padding(.horizontal, 6)
-                                                    .padding(.vertical, 8)
+                                                    Image(systemName: group.icon)
+                                                        .foregroundColor(group.color)
+                                                        .font(Theme.bodyFont)
+                                                    Text(group.count > 1 ? "\(group.name) (\(group.count))" : group.name)
+                                                        .font(Theme.bodyFont)
+                                                        .foregroundColor(Theme.textColor)
+                                                    Spacer()
+                                                    Text("\(group.cost)")
+                                                        .font(Theme.bodyFont)
+                                                        .foregroundColor(.green)
                                                 }
                                                 .padding(.horizontal, 6)
+                                                .padding(.vertical, 8)
                                             }
                                             .padding(.horizontal, 6)
+                                            .contentShape(Rectangle())
+                                            .onTapGesture {
+                                                if !isNPCDragging {
+                                                    moveItemFromNPCToPlayer(group)
+                                                }
+                                            }
                                         }
                                     }
                                     .padding(.vertical, 8)
                                 }
+                                .simultaneousGesture(
+                                    DragGesture()
+                                        .onChanged { _ in isNPCDragging = true }
+                                        .onEnded { _ in
+                                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                isNPCDragging = false
+                                            }
+                                        }
+                                )
                             }
                             .padding(.vertical, 4)
                             .background(Color.black.opacity(0.8))

@@ -81,9 +81,14 @@ struct RecipeRowViewShort: View {
                         Spacer()
                         VStack {
                             Text("Mastery Level: \(recipe.professionLevel)")
-                                .font(Theme.bodyFont)
-                                .foregroundColor(Color.green)
+                                .font(Theme.smallFont)
+                                .foregroundColor(recipe.professionLevelColor)
                             Spacer()
+                            if recipe.isUnknown {
+                                Text("Unknown")
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(Color.gray)
+                            }
                         }
                     }
                 }

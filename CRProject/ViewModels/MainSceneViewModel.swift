@@ -55,15 +55,30 @@ class MainSceneViewModel: ObservableObject {
         let initialPlayer = NPCGenerator.createPlayer()
         initialPlayer.coins.add(1000)
         gameStateService.setPlayer(initialPlayer)
-        ItemsManagementService.shared.giveItem(itemId: 1, to: initialPlayer)
+     
         ItemsManagementService.shared.giveItem(itemId: 181, to: initialPlayer)
         
-        for _ in 0..<100 {
-            ItemsManagementService.shared.giveItem(itemId: 310, to: initialPlayer)
-            ItemsManagementService.shared.giveItem(itemId: 309, to: initialPlayer)
-            ItemsManagementService.shared.giveItem(itemId: 308, to: initialPlayer)
-            ItemsManagementService.shared.giveItem(itemId: 307, to: initialPlayer)
-            ItemsManagementService.shared.giveItem(itemId: 305, to: initialPlayer)
+        for _ in 0..<20 {
+            ItemsManagementService.shared.giveItem(itemId: 1001, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1002, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1003, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1004, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1005, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1006, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1007, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1008, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1009, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1010, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1011, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1012, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1013, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1014, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1015, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1016, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1017, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1018, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1019, to: initialPlayer)
+            ItemsManagementService.shared.giveItem(itemId: 1020, to: initialPlayer)
         }
         
         // Assign player to the published property

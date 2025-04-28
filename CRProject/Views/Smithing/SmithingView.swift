@@ -98,18 +98,16 @@ struct SmithingView: View {
                                     Text("\(level.description)")
                                         .font(Theme.bodyFont)
                                         .foregroundColor(viewModel.selectedProfessionLevel == level ? .yellow : Theme.textColor)
-                                      
                                 }
-                             
                             }
                         }
                     }
                     .padding(.horizontal, 8)
                     .padding(.top, 5)
                     
-                    // Second filter: Item Type
+                    // Second filter: Item Type and Known Recipes
                     HStack(spacing: 8) {
-                        ForEach([ItemType.weapon, ItemType.armor, ItemType.resource], id: \.self) { type in
+                        ForEach([ItemType.weapon, ItemType.armor], id: \.self) { type in
                             Button(action: {
                                 viewModel.selectedItemType = viewModel.selectedItemType == type ? nil : type
                                 viewModel.refreshRecipes()
@@ -119,6 +117,24 @@ struct SmithingView: View {
                                     .foregroundColor(viewModel.selectedItemType == type ? .yellow : Theme.textColor)
                                     .frame(width: 30, height: 30)
                             }
+                        }
+                        // Known recipes filter button
+                        Button(action: {
+                            viewModel.showOnlyKnownRecipes.toggle()
+                            viewModel.refreshRecipes()
+                        }) {
+                            HStack(spacing: 4) {
+                                Image(systemName: viewModel.showOnlyKnownRecipes ? "eye.slash" : "eye")
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(viewModel.showOnlyKnownRecipes ? .yellow : Theme.textColor)
+                                Text("Known")
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(viewModel.showOnlyKnownRecipes ? .yellow : Theme.textColor)
+                            }
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(Color.black.opacity(0.7))
+                            .cornerRadius(8)
                         }
                     }
                     .padding(.horizontal, 8)
@@ -141,7 +157,7 @@ struct SmithingView: View {
                                 return lhsCraftable && !rhsCraftable
                             }
                             ForEach(sortedRecipes) { recipe in
-                                let isCraftable = viewModel.craftableRecipes.contains(where: { $0.id == recipe.id })
+                                let isCraftable = viewModel.craftableRecipes.contains(where: { $0.id == recipe.id && !recipe.isUnknown})
                                 
                                 Button(action: {
                                     viewModel.selectRecipe(recipe)

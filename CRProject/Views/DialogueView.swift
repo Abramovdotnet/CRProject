@@ -17,6 +17,7 @@ struct DialogueView: View {
     @State private var backgroundOpacity = 0.0
     @State private var moonPhase: Double = 0.0
     @State private var contentOpacity = 0.0
+    @State private var isDraggingDialogues = false
     
     // MARK: - Body
     var body: some View {
@@ -75,7 +76,7 @@ struct DialogueView: View {
                             VStack {
                                 // Player Options
                                 ForEach(viewModel.options) { option in
-                                    DialogueOptionButton(character: GameStateService.shared.player!, option: option) {
+                                    DialogueOptionButton(character: GameStateService.shared.player!, option: option, isDragging: isDraggingDialogues) {
                                         viewModel.selectOption(option)
                                     }
                                     .frame(maxWidth: bubbleMaxWidth)
@@ -99,6 +100,15 @@ struct DialogueView: View {
                     .opacity(contentOpacity)
                     .frame(width: centralColumnWidth) 
                     .padding(.top, 20)
+                    .simultaneousGesture(
+                        DragGesture()
+                            .onChanged { _ in isDraggingDialogues = true }
+                            .onEnded { _ in
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                    isDraggingDialogues = false
+                                }
+                            }
+                    )
                     
                     Spacer() 
                     
@@ -176,10 +186,15 @@ struct DialogueView: View {
 private struct DialogueOptionButton: View {
     let character: any Character
     let option: DialogueOption
+    let isDragging: Bool
     let action: () -> Void
     
     var body: some View {
-        Button(action: action) {
+        Button(action: {
+            if !isDragging {
+                action()
+            }
+        }) {
             // Ensure top alignment for consistency with NPC bubble
             HStack(alignment: .top, spacing: 8) {
                 getCharacterImage()

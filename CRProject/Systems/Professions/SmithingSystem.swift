@@ -60,6 +60,7 @@ class SmithingSystem {
     
     func checkCouldCraft(recipe: Recipe, player: Player) -> Bool {
         guard player.smithingProgress.level >= recipe.professionLevel else { return false }
+        guard !recipe.isUnknown else { return false }
         
         // Precompute item counts for efficiency
         let itemCounts = Dictionary(
@@ -103,10 +104,21 @@ class SmithingSystem {
         }
     }
     
+    func unlockNewRecipe(player: Player) {
+        let firstUnknownRecipe = RecipeReader.shared.getRecipes()
+            .filter { $0.isUnknown == true }
+            .sorted { $0.professionLevel < $1.professionLevel }
+            .first
+        
+        if firstUnknownRecipe != nil {
+            firstUnknownRecipe?.isUnknown = false
+        }
+    }
     
-    func craft(recipeId: Int, player: Player) -> Item? {
+    func craft(recipeId: Int, player: Player) -> (Item?, Bool) {
         let recipe = RecipeReader.shared.getRecipe(by: recipeId)!
         var result: Item?
+        var newRecipeUnlocked: Bool = false
         
         if checkCouldCraft(recipe: recipe, player: player) {
             for resource in recipe.requiredResources {
@@ -116,8 +128,14 @@ class SmithingSystem {
             }
             
             result = Item.createUnique(ItemReader.shared.getItem(by: recipe.resultItemId)!)
+            
+            newRecipeUnlocked = Int.random(in: 1...4) == 4
+            
+            if newRecipeUnlocked {
+                unlockNewRecipe(player: player)
+            }
         }
         
-        return result
+        return (result, newRecipeUnlocked)
     }
 }

@@ -1,246 +1,6 @@
 {
     "items": [
         {
-            "id": 1,
-            "type": "weapon",
-            "name": "Iron Longsword",
-            "cost": 180
-        },
-        {
-            "id": 2,
-            "type": "weapon",
-            "name": "Steel Dagger",
-            "cost": 60
-        },
-        {
-            "id": 3,
-            "type": "weapon",
-            "name": "Oak Longbow",
-            "cost": 120
-        },
-        {
-            "id": 4,
-            "type": "weapon",
-            "name": "Battle Axe",
-            "cost": 144
-        },
-        {
-            "id": 5,
-            "type": "weapon",
-            "name": "War Hammer",
-            "cost": 156
-        },
-        {
-            "id": 6,
-            "type": "weapon",
-            "name": "Crossbow",
-            "cost": 240
-        },
-        {
-            "id": 7,
-            "type": "weapon",
-            "name": "Spear",
-            "cost": 96
-        },
-        {
-            "id": 8,
-            "type": "weapon",
-            "name": "Mace",
-            "cost": 108
-        },
-        {
-            "id": 9,
-            "type": "weapon",
-            "name": "Rapier",
-            "cost": 192
-        },
-        {
-            "id": 10,
-            "type": "weapon",
-            "name": "Halberd",
-            "cost": 168
-        },
-        {
-            "id": 11,
-            "type": "weapon",
-            "name": "Short Sword",
-            "cost": 120
-        },
-        {
-            "id": 12,
-            "type": "weapon",
-            "name": "Bastard Sword",
-            "cost": 210
-        },
-        {
-            "id": 13,
-            "type": "weapon",
-            "name": "Greatsword",
-            "cost": 300
-        },
-        {
-            "id": 14,
-            "type": "weapon",
-            "name": "Scimitar",
-            "cost": 150
-        },
-        {
-            "id": 15,
-            "type": "weapon",
-            "name": "Falchion",
-            "cost": 135
-        },
-        {
-            "id": 16,
-            "type": "weapon",
-            "name": "Katana",
-            "cost": 240
-        },
-        {
-            "id": 17,
-            "type": "weapon",
-            "name": "Claymore",
-            "cost": 270
-        },
-        {
-            "id": 18,
-            "type": "weapon",
-            "name": "Estoc",
-            "cost": 180
-        },
-        {
-            "id": 19,
-            "type": "weapon",
-            "name": "Flail",
-            "cost": 165
-        },
-        {
-            "id": 20,
-            "type": "weapon",
-            "name": "Morning Star",
-            "cost": 150
-        },
-        {
-            "id": 21,
-            "type": "armor",
-            "name": "Chainmail Hauberk",
-            "cost": 360
-        },
-        {
-            "id": 22,
-            "type": "armor",
-            "name": "Plate Cuirass",
-            "cost": 600
-        },
-        {
-            "id": 23,
-            "type": "armor",
-            "name": "Leather Jerkin",
-            "cost": 96
-        },
-        {
-            "id": 24,
-            "type": "armor",
-            "name": "Steel Helmet",
-            "cost": 180
-        },
-        {
-            "id": 25,
-            "type": "armor",
-            "name": "Knight's Gauntlets",
-            "cost": 144
-        },
-        {
-            "id": 26,
-            "type": "armor",
-            "name": "Shield",
-            "cost": 120
-        },
-        {
-            "id": 27,
-            "type": "armor",
-            "name": "Greaves",
-            "cost": 216
-        },
-        {
-            "id": 28,
-            "type": "armor",
-            "name": "Pauldrons",
-            "cost": 240
-        },
-        {
-            "id": 29,
-            "type": "armor",
-            "name": "Gambeson",
-            "cost": 72
-        },
-        {
-            "id": 30,
-            "type": "armor",
-            "name": "Brigandine",
-            "cost": 300
-        },
-        {
-            "id": 31,
-            "type": "armor",
-            "name": "Scale Armor",
-            "cost": 420
-        },
-        {
-            "id": 32,
-            "type": "armor",
-            "name": "Splint Mail",
-            "cost": 480
-        },
-        {
-            "id": 33,
-            "type": "armor",
-            "name": "Lamellar Armor",
-            "cost": 540
-        },
-        {
-            "id": 34,
-            "type": "armor",
-            "name": "Ring Mail",
-            "cost": 240
-        },
-        {
-            "id": 35,
-            "type": "armor",
-            "name": "Studded Leather",
-            "cost": 120
-        },
-        {
-            "id": 36,
-            "type": "armor",
-            "name": "Full Plate Armor",
-            "cost": 1200
-        },
-        {
-            "id": 37,
-            "type": "armor",
-            "name": "Half Plate",
-            "cost": 840
-        },
-        {
-            "id": 38,
-            "type": "armor",
-            "name": "Breastplate",
-            "cost": 300
-        },
-        {
-            "id": 39,
-            "type": "armor",
-            "name": "Cuirass",
-            "cost": 360
-        },
-        {
-            "id": 40,
-            "type": "armor",
-            "name": "Vambraces",
-            "cost": 180
-        },
-        {
             "id": 41,
             "type": "clothing",
             "name": "Woolen Tunic",
@@ -1441,66 +1201,6 @@
             "cost": 270
         },
         {
-            "id": 241,
-            "type": "weapon",
-            "name": "Throwing Knives",
-            "cost": 45
-        },
-        {
-            "id": 242,
-            "type": "weapon",
-            "name": "Quarterstaff",
-            "cost": 30
-        },
-        {
-            "id": 243,
-            "type": "weapon",
-            "name": "War Scythe",
-            "cost": 85
-        },
-        {
-            "id": 244,
-            "type": "weapon",
-            "name": "Hunting Bow",
-            "cost": 95
-        },
-        {
-            "id": 245,
-            "type": "weapon",
-            "name": "Pike",
-            "cost": 75
-        },
-        {
-            "id": 246,
-            "type": "armor",
-            "name": "Padded Coif",
-            "cost": 25
-        },
-        {
-            "id": 247,
-            "type": "armor",
-            "name": "Leather Bracers",
-            "cost": 35
-        },
-        {
-            "id": 248,
-            "type": "armor",
-            "name": "Mail Skirt",
-            "cost": 120
-        },
-        {
-            "id": 249,
-            "type": "armor",
-            "name": "Studded Vest",
-            "cost": 85
-        },
-        {
-            "id": 250,
-            "type": "armor",
-            "name": "Reinforced Boots",
-            "cost": 45
-        },
-        {
             "id": 251,
             "type": "clothing",
             "name": "Merchant's Robe",
@@ -1818,227 +1518,130 @@
             "name": "Scroll",
             "cost": 1
         },
-        {
-            "id": 304,
-            "type": "resource",
-            "name": "Leather",
-            "cost": 15
-        },
-        {
-            "id": 305,
-            "type": "resource",
-            "name": "Iron ignot",
-            "cost": 20
-        },
-        {
-            "id": 306,
-            "type": "resource",
-            "name": "Thread",
-            "cost": 2
-        },
-        {
-            "id": 307,
-            "type": "resource",
-            "name": "Copper ignot",
-            "cost": 22
-        },
-        {
-            "id": 308,
-            "type": "resource",
-            "name": "Steel ignot",
-            "cost": 25
-        },
-        {
-            "id": 309,
-            "type": "resource",
-            "name": "Composite ignot",
-            "cost": 30
-        },
-        {
-            "id": 310,
-            "type": "resource",
-            "name": "Coal",
-            "cost": 2
-        },
-        {
-            "id": 311,
-            "type": "resource",
-            "name": "Damascus Steel Ingot",
-            "cost": 500
-        },
-        {
-            "id": 312,
-            "type": "resource",
-            "name": "Tempered Steel Plate",
-            "cost": 400
-        },
-        {
-            "id": 313,
-            "type": "resource",
-            "name": "Hardened Leather",
-            "cost": 200
-        },
-        {
-            "id": 314,
-            "type": "resource",
-            "name": "Riveted Chain Links",
-            "cost": 300
-        },
-        {
-            "id": 315,
-            "type": "resource",
-            "name": "Polished Steel Plate",
-            "cost": 450
-        },
-        {
-            "id": 316,
-            "type": "resource",
-            "name": "Reinforced Leather Strips",
-            "cost": 250
-        },
-        {
-            "id": 317,
-            "type": "resource",
-            "name": "Pattern-Welded Steel",
-            "cost": 600
-        },
-        {
-            "id": 318,
-            "type": "resource",
-            "name": "Tempered Spring Steel",
-            "cost": 550
-        },
-        {
-            "id": 319,
-            "type": "resource",
-            "name": "Hardened Steel Wire",
-            "cost": 350
-        },
-        {
-            "id": 320,
-            "type": "resource",
-            "name": "Reinforced Steel Plates",
-            "cost": 700
-        },
-        {
-            "id": 41,
-            "type": "weapon",
-            "name": "Zweihänder",
-            "cost": 1200
-        },
-        {
-            "id": 42,
-            "type": "weapon",
-            "name": "Poleaxe",
-            "cost": 900
-        },
-        {
-            "id": 43,
-            "type": "weapon",
-            "name": "War Scythe",
-            "cost": 800
-        },
-        {
-            "id": 44,
-            "type": "weapon",
-            "name": "Bec de Corbin",
-            "cost": 950
-        },
-        {
-            "id": 45,
-            "type": "weapon",
-            "name": "Lucerne Hammer",
-            "cost": 850
-        },
-        {
-            "id": 46,
-            "type": "weapon",
-            "name": "Bardiche",
-            "cost": 750
-        },
-        {
-            "id": 47,
-            "type": "weapon",
-            "name": "Glaive",
-            "cost": 800
-        },
-        {
-            "id": 48,
-            "type": "weapon",
-            "name": "Partisan",
-            "cost": 700
-        },
-        {
-            "id": 49,
-            "type": "weapon",
-            "name": "Ranseur",
-            "cost": 750
-        },
-        {
-            "id": 50,
-            "type": "weapon",
-            "name": "Voulge",
-            "cost": 650
-        },
-        {
-            "id": 51,
-            "type": "armor",
-            "name": "Maximilian Armor",
-            "cost": 2500
-        },
-        {
-            "id": 52,
-            "type": "armor",
-            "name": "Gothic Plate Armor",
-            "cost": 2200
-        },
-        {
-            "id": 53,
-            "type": "armor",
-            "name": "Milanese Plate",
-            "cost": 2000
-        },
-        {
-            "id": 54,
-            "type": "armor",
-            "name": "Brigandine with Plate",
-            "cost": 1500
-        },
-        {
-            "id": 55,
-            "type": "armor",
-            "name": "Cuirass with Tassets",
-            "cost": 1300
-        },
-        {
-            "id": 56,
-            "type": "armor",
-            "name": "Great Helm",
-            "cost": 800
-        },
-        {
-            "id": 57,
-            "type": "armor",
-            "name": "Armet",
-            "cost": 900
-        },
-        {
-            "id": 58,
-            "type": "armor",
-            "name": "Sallet",
-            "cost": 750
-        },
-        {
-            "id": 59,
-            "type": "armor",
-            "name": "Bascinet",
-            "cost": 700
-        },
-        {
-            "id": 60,
-            "type": "armor",
-            "name": "Burgonet",
-            "cost": 850
-        }
+        {"id": 1001, "type": "resource", "name": "Iron Ingot", "cost": 18},
+        {"id": 1002, "type": "resource", "name": "Steel Ingot", "cost": 28},
+        {"id": 1003, "type": "resource", "name": "Wrought Iron Bar", "cost": 15},
+        {"id": 1004, "type": "resource", "name": "Charcoal", "cost": 4},
+        {"id": 1005, "type": "resource", "name": "Leather", "cost": 12},
+        {"id": 1006, "type": "resource", "name": "Oak Wood Plank", "cost": 7},
+        {"id": 1007, "type": "resource", "name": "Ash Wood Plank", "cost": 8},
+        {"id": 1008, "type": "resource", "name": "Bronze Ingot", "cost": 22},
+        {"id": 1009, "type": "resource", "name": "Copper Rivet", "cost": 3},
+        {"id": 1010, "type": "resource", "name": "Iron Nail", "cost": 2},
+        {"id": 1011, "type": "resource", "name": "Linen Thread", "cost": 2},
+        {"id": 1012, "type": "resource", "name": "Boiled Leather", "cost": 16},
+        {"id": 1013, "type": "resource", "name": "Hardened Leather", "cost": 20},
+        {"id": 1014, "type": "resource", "name": "Steel Wire", "cost": 6},
+        {"id": 1015, "type": "resource", "name": "Iron Plate", "cost": 24},
+        {"id": 1016, "type": "resource", "name": "Steel Plate", "cost": 32},
+        {"id": 1017, "type": "resource", "name": "Brass Buckle", "cost": 5},
+        {"id": 1018, "type": "resource", "name": "Wool Padding", "cost": 4},
+        {"id": 1019, "type": "resource", "name": "Pine Wood Plank", "cost": 6},
+        {"id": 1020, "type": "resource", "name": "Rawhide", "cost": 8},
+        
+        {"id": 2001, "type": "weapon", "name": "Iron Dagger", "cost": 40},
+        {"id": 2002, "type": "weapon", "name": "Wooden Club", "cost": 28},
+        {"id": 2003, "type": "weapon", "name": "Short Spear", "cost": 55},
+        {"id": 2004, "type": "weapon", "name": "Hand Axe", "cost": 60},
+        {"id": 2005, "type": "weapon", "name": "Quarterstaff", "cost": 32},
+        {"id": 2006, "type": "weapon", "name": "Falchion", "cost": 70},
+        {"id": 2007, "type": "weapon", "name": "Wooden Buckler", "cost": 36},
+        {"id": 2008, "type": "weapon", "name": "Stone Hammer", "cost": 38},
+        {"id": 2009, "type": "weapon", "name": "Boar Spear", "cost": 65},
+        {"id": 2010, "type": "weapon", "name": "Slingshot", "cost": 30},
+        {"id": 2011, "type": "armor", "name": "Leather Cap", "cost": 35},
+        {"id": 2012, "type": "armor", "name": "Leather Bracers", "cost": 45},
+        {"id": 2013, "type": "armor", "name": "Leather Greaves", "cost": 55},
+        {"id": 2014, "type": "armor", "name": "Leather Vest", "cost": 65},
+        {"id": 2015, "type": "armor", "name": "Iron Helm", "cost": 75},
+        {"id": 2016, "type": "armor", "name": "Iron Gauntlets", "cost": 85},
+        {"id": 2017, "type": "armor", "name": "Iron Greaves", "cost": 95},
+        {"id": 2018, "type": "armor", "name": "Iron Breastplate", "cost": 120},
+        {"id": 2019, "type": "armor", "name": "Leather Pauldrons", "cost": 50},
+        {"id": 2020, "type": "armor", "name": "Leather Boots", "cost": 40},
+        
+        {"id": 2021, "type": "weapon", "name": "Steel Dagger", "cost": 85},
+        {"id": 2022, "type": "weapon", "name": "Steel Shortsword", "cost": 120},
+        {"id": 2023, "type": "weapon", "name": "Steel Mace", "cost": 110},
+        {"id": 2024, "type": "weapon", "name": "Steel Axe", "cost": 130},
+        {"id": 2025, "type": "weapon", "name": "Steel Spear", "cost": 140},
+        {"id": 2026, "type": "weapon", "name": "Steel Warhammer", "cost": 150},
+        {"id": 2027, "type": "weapon", "name": "Steel Longsword", "cost": 160},
+        {"id": 2028, "type": "weapon", "name": "Steel Battle Axe", "cost": 170},
+        {"id": 2029, "type": "weapon", "name": "Steel Halberd", "cost": 180},
+        {"id": 2030, "type": "weapon", "name": "Steel Greatsword", "cost": 200},
+        {"id": 2031, "type": "armor", "name": "Steel Helm", "cost": 150},
+        {"id": 2032, "type": "armor", "name": "Steel Gauntlets", "cost": 160},
+        {"id": 2033, "type": "armor", "name": "Steel Greaves", "cost": 170},
+        {"id": 2034, "type": "armor", "name": "Steel Breastplate", "cost": 200},
+        {"id": 2035, "type": "armor", "name": "Steel Pauldrons", "cost": 140},
+        {"id": 2036, "type": "armor", "name": "Steel Sabatons", "cost": 130},
+        {"id": 2037, "type": "armor", "name": "Steel Cuirass", "cost": 190},
+        {"id": 2038, "type": "armor", "name": "Steel Vambraces", "cost": 155},
+        {"id": 2039, "type": "armor", "name": "Steel Cuisses", "cost": 165},
+        {"id": 2040, "type": "armor", "name": "Steel Gorget", "cost": 145},
+        
+        {"id": 2041, "type": "weapon", "name": "Damascus Dagger", "cost": 250},
+        {"id": 2042, "type": "weapon", "name": "Damascus Shortsword", "cost": 350},
+        {"id": 2043, "type": "weapon", "name": "Damascus Mace", "cost": 300},
+        {"id": 2044, "type": "weapon", "name": "Damascus Axe", "cost": 380},
+        {"id": 2045, "type": "weapon", "name": "Damascus Spear", "cost": 400},
+        {"id": 2046, "type": "weapon", "name": "Damascus Warhammer", "cost": 420},
+        {"id": 2047, "type": "weapon", "name": "Damascus Longsword", "cost": 450},
+        {"id": 2048, "type": "weapon", "name": "Damascus Battle Axe", "cost": 480},
+        {"id": 2049, "type": "weapon", "name": "Damascus Halberd", "cost": 500},
+        {"id": 2050, "type": "weapon", "name": "Damascus Greatsword", "cost": 550},
+        {"id": 2051, "type": "armor", "name": "Damascus Helm", "cost": 450},
+        {"id": 2052, "type": "armor", "name": "Damascus Gauntlets", "cost": 480},
+        {"id": 2053, "type": "armor", "name": "Damascus Greaves", "cost": 500},
+        {"id": 2054, "type": "armor", "name": "Damascus Breastplate", "cost": 600},
+        {"id": 2055, "type": "armor", "name": "Damascus Pauldrons", "cost": 420},
+        {"id": 2056, "type": "armor", "name": "Damascus Sabatons", "cost": 400},
+        {"id": 2057, "type": "armor", "name": "Damascus Cuirass", "cost": 550},
+        {"id": 2058, "type": "armor", "name": "Damascus Vambraces", "cost": 460},
+        {"id": 2059, "type": "armor", "name": "Damascus Cuisses", "cost": 490},
+        {"id": 2060, "type": "armor", "name": "Damascus Gorget", "cost": 440},
+        
+        {"id": 2061, "type": "weapon", "name": "Pattern-Welded Dagger", "cost": 800},
+        {"id": 2062, "type": "weapon", "name": "Pattern-Welded Shortsword", "cost": 1200},
+        {"id": 2063, "type": "weapon", "name": "Pattern-Welded Mace", "cost": 1100},
+        {"id": 2064, "type": "weapon", "name": "Pattern-Welded Axe", "cost": 1300},
+        {"id": 2065, "type": "weapon", "name": "Pattern-Welded Spear", "cost": 1400},
+        {"id": 2066, "type": "weapon", "name": "Pattern-Welded Warhammer", "cost": 1500},
+        {"id": 2067, "type": "weapon", "name": "Pattern-Welded Longsword", "cost": 1600},
+        {"id": 2068, "type": "weapon", "name": "Pattern-Welded Battle Axe", "cost": 1700},
+        {"id": 2069, "type": "weapon", "name": "Pattern-Welded Halberd", "cost": 1800},
+        {"id": 2070, "type": "weapon", "name": "Pattern-Welded Greatsword", "cost": 2000},
+        {"id": 2071, "type": "armor", "name": "Pattern-Welded Helm", "cost": 900},
+        {"id": 2072, "type": "armor", "name": "Pattern-Welded Gauntlets", "cost": 950},
+        {"id": 2073, "type": "armor", "name": "Pattern-Welded Pauldrons", "cost": 850},
+        {"id": 2074, "type": "armor", "name": "Pattern-Welded Cuirass", "cost": 1200},
+        {"id": 2075, "type": "armor", "name": "Pattern-Welded Greaves", "cost": 1000},
+        {"id": 2076, "type": "armor", "name": "Pattern-Welded Sabatons", "cost": 900},
+        {"id": 2077, "type": "armor", "name": "Pattern-Welded Vambraces", "cost": 950},
+        {"id": 2078, "type": "armor", "name": "Pattern-Welded Gorget", "cost": 850},
+        {"id": 2079, "type": "armor", "name": "Pattern-Welded Cuisses", "cost": 1050},
+        {"id": 2080, "type": "armor", "name": "Pattern-Welded Tassets", "cost": 900},
+        
+        {"id": 2081, "type": "weapon", "name": "Meteoric Dagger", "cost": 1200},
+        {"id": 2082, "type": "weapon", "name": "Meteoric Shortsword", "cost": 1800},
+        {"id": 2083, "type": "weapon", "name": "Meteoric Mace", "cost": 1600},
+        {"id": 2084, "type": "weapon", "name": "Meteoric Axe", "cost": 2000},
+        {"id": 2085, "type": "weapon", "name": "Meteoric Spear", "cost": 2200},
+        {"id": 2086, "type": "weapon", "name": "Meteoric Warhammer", "cost": 2400},
+        {"id": 2087, "type": "weapon", "name": "Meteoric Longsword", "cost": 2600},
+        {"id": 2088, "type": "weapon", "name": "Meteoric Battle Axe", "cost": 2800},
+        {"id": 2089, "type": "weapon", "name": "Meteoric Halberd", "cost": 3000},
+        {"id": 2090, "type": "weapon", "name": "Meteoric Greatsword", "cost": 3500},
+        {"id": 2091, "type": "armor", "name": "Meteoric Helm", "cost": 1500},
+        {"id": 2092, "type": "armor", "name": "Meteoric Gauntlets", "cost": 1600},
+        {"id": 2093, "type": "armor", "name": "Meteoric Pauldrons", "cost": 1400},
+        {"id": 2094, "type": "armor", "name": "Meteoric Cuirass", "cost": 2000},
+        {"id": 2095, "type": "armor", "name": "Meteoric Greaves", "cost": 1700},
+        {"id": 2096, "type": "armor", "name": "Meteoric Sabatons", "cost": 1500},
+        {"id": 2097, "type": "armor", "name": "Meteoric Vambraces", "cost": 1600},
+        {"id": 2098, "type": "armor", "name": "Meteoric Gorget", "cost": 1400},
+        {"id": 2099, "type": "armor", "name": "Meteoric Cuisses", "cost": 1800},
+        {"id": 2100, "type": "armor", "name": "Meteoric Tassets", "cost": 1500}
     ]
 } 

@@ -7,6 +7,7 @@
 
 import Foundation
 import Combine
+import SwiftUICore
 
 class Recipe : Codable, Identifiable, ObservableObject {
     var id: Int { resultItemId } // Using resultItemId as the unique identifier
@@ -15,6 +16,7 @@ class Recipe : Codable, Identifiable, ObservableObject {
     var professionLevel: Int = 0
     var resultItemId: Int = 0
     var productionTime: Int = 0
+    var isUnknown: Bool = true
     
     init(profession: Profession, requiredResources: [RecipeResource], professionLevel: Int, resultItemId: Int, productionTime: Int = 1) {
         self.profession = profession
@@ -30,6 +32,7 @@ class Recipe : Codable, Identifiable, ObservableObject {
         case professionLevel
         case resultItemId
         case productionTime
+        case isUnknown
     }
     
     required init(from decoder: Decoder) throws {
@@ -47,6 +50,7 @@ class Recipe : Codable, Identifiable, ObservableObject {
         professionLevel = try container.decode(Int.self, forKey: .professionLevel)
         resultItemId = try container.decode(Int.self, forKey: .resultItemId)
         productionTime = try container.decode(Int.self, forKey: .productionTime)
+        isUnknown = try container.decode(Bool.self, forKey: .isUnknown)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -56,6 +60,26 @@ class Recipe : Codable, Identifiable, ObservableObject {
         try container.encode(professionLevel, forKey: .professionLevel)
         try container.encode(resultItemId, forKey: .resultItemId)
         try container.encode(productionTime, forKey: .productionTime)
+        try container.encode(isUnknown, forKey: .isUnknown)
+    }
+    
+    var professionLevelColor: Color {
+        switch professionLevel {
+        case 0:
+            return .gray
+        case 1:
+            return .white
+        case 2:
+            return .green
+        case 3:
+            return .yellow
+        case 4:
+            return .cyan
+        case 5:
+            return .orange
+        default:
+            return .gray
+        }
     }
 }
 

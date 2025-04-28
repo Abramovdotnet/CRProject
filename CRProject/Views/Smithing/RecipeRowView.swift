@@ -103,21 +103,27 @@ struct RecipeRowView: View {
                                 }
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
+                            Spacer()
                         }
                         
-                  
                         HStack {
                             Spacer()
                             VStack {
                                 Text("Mastery Level: \(recipe.professionLevel)")
-                                    .font(Theme.bodyFont)
-                                    .foregroundColor(Color.green)
+                                    .font(Theme.smallFont)
+                                    .foregroundColor(recipe.professionLevelColor)
                                 Spacer()
+                                if recipe.isUnknown {
+                                    Text("Unknown")
+                                        .font(Theme.smallFont)
+                                        .foregroundColor(Color.gray)
+                                }
                             }
                         }
+                        .padding(.top, -5)
                   
                     }
-                    .frame(height: 150)
+                    .frame(height: 200)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 12)
