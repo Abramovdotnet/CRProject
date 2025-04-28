@@ -44,72 +44,6 @@ struct SmithingView: View {
         }
     }
     
-    func resourcesColumn() -> some View {
-        VStack {
-            HStack {
-                Text("Resources")
-                    .font(Theme.bodyFont)
-                    .foregroundColor(Theme.textColor)
-                
-                Image(systemName: ItemType.resource.icon)
-                    .font(Theme.bodyFont)
-                    .foregroundColor(ItemType.resource.color)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 30)
-            .background(Color.black.opacity(0.8))
-            .cornerRadius(12)
-            .padding(.horizontal, 8)
-            
-            ZStack {
-                ScrollView {
-                    VStack(spacing: 8) {
-                        ForEach(viewModel.playerResources) { group in
-                            ResourceRowView(group: group)
-                                .padding(.horizontal, 6)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                }
-                .frame(maxWidth: .infinity)
-                .background(Color.black.opacity(0.8))
-                .cornerRadius(12)
-            }
-            
-            HStack {
-                Text("Tools")
-                    .font(Theme.bodyFont)
-                    .foregroundColor(Theme.textColor)
-                
-                Image(systemName: ItemType.tools.icon)
-                    .font(Theme.bodyFont)
-                    .foregroundColor(ItemType.tools.color)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 30)
-            .background(Color.black.opacity(0.8))
-            .cornerRadius(12)
-            .padding(.horizontal, 8)
-            
-            ZStack {
-                ScrollView {
-                    VStack(spacing: 8) {
-                        ForEach(viewModel.playerTools) { group in
-                            ResourceRowView(group: group)
-                                .padding(.horizontal, 6)
-                        }
-                    }
-                    .padding(.vertical, 8)
-                }
-                .frame(maxWidth: .infinity)
-                .background(Color.black.opacity(0.8))
-                .cornerRadius(12)
-            }
-        }
-        .padding(.top, 10)
-        .frame(width: 250)
-    }
-    
     private func craftingColumn() -> some View {
         VStack {
             Spacer()
@@ -149,6 +83,51 @@ struct SmithingView: View {
     private func recipesColumn() -> some View {
         ZStack {
             VStack {
+                VStack {
+                    // First filter: Profession Level
+                    HStack(spacing: 8) {
+                        ForEach(1...5, id: \.self) { level in
+                            Button(action: {
+                                viewModel.selectedProfessionLevel = viewModel.selectedProfessionLevel == level ? nil : level
+                                viewModel.refreshRecipes()
+                            }) {
+                                HStack {
+                                    Image(systemName: "hammer.fill")
+                                        .font(Theme.bodyFont)
+                                        .foregroundColor(viewModel.selectedProfessionLevel == level ? .yellow : Theme.textColor)
+                                    Text("\(level.description)")
+                                        .font(Theme.bodyFont)
+                                        .foregroundColor(viewModel.selectedProfessionLevel == level ? .yellow : Theme.textColor)
+                                      
+                                }
+                             
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                    .padding(.top, 5)
+                    
+                    // Second filter: Item Type
+                    HStack(spacing: 8) {
+                        ForEach([ItemType.weapon, ItemType.armor, ItemType.resource], id: \.self) { type in
+                            Button(action: {
+                                viewModel.selectedItemType = viewModel.selectedItemType == type ? nil : type
+                                viewModel.refreshRecipes()
+                            }) {
+                                Image(systemName: type.icon)
+                                    .font(Theme.bodyFont)
+                                    .foregroundColor(viewModel.selectedItemType == type ? .yellow : Theme.textColor)
+                                    .frame(width: 30, height: 30)
+                            }
+                        }
+                    }
+                    .padding(.horizontal, 8)
+                }
+                .background(Color.black.opacity(0.8))
+                .cornerRadius(12)
+                .padding(.top, 5)
+                .frame(maxWidth: .infinity)
+                
                 ZStack {
                     ScrollView {
                         VStack(spacing: 4) {
@@ -187,7 +166,7 @@ struct SmithingView: View {
             }
         }
         .cornerRadius(12)
-        .frame(width: 280)
+        .frame(width: 300)
         .padding(.top, 10)
     }
     

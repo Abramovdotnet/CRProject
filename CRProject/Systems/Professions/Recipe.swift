@@ -14,12 +14,14 @@ class Recipe : Codable, Identifiable, ObservableObject {
     @Published var requiredResources: [RecipeResource] = []
     var professionLevel: Int = 0
     var resultItemId: Int = 0
+    var productionTime: Int = 0
     
-    init(profession: Profession, requiredResources: [RecipeResource], professionLevel: Int, resultItemId: Int) {
+    init(profession: Profession, requiredResources: [RecipeResource], professionLevel: Int, resultItemId: Int, productionTime: Int = 1) {
         self.profession = profession
         self.requiredResources = requiredResources
         self.professionLevel = professionLevel
         self.resultItemId = resultItemId
+        self.productionTime = productionTime
     }
     
     enum CodingKeys: String, CodingKey {
@@ -27,6 +29,7 @@ class Recipe : Codable, Identifiable, ObservableObject {
         case requiredResources
         case professionLevel
         case resultItemId
+        case productionTime
     }
     
     required init(from decoder: Decoder) throws {
@@ -43,6 +46,7 @@ class Recipe : Codable, Identifiable, ObservableObject {
         requiredResources = try container.decode([RecipeResource].self, forKey: .requiredResources)
         professionLevel = try container.decode(Int.self, forKey: .professionLevel)
         resultItemId = try container.decode(Int.self, forKey: .resultItemId)
+        productionTime = try container.decode(Int.self, forKey: .productionTime)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -51,6 +55,7 @@ class Recipe : Codable, Identifiable, ObservableObject {
         try container.encode(requiredResources, forKey: .requiredResources)
         try container.encode(professionLevel, forKey: .professionLevel)
         try container.encode(resultItemId, forKey: .resultItemId)
+        try container.encode(productionTime, forKey: .productionTime)
     }
 }
 

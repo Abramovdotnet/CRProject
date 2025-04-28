@@ -7,5 +7,5 @@
 
 class ProfessionProgress : Codable {
     var profession: Profession = .blacksmith
-    var level: Int = 1
+    var level: Int = 5
 }

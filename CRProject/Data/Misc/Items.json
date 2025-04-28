@@ -1831,6 +1831,12 @@
             "cost": 20
         },
         {
+            "id": 306,
+            "type": "resource",
+            "name": "Thread",
+            "cost": 2
+        },
+        {
             "id": 307,
             "type": "resource",
             "name": "Copper ignot",
@@ -1853,6 +1859,186 @@
             "type": "resource",
             "name": "Coal",
             "cost": 2
+        },
+        {
+            "id": 311,
+            "type": "resource",
+            "name": "Damascus Steel Ingot",
+            "cost": 500
+        },
+        {
+            "id": 312,
+            "type": "resource",
+            "name": "Tempered Steel Plate",
+            "cost": 400
+        },
+        {
+            "id": 313,
+            "type": "resource",
+            "name": "Hardened Leather",
+            "cost": 200
+        },
+        {
+            "id": 314,
+            "type": "resource",
+            "name": "Riveted Chain Links",
+            "cost": 300
+        },
+        {
+            "id": 315,
+            "type": "resource",
+            "name": "Polished Steel Plate",
+            "cost": 450
+        },
+        {
+            "id": 316,
+            "type": "resource",
+            "name": "Reinforced Leather Strips",
+            "cost": 250
+        },
+        {
+            "id": 317,
+            "type": "resource",
+            "name": "Pattern-Welded Steel",
+            "cost": 600
+        },
+        {
+            "id": 318,
+            "type": "resource",
+            "name": "Tempered Spring Steel",
+            "cost": 550
+        },
+        {
+            "id": 319,
+            "type": "resource",
+            "name": "Hardened Steel Wire",
+            "cost": 350
+        },
+        {
+            "id": 320,
+            "type": "resource",
+            "name": "Reinforced Steel Plates",
+            "cost": 700
+        },
+        {
+            "id": 41,
+            "type": "weapon",
+            "name": "Zweihänder",
+            "cost": 1200
+        },
+        {
+            "id": 42,
+            "type": "weapon",
+            "name": "Poleaxe",
+            "cost": 900
+        },
+        {
+            "id": 43,
+            "type": "weapon",
+            "name": "War Scythe",
+            "cost": 800
+        },
+        {
+            "id": 44,
+            "type": "weapon",
+            "name": "Bec de Corbin",
+            "cost": 950
+        },
+        {
+            "id": 45,
+            "type": "weapon",
+            "name": "Lucerne Hammer",
+            "cost": 850
+        },
+        {
+            "id": 46,
+            "type": "weapon",
+            "name": "Bardiche",
+            "cost": 750
+        },
+        {
+            "id": 47,
+            "type": "weapon",
+            "name": "Glaive",
+            "cost": 800
+        },
+        {
+            "id": 48,
+            "type": "weapon",
+            "name": "Partisan",
+            "cost": 700
+        },
+        {
+            "id": 49,
+            "type": "weapon",
+            "name": "Ranseur",
+            "cost": 750
+        },
+        {
+            "id": 50,
+            "type": "weapon",
+            "name": "Voulge",
+            "cost": 650
+        },
+        {
+            "id": 51,
+            "type": "armor",
+            "name": "Maximilian Armor",
+            "cost": 2500
+        },
+        {
+            "id": 52,
+            "type": "armor",
+            "name": "Gothic Plate Armor",
+            "cost": 2200
+        },
+        {
+            "id": 53,
+            "type": "armor",
+            "name": "Milanese Plate",
+            "cost": 2000
+        },
+        {
+            "id": 54,
+            "type": "armor",
+            "name": "Brigandine with Plate",
+            "cost": 1500
+        },
+        {
+            "id": 55,
+            "type": "armor",
+            "name": "Cuirass with Tassets",
+            "cost": 1300
+        },
+        {
+            "id": 56,
+            "type": "armor",
+            "name": "Great Helm",
+            "cost": 800
+        },
+        {
+            "id": 57,
+            "type": "armor",
+            "name": "Armet",
+            "cost": 900
+        },
+        {
+            "id": 58,
+            "type": "armor",
+            "name": "Sallet",
+            "cost": 750
+        },
+        {
+            "id": 59,
+            "type": "armor",
+            "name": "Bascinet",
+            "cost": 700
+        },
+        {
+            "id": 60,
+            "type": "armor",
+            "name": "Burgonet",
+            "cost": 850
         }
     ]
-}
+} 

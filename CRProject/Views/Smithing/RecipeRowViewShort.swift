@@ -75,6 +75,19 @@ struct RecipeRowViewShort: View {
                                 .stroke(isCraftable ? resultItem.color().opacity(0.3) : Theme.textColor.opacity(0.3), lineWidth: 1)
                         )
                 )
+                
+                ZStack {
+                    HStack {
+                        Spacer()
+                        VStack {
+                            Text("Mastery Level: \(recipe.professionLevel)")
+                                .font(Theme.bodyFont)
+                                .foregroundColor(Color.green)
+                            Spacer()
+                        }
+                    }
+                }
+                .padding(5)
             }
             .padding(.horizontal, 20)
             .shadow(color: isSelected ? isCraftable ? resultItem.color().opacity(0.8) : Color.white.opacity(0.3) : Color.clear, radius: 10)
