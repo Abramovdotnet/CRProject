@@ -128,9 +128,9 @@ struct VampireGazeView: View {
         GeometryReader { geometry in
             ZStack {
                 switch selectedPower {
-                case .charm:
+                case .seduction:
                     EnhancedRedMistEffect()
-                case .mesmerize:
+                case .command:
                     EnhancedHypnoticSpiralEffect()
                 case .dominate:
                     EnhancedDarkTendrils()

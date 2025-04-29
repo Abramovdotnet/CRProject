@@ -14,6 +14,7 @@ struct MainSceneView: View {
     @State private var showingTrade = false
     @State private var showingInventory = false
     @State private var showingSmithing = false
+    @State private var showingAbilities = false
     
     init(viewModel: MainSceneViewModel) {
         self.viewModel = viewModel
@@ -126,7 +127,7 @@ struct MainSceneView: View {
                                     }
                                     
                                     // Hide
-                                    if let player = viewModel.getPlayer(), player.hiddenAt == .none {
+                                    if let player = viewModel.getPlayer(), player.hiddenAt == .none && AbilitiesSystem.shared.hasInvisibility {
                                         ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
                                             MainSceneActionButton(
                                                 icon: "eye.fill",
@@ -143,14 +144,27 @@ struct MainSceneView: View {
                                             )
                                         }
                                     } else {
-                                        MainSceneActionButton(
-                                            icon: "eye.slash",
-                                            color: .red,
-                                            action: {
-                                                viewModel.getGameStateService().movePlayerThroughHideouts(to: .none)
+                                        if AbilitiesSystem.shared.hasInvisibility {
+                                            MainSceneActionButton(
+                                                icon: "eye.slash",
+                                                color: .red,
+                                                action: {
+                                                    viewModel.getGameStateService().movePlayerThroughHideouts(to: .none)
+                                                }
+                                            )
+                                            .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
+                                            
+                                            if AbilitiesSystem.shared.hasWhisper {
+                                                MainSceneActionButton(
+                                                    icon: Ability.whisper.icon,
+                                                    color: Ability.whisper.color,
+                                                    action: {
+                                                        viewModel.getGameStateService().whisperToRandomNpc()
+                                                    }
+                                                )
+                                                .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
                                             }
-                                        )
-                                        .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
+                                        }
                                     }
                                     
                                     MainSceneActionButton(
@@ -160,6 +174,15 @@ struct MainSceneView: View {
                                             showingInventory = true
                                         }
                                     )
+                                    
+                                    MainSceneActionButton(
+                                        icon: "moon.stars.circle.fill",
+                                        color: Theme.bloodProgressColor,
+                                        action: {
+                                            showingAbilities = true
+                                        }
+                                    )
+                                    
                                     Spacer()
                                 }
                                 .frame(width: 15)

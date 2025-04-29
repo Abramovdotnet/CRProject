@@ -32,16 +32,6 @@ struct TopWidgetView: View {
                     .font(Theme.bodyFont)
                     .padding(.leading, -5)
             
-                // Use unwrapped player
-                if player.hiddenAt != .none {
-                    Image(systemName: player.hiddenAt.iconName)
-                        .foregroundColor(Theme.textColor)
-                        .font(Theme.bodyFont)
-                    Text(player.hiddenAt.description)
-                        .foregroundColor(Theme.textColor)
-                        .font(Theme.bodyFont)
-                }
-                
                 Image(systemName: "person.3.fill")
                     .font(Theme.bodyFont)
                     .foregroundColor(Theme.textColor)
@@ -114,6 +104,15 @@ struct TopWidgetView: View {
                     viewModel.resetDesires()
                 }) {
                     Image(systemName: "w.circle")
+                        .font(Theme.bodyFont)
+                        .foregroundColor(.yellow)
+                        .cornerRadius(12)
+                }
+                
+                Button(action: {
+                    StatisticsService.shared.maxOutAchievements()
+                }) {
+                    Image(systemName: "sparkles")
                         .font(Theme.bodyFont)
                         .foregroundColor(.yellow)
                         .cornerRadius(12)

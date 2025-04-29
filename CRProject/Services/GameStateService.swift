@@ -102,6 +102,26 @@ class GameStateService : ObservableObject, GameService{
         }
     }
     
+    func whisperToRandomNpc() {
+        if player?.hiddenAt != HidingCell.none {
+            guard let npcs = currentScene?.getNPCs().filter( { $0.currentActivity != .sleep && $0.currentActivity != .bathe && $0.currentActivity != .fleeing && $0.isSpecialBehaviorSet == false }) else { return }
+            
+            if npcs.count > 0 {
+                let victim = npcs.randomElement()!
+                
+                if victim.isUnknown {
+                    InvestigationService.shared.investigate(inspector: player!, investigationObject: victim)
+                }
+                
+                npcManager.selectedNPC = victim
+                VampireGaze.shared.attemptGazePower(power: .follow, on: victim)
+                gameEventsBus.addWarningMessage("* \(victim.isUnknown ? "stranger" : victim.name) heard your whisper and obeyed. *")
+            } else {
+                gameEventsBus.addWarningMessage("* My whisper left no echo.*")
+            }
+        }
+    }
+    
     func changeLocation(to locationId: Int) throws {
         DebugLogService.shared.log("Changing location to ID: \(locationId)", category: "Location")
         

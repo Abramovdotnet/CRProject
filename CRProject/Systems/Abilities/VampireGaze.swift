@@ -14,28 +14,49 @@ class VampireGaze: GameService {
     private let gameTimeService: GameTimeService
     
     enum GazePower: String, CaseIterable {
-        case charm     // Gentle seduction
-        case mesmerize // Deep hypnosis
+        case seduction     // Gentle seduction
+        case command // Deep hypnosis
         case dominate  // Forceful control
         case scare // Savage fear
         case follow // Force follow
         
         static func availableCases(npc: NPC) -> [GazePower] {
+            var availablePowers: [GazePower] = []
+            
+            if AbilitiesSystem.shared.hasSeduction {
+                availablePowers.append(.seduction)
+            }
+            
+            if AbilitiesSystem.shared.hasCommand {
+                availablePowers.append(.command)
+            }
+            
+            if AbilitiesSystem.shared.hasDomination {
+                availablePowers.append(.dominate)
+            }
+            
+            if AbilitiesSystem.shared.hasEnthralling {
+                //availablePowers.append(.seduction)
+            }
+            
+            availablePowers.append(.scare)
+            availablePowers.append(.follow)
+            
             if npc.currentActivity == .seductedByPlayer {
-                return [.mesmerize, .dominate, .scare, .follow]
+                return availablePowers.filter( { $0 != .seduction && $0 != .follow })
             } else if npc.currentActivity == .allyingPlayer {
-                return [.mesmerize, .scare]
+                return availablePowers.filter( { $0 != .seduction && $0 != .dominate })
             } else if npc.currentActivity == .followingPlayer {
-                return [.mesmerize, .dominate, .scare, .charm]
+                return availablePowers.filter( { $0 != .follow })
             } else {
-                return [.charm, .mesmerize, .dominate, .scare, .follow]
+                return availablePowers
             }
         }
         
         var icon: String {
             switch self {
-            case .charm: return "heart.fill"
-            case .mesmerize: return "eye.fill"
+            case .seduction: return "heart.fill"
+            case .command: return "eye.fill"
             case .dominate: return "bolt.fill"
             case .scare: return "figure.run"
             case .follow: return "person.2.fill"
@@ -44,8 +65,8 @@ class VampireGaze: GameService {
         
         var color: Color {
             switch self {
-            case .charm: return .teal
-            case .mesmerize: return .purple
+            case .seduction: return .teal
+            case .command: return .purple
             case .dominate: return .green
             case .scare: return .red
             case .follow: return .blue
@@ -54,8 +75,8 @@ class VampireGaze: GameService {
         
         var description: String {
             switch self {
-            case .charm: return "Gentle seduction, most effective on social NPCs"
-            case .mesmerize: return "Hypnotic influence, works on weak-willed NPCs"
+            case .seduction: return "Gentle seduction, most effective on social NPCs"
+            case .command: return "Hypnotic influence, works on weak-willed NPCs"
             case .dominate: return "Forceful control, effective but risky"
             case .scare: return "Savage fear, most effective on weak-willed NPCs"
             case .follow: return "Forces NPC to follow you"
@@ -64,8 +85,8 @@ class VampireGaze: GameService {
         
         var cost: Float {
             switch self {
-            case .charm: return 10
-            case .mesmerize: return 20
+            case .seduction: return 10
+            case .command: return 20
             case .dominate: return 10
             case .scare: return 10
             case .follow: return 10
@@ -117,10 +138,10 @@ class VampireGaze: GameService {
         var awarenessIncrease: Float = 0
         
         switch power {
-        case .charm:
+        case .seduction:
             successChance = 100 - resistance
             awarenessIncrease = 10
-        case .mesmerize:
+        case .command:
             successChance = 100 - resistance
             awarenessIncrease = 10
         case .dominate:
@@ -146,7 +167,7 @@ class VampireGaze: GameService {
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .fleeing
                 npc.decreasePlayerRelationship(with: 5)
-            } else if power == .charm {
+            } else if power == .seduction {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .seductedByPlayer
@@ -157,7 +178,7 @@ class VampireGaze: GameService {
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .allyingPlayer
                 npc.increasePlayerRelationship(with: 2)
-                StatisticsService.shared.increasePeopleIntimidated()
+                StatisticsService.shared.increasePeopleDominated()
             } else if power == .follow {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4

@@ -42,11 +42,15 @@ class FeedingService: GameService {
         
         if prey.currentActivity == .sleep {
             awarenessIncreaseValue -= 86
+            
+            StatisticsService.shared.increasefeedingsOverSleepingVictims()
         }
         
         if vampire.desiredVictim.isDesiredVictim(npc: prey){
             vampire.bloodMeter.addBlood(amount * 3)
             vampire.desiredVictim.updateDesiredVictim()
+            
+            StatisticsService.shared.increasefeedingsOverDesiredVictims()
             
             gameEventsBus.addDangerMessage(message: "Player consumed DESIRED victims blood.")
         }
