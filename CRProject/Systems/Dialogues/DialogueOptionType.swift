@@ -17,4 +17,6 @@ enum DialogueOptionType: String, Codable {
     case loveForSail
     case relationshipIncrease
     case relationshipDecrease
+    case askingForSmithingPermission
+    case askingForAlchemyPermission
 }

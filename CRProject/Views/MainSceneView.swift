@@ -263,8 +263,8 @@ struct MainSceneView: View {
                 GeometryReader { geometry in
                     NavigationWebView(
                         viewModel: viewModel,
-                        offset: .constant(.zero), // Managed externally if needed
-                        scale: .constant(1.0),    // Managed externally if needed
+                        offset: .constant(.zero),
+                        scale: .constant(1.0),
                         geometry: geometry,
                         onLocationSelected: { location in
                             if viewModel.isLocationAccessible(location) {
@@ -273,30 +273,37 @@ struct MainSceneView: View {
                         }
                     )
                     .background(Color.black.edgesIgnoringSafeArea(.all))
+                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                 }
             }
             .sheet(isPresented: $npcManager.isShowingDialogue, onDismiss: { viewModel.activeDialogueViewModel = nil }) {
                 if let dialogueViewModel = viewModel.activeDialogueViewModel {
                     DialogueView(viewModel: dialogueViewModel, mainViewModel: viewModel)
+                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                 } else {
                     Text("Loading Dialogue...")
+                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                 }
             }
             .sheet(isPresented: $viewModel.isShowingVampireGazeView) {
                 if let npc = npcManager.selectedNPC {
                     VampireGazeView(npc: npc, isPresented: $viewModel.isShowingVampireGazeView, mainViewModel: viewModel)
+                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                 }
             }
             .sheet(isPresented: $showingTrade) {
                 if let npc = npcManager.selectedNPC {
                     TradeView(player: gameStateService.player!, npc: npc, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                 }
             }
             .sheet(isPresented: $showingInventory) {
                 CharacterInventoryView(character: gameStateService.player!, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
             }
             .sheet(isPresented: $showingSmithing) {
                 SmithingView(player: gameStateService.player!, mainViewModel: viewModel)
+                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
             }
             .withDebugOverlay(viewModel: viewModel)
         }

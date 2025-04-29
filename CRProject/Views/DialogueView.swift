@@ -247,6 +247,10 @@ private struct DialogueOptionButton: View {
             return Image(systemName: "arrow.up.heart.fill")
         case .relationshipDecrease:
             return Image(systemName: "arrow.down.heart.fill")
+        case .askingForSmithingPermission:
+            return Image(systemName: "hammer.fill")
+        case .askingForAlchemyPermission:
+            return Image(systemName: "flask.fill")
         }
     }
     
@@ -268,6 +272,10 @@ private struct DialogueOptionButton: View {
             return .green
         case .relationshipDecrease:
             return .red
+        case .askingForSmithingPermission:
+            return .orange
+        case .askingForAlchemyPermission:
+            return .green
         }
     }
     

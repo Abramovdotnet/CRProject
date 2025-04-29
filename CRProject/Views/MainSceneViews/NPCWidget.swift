@@ -15,6 +15,7 @@ struct NPCWidget: View {
     let isSelected: Bool
     let isDisabled: Bool
     var showCurrentActivity: Bool = true
+    var showResistance: Bool = false
     let onTap: () -> Void
     let onAction: (NPCAction) -> Void
     
@@ -157,19 +158,35 @@ struct NPCWidget: View {
                             .padding(.top, 4)
                             
                             VStack(alignment: .leading, spacing: 4) {
-                                HStack {
-                                    Text("Relationship ")
-                                        .font(Theme.bodyFont)
-                                        .foregroundColor(Theme.textColor)
-                                    Spacer()
-                                    Text(getRelationshipPercentage())
-                                        .font(Theme.bodyFont)
-                                        .foregroundColor(getRelationshipColor())
+                                if showResistance {
+                                    HStack {
+                                        Text("Resistance ")
+                                            .font(Theme.bodyFont)
+                                            .foregroundColor(Theme.textColor)
+                                        Spacer()
+                                        Text(String(format: "%.1f%%", VampireGaze.shared.calculateNPCResistance(npc: npc)))
+                                            .font(Theme.bodyFont)
+                                            .foregroundColor(getRelationshipColor())
+                                    }
+                                    
+                                    GradientProgressBar(value: Float(VampireGaze.shared.calculateNPCResistance(npc: npc)), barColor: Theme.bloodProgressColor.opacity(0.7), backgroundColor: Theme.textColor.opacity(0.3))
+                                        .frame(height: 5)
+                                        .shadow(color: Color.green.opacity(0.3), radius: 2)
+                                } else {
+                                    HStack {
+                                        Text("Relationship ")
+                                            .font(Theme.bodyFont)
+                                            .foregroundColor(Theme.textColor)
+                                        Spacer()
+                                        Text(getRelationshipPercentage())
+                                            .font(Theme.bodyFont)
+                                            .foregroundColor(getRelationshipColor())
+                                    }
+                                    
+                                    GradientProgressBar(value: Float(abs(npc.playerRelationship.value)), barColor: npc.playerRelationship.value >= 0 ? Color.green : Color.red, backgroundColor: Theme.textColor.opacity(0.3))
+                                        .frame(height: 5)
+                                        .shadow(color: Color.green.opacity(0.3), radius: 2)
                                 }
-                                
-                                GradientProgressBar(value: Float(abs(npc.playerRelationship.value)), barColor: npc.playerRelationship.value >= 0 ? Color.green : Color.red, backgroundColor: Theme.textColor.opacity(0.3))
-                                    .frame(height: 5)
-                                    .shadow(color: Color.green.opacity(0.3), radius: 2)
                             }
                             .padding(.top, 8)
 
@@ -240,16 +257,16 @@ struct NPCWidget: View {
                 
                 if isSelected {
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(npc.currentActivity.color.opacity(0.8), lineWidth: 2)
+                        .stroke(Color.black.opacity(1.0), lineWidth: 0.5)
                         .background(Color.white.opacity(0.05))
-                        .blur(radius: 0.5)
+                        .blur(radius: 2.5)
                 }
                 
                 if !showCurrentActivity {
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(Theme.awarenessProgressColor, lineWidth: 1)
+                        .stroke(Color.black, lineWidth: 0.5)
                         .background(Color.white.opacity(0.05))
-                        .blur(radius: 0.5)
+                        .blur(radius: 2.5)
                 }
             }
             .frame(width: buttonWidth, height: 320)
@@ -267,7 +284,7 @@ struct NPCWidget: View {
         .disabled(isDisabled)
         .animation(.easeInOut(duration: 0.3), value: isSelected)
         .frame(width: buttonWidth, height: 320)
-        .shadow(color: showCurrentActivity ? npc.currentActivity.color.opacity(0.5) : Theme.awarenessProgressColor.opacity(0.5), radius: 10)
+        .shadow(color: .black, radius: 15, x: 1, y: 1)
     }
     
     private func getNPCImage() -> Image {

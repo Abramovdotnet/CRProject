@@ -116,7 +116,7 @@ struct PlayerWidget : View {
             .padding(.horizontal, 8)
             
             RoundedRectangle(cornerRadius: 12)
-                .stroke(Theme.bloodProgressColor.opacity(0.8), lineWidth: 2)
+                .stroke(Color.black, lineWidth: 2)
                 .background(Color.white.opacity(0.05))
                 .blur(radius: 0.5)
         }
@@ -127,6 +127,7 @@ struct PlayerWidget : View {
                 .blur(radius: 2)
                 .offset(y: 2)
         )
+        .shadow(color: .black, radius: 15, x: 1, y: 1)
         .clipShape(RoundedRectangle(cornerRadius: 12))
     }
 }

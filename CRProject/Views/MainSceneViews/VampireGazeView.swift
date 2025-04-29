@@ -53,7 +53,7 @@ struct VampireGazeView: View {
                 // Main Content (Horizontal Layout)
                 HStack(alignment: .center, spacing: 20) {
                     // NPC Info Card (Left Side)
-                    NPCWidget(npc: npc, isSelected: false, isDisabled: false, onTap: { Void() }, onAction: { _ in Void ()})
+                    NPCWidget(npc: npc, isSelected: false, isDisabled: false, showResistance: true, onTap: { Void() }, onAction: { _ in Void ()})
                         .padding(.top, 40)
                     
                     // Power Selection Area (Right Side)

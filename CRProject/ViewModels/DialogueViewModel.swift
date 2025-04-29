@@ -106,6 +106,10 @@ class DialogueViewModel: ObservableObject {
             } else {
                 shouldDismiss = true
             }
+        case .askingForSmithingPermission:
+            handleAskingForSmithingPermission(nextNodeId: option.nextNodeId)
+        case .askingForAlchemyPermission:
+            handleAskingForAlchemyPermission(nextNodeId: option.nextNodeId)
         }
     }
     
@@ -208,6 +212,22 @@ class DialogueViewModel: ObservableObject {
         GameStateService.shared.player?.processRelationshipDialogueNode(option: option)
         VibrationService.shared.lightTap()
         // Directly process the next node
+        if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+            updateDialogue(text: newText, options: newOptions)
+        } else {
+            shouldDismiss = true
+        }
+    }
+    
+    private func handleAskingForSmithingPermission(nextNodeId: String) {
+        if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+            updateDialogue(text: newText, options: newOptions)
+        } else {
+            shouldDismiss = true
+        }
+    }
+    
+    private func handleAskingForAlchemyPermission(nextNodeId: String) {
         if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
             updateDialogue(text: newText, options: newOptions)
         } else {

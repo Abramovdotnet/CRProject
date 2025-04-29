@@ -81,6 +81,25 @@ class Recipe : Codable, Identifiable, ObservableObject {
             return .gray
         }
     }
+    
+    static func professionlevelColor(level: Int) -> Color {
+        switch level {
+        case 0:
+            return .gray
+        case 1:
+            return .white
+        case 2:
+            return .green
+        case 3:
+            return .yellow
+        case 4:
+            return .cyan
+        case 5:
+            return .orange
+        default:
+            return .gray
+        }
+    }
 }
 
 class RecipeResource : Codable, ObservableObject {

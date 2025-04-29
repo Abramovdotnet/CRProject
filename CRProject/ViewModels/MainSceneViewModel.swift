@@ -386,9 +386,9 @@ class MainSceneViewModel: ObservableObject {
         childScenes = LocationReader.getChildLocations(for: locationId)
         DebugLogService.shared.log("DEBUG: Child scenes count: \(childScenes.count)", category: "Debug")
         
-        // Get sibling locations
-        siblingScenes = LocationReader.getSiblingLocations(for: locationId)
-        DebugLogService.shared.log("DEBUG: Sibling scenes count: \(siblingScenes.count)", category: "Debug")
+        // Removed direct assignment to siblingScenes here to avoid redundancy and ensure single source of truth.
+        // siblingScenes = LocationReader.getSiblingLocations(for: locationId)
+        // DebugLogService.shared.log("DEBUG: Sibling scenes count: \(siblingScenes.count)", category: "Debug")
     }
     
     func updatePlayerBloodPercentage() {

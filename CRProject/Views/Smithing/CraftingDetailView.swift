@@ -22,6 +22,7 @@ struct CraftingDetailView: View {
                     isCraftable: couldCraft()
                 )
                 .padding(.horizontal, 6)
+                .opacity(couldCraft() ? 1 : 0.7)
                 
                 if couldCraft() {
                     Button(action: onCraft) {

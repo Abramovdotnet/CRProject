@@ -40,6 +40,10 @@ struct SmithingView: View {
                     
                     Spacer()
                 }
+            }.onAppear() {
+                PopUpState.shared.show(title: "Добро пожаловать в игру!")
+                PopUpState.shared.show(title: "Test", image: Image("sphere1"))
+                PopUpState.shared.show(title: "New test", details: "Here is details explained", image: Image("sphere1"))
             }
         }
     }
@@ -85,20 +89,24 @@ struct SmithingView: View {
             VStack {
                 VStack {
                     // First filter: Profession Level
-                    HStack(spacing: 8) {
+                    HStack(spacing: 12) {
                         ForEach(1...5, id: \.self) { level in
                             Button(action: {
                                 viewModel.selectedProfessionLevel = viewModel.selectedProfessionLevel == level ? nil : level
                                 viewModel.refreshRecipes()
                             }) {
-                                HStack {
+                                ZStack{
+                                    Circle()
+                                        .fill(viewModel.selectedProfessionLevel == level ? Recipe.professionlevelColor(level: level).opacity(0.3) : Color.clear)
+                                        .blur(radius: 5)
+                                        .opacity(0.9)
+                                    
                                     Image(systemName: "hammer.fill")
                                         .font(Theme.bodyFont)
-                                        .foregroundColor(viewModel.selectedProfessionLevel == level ? .yellow : Theme.textColor)
-                                    Text("\(level.description)")
-                                        .font(Theme.bodyFont)
-                                        .foregroundColor(viewModel.selectedProfessionLevel == level ? .yellow : Theme.textColor)
+                                        .foregroundColor(Recipe.professionlevelColor(level: level))
+                                        .shadow(color: Recipe.professionlevelColor(level: level).opacity(0.8), radius: 5, x: 1, y: 1)
                                 }
+                                .frame(width: 30, height: 30)
                             }
                         }
                     }
@@ -112,10 +120,17 @@ struct SmithingView: View {
                                 viewModel.selectedItemType = viewModel.selectedItemType == type ? nil : type
                                 viewModel.refreshRecipes()
                             }) {
-                                Image(systemName: type.icon)
-                                    .font(Theme.bodyFont)
-                                    .foregroundColor(viewModel.selectedItemType == type ? .yellow : Theme.textColor)
-                                    .frame(width: 30, height: 30)
+                                ZStack {
+                                    Circle()
+                                        .fill(viewModel.selectedItemType == type ? Color.yellow.opacity(0.3) : Color.clear)
+                                        .blur(radius: 5)
+                                        .opacity(0.9)
+                                    
+                                    Image(systemName: type.icon)
+                                        .font(Theme.bodyFont)
+                                        .foregroundColor(viewModel.selectedItemType == type ? .yellow : Theme.textColor)
+                                }
+                                .frame(width: 30, height: 30)
                             }
                         }
                         // Known recipes filter button
@@ -133,7 +148,6 @@ struct SmithingView: View {
                             }
                             .padding(.horizontal, 8)
                             .padding(.vertical, 4)
-                            .background(Color.black.opacity(0.7))
                             .cornerRadius(8)
                         }
                     }

@@ -2,6 +2,8 @@ import SwiftUI
 
 @main
 struct CRProjectApp: App {
+    @StateObject var popUpManager = PopUpManager()
+
     init() {
         // Register services in the correct order
         let dependencyManager = DependencyManager.shared
@@ -30,7 +32,9 @@ struct CRProjectApp: App {
     
     var body: some SwiftUI.Scene {
         WindowGroup {
-            MainSceneView(viewModel: MainSceneViewModel())
+            ZStack {
+                MainSceneView(viewModel: MainSceneViewModel())
+            }
         }
     }
 }

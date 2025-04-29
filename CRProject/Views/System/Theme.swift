@@ -25,8 +25,8 @@ struct VampireButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
-            .background(Theme.primaryColor)
             .foregroundColor(Theme.textColor)
+            .font(Theme.bodyFont)
             .cornerRadius(8)
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)
