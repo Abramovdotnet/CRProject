@@ -1,7 +1,7 @@
 import Foundation
 import Combine
 
-class StatisticsService: GameService {
+class StatisticsService: GameService, ObservableObject {
     @Published private(set) var daysSurvived: Int = 0
     @Published private(set) var feedings: Int = 0
     @Published private(set) var feedingsOverSleepingVictims: Int = 0

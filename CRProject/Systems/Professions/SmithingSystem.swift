@@ -133,6 +133,7 @@ class SmithingSystem {
             
             if newRecipeUnlocked {
                 unlockNewRecipe(player: player)
+                StatisticsService.shared.increaseSmithingRecipesUnlocked()
             }
         }
         

@@ -328,6 +328,10 @@ struct MainSceneView: View {
                 SmithingView(player: gameStateService.player!, mainViewModel: viewModel)
                     .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
             }
+            .sheet(isPresented: $showingAbilities) {
+                AbilitiesView(scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+            }
             .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
             .withDebugOverlay(viewModel: viewModel)
         }

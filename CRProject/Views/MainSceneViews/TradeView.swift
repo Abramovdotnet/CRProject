@@ -343,6 +343,13 @@ struct TradeView: View {
             npc.coins.value += abs(dealTotal)
         }
         npc.playerRelationship.increase(amount: 2)
+        
+        if dealTotal >= 500 && dealTotal < 1000 {
+            StatisticsService.shared.increase500CoinsDeals()
+        } else if dealTotal >= 1000 {
+            StatisticsService.shared.increase1000CoinsDeals()
+        }
+        
         StatisticsService.shared.increaseBartersCompleted()
         npcManager.playerInteracted(with: npc)
         GameEventsBusService.shared.addMessageWithIcon(

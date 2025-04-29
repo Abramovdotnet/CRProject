@@ -6,10 +6,11 @@
 //
 
 import SwiftUICore
+import Combine
 
-class AbilitiesSystem {
+class AbilitiesSystem: ObservableObject {
     var id: Int = 0
-    var playerAbilities: [Ability] = []
+    @Published var playerAbilities: [Ability] = []
     static var shared: AbilitiesSystem = AbilitiesSystem()
     
     var hasSeduction: Bool { playerAbilities.contains(.seduction) }
@@ -264,7 +265,7 @@ enum Ability: String, CaseIterable {
             case .smithingApprentice: return "hammer.circle.fill"
             case .smithingExpert: return "wrench.and.screwdriver.fill"
             case .smithingMaster: return "sparkles"
-            case .alchemyNovice: return "vial"
+            case .alchemyNovice: return "flask.fill"
             case .alchemyApprentice: return "testtube.2"
             case .alchemyExpert: return "pills.fill"
             case .alchemyMaster: return "allergens"
