@@ -26,7 +26,7 @@ struct VampireButtonStyle: ButtonStyle {
         configuration.label
             .padding(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
             .foregroundColor(Theme.textColor)
-            .font(Theme.bodyFont)
+            .font(Theme.headingLightFont)
             .cornerRadius(8)
             .scaleEffect(configuration.isPressed ? 0.95 : 1.0)
             .animation(.easeInOut(duration: 0.2), value: configuration.isPressed)

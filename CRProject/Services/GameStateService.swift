@@ -1,4 +1,5 @@
 import Foundation
+import SwiftUICore
 import Combine
 
 enum GameStateError: Error {
@@ -222,6 +223,7 @@ class GameStateService : ObservableObject, GameService{
         
         if currentPlayerBlood <= 30 {
             gameEventsBus.addWarningMessage("* I feel huge lack of blood! *")
+            PopUpState.shared.show(title: "Uncontrollable blood lust", details: "If blood pool goes under 10%, you will loose control over your actions and drain empty random victim.", image: .system(name: "drop.fill", color: .red))
         }
         
         if currentPlayerBlood <= 10 {

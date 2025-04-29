@@ -40,10 +40,6 @@ struct SmithingView: View {
                     
                     Spacer()
                 }
-            }.onAppear() {
-                PopUpState.shared.show(title: "Добро пожаловать в игру!")
-                PopUpState.shared.show(title: "Test", image: Image("sphere1"))
-                PopUpState.shared.show(title: "New test", details: "Here is details explained", image: Image("sphere1"))
             }
         }
     }

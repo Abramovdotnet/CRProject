@@ -305,6 +305,7 @@ struct MainSceneView: View {
                 SmithingView(player: gameStateService.player!, mainViewModel: viewModel)
                     .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
             }
+            .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
             .withDebugOverlay(viewModel: viewModel)
         }
     }
