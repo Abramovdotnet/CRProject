@@ -188,9 +188,7 @@ class GameStateService : ObservableObject, GameService{
         }
         
         if !scene.isIndoor && !gameTime.isNightTime {
-            if AbilitiesSystem.shared.hasDayWalker && (player?.bloodMeter.currentBlood)! >= 70.0 {
-                gameEventsBus.addWarningMessage("Daywalker greets the sun..." )
-            } else {
+            if !AbilitiesSystem.shared.hasDayWalker && (player?.bloodMeter.currentBlood)! >= 70.0 {
                 forcePlayerToFindHideout()
             }
         }

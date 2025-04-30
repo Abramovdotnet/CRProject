@@ -34,7 +34,7 @@ class Player: ObservableObject, Character, Codable {
     var hiddenAt: HidingCell = .none
     var onCraftingProcess: Bool = false
 
-    var desiredVictim: DesiredVictim = DesiredVictim()
+    @Published var desiredVictim: DesiredVictim = DesiredVictim()
     
     var smithingProgress: ProfessionProgress = ProfessionProgress()
     var medicineProgress: ProfessionProgress = ProfessionProgress()

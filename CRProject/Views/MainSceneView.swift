@@ -127,7 +127,7 @@ struct MainSceneView: View {
                                     }
                                     
                                     // Hide
-                                    if let player = viewModel.getPlayer(), player.hiddenAt == .none && AbilitiesSystem.shared.hasInvisibility {
+                                    if let player = GameStateService.shared.player, player.hiddenAt == .none && AbilitiesSystem.shared.hasInvisibility {
                                         ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
                                             MainSceneActionButton(
                                                 icon: "eye.fill",

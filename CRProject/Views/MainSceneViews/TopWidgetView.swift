@@ -4,13 +4,11 @@ import SwiftUI
 struct TopWidgetView: View {
     @ObservedObject var viewModel: MainSceneViewModel
     @ObservedObject private var awarenessService = VampireNatureRevealService.shared
-    
-    // Use state to animate awareness changes
-    @State private var animatedAwareness: Double = 0
+    @ObservedObject private var playerBloodMeter: BloodMeter = GameStateService.shared.player!.bloodMeter
 
     var body: some View {
         // Keep the outer check for player existence if needed for other properties
-        if let player = viewModel.player { 
+        if let player = GameStateService.shared.player {
             HStack {
                 // World Info
                 Image(systemName: viewModel.isNight ? "moon.fill" : "sun.max.fill")
@@ -49,10 +47,10 @@ struct TopWidgetView: View {
                     .font(Theme.bodyFont)
                     .foregroundColor(Theme.awarenessProgressColor)
                     .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                Text("\(Int(animatedAwareness))%")
+                Text("\(Int(awarenessService.awarenessLevel))%")
                     .font(Theme.bodyFont)
                     .padding(.leading, -5)
-                ProgressBar(value: animatedAwareness / 100.0, color: Theme.awarenessProgressColor)
+                ProgressBar(value: Double(awarenessService.awarenessLevel) / 100.0, color: Theme.awarenessProgressColor)
                     .frame(width: 100)
                     .padding(.leading, -5)
                 
@@ -61,10 +59,10 @@ struct TopWidgetView: View {
                     .foregroundColor(Theme.bloodProgressColor)
                     .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
                 // Use player directly for blood percentage if available
-                Text("\(Int(player.bloodMeter.bloodPercentage))%")
+                Text("\(Int(playerBloodMeter.bloodPercentage))%")
                     .font(Theme.bodyFont)
                     .padding(.leading, -5)
-                ProgressBar(value: Double(player.bloodMeter.bloodPercentage / 100), color: Theme.bloodProgressColor)
+                ProgressBar(value: Double(playerBloodMeter.bloodPercentage / 100), color: Theme.bloodProgressColor)
                     .frame(width: 100)
                     .padding(.leading, -5)
                 
@@ -134,12 +132,6 @@ struct TopWidgetView: View {
             }
             .padding(.top, 5)
             .padding(.bottom, 5)
-            .onAppear {
-                updateAnimatedAwareness()
-            }
-            .onChange(of: awarenessService.awarenessLevel) { newValue in
-                updateAnimatedAwareness()
-            }
         } else {
             // Optional: Show a placeholder or loading state if player is nil
             HStack {
@@ -149,12 +141,6 @@ struct TopWidgetView: View {
             }
             .padding(.top, 5)
             .padding(.bottom, 5)
-        }
-    }
-    
-    private func updateAnimatedAwareness() {
-        withAnimation(.easeInOut(duration: 0.5)) {
-            animatedAwareness = Double(awarenessService.awarenessLevel)
         }
     }
 }

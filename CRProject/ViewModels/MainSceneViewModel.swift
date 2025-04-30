@@ -10,10 +10,6 @@ class MainSceneViewModel: ObservableObject {
     @Published var npcs: [NPC] = []
     @Published var sceneAwareness: Float = 0
     @Published var playerBloodPercentage: Float = 100
-    @Published var desiredProfession: Profession?
-    @Published var desiredSex: Sex?
-    @Published var desiredAge: String?
-    @Published var desiredMorality: Morality?
     @Published var currentDay: Int = 1
     @Published var currentHour: Int = 0
     @Published var isNight: Bool = false
@@ -23,7 +19,6 @@ class MainSceneViewModel: ObservableObject {
     @Published private(set) var locationPositions: [Int: CGPoint]?
     @Published private(set) var visibleLocations: Set<Int> = []
     @Published var isDebugOverlayVisible = false
-    @Published var player: Player?
     @Published var playerCoinsValue: Int = 0
     @Published var activeDialogueViewModel: DialogueViewModel? = nil
     @Published var isShowingVampireGazeView = false
@@ -81,9 +76,6 @@ class MainSceneViewModel: ObservableObject {
             ItemsManagementService.shared.giveItem(itemId: 1020, to: initialPlayer)
         }
         
-        // Assign player to the published property
-        self.player = initialPlayer
-        
         // Initialize playerCoinsValue
         self.playerCoinsValue = initialPlayer.coins.value
         
@@ -97,7 +89,6 @@ class MainSceneViewModel: ObservableObject {
             }
             .store(in: &cancellables)
         
-        updatePlayerBloodPercentage()
         resetDesires()
         
         // Subscribe to scene changes
@@ -200,23 +191,12 @@ class MainSceneViewModel: ObservableObject {
         } catch {
             DebugLogService.shared.log("Error creating initial scene: \(error)", category: "Error")
         }
-        
-        // Subscribe to blood changes
-        NotificationCenter.default.publisher(for: .bloodPercentageChanged)
-            .sink { [weak self] _ in
-                self?.updatePlayerBloodPercentage()
-            }
-            .store(in: &cancellables)
-        
+  
         NotificationCenter.default.publisher(for: .exposed)
             .sink { [weak self] _ in
                 self?.endGame()
             }
             .store(in: &cancellables)
-            
-        // Initial updates
-        updatePlayerBloodPercentage()
-        updateSceneAwareness()
     }
     
     func navigateToParent() {
@@ -234,7 +214,7 @@ class MainSceneViewModel: ObservableObject {
                 locationPositions = oldPos
             }
             updateSceneAwareness()
-            updatePlayerBloodPercentage()
+
         }
     }
     
@@ -244,15 +224,6 @@ class MainSceneViewModel: ObservableObject {
         
         try? gameStateService.changeLocation(to: scene.id)
         currentScene = gameStateService.currentScene
-        
-        // Trigger position update with animation
-        withAnimation(.easeInOut(duration: 0.6)) {
-            if let oldPos = oldPositions {
-                locationPositions = oldPos
-            }
-            updateSceneAwareness()
-            updatePlayerBloodPercentage()
-        }
     }
     
     func navigateToSibling(_ scene: Scene) {
@@ -261,15 +232,6 @@ class MainSceneViewModel: ObservableObject {
         
         try? gameStateService.changeLocation(to: scene.id)
         currentScene = gameStateService.currentScene
-        
-        // Trigger position update with animation
-        withAnimation(.easeInOut(duration: 0.6)) {
-            if let oldPos = oldPositions {
-                locationPositions = oldPos
-            }
-            updateSceneAwareness()
-            updatePlayerBloodPercentage()
-        }
     }
     
     // MARK: - NPC Management
@@ -299,40 +261,21 @@ class MainSceneViewModel: ObservableObject {
               investigationService.canInvestigate(inspector: player, investigationObject: npc) else {
             return
         }
-        investigationService.investigate(inspector: player, investigationObject: npc)
-        updateSceneAwareness()
-        updatePlayerBloodPercentage()
-    }
+        investigationService.investigate(inspector: player, investigationObject: npc)    }
     
     func resetAwareness() {
         vampireNatureRevealService.decreaseAwareness(amount: 100)
-        updateSceneAwareness()
     }
     
     func resetBloodPool() {
-        guard let player = gameStateService.getPlayer() else { return }
+        guard let player = GameStateService.shared.player else { return }
         
-        player.bloodMeter.currentBlood = 100
-        updatePlayerBloodPercentage()
+        player.bloodMeter.addBlood(100)
     }
     
     func resetDesires() {
-        if let player = self.player {
-            player.desiredVictim.updateDesiredVictim()
-            
-            desiredAge = player.desiredVictim.desiredAgeRange?.rangeDescription
-            desiredSex = player.desiredVictim.desiredSex
-            desiredMorality = player.desiredVictim.desiredMorality
-            desiredProfession = player.desiredVictim.desiredProfession
-            
-            // Post notification that desires were reset
-            NotificationCenter.default.post(name: .desireReset, object: nil)
-        } else {
-            desiredProfession = nil
-            desiredSex = nil
-            desiredAge = nil
-            desiredMorality = nil
-        }
+        guard let player = GameStateService.shared.player else { return }
+        player.desiredVictim.updateDesiredVictim()
     }
     
     // MARK: - Blood Management
@@ -344,8 +287,6 @@ class MainSceneViewModel: ObservableObject {
         let sceneId = currentScene?.id ?? 0
         do {
             try feedingService.feedOnCharacter(vampire: player, prey: npc, amount: 30, in: sceneId)
-            updatePlayerBloodPercentage()
-            updateSceneAwareness()
 
             DebugLogService.shared.log("\(sceneAwareness)", category: "Debug")
         } catch {
@@ -360,8 +301,6 @@ class MainSceneViewModel: ObservableObject {
         }
         do {
             try feedingService.emptyBlood(vampire: player, prey: npc, in: currentScene?.id ?? 0)
-            updatePlayerBloodPercentage()
-            updateSceneAwareness()
             DebugLogService.shared.log("Blood emptied", category: "Debug")
         } catch {
         }
@@ -392,14 +331,6 @@ class MainSceneViewModel: ObservableObject {
         // Removed direct assignment to siblingScenes here to avoid redundancy and ensure single source of truth.
         // siblingScenes = LocationReader.getSiblingLocations(for: locationId)
         // DebugLogService.shared.log("DEBUG: Sibling scenes count: \(siblingScenes.count)", category: "Debug")
-    }
-    
-    func updatePlayerBloodPercentage() {
-        if let player = self.player {
-            playerBloodPercentage = player.bloodMeter.bloodPercentage
-        } else {
-            playerBloodPercentage = 0
-        }
     }
     
     func updateSceneAwareness() {
@@ -438,7 +369,6 @@ class MainSceneViewModel: ObservableObject {
     func advanceTime() {
         withAnimation(.easeInOut(duration: 0.3)) {
             gameTime.advanceTime()
-            updatePlayerBloodPercentage()
         }
     }
     
@@ -591,10 +521,6 @@ class MainSceneViewModel: ObservableObject {
         return (currentScene?.sceneType.possibleHidingCells())!
     }
     
-    func getPlayer() -> Player? {
-        return player
-    }
-    
     func getGameStateService() -> GameStateService {
         return gameStateService
     }
@@ -604,7 +530,7 @@ class MainSceneViewModel: ObservableObject {
     func handleNPCAction(_ action: NPCAction) {
         switch action {
         case .startConversation(let npc):
-            guard let player = self.player else { return }
+            guard let player = GameStateService.shared.player else { return }
             // Create and store the ViewModel
             self.activeDialogueViewModel = DialogueViewModel(npc: npc, player: player)
             // Now trigger the sheet presentation (using the existing mechanism)

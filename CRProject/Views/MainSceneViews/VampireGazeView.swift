@@ -155,11 +155,6 @@ struct VampireGazeView: View {
         
         if let player = GameStateService.shared.player {
             player.bloodMeter.useBlood(power.cost)
-            // Notify observers that blood percentage has changed
-            NotificationCenter.default.post(name: .bloodPercentageChanged, object: nil)
-            // Update main view model's blood percentage
-            mainViewModel.updatePlayerBloodPercentage()
-            mainViewModel.updateSceneAwareness()
         }
         
         withAnimation(.easeInOut(duration: 1.0)) {

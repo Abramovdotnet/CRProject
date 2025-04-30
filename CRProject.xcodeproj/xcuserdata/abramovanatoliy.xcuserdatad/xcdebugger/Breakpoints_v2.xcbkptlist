@@ -270,8 +270,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "247"
-            endingLineNumber = "247"
+            startingLineNumber = "245"
+            endingLineNumber = "245"
             landmarkName = "advanceWorldState(advanceSafe:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -320,7 +320,23 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "208"
             endingLineNumber = "208"
-            landmarkName = "consumeItem(_:)"
+            landmarkName = "CharacterInventoryView"
+            landmarkType = "14">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8FF2D242-FB90-437F-B390-B899B78B01C0"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/GameStateService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "209"
+            endingLineNumber = "209"
+            landmarkName = "handleNightAppears()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

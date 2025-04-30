@@ -8,50 +8,45 @@
 import Foundation
 
 class BloodMeter : ObservableObject, Codable {
-    @Published private var _currentBlood: Float
     private var maxBlood: Float = 100
     
-    var currentBlood: Float {
-        get { _currentBlood }
-        set {
-            objectWillChange.send()
-            _currentBlood = min(max(newValue, 0), maxBlood)
-        }
-    }
-    
-    var bloodPercentage: Float {
-        return (_currentBlood / maxBlood) * 100
-    }
+    @Published var currentBlood: Float = 0
+    @Published var bloodPercentage: Float = 0
     
     init(initialBlood: Float) {
-        self._currentBlood = min(max(initialBlood, 0), maxBlood)
+        self.currentBlood = min(max(initialBlood, 0), maxBlood)
+        calculateBloodPercentage()
     }
     
     func addBlood(_ amount: Float) {
         guard amount > 0 else { return }
-        objectWillChange.send()
-        _currentBlood = min(_currentBlood + amount, maxBlood)
+        currentBlood = min(currentBlood + amount, maxBlood)
+        calculateBloodPercentage()
     }
     
     func useBlood(_ amount: Float) {
         guard amount > 0 else { return }
-        objectWillChange.send()
-        if _currentBlood <= amount {
-            _currentBlood = 0
+        if currentBlood <= amount {
+            currentBlood = 0
         } else {
-            _currentBlood -= amount
+            currentBlood -= amount
         }
+        calculateBloodPercentage()
     }
     
     func hasEnoughBlood(_ amount: Float) -> Bool {
-        return amount <= _currentBlood
+        return amount <= currentBlood
     }
     
     func emptyBlood() -> Float {
-        objectWillChange.send()
-        let availableBlood = _currentBlood
-        _currentBlood = 0
+        let availableBlood = currentBlood
+        currentBlood = 0
+        calculateBloodPercentage()
         return availableBlood
+    }
+    
+    func calculateBloodPercentage() {
+        bloodPercentage = (currentBlood / maxBlood) * 100
     }
     
     enum CodingKeys: String, CodingKey {
@@ -60,13 +55,13 @@ class BloodMeter : ObservableObject, Codable {
     
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        _currentBlood = try container.decode(Float.self, forKey: ._currentBlood)
+        currentBlood = try container.decode(Float.self, forKey: ._currentBlood)
         maxBlood = try container.decode(Float.self, forKey: .maxBlood)
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(_currentBlood, forKey: ._currentBlood)
+        try container.encode(currentBlood, forKey: ._currentBlood)
         try container.encode(maxBlood, forKey: .maxBlood)
     }
 }

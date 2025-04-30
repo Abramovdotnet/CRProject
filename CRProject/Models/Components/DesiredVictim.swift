@@ -35,7 +35,7 @@ enum DesiredVictimAgeRange: String, CaseIterable, Codable {
 }
 
 // Conform DesiredVictim to Codable
-class DesiredVictim: Codable {
+class DesiredVictim: Codable, ObservableObject {
     // Renamed internal enum to avoid conflict
     typealias AgeRange = DesiredVictimAgeRange
 
