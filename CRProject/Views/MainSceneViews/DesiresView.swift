@@ -29,16 +29,36 @@ struct DesiresView: View {
                 // Desires
                 HStack {
                     ZStack {
-                        Circle()
-                            .fill(Theme.bloodProgressColor)
-                            .blur(radius: 7)
-                            .opacity(0.3)
+                        // 1. Frame (bottom layer)
+                        Image("iconFrame")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 20 * 1.1, height: 20 * 1.1)
                         
-                        Image(systemName: "drop.fill")
-                            .font(Theme.bodyFont)
-                            .foregroundColor(Theme.bloodProgressColor)
+                        // 2. Background circle (middle layer)
+                        Circle()
+                            .fill(Color.black.opacity(0.7))
+                            .frame(width: 20 * 0.85, height: 20 * 0.85)
+                            .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
+                            .overlay(
+                                Circle()
+                                    .stroke(Color.white.opacity(0.2), lineWidth: 1)
+                            )
+                        
+                        Image("sphere1")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(width: 20 * 0.8, height: 20 * 0.8)
                     }
-                    .frame(width: 25, height: 25)
+                    .shadow(color: Theme.bloodProgressColor, radius: 3, x: 0, y: 2)
+                    .overlay(
+                        Circle()
+                            .fill(Color.red.opacity(0.3))
+                            .frame(width: 20 * 1.4, height: 20 * 1.4)
+                            .blur(radius: 4)
+                            .opacity(0.7 + sin(Date().timeIntervalSince1970 * 2) * 0.3)
+                            .animation(Animation.easeInOut(duration: 1.5).repeatForever(autoreverses: true), value: UUID())
+                    )
                     Text("Desires: ")
                         .font(Theme.bodyFont)
                         .foregroundColor(Theme.bloodProgressColor)

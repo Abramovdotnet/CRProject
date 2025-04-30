@@ -110,6 +110,13 @@ class SmithingSystem {
             .sorted { $0.professionLevel < $1.professionLevel }
             .first
         
+        if firstUnknownRecipe?.professionLevel ?? 0 > player.smithingProgress.level {
+            player.smithingProgress.level += 1
+            
+            PopUpState.shared.show(title: "New smithing level unlocked", image: .system(name: Ability.smithingNovice.icon, color: Ability.smithingNovice.color))
+
+        }
+        
         if firstUnknownRecipe != nil {
             firstUnknownRecipe?.isUnknown = false
         }

@@ -66,18 +66,18 @@ struct AbilitiesView: View {
             EnhancedBloodMistEffect()
                 .opacity(0.4)
                 .ignoresSafeArea()
-            
-            DustEmitterView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .edgesIgnoringSafeArea(.all)
+                
+                DustEmitterView()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                       .edgesIgnoringSafeArea(.all)
         }
     }
-    
+                
     private func topBar(geometry: GeometryProxy) -> some View {
-        TopWidgetView(viewModel: mainViewModel)
-            .frame(maxWidth: .infinity)
-            .padding(.top, geometry.safeAreaInsets.top)
-            .foregroundColor(Theme.textColor)
+                    TopWidgetView(viewModel: mainViewModel)
+                        .frame(maxWidth: .infinity)
+                        .padding(.top, geometry.safeAreaInsets.top)
+                        .foregroundColor(Theme.textColor)
     }
     
     private func mainContentView(geometry: GeometryProxy) -> some View {

@@ -229,6 +229,8 @@ class NPCInteractionService : GameService {
         if let casualtyNPC = NPCReader.getRuntimeNPC(by: currentNPC.casualtyNpcId) {
             casualtyNPC.deathStatus = .confirmed
             currentNPC.casualtyNpcId = 0
+            
+            PopUpState.shared.show(title: "Casualty reported", details: "Guards will arrive soon to check what happened", image: .system(name: NPCInteraction.findOutCasualty.icon, color: NPCInteraction.findOutCasualty.color))
         }
     }
     
@@ -320,6 +322,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
     case smithingCraft = "smithingCraft"
     case alchemyCraft = "alchemyCraft"
     case awareAboutVampire = "awareAboutVampire"
+    case vampireMilitaryReport = "vampireMilitaryReport"
     case awareAboutCasualty = "awareAboutCasualty"
     case findOutCasualty = "findOutCasualty"
     case askForProtection = "askForProtection"
@@ -372,6 +375,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return "boilded potion for"
         case .awareAboutVampire:
             return "spread vampire threat to"
+        case .vampireMilitaryReport:
+            return "reported vampire threat to"
         case .awareAboutCasualty:
             return "told about casualty"
         case .findOutCasualty:
@@ -527,6 +532,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return 0
         case .bathing:
             return 0
+        case .vampireMilitaryReport:
+            return 0
         }
     }
     
@@ -602,6 +609,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return "figure.fencing"
         case .bathing:
             return NPCActivityType.bathe.icon
+        case .vampireMilitaryReport:
+            return NPCActivityType.fleeing.icon
         }
     }
     
@@ -678,6 +687,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return Color.red
         case .bathing:
             return NPCActivityType.bathe.color
+        case .vampireMilitaryReport:
+            return Theme.awarenessProgressColor
         }
     }
     
@@ -763,6 +774,12 @@ enum NPCInteraction : String, CaseIterable, Codable {
             if currentNPC.currentActivity == .fleeing && currentNPC.isVampireAttackWitness && !otherNPC.isVampireAttackWitness {
                 return .awareAboutVampire
             }
+            
+            // Vampire militaryReport
+            if currentNPC.currentActivity == .fleeing && currentNPC.isVampireAttackWitness && !otherNPC.isVampireAttackWitness && otherNPC.isMilitary {
+                return .awareAboutVampire
+            }
+            
             
             // Drunk Fight
             if currentNPC.currentActivity == .drink || currentNPC.currentActivity == .gamble && (!currentNPC.isMilitary && !otherNPC.isMilitary) ||

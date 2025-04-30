@@ -101,4 +101,9 @@ class SmithingViewModel: ObservableObject {
     func clearResult() {
         craftingResult = nil
     }
+    
+    // Returns the count of a specific resource the player has
+    func getResourceCount(resourceId: Int) -> Int {
+        return player.items.filter { $0.id == resourceId }.count
+    }
 } 
