@@ -194,8 +194,16 @@ struct MainSceneView: View {
                                 Spacer()
                                 HStack(spacing: 10) {
                                     VStack {
-                                        DesiresView(npc: npcManager.selectedNPC, onAction: viewModel.handleNPCAction)
-                                            .id(npcManager.selectedNPC?.id ?? 0)
+                                        // Player information bar
+                                        ZStack {
+                                            HStack {
+                                                HStack(alignment: .top, spacing: 4) {
+                                                    DesiresView(npc: npcManager.selectedNPC, onAction: viewModel.handleNPCAction, viewModel: viewModel)
+                                                    
+                                                    Spacer()
+                                                }
+                                            }
+                                        }
                                         
                                         if npcManager.selectedNPC != nil {
                                             HorizontalNPCWidget(npc: npcManager.selectedNPC!)

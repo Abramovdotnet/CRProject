@@ -324,6 +324,9 @@ class MainSceneViewModel: ObservableObject {
             desiredSex = player.desiredVictim.desiredSex
             desiredMorality = player.desiredVictim.desiredMorality
             desiredProfession = player.desiredVictim.desiredProfession
+            
+            // Post notification that desires were reset
+            NotificationCenter.default.post(name: .desireReset, object: nil)
         } else {
             desiredProfession = nil
             desiredSex = nil

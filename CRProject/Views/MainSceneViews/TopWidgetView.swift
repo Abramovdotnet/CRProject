@@ -3,6 +3,10 @@ import SwiftUI
 // MARK: - Top Widget
 struct TopWidgetView: View {
     @ObservedObject var viewModel: MainSceneViewModel
+    @ObservedObject private var awarenessService = VampireNatureRevealService.shared
+    
+    // Use state to animate awareness changes
+    @State private var animatedAwareness: Double = 0
 
     var body: some View {
         // Keep the outer check for player existence if needed for other properties
@@ -45,10 +49,10 @@ struct TopWidgetView: View {
                     .font(Theme.bodyFont)
                     .foregroundColor(Theme.awarenessProgressColor)
                     .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                Text("\(Int(viewModel.sceneAwareness))%")
+                Text("\(Int(animatedAwareness))%")
                     .font(Theme.bodyFont)
                     .padding(.leading, -5)
-                ProgressBar(value: Double(viewModel.sceneAwareness / 100.0), color: Theme.awarenessProgressColor)
+                ProgressBar(value: animatedAwareness / 100.0, color: Theme.awarenessProgressColor)
                     .frame(width: 100)
                     .padding(.leading, -5)
                 
@@ -130,6 +134,12 @@ struct TopWidgetView: View {
             }
             .padding(.top, 5)
             .padding(.bottom, 5)
+            .onAppear {
+                updateAnimatedAwareness()
+            }
+            .onChange(of: awarenessService.awarenessLevel) { newValue in
+                updateAnimatedAwareness()
+            }
         } else {
             // Optional: Show a placeholder or loading state if player is nil
             HStack {
@@ -139,6 +149,12 @@ struct TopWidgetView: View {
             }
             .padding(.top, 5)
             .padding(.bottom, 5)
+        }
+    }
+    
+    private func updateAnimatedAwareness() {
+        withAnimation(.easeInOut(duration: 0.5)) {
+            animatedAwareness = Double(awarenessService.awarenessLevel)
         }
     }
 }

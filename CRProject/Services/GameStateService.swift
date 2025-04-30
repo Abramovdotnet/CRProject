@@ -210,8 +210,7 @@ class GameStateService : ObservableObject, GameService{
     func handleNightAppears() {
         player?.desiredVictim.updateDesiredVictim()
         
-        vampireNatureRevealService.decreaseAwareness(amount: 8)
-        
+
         CoinsManagementService.shared.updateWorldEconomy()
         ItemsManagementService.shared.distributeDailyItems()
     }
@@ -239,8 +238,6 @@ class GameStateService : ObservableObject, GameService{
         
         if player.hiddenAt == .none && activeNpcs.count > 0 {
             vampireNatureRevealService.increaseAwareness(amount: 1)
-        } else {
-            vampireNatureRevealService.decreaseAwareness(amount: 1)
         }
 
         let currentPlayerBlood = player.bloodMeter.currentBlood

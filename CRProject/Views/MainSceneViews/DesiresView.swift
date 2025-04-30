@@ -7,11 +7,21 @@
 
 
 import SwiftUI
+import Combine
 
 struct DesiresView: View {
     let npc: NPC?
     var onAction: (NPCAction) -> Void
-    var player: Player = GameStateService.shared.player!
+    @ObservedObject var viewModel: MainSceneViewModel
+    
+    // State for tracking current desires to force view updates
+    @State private var desiredSex: Sex? = nil
+    @State private var desiredAgeRange: String? = nil
+    @State private var desiredProfession: Profession? = nil
+    @State private var desiredMorality: Morality? = nil
+    
+    // Set up a cancellable for notifications
+    @State private var cancellables = Set<AnyCancellable>()
     
     var body: some View {
         HStack(spacing: 2) {
@@ -33,23 +43,23 @@ struct DesiresView: View {
                         .font(Theme.bodyFont)
                         .foregroundColor(Theme.bloodProgressColor)
                     
-                    if player.desiredVictim.desiredSex != nil {
-                        Text(player.desiredVictim.desiredSex?.rawValue ?? "")
+                    if let desiredSex = viewModel.desiredSex {
+                        Text(desiredSex.rawValue)
                             .font(Theme.bodyFont)
                             .foregroundColor(Theme.textColor)
-                        Image(systemName: player.desiredVictim.desiredSex == .female ? "figure.stand.dress" : "figure.wave")
+                        Image(systemName: desiredSex == .female ? "figure.stand.dress" : "figure.wave")
                             .font(Theme.bodyFont)
                             .foregroundColor(Color.yellow)
                     }
-                    if player.desiredVictim.desiredAgeRange != nil {
+                    if let desiredAge = viewModel.desiredAge {
                         Text("Age ")
                             .font(Theme.bodyFont)
                             .foregroundColor(Theme.textColor)
-                        Text((player.desiredVictim.desiredAgeRange?.rangeDescription ?? ""))
+                        Text(desiredAge)
                             .font(Theme.bodyFont)
                             .foregroundColor(Theme.textColor)
                     }
-                    if let desiredProfession = player.desiredVictim.desiredProfession {
+                    if let desiredProfession = viewModel.desiredProfession {
                         Text(desiredProfession.rawValue)
                             .font(Theme.bodyFont)
                             .foregroundColor(desiredProfession.color)
@@ -58,7 +68,7 @@ struct DesiresView: View {
                             .foregroundColor(desiredProfession.color)
                     }
                     
-                    if let desiredMorality = player.desiredVictim.desiredMorality {
+                    if let desiredMorality = viewModel.desiredMorality {
                         Text(desiredMorality.description)
                             .font(Theme.bodyFont)
                             .foregroundColor(desiredMorality.color)
@@ -78,6 +88,33 @@ struct DesiresView: View {
                 .fill(Color.black.opacity(0.7))
                 .shadow(color: .black.opacity(0.3), radius: 5, x: 0, y: 3)
         )
+        .onAppear {
+            setupDesireUpdates()
+        }
+        .onChange(of: viewModel.desiredSex) { _ in updateLocalState() }
+        .onChange(of: viewModel.desiredAge) { _ in updateLocalState() }
+        .onChange(of: viewModel.desiredProfession) { _ in updateLocalState() }
+        .onChange(of: viewModel.desiredMorality) { _ in updateLocalState() }
+    }
+    
+    private func setupDesireUpdates() {
+        updateLocalState()
+        
+        // Listen for desire reset notifications
+        NotificationCenter.default.publisher(for: .desireReset)
+            .receive(on: RunLoop.main)
+            .sink { _ in
+                updateLocalState()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateLocalState() {
+        // Update our local state with the viewModel values
+        desiredSex = viewModel.desiredSex
+        desiredAgeRange = viewModel.desiredAge
+        desiredProfession = viewModel.desiredProfession
+        desiredMorality = viewModel.desiredMorality
     }
     
     private func getSpecialBehaviorProgress() -> String {
@@ -85,6 +122,10 @@ struct DesiresView: View {
     }
 }
 
+// Notification for desire resets
+extension Notification.Name {
+    static let desireReset = Notification.Name("desireReset")
+}
 
 private struct ActionButton: View {
     let icon: String

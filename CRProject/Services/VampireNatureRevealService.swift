@@ -7,7 +7,7 @@ extension Notification.Name {
 }
 
 class VampireNatureRevealService: ObservableObject, GameService {
-    private var awarenessLevel: Float = 0.0
+    @Published var awarenessLevel: Float = 0.0
     private let awarenessPublisher = PassthroughSubject<Int, Never>()
     private let gameEventsBus: GameEventsBusService
     

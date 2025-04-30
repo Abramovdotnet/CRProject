@@ -39,6 +39,15 @@ class Item : Codable {
     func color() -> Color {
         return type.color
     }
+    
+    var isConsumable: Bool {
+        switch type {
+        case .drink, .food:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 enum ItemType : String, CaseIterable, Codable {

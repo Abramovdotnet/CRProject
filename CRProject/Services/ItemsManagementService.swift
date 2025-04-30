@@ -110,25 +110,6 @@ class ItemsManagementService : GameService {
             // Clear existing items
             npc.items.removeAll()
             
-            // Basic food and drink items (1-3 items)
-            let basicFoodCount = Int.random(in: 1...3)
-            let foodItems = allItems.filter { $0.type == .food }
-            let drinkItems = allItems.filter { $0.type == .drink }
-            
-            // Add random food items
-            for _ in 0..<basicFoodCount {
-                if let randomFood = foodItems.randomElement() {
-                    npc.items.append(Item.createUnique(randomFood))
-                }
-            }
-            
-            // Add 1-2 drink items
-            let drinkCount = Int.random(in: 1...2)
-            for _ in 0..<drinkCount {
-                if let randomDrink = drinkItems.randomElement() {
-                    npc.items.append(Item.createUnique(randomDrink))
-                }
-            }
             
             // Add profession-specific items
             switch npc.profession {
@@ -269,7 +250,7 @@ class ItemsManagementService : GameService {
                 
             case .merchant:
                 // Add various items for trading
-                let randomItems = allItems.filter { $0.type != .food && $0.type != .drink }
+                let randomItems = allItems
                 let itemCount = Int.random(in: 8...27)
                 for _ in 0..<itemCount {
                     if let randomItem = randomItems.randomElement() {

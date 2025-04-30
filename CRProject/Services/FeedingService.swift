@@ -50,6 +50,9 @@ class FeedingService: GameService {
             vampire.bloodMeter.addBlood(amount * 3)
             vampire.desiredVictim.updateDesiredVictim()
             
+            // Post notification that desires were reset
+            NotificationCenter.default.post(name: .desireReset, object: nil)
+            
             StatisticsService.shared.increasefeedingsOverDesiredVictims()
             
             gameEventsBus.addDangerMessage(message: "Player consumed DESIRED victims blood.")
@@ -71,6 +74,13 @@ class FeedingService: GameService {
         setWitnessesIfExists(sceneId: sceneId)
         
         gameTime.advanceTime()
+    }
+    
+    func consumeFood(vampire: Player, food: Item) {
+        if food.isConsumable {
+            vampireNatureRevealService.decreaseAwareness(amount: 4)
+            ItemsManagementService.shared.removeItem(item: food, from: vampire)
+        }
     }
     
     func emptyBlood(vampire: any Character, prey: NPC, in sceneId: Int) throws {

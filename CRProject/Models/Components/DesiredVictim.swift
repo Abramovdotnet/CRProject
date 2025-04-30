@@ -40,10 +40,10 @@ class DesiredVictim: Codable {
     typealias AgeRange = DesiredVictimAgeRange
 
     // Desired characteristics
-    private(set) var desiredProfession: Profession?
-    private(set) var desiredMorality: Morality?
-    private(set) var desiredAgeRange: AgeRange?
-    private(set) var desiredSex: Sex?
+    @Published var desiredProfession: Profession?
+    @Published var desiredMorality: Morality?
+    @Published var desiredAgeRange: AgeRange?
+    @Published var desiredSex: Sex?
     
     init() {
         updateDesiredVictim()
