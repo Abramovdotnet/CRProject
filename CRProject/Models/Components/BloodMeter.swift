@@ -38,6 +38,10 @@ class BloodMeter : ObservableObject, Codable {
         return amount <= currentBlood
     }
     
+    func increaseMaxBlood(_ amount: Float) {
+        maxBlood += amount
+    }
+    
     func emptyBlood() -> Float {
         let availableBlood = currentBlood
         currentBlood = 0
@@ -46,7 +50,7 @@ class BloodMeter : ObservableObject, Codable {
     }
     
     func calculateBloodPercentage() {
-        bloodPercentage = (currentBlood / maxBlood) * 100
+        bloodPercentage = (currentBlood / maxBlood) * maxBlood
     }
     
     enum CodingKeys: String, CodingKey {

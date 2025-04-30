@@ -284,7 +284,7 @@ struct NPCWidget: View {
         .disabled(isDisabled)
         .animation(.easeInOut(duration: 0.3), value: isSelected)
         .frame(width: buttonWidth, height: 320)
-        .shadow(color: .black, radius: 15, x: 1, y: 1)
+        .shadow(color: .black, radius: 10, x: 1, y: 1)
     }
     
     private func getNPCImage() -> Image {

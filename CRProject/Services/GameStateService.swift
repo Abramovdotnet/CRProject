@@ -89,15 +89,23 @@ class GameStateService : ObservableObject, GameService{
         }
              
         if !locationChange {
-            // Get active NPCs
-            guard let npcs = currentScene?.getNPCs().filter( { $0.currentActivity != .sleep && $0.currentActivity != .bathe && $0.currentActivity != .fleeing && $0.isSpecialBehaviorSet == false }) else { return }
+            // Only increase awareness if player doesn't have the Ghost ability
+            if !AbilitiesSystem.shared.hasGhost {
+                // Get active NPCs
+                guard let npcs = currentScene?.getNPCs().filter( { $0.currentActivity != .sleep && $0.currentActivity != .bathe && $0.currentActivity != .fleeing && $0.isSpecialBehaviorSet == false }) else { return }
+                
+                let npcCount = npcs.count
+                
+                if npcCount > 0 {
+                    let awarenessIncrease = 4 * npcCount
+                    vampireNatureRevealService.increaseAwareness(amount: Float(awarenessIncrease))
+                    gameEventsBus.addWarningMessage("* \(npcCount) characters just saw by strange \(to == .none ? "appearance" : "disappearance")! *")
+                }
+            }
             
-            let npcCount = npcs.count
-            
-            if npcCount > 0 {
-                let awarenessIncrease = 4 * npcCount
-                vampireNatureRevealService.increaseAwareness(amount: Float(awarenessIncrease))
-                gameEventsBus.addWarningMessage("* \(npcCount) characters just saw by strange \(to == .none ? "appearance" : "disappearance")! *")
+            // Track disappearances for Ghost ability
+            if to != .none {
+                StatisticsService.shared.increaseDisappearances()
             }
         }
     }
@@ -176,7 +184,7 @@ class GameStateService : ObservableObject, GameService{
         advanceWorldState()
         
         // Reduce player blood pool
-        player?.bloodMeter.useBlood(4)
+        player?.bloodMeter.useBlood(AbilitiesSystem.shared.hasLordOfBlood ? 2 : 4)
         
         // Reset selection if npc left location
         guard let scene = currentScene else { return }

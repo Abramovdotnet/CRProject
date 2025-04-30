@@ -114,11 +114,22 @@ class DialogueViewModel: ObservableObject {
             handleAskForDesiredVictim(nextNodeId: option.nextNodeId)
         case .desiredVictimBribe:
             handleDesiredVictimBribe(nextNodeId: option.nextNodeId)
+        case .fakeAlibiesBribe:
+            handleFakeAlibiesBribe(nextNodeId: option.nextNodeId)
+        case .overlookActivitiesIntimidation:
+            handleOverlookActivitiesIntimidation(nextNodeId: option.nextNodeId)
+        case .askingForFakeAlibies:
+            // This is no longer used, but kept for backward compatibility
+            if let (newText, newOptions) = dialogueProcessor.processNode(option.nextNodeId) {
+                updateDialogue(text: newText, options: newOptions)
+            } else {
+                shouldDismiss = true
+            }
         }
     }
     
     private func handleIntimidation(nextNodeId: String) {
-        let success = dialogueProcessor.attemptIntimidation()
+        let success = dialogueProcessor.attemptIntimidation(npc: npc)
         showActionResult(success: success, action: "Intimidation")
         
         if success {
@@ -298,6 +309,7 @@ class DialogueViewModel: ObservableObject {
             // Sufficient funds: Proceed with transaction and next node
             CoinsManagementService.shared.moveCoins(from: player, to: npc, amount: cost)
             npc.playerRelationship.increase(amount: 1)
+            npc.spentNightWithPlayer = true
             
             VibrationService.shared.lightTap()
             
@@ -383,6 +395,149 @@ class DialogueViewModel: ObservableObject {
         } else {
             shouldDismiss = true
         }
+    }
+    
+    private func handleFakeAlibiesBribe(nextNodeId: String) {
+        guard let player = gameStateService.player else { return }
+        
+        // Check if player has enough coins
+        if player.coins.value >= 150 {
+            // Player pays for the fake alibi
+            CoinsManagementService.shared.moveCoins(from: player, to: npc, amount: 150)
+            
+            // Increase player-NPC relationship
+            npc.playerRelationship.increase(amount: 2)
+            
+            // Reduce awareness - the alibi helps cover player's activities
+            vampireNatureRevealService.decreaseAwareness(amount: 15)
+            
+            // Set NPC as alibi provider for player
+            npc.isIntimidated = true
+            
+            // Process the success node
+            if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+                updateDialogue(text: newText, options: newOptions)
+            } else {
+                shouldDismiss = true
+            }
+            
+            // Add a game event
+            GameEventsBusService.shared.addMessageWithIcon(
+                type: .common,
+                location: GameStateService.shared.currentScene?.name ?? "Unknown",
+                player: player,
+                secondaryNPC: npc,
+                interactionType: .conversation,
+                hasSuccess: true,
+                isSuccess: true
+            )
+            
+            // Increment statistics for bribes - this helps with Silver Tongue ability
+            StatisticsService.shared.increaseBribes()
+            
+            // Show success message
+            showActionResult(success: true, action: "Arranged Alibi")
+            
+            // Haptic feedback
+            VibrationService.shared.lightTap()
+        } else {
+            // Not enough coins - this should be caught by the UI requirements,
+            // but handle it gracefully just in case
+            GameEventsBusService.shared.addWarningMessage("* Not enough coins! *")
+            showActionResult(success: false, action: "Not enough coins")
+            
+            // Try to go back to initial dialogue
+            if let initialNodeId = dialogueProcessor.dialogueTree?.initialNode,
+               let (newText, newOptions) = dialogueProcessor.processNode(initialNodeId) {
+                updateDialogue(text: newText, options: newOptions)
+            }
+            
+            // Haptic feedback
+            VibrationService.shared.errorVibration()
+        }
+        
+        // Advance time for the transaction
+        GameTimeService.shared.advanceTime()
+    }
+    
+    private func handleOverlookActivitiesIntimidation(nextNodeId: String) {
+        guard let player = gameStateService.player else { return }
+        
+        // For Mysterious Person ability, success is based on intimidation
+        let success = dialogueProcessor.attemptIntimidation(npc: npc)
+        
+        // Set NPC as intimidated
+        npc.isIntimidated = true
+        npc.intimidationDay = GameTimeService.shared.currentDay
+        
+        if success {
+            // Successful intimidation - NPC is intimidated into overlooking activities
+            
+            // Decrease relationship - even if successful, intimidation damages relationship
+            npc.playerRelationship.decrease(amount: 1)
+            
+            // Reduce awareness substantially - the NPC won't report suspicious activities
+            vampireNatureRevealService.decreaseAwareness(amount: 4)
+            
+            // Process the success node
+            if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+                updateDialogue(text: newText, options: newOptions)
+            } else {
+                shouldDismiss = true
+            }
+            
+            // Add a game event
+            GameEventsBusService.shared.addMessageWithIcon(
+                type: .common,
+                location: GameStateService.shared.currentScene?.name ?? "Unknown",
+                player: player,
+                secondaryNPC: npc,
+                interactionType: .conversation,
+                hasSuccess: true,
+                isSuccess: true
+            )
+            
+            // Show success message
+            showActionResult(success: true, action: "Intimidation")
+            
+            // Haptic feedback
+            VibrationService.shared.lightTap()
+        } else {
+            // Failed intimidation - NPC refuses to be intimidated
+            
+            // Major relationship decrease - NPC is offended by intimidation attempt
+            npc.playerRelationship.decrease(amount: 2)
+            
+            // Increase awareness - failed intimidation makes NPC more suspicious
+            vampireNatureRevealService.increaseAwareness(amount: 10)
+            
+            // Process the failure node
+            if let (newText, newOptions) = dialogueProcessor.processNode("overlook_fail") {
+                updateDialogue(text: newText, options: newOptions)
+            } else {
+                shouldDismiss = true
+            }
+            
+            // Add a game event
+            GameEventsBusService.shared.addMessageWithIcon(
+                type: .common,
+                location: GameStateService.shared.currentScene?.name ?? "Unknown",
+                player: player,
+                secondaryNPC: npc,
+                interactionType: .conversation,
+                hasSuccess: true,
+                isSuccess: false
+            )
+            
+            // Show failure message
+            showActionResult(success: false, action: "Intimidation")
+            
+            // Haptic feedback
+            VibrationService.shared.errorVibration()
+        }
+        
+        // Advance time for the intimidation attempt
+        GameTimeService.shared.advanceTime()
     }
     
     func onHypnosisGameComplete(score: Int) {

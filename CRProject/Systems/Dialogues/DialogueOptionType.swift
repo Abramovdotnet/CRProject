@@ -21,4 +21,7 @@ enum DialogueOptionType: String, Codable {
     case askingForAlchemyPermission
     case askingForDesiredVictim
     case desiredVictimBribe
+    case overlookActivitiesIntimidation
+    case askingForFakeAlibies
+    case fakeAlibiesBribe
 }

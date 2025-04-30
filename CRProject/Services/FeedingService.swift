@@ -32,12 +32,15 @@ class FeedingService: GameService {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
         
+        prey.isBeasyByPlayerAction = true
+        
         try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
         
         var awarenessIncreaseValue: Float = 90.0;
         
         if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
             awarenessIncreaseValue -= 82
+            vampire.bloodMeter.addBlood(10)
         }
         
         if prey.currentActivity == .sleep {
@@ -75,8 +78,13 @@ class FeedingService: GameService {
     
     func consumeFood(vampire: Player, food: Item) {
         if food.isConsumable {
-            vampireNatureRevealService.decreaseAwareness(amount: 4)
+            // If player has Masquerade ability, consuming food reduces awareness twice as much
+            let decreaseAmount: Float = AbilitiesSystem.shared.hasMasquerade ? 2.0 : 1.0
+            vampireNatureRevealService.decreaseAwareness(amount: decreaseAmount)
+            vampire.bloodMeter.useBlood(1)
+            
             ItemsManagementService.shared.removeItem(item: food, from: vampire)
+            StatisticsService.shared.increaseFoodConsumed()
         }
     }
     
@@ -91,12 +99,17 @@ class FeedingService: GameService {
         
         if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
             awarenessIncreaseValue -= 60
+            vampire.bloodMeter.addBlood(10)
         } else {
             prey.decreasePlayerRelationship(with: 100)
         }
         
         if prey.currentActivity == .sleep {
             awarenessIncreaseValue -= 70
+        }
+        
+        if AbilitiesSystem.shared.hasSonOfDracula {
+            vampire.bloodMeter.increaseMaxBlood(1)
         }
         
         // Increase awareness in the scene where feeding occurred

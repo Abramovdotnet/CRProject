@@ -270,9 +270,9 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "245"
-            endingLineNumber = "245"
-            landmarkName = "advanceWorldState(advanceSafe:)"
+            startingLineNumber = "248"
+            endingLineNumber = "248"
+            landmarkName = "handleSafeTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -286,8 +286,8 @@
             filePath = "CRProject/Services/StatisticsService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "59"
-            endingLineNumber = "59"
+            startingLineNumber = "63"
+            endingLineNumber = "63"
             landmarkName = "increaseAlchemyRecipesUnlocked()"
             landmarkType = "7">
          </BreakpointContent>
@@ -334,9 +334,9 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "209"
-            endingLineNumber = "209"
-            landmarkName = "handleNightAppears()"
+            startingLineNumber = "212"
+            endingLineNumber = "212"
+            landmarkName = "handleTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -352,7 +352,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "153"
             endingLineNumber = "153"
-            landmarkName = "handleAskForDesiredVictim(nextNodeId:)"
+            landmarkName = "handleSeduction(nextNodeId:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -366,9 +366,9 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "126"
-            endingLineNumber = "126"
-            landmarkName = "changeLocation(to:)"
+            startingLineNumber = "129"
+            endingLineNumber = "129"
+            landmarkName = "whisperToRandomNpc()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -385,6 +385,70 @@
             startingLineNumber = "565"
             endingLineNumber = "565"
             landmarkName = "navigateToLocation(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "513B1F8C-413C-48C4-9BF2-749B4137AA7A"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Systems/Dialogues/DialogueProcessor.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "376"
+            endingLineNumber = "376"
+            landmarkName = "attemptIntimidation(npc:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6F00FFAB-F837-4646-AFD4-4492A1602F22"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/NPCBehaviorService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "76"
+            endingLineNumber = "76"
+            landmarkName = "handleNPCMovementBehavior(npc:gameTimeService:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "02A64C4B-53A1-4FF5-9E58-1EAC610599DE"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/NPCBehaviorService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "119"
+            endingLineNumber = "119"
+            landmarkName = "handleNPCMovementBehavior(npc:gameTimeService:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "CB09A447-CADB-426A-B076-32E10861A035"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/NPCBehaviorService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "95"
+            endingLineNumber = "95"
+            landmarkName = "handleNPCMovementBehavior(npc:gameTimeService:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

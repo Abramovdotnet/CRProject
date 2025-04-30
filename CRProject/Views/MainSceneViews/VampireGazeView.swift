@@ -33,8 +33,12 @@ struct VampireGazeView: View {
             ZStack {
                 // Solid Black Background Base
                 Color.black
-                    .opacity(0.9)
                     .ignoresSafeArea()
+                
+                Image("gaze")
+                    .resizable()
+                    .ignoresSafeArea()
+                    .opacity(0.3)
                 
                 DustEmitterView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)

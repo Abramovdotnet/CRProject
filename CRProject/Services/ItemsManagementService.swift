@@ -136,7 +136,7 @@ class ItemsManagementService : GameService {
                 }
                 
                 // Add various resources
-                let resourcesCount = Int.random(in: 20...100)
+                let resourcesCount = Int.random(in: 80...180)
                 for _ in 0..<resourcesCount {
                     if let randomResource = resources.randomElement() {
                         npc.items.append(Item.createUnique(randomResource))
@@ -233,7 +233,7 @@ class ItemsManagementService : GameService {
                 let tools = allItems.filter { $0.type == .tools && $0.name.contains("Potter") }
                 
                 // Add 2-3 alchemy items
-                let alchemyCount = Int.random(in: 11...34)
+                let alchemyCount = Int.random(in: 50...120)
                 for _ in 0..<alchemyCount {
                     if let randomAlchemy = alchemyItems.randomElement() {
                         npc.items.append(Item.createUnique(randomAlchemy))
@@ -251,7 +251,7 @@ class ItemsManagementService : GameService {
             case .merchant:
                 // Add various items for trading
                 let randomItems = allItems
-                let itemCount = Int.random(in: 8...27)
+                let itemCount = Int.random(in: 60...120)
                 for _ in 0..<itemCount {
                     if let randomItem = randomItems.randomElement() {
                         npc.items.append(Item.createUnique(randomItem))
@@ -292,9 +292,9 @@ class ItemsManagementService : GameService {
                 }
             }
             
-            // Ensure NPC doesn't have too many items (max 40)
-            if npc.items.count > 200 {
-                npc.items = Array(npc.items.prefix(200))
+            // Ensure NPC doesn't have too many items (max 300)
+            if npc.items.count > 300 {
+                npc.items = Array(npc.items.prefix(300))
             }
         }
     }

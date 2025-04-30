@@ -140,8 +140,6 @@ class DialogueNodeOption: Codable, Equatable {
 }
 
 struct DialogueRequirements: Codable, Equatable {
-    let minCharisma: Int?
-    let minStrength: Int?
     let isNight: Bool?
     let isIndoor: Bool?
     let coins: Int?
@@ -149,9 +147,7 @@ struct DialogueRequirements: Codable, Equatable {
     let maxRelationship: Int?
     
     static func == (lhs: DialogueRequirements, rhs: DialogueRequirements) -> Bool {
-        return lhs.minCharisma == rhs.minCharisma &&
-               lhs.minStrength == rhs.minStrength &&
-               lhs.isNight == rhs.isNight &&
+        return lhs.isNight == rhs.isNight &&
                lhs.isIndoor == rhs.isIndoor &&
                lhs.coins == rhs.coins &&
                lhs.minRelationship == rhs.minRelationship &&

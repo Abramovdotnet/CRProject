@@ -8,6 +8,7 @@
 import SwiftUICore
 import UIKit
 import SwiftUI
+import Combine
 
 
 struct AbilitiesView: View {
@@ -54,22 +55,25 @@ struct AbilitiesView: View {
     private func backgroundView(scene: Scene) -> some View {
         ZStack {
             Color.black
-                .opacity(0.9)
                 .ignoresSafeArea()
+            Image("vampiricWall")
+                .resizable()
+                .ignoresSafeArea()
+                .opacity(0.7)
             
             // Blood moon effect
             BloodMoonEffect(phase: moonPhase)
                 .opacity(backgroundOpacity * 0.8)
                 .ignoresSafeArea()
           
-            // Blood mist effect
-            EnhancedBloodMistEffect()
+            // Blood mist effect with fixed animation instead of TimelineView
+            CustomBloodMistEffect()
                 .opacity(0.4)
                 .ignoresSafeArea()
                 
-                DustEmitterView()
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-                       .edgesIgnoringSafeArea(.all)
+            DustEmitterView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .edgesIgnoringSafeArea(.all)
         }
     }
                 
@@ -118,11 +122,11 @@ struct AbilitiesView: View {
             // Scrollable content with hidden scrollbar
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 16) {
-                    abilitiesSectionView(title: "Vampiric Powers", abilities: [.seduction, .domination, .whisper, .enthralling, .command, .invisibility, .dayWalker])
+                    abilitiesSectionView(title: "Vampiric Powers", abilities: [.seduction, .domination, .whisper, .enthralling, .command, .invisibility, .dayWalker, .lordOfBlood, .darkness, .memoryErasure, .sonOfDracula, .ghost])
                     
                     abilitiesSectionView(title: "Crafting Skills", abilities: [.smithingNovice, .smithingApprentice, .smithingExpert, .smithingMaster, .alchemyNovice, .alchemyApprentice, .alchemyExpert, .alchemyMaster])
                     
-                    abilitiesSectionView(title: "Social Skills", abilities: [.bribe, .trader])
+                    abilitiesSectionView(title: "Social Skills", abilities: [.bribe, .trader, .masquerade, .unholyTongue, .mysteriousPerson, .oldFriend, .undeadCasanova])
                 }
                 .padding()
             }
@@ -229,9 +233,9 @@ struct AbilitiesView: View {
                 subrequirementRow(label: "Drain victims", current: statisticsService.victimsDrained, required: 1)
                 
             case .whisper:
-                subrequirementRow(label: "Use seduction", current: statisticsService.peopleSeducted, required: 10)
-                subrequirementRow(label: "Feed over sleeping victims", current: statisticsService.feedingsOverSleepingVictims, required: 5)
-                subrequirementRow(label: "Feed over desired victims", current: statisticsService.feedingsOverDesiredVictims, required: 3)
+                subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 10)
+                subrequirementRow(label: "Seduce victims", current: statisticsService.peopleSeducted, required: 15)
+                subrequirementRow(label: "Feed over desired victims", current: statisticsService.feedingsOverDesiredVictims, required: 10)
                 
             case .command:
                 subrequirementRow(label: "Use seduction", current: statisticsService.peopleSeducted, required: 5)
@@ -275,12 +279,54 @@ struct AbilitiesView: View {
                 
             case .invisibility:
                 subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 5)
+                subrequirementRow(label: "People seduced", current: statisticsService.peopleSeducted, required: 10)
                 subrequirementRow(label: "Feed over desired victims", current: statisticsService.feedingsOverDesiredVictims, required: 5)
                 
             case .dayWalker:
                 subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 10)
                 subrequirementRow(label: "Feed over desired victims", current: statisticsService.feedingsOverDesiredVictims, required: 10)
                 subrequirementRow(label: "Drain victims", current: statisticsService.victimsDrained, required: 3)
+                
+            case .lordOfBlood:
+                subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 30)
+                subrequirementRow(label: "Feed over desired victims", current: statisticsService.feedingsOverDesiredVictims, required: 30)
+                subrequirementRow(label: "Dominate victims", current: statisticsService.peopleDominated, required: 30)
+                
+            case .masquerade:
+                subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 30)
+                subrequirementRow(label: "Food consumed", current: statisticsService.foodConsumed, required: 100)
+                subrequirementRow(label: "Seduce victims", current: statisticsService.peopleSeducted, required: 20)
+                
+            case .unholyTongue:
+                subrequirementRow(label: "Bribe victims", current: statisticsService.bribes, required: 20)
+                
+            case .mysteriousPerson:
+                subrequirementRow(label: "Successful bribes", current: statisticsService.bribes, required: 10)
+                subrequirementRow(label: "Barters completed", current: statisticsService.bartersCompleted, required: 20)
+                
+            case .darkness:
+                subrequirementRow(label: "Desired victims", current: statisticsService.feedingsOverDesiredVictims, required: 15)
+                subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 21)
+                subrequirementRow(label: "Sleeping victims", current: statisticsService.feedingsOverSleepingVictims, required: 30)
+                
+            case .memoryErasure:
+                subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 40)
+                subrequirementRow(label: "Dominate victims", current: statisticsService.peopleDominated, required: 20)
+                
+            case .oldFriend:
+                subrequirementRow(label: "Friendships created", current: statisticsService.friendshipsCreated, required: 10)
+                
+            case .undeadCasanova:
+                subrequirementRow(label: "Friendships created", current: statisticsService.friendshipsCreated, required: 15)
+                subrequirementRow(label: "Nights spent with someone", current: statisticsService.nightSpentsWithSomeone, required: 20)
+                subrequirementRow(label: "Feed on desired victims", current: statisticsService.feedingsOverDesiredVictims, required: 20)
+                
+            case .sonOfDracula:
+                subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 100)
+                subrequirementRow(label: "Drain victims", current: statisticsService.victimsDrained, required: 50)
+                
+            case .ghost:
+                subrequirementRow(label: "Disappearances", current: statisticsService.disappearances, required: 30)
             }
         }
         .padding(.horizontal, 4)
@@ -400,7 +446,8 @@ struct AbilitiesView: View {
             ("Sleeping Victims", "\(statisticsService.feedingsOverSleepingVictims)"),
             ("Desired Victims", "\(statisticsService.feedingsOverDesiredVictims)"),
             ("Victims Drained", "\(statisticsService.victimsDrained)"),
-            ("People Killed", "\(statisticsService.peopleKilled)")
+            ("People Killed", "\(statisticsService.peopleKilled)"),
+            ("Food Consumed", "\(statisticsService.foodConsumed)")
         ]
     }
     
@@ -409,7 +456,10 @@ struct AbilitiesView: View {
             ("Seductions", "\(statisticsService.peopleSeducted)"),
             ("Dominations", "\(statisticsService.peopleDominated)"),
             ("Bribes Paid", "\(statisticsService.bribes)"),
-            ("Investigations", "\(statisticsService.investigations)")
+            ("Investigations", "\(statisticsService.investigations)"),
+            ("Friendships Created", "\(statisticsService.friendshipsCreated)"),
+            ("Nights With Someone", "\(statisticsService.nightSpentsWithSomeone)"),
+            ("Disappearances", "\(statisticsService.disappearances)")
         ]
     }
     
@@ -523,6 +573,26 @@ struct AbilitiesView: View {
             return calculateInvisibilityProgress()
         case .dayWalker:
             return calculateDayWalkerProgress()
+        case .lordOfBlood:
+            return calculateLordOfBloodProgress()
+        case .masquerade:
+            return calculateMasqueradeProgress()
+        case .unholyTongue:
+            return calculateUnholyTongueProgress()
+        case .mysteriousPerson:
+            return calculateMysteriousPersonProgress()
+        case .darkness:
+            return calculateDarknessProgress()
+        case .memoryErasure:
+            return calculateMemoryErasureProgress()
+        case .oldFriend:
+            return calculateOldFriendProgress()
+        case .undeadCasanova:
+            return calculateUndeadCasanovaProgress()
+        case .sonOfDracula:
+            return calculateSonOfDraculaProgress()
+        case .ghost:
+            return calculateGhostProgress()
         }
     }
     
@@ -613,5 +683,111 @@ struct AbilitiesView: View {
         let feedProgress = min(1.0, Double(statisticsService.feedingsOverDesiredVictims) / 10.0)
         let drainProgress = min(1.0, Double(statisticsService.victimsDrained) / 3.0)
         return (daysProgress + feedProgress + drainProgress) / 3.0
+    }
+    
+    private func calculateLordOfBloodProgress() -> Double {
+        let daysProgress = min(1.0, Double(statisticsService.daysSurvived) / 30.0)
+        let feedProgress = min(1.0, Double(statisticsService.feedingsOverDesiredVictims) / 30.0)
+        let dominateProgress = min(1.0, Double(statisticsService.peopleDominated) / 30.0)
+        return (daysProgress + feedProgress + dominateProgress) / 3.0
+    }
+    
+    private func calculateMasqueradeProgress() -> Double {
+        let daysProgress = min(1.0, Double(statisticsService.daysSurvived) / 30.0)
+        let foodProgress = min(1.0, Double(statisticsService.foodConsumed) / 100.0)
+        let seduceProgress = min(1.0, Double(statisticsService.peopleSeducted) / 20.0)
+        return (daysProgress + foodProgress + seduceProgress) / 3.0
+    }
+    
+    private func calculateUnholyTongueProgress() -> Double {
+        return min(1.0, Double(statisticsService.bribes) / 20.0)
+    }
+    
+    private func calculateMysteriousPersonProgress() -> Double {
+        let bribeProgress = min(1.0, Double(statisticsService.bribes) / 10.0)
+        let barterProgress = min(1.0, Double(statisticsService.bartersCompleted) / 20.0)
+        return (bribeProgress + barterProgress) / 2.0
+    }
+    
+    private func calculateDarknessProgress() -> Double {
+        let desiredProgress = min(1.0, Double(statisticsService.feedingsOverDesiredVictims) / 15.0)
+        let daysProgress = min(1.0, Double(statisticsService.daysSurvived) / 21.0)
+        let sleepingProgress = min(1.0, Double(statisticsService.feedingsOverSleepingVictims) / 30.0)
+        return (desiredProgress + daysProgress + sleepingProgress) / 3.0
+    }
+    
+    private func calculateMemoryErasureProgress() -> Double {
+        let daysProgress = min(1.0, Double(statisticsService.daysSurvived) / 40.0)
+        let dominationProgress = min(1.0, Double(statisticsService.peopleDominated) / 20.0)
+        return (daysProgress + dominationProgress) / 2.0
+    }
+    
+    private func calculateOldFriendProgress() -> Double {
+        return min(1.0, Double(statisticsService.friendshipsCreated) / 10.0)
+    }
+    
+    private func calculateUndeadCasanovaProgress() -> Double {
+        let friendshipProgress = min(1.0, Double(statisticsService.friendshipsCreated) / 15.0)
+        let nightsProgress = min(1.0, Double(statisticsService.nightSpentsWithSomeone) / 20.0)
+        let feedingProgress = min(1.0, Double(statisticsService.feedingsOverDesiredVictims) / 20.0)
+        return (friendshipProgress + nightsProgress + feedingProgress) / 3.0
+    }
+    
+    private func calculateSonOfDraculaProgress() -> Double {
+        let daysProgress = min(1.0, Double(statisticsService.daysSurvived) / 100.0)
+        let drainProgress = min(1.0, Double(statisticsService.victimsDrained) / 50.0)
+        return (daysProgress + drainProgress) / 2.0
+    }
+    
+    private func calculateGhostProgress() -> Double {
+        return min(1.0, Double(statisticsService.disappearances) / 30.0)
+    }
+}
+
+// Add this new implementation to the AbilitiesView - it uses a regular animation timer
+// instead of TimelineView with onChange
+struct CustomBloodMistEffect: View {
+    @State private var phase: CGFloat = 0
+    @State private var animationTimer: AnyCancellable?
+    
+    var body: some View {
+        Canvas { context, size in
+            context.addFilter(.blur(radius: 30))
+            
+            for i in 0..<15 {
+                var path = Path()
+                let offset = CGFloat(i) * 0.2 + phase
+                
+                for x in stride(from: 0, through: size.width, by: 20) {
+                    let y = sin(x/60 + offset) * 40 + size.height/2
+                    if x == 0 {
+                        path.move(to: CGPoint(x: x, y: y))
+                    } else {
+                        path.addQuadCurve(
+                            to: CGPoint(x: x, y: y),
+                            control: CGPoint(x: x - 10, y: y + 10 * sin(x/30 + offset))
+                        )
+                    }
+                }
+                
+                context.stroke(
+                    path,
+                    with: .color(.red.opacity(0.15)),
+                    lineWidth: 30
+                )
+            }
+        }
+        .onAppear {
+            // Use a timer instead of TimelineView
+            animationTimer = Timer.publish(every: 0.05, on: .main, in: .common).autoconnect()
+                .sink { _ in
+                    phase += 0.02
+                }
+        }
+        .onDisappear {
+            // Cancel the timer when view disappears
+            animationTimer?.cancel()
+            animationTimer = nil
+        }
     }
 }

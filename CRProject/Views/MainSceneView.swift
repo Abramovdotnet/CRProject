@@ -4,20 +4,41 @@ struct MainSceneView: View {
     @ObservedObject var viewModel: MainSceneViewModel
     @StateObject private var npcManager = NPCInteractionManager.shared
     @StateObject private var gameStateService: GameStateService = DependencyManager.shared.resolve()
-    @State private var showingNavigation = false
+    @State private var navigationPath = NavigationPath()
     @State private var compassScale: CGFloat = 1.0
     @State private var watchScale: CGFloat = 1.0
     @State private var spentTimeWatchScale: CGFloat = 1.0
     @State private var noneHideoutScale: CGFloat = 1.0
     @State private var shadowHideoutScale: CGFloat = 1.0
     @State private var showSmokeEffect = false
-    @State private var showingTrade = false
-    @State private var showingInventory = false
-    @State private var showingSmithing = false
-    @State private var showingAbilities = false
+    
+    // New enum for navigation destinations
+    enum NavigationDestination: Hashable {
+        case navigation
+        case dialogue
+        case vampireGaze
+        case trade
+        case inventory
+        case smithing
+        case abilities
+    }
     
     init(viewModel: MainSceneViewModel) {
         self.viewModel = viewModel
+        
+        // Configure the navigation bar appearance
+        let navBarAppearance = UINavigationBarAppearance()
+        navBarAppearance.configureWithTransparentBackground()
+        navBarAppearance.backgroundColor = UIColor.clear
+        navBarAppearance.shadowColor = .clear
+        
+        // Remove the default back button text
+        navBarAppearance.backButtonAppearance.normal.titleTextAttributes = [.foregroundColor: UIColor.clear]
+        
+        // Apply to all navigation bars
+        UINavigationBar.appearance().standardAppearance = navBarAppearance
+        UINavigationBar.appearance().compactAppearance = navBarAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = navBarAppearance
     }
     
     // Reference to grid view for scrolling
@@ -46,56 +67,62 @@ struct MainSceneView: View {
         if viewModel.isGameEnd {
             EndGameView()
         } else {
-            GeometryReader { geometry in
-                ZStack { // Apply colorMultiply to this ZStack
-                    Image(uiImage: UIImage(named: "location\(viewModel.currentScene!.id.description)") ?? UIImage(named: "MainSceneBackground")!)
-                        .resizable()
-                        .ignoresSafeArea()
-                        .saturation(isPlayerHidden ? 0 : 1)
-                        .animation(.easeInOut(duration: 0.3), value: isPlayerHidden)
-                        .overlay(
-                            Group {
-                                if isPlayerHidden {
-                                    Rectangle()
-                                        .fill(
-                                            RadialGradient(
-                                                gradient: Gradient(colors: [
-                                                    Color.black.opacity(0.0),
-                                                    Color.black.opacity(0.9)
-                                                ]),
-                                                center: .center,
-                                                startRadius: 0,
-                                                endRadius: UIScreen.main.bounds.width * 0.5
+            // Global background to ensure no white edges
+            ZStack {
+                Color.black.edgesIgnoringSafeArea(.all)
+                
+                NavigationStack(path: $navigationPath) {
+                    ZStack {
+                        Image(uiImage: UIImage(named: "location\(viewModel.currentScene!.id.description)") ?? UIImage(named: "MainSceneBackground")!)
+                            .resizable()
+                            .ignoresSafeArea()
+                            .saturation(isPlayerHidden ? 0 : 1)
+                            .animation(.easeInOut(duration: 0.3), value: isPlayerHidden)
+                            .overlay(
+                                Group {
+                                    if isPlayerHidden {
+                                        Rectangle()
+                                            .fill(
+                                                RadialGradient(
+                                                    gradient: Gradient(colors: [
+                                                        Color.black.opacity(0.0),
+                                                        Color.black.opacity(0.9)
+                                                    ]),
+                                                    center: .center,
+                                                    startRadius: 0,
+                                                    endRadius: UIScreen.main.bounds.width * 0.5
+                                                )
                                             )
-                                        )
-                                        .ignoresSafeArea()
-                                        .animation(.easeInOut(duration: 0.3), value: isPlayerHidden)
+                                            .ignoresSafeArea()
+                                            .animation(.easeInOut(duration: 0.3), value: isPlayerHidden)
+                                    }
                                 }
+                            )
+                            .onAppear {
+                                let imageName = UIImage(named: viewModel.currentScene!.sceneType.rawValue) != nil ? 
+                                viewModel.currentScene!.sceneType.rawValue : "MainSceneBackground"
+                                DebugLogService.shared.log("Loading background: \(imageName)", category: "Scene")
                             }
-                        )
-                        .onAppear {
-                            let imageName = UIImage(named: viewModel.currentScene!.sceneType.rawValue) != nil ? 
-                            viewModel.currentScene!.sceneType.rawValue : "MainSceneBackground"
-                            DebugLogService.shared.log("Loading background: \(imageName)", category: "Scene")
-                        }
-                    
-                    if showSmokeEffect {
-                        SmokeEffect(duration: 1.0)
-                            .allowsHitTesting(false)
-                    }
-                    
-                    DustEmitterView()
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
-                           .edgesIgnoringSafeArea(.all)
-                    
-                    VStack(spacing: 0) {
-                        TopWidgetView(viewModel: viewModel)
-                            .frame(maxWidth: .infinity)
-                            .background(Color.clear)
                         
-                        GeometryReader { geometry in
-                            HStack(spacing: 10) {
-                                VStack(alignment: .leading, spacing: 4) {
+                        if showSmokeEffect {
+                            SmokeEffect(duration: 1.0)
+                                .ignoresSafeArea()
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .allowsHitTesting(false)
+                        }
+                        
+                        DustEmitterView()
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        
+                        VStack(spacing: 0) {
+                            TopWidgetView(viewModel: viewModel)
+                                .frame(maxWidth: .infinity)
+                                .background(Color.clear)
+                            
+                            // Main content area - now without any padding
+                            HStack(spacing: 0) {
+                                // Left buttons - aligned to the left edge
+                                VStack(alignment: .center, spacing: 4) {
                                     // Advance time
                                     MainSceneActionButton(
                                         icon: "hourglass.bottomhalf.fill",
@@ -110,7 +137,7 @@ struct MainSceneView: View {
                                             icon: "hammer.fill",
                                             color: Theme.textColor,
                                             action: {
-                                                showingSmithing = true
+                                                navigationPath.append(NavigationDestination.smithing)
                                             }
                                         )
                                     }
@@ -121,7 +148,7 @@ struct MainSceneView: View {
                                             icon: "map.fill",
                                             color: Theme.bloodProgressColor,
                                             action: {
-                                                showingNavigation = true
+                                                navigationPath.append(NavigationDestination.navigation)
                                             }
                                         )
                                     }
@@ -135,6 +162,7 @@ struct MainSceneView: View {
                                                 action: {
                                                     showSmokeEffect = true
                                                     viewModel.getGameStateService().movePlayerThroughHideouts(to: hideout)
+                                                    StatisticsService.shared.increaseDisappearances()
                                                     
                                                     // Reset smoke effect after animation
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -171,7 +199,7 @@ struct MainSceneView: View {
                                         icon: "duffle.bag.fill",
                                         color: Theme.bloodProgressColor,
                                         action: {
-                                            showingInventory = true
+                                            navigationPath.append(NavigationDestination.inventory)
                                         }
                                     )
                                     
@@ -179,169 +207,304 @@ struct MainSceneView: View {
                                         icon: "moon.stars.circle.fill",
                                         color: Theme.bloodProgressColor,
                                         action: {
-                                            showingAbilities = true
+                                            navigationPath.append(NavigationDestination.abilities)
                                         }
                                     )
                                     
                                     Spacer()
                                 }
-                                .frame(width: 15)
-                                Spacer()
+                                .frame(width: 60)
+                                
+                                Spacer(minLength: 10)
+                                
+                                // Center NPCSGridView
                                 NPCSGridView(
                                     npcs: viewModel.npcs,
                                     onAction: viewModel.handleNPCAction
                                 )
-                                Spacer()
-                                HStack(spacing: 10) {
-                                    VStack {
-                                        // Player information bar
-                                        ZStack {
-                                            HStack {
-                                                HStack(alignment: .top, spacing: 4) {
-                                                    DesiresView(npc: npcManager.selectedNPC, onAction: viewModel.handleNPCAction, viewModel: viewModel)
-                                                    
-                                                    Spacer()
-                                                }
+                                .layoutPriority(1)
+                                
+                                Spacer(minLength: 10)
+                                
+                                // Information panel
+                                VStack(spacing: 8) {
+                                    // Player information bar
+                                    ZStack {
+                                        HStack {
+                                            HStack(alignment: .top, spacing: 4) {
+                                                DesiresView(npc: npcManager.selectedNPC, onAction: viewModel.handleNPCAction, viewModel: viewModel)
+                                                
+                                                Spacer()
                                             }
                                         }
-                                        
-                                        if npcManager.selectedNPC != nil {
-                                            HorizontalNPCWidget(npc: npcManager.selectedNPC!)
-                                        }
-                                   
-                                        // Chat History
-                                        ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
-                                            .frame(maxWidth: .infinity)
                                     }
-                                    .frame(maxWidth: .infinity)
-                
-                                    // Actions
-                                    VStack(alignment: .leading, spacing: 4) {
-                                        if let selectedNPC = npcManager.selectedNPC {
-                                            if !selectedNPC.isUnknown && selectedNPC.isAlive {
-                                                if selectedNPC.currentActivity != .sleep && selectedNPC.currentActivity != .fleeing && selectedNPC.currentActivity != .bathe {
-                                                    // Start conversation
-                                                    MainSceneActionButton(
-                                                        icon: "bubble.left.fill",
-                                                        color: Theme.textColor,
-                                                        action: {
-                                                            viewModel.handleNPCAction(.startConversation(selectedNPC))
+                                    
+                                    if npcManager.selectedNPC != nil {
+                                        HorizontalNPCWidget(npc: npcManager.selectedNPC!)
+                                    }
+                               
+                                    // Chat History
+                                    ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
+                                        .frame(maxWidth: .infinity)
+                                }
+                                .frame(width: 360, alignment: .top)
+                                
+                                Spacer(minLength: 10)
+                                
+                                // Right buttons - aligned to the right edge
+                                VStack(alignment: .center, spacing: 4) {
+                                    if let selectedNPC = npcManager.selectedNPC {
+                                        if !selectedNPC.isUnknown && selectedNPC.isAlive {
+                                            if selectedNPC.currentActivity != .sleep && selectedNPC.currentActivity != .fleeing && selectedNPC.currentActivity != .bathe {
+                                                // Start conversation
+                                                MainSceneActionButton(
+                                                    icon: "bubble.left.fill",
+                                                    color: Theme.textColor,
+                                                    action: {
+                                                        viewModel.handleNPCAction(.startConversation(selectedNPC))
+                                                        // Add a slight delay to let the viewModel update activeDialogueViewModel
+                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                            navigationPath.append(NavigationDestination.dialogue)
                                                         }
-                                                    )
-                                                    
+                                                    }
+                                                )
+                                                
+                                                if selectedNPC.isTradeAvailable() {
                                                     // Trade
                                                     MainSceneActionButton(
                                                         icon: "cart.fill",
                                                         color: Theme.textColor,
                                                         action: {
-                                                            showingTrade = true
-                                                        }
-                                                    )
-                                                }
-                                                
-                                                // Start intimidation
-                                                MainSceneActionButton(
-                                                    icon: "bolt.heart.fill",
-                                                    color: Theme.bloodProgressColor,
-                                                    action: {
-                                                        viewModel.handleNPCAction(.startIntimidation(selectedNPC))
-                                                    }
-                                                )
-                                                
-                                                if !selectedNPC.isVampire {
-                                                    // Feed
-                                                    MainSceneActionButton(
-                                                        icon: "drop.halffull",
-                                                        color: Theme.bloodProgressColor,
-                                                        action: {
-                                                            viewModel.handleNPCAction(.feed(selectedNPC))
-                                                        }
-                                                    )
-                                                    
-                                                    // Empty blood
-                                                    MainSceneActionButton(
-                                                        icon: "drop.fill",
-                                                        color: Theme.bloodProgressColor,
-                                                        action: {
-                                                            viewModel.handleNPCAction(.drain(selectedNPC))
+                                                            navigationPath.append(NavigationDestination.trade)
                                                         }
                                                     )
                                                 }
                                             }
+                                            
+                                            // Start intimidation
+                                            MainSceneActionButton(
+                                                icon: "bolt.heart.fill",
+                                                color: Theme.bloodProgressColor,
+                                                action: {
+                                                    viewModel.handleNPCAction(.startIntimidation(selectedNPC))
+                                                    // Handle VampireGaze
+                                                    if viewModel.isShowingVampireGazeView {
+                                                        navigationPath.append(NavigationDestination.vampireGaze)
+                                                    }
+                                                }
+                                            )
+                                            
+                                            if !selectedNPC.isVampire {
+                                                // Feed
+                                                MainSceneActionButton(
+                                                    icon: "drop.halffull",
+                                                    color: Theme.bloodProgressColor,
+                                                    action: {
+                                                        viewModel.handleNPCAction(.feed(selectedNPC))
+                                                    }
+                                                )
+                                                
+                                                // Empty blood
+                                                MainSceneActionButton(
+                                                    icon: "drop.fill",
+                                                    color: Theme.bloodProgressColor,
+                                                    action: {
+                                                        viewModel.handleNPCAction(.drain(selectedNPC))
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
-                                    .frame(width: 60)
-                                    .frame(maxHeight: .infinity, alignment: .top)
-                                    .padding(.trailing, 10)
+                                    
+                                    Spacer()
                                 }
-                                .frame(width: 460)
+                                .frame(width: 60)
                             }
-                            .frame(maxHeight: .infinity)
+                            .padding(.top)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                        }
+                        
+                        // Red Overlay for low blood
+                        Rectangle()
+                            .fill(.red)
+                            .opacity(lowBloodRedOpacity)
+                            .allowsHitTesting(false) // Make overlay non-interactive
+                    }
+                    .background(Color.black)
+                    .foregroundColor(Theme.textColor)
+                    .animation(.easeInOut(duration: 0.5), value: lowBloodRedOpacity)
+                    .navigationBarHidden(true)
+                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                    .withDebugOverlay(viewModel: viewModel)
+                    .navigationDestination(for: NavigationDestination.self) { destination in
+                        switch destination {
+                        case .navigation:
+                            ZStack {
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                
+                                GeometryReader { geometry in
+                                    NavigationWebView(
+                                        viewModel: viewModel,
+                                        offset: .constant(.zero),
+                                        scale: .constant(1.0),
+                                        geometry: geometry,
+                                        onLocationSelected: { location in
+                                            if viewModel.isLocationAccessible(location) {
+                                                safePopNavigation()
+                                                viewModel.navigateToLocation(location)
+                                            }
+                                        }
+                                    )
+                                    .background(Color.black.edgesIgnoringSafeArea(.all))
+                                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                                }
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 {
+                                            safePopNavigation()
+                                        }
+                                    }
+                            )
+                            
+                        case .dialogue:
+                            ZStack {
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                
+                                if let dialogueViewModel = viewModel.activeDialogueViewModel {
+                                    DialogueView(viewModel: dialogueViewModel, mainViewModel: viewModel)
+                                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                                        .onDisappear {
+                                            viewModel.activeDialogueViewModel = nil
+                                        }
+                                } else {
+                                    Text("Loading Dialogue...")
+                                        .foregroundColor(Theme.textColor)
+                                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                                        .onAppear {
+                                            // If dialogue not available, go back safely
+                                            if !navigationPath.isEmpty {
+                                                navigationPath.removeLast()
+                                            }
+                                        }
+                                }
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 {
+                                            safePopNavigation()
+                                            viewModel.activeDialogueViewModel = nil
+                                        }
+                                    }
+                            )
+                            
+                        case .vampireGaze:
+                            ZStack {
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                
+                                if let npc = npcManager.selectedNPC {
+                                    VampireGazeView(npc: npc, isPresented: $viewModel.isShowingVampireGazeView, mainViewModel: viewModel)
+                                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                                        .onDisappear {
+                                            viewModel.isShowingVampireGazeView = false
+                                        }
+                                }
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 {
+                                            safePopNavigation()
+                                            viewModel.isShowingVampireGazeView = false
+                                        }
+                                    }
+                            )
+                            
+                        case .trade:
+                            ZStack {
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                
+                                if let npc = npcManager.selectedNPC {
+                                    TradeView(player: gameStateService.player!, npc: npc, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+                                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                                }
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 {
+                                            safePopNavigation()
+                                        }
+                                    }
+                            )
+                            
+                        case .inventory:
+                            ZStack {
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                
+                                CharacterInventoryView(character: gameStateService.player!, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+                                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 {
+                                            safePopNavigation()
+                                        }
+                                    }
+                            )
+                            
+                        case .smithing:
+                            ZStack {
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                
+                                SmithingView(player: gameStateService.player!, mainViewModel: viewModel)
+                                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 {
+                                            safePopNavigation()
+                                        }
+                                    }
+                            )
+                            
+                        case .abilities:
+                            ZStack {
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                
+                                AbilitiesView(scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+                                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 {
+                                            safePopNavigation()
+                                        }
+                                    }
+                            )
                         }
                     }
                 }
-                
-                // Red Overlay for low blood
-                Rectangle()
-                    .fill(.red)
-                    .opacity(lowBloodRedOpacity)
-                    .ignoresSafeArea()
-                    .allowsHitTesting(false) // Make overlay non-interactive
             }
-            .foregroundColor(Theme.textColor)
-            .animation(.easeInOut(duration: 0.5), value: lowBloodRedOpacity) // Keep animation on ZStack
-            .sheet(isPresented: $showingNavigation) {
-                GeometryReader { geometry in
-                    NavigationWebView(
-                        viewModel: viewModel,
-                        offset: .constant(.zero),
-                        scale: .constant(1.0),
-                        geometry: geometry,
-                        onLocationSelected: { location in
-                            if viewModel.isLocationAccessible(location) {
-                                viewModel.navigateToLocation(location)
-                            }
-                        }
-                    )
-                    .background(Color.black.edgesIgnoringSafeArea(.all))
-                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
-                }
-            }
-            .sheet(isPresented: $npcManager.isShowingDialogue, onDismiss: { viewModel.activeDialogueViewModel = nil }) {
-                if let dialogueViewModel = viewModel.activeDialogueViewModel {
-                    DialogueView(viewModel: dialogueViewModel, mainViewModel: viewModel)
-                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
-                } else {
-                    Text("Loading Dialogue...")
-                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
-                }
-            }
-            .sheet(isPresented: $viewModel.isShowingVampireGazeView) {
-                if let npc = npcManager.selectedNPC {
-                    VampireGazeView(npc: npc, isPresented: $viewModel.isShowingVampireGazeView, mainViewModel: viewModel)
-                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
-                }
-            }
-            .sheet(isPresented: $showingTrade) {
-                if let npc = npcManager.selectedNPC {
-                    TradeView(player: gameStateService.player!, npc: npc, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
-                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
-                }
-            }
-            .sheet(isPresented: $showingInventory) {
-                CharacterInventoryView(character: gameStateService.player!, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
-                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
-            }
-            .sheet(isPresented: $showingSmithing) {
-                SmithingView(player: gameStateService.player!, mainViewModel: viewModel)
-                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
-            }
-            .sheet(isPresented: $showingAbilities) {
-                AbilitiesView(scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
-                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
-            }
-            .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
-            .withDebugOverlay(viewModel: viewModel)
+        }
+    }
+    
+    // Add a safe remove method
+    func safePopNavigation() {
+        if !navigationPath.isEmpty {
+            navigationPath.removeLast()
         }
     }
     

@@ -18,6 +18,10 @@ class StatisticsService: GameService, ObservableObject {
     @Published private(set) var propertiesBought: Int = 0
     @Published private(set) var _500CoinsDeals: Int = 0
     @Published private(set) var _1000CoinsDeals: Int = 0
+    @Published private(set) var foodConsumed: Int = 0
+    @Published private(set) var friendshipsCreated: Int = 0
+    @Published private(set) var nightSpentsWithSomeone: Int = 0
+    @Published private(set) var disappearances: Int = 0
     
     static let shared: StatisticsService = DependencyManager.shared.resolve()
     
@@ -111,6 +115,14 @@ class StatisticsService: GameService, ObservableObject {
         if !AbilitiesSystem.shared.hasDomination && AbilitiesSystem.shared.canUnlock(Ability.domination) {
             AbilitiesSystem.shared.unlockAbility(Ability.domination)
         }
+        
+        if !AbilitiesSystem.shared.hasUnholyTongue && AbilitiesSystem.shared.canUnlock(Ability.unholyTongue) {
+            AbilitiesSystem.shared.unlockAbility(Ability.unholyTongue)
+        }
+        
+        if !AbilitiesSystem.shared.hasMysteriousPerson && AbilitiesSystem.shared.canUnlock(Ability.mysteriousPerson) {
+            AbilitiesSystem.shared.unlockAbility(Ability.mysteriousPerson)
+        }
     }
     
     func increasefeedingsOverSleepingVictims() {
@@ -122,6 +134,10 @@ class StatisticsService: GameService, ObservableObject {
         
         if !AbilitiesSystem.shared.hasWhisper && AbilitiesSystem.shared.canUnlock(Ability.whisper) {
             AbilitiesSystem.shared.unlockAbility(Ability.whisper)
+        }
+        
+        if !AbilitiesSystem.shared.hasDarkness && AbilitiesSystem.shared.canUnlock(Ability.darkness) {
+            AbilitiesSystem.shared.unlockAbility(Ability.darkness)
         }
     }
 
@@ -158,6 +174,18 @@ class StatisticsService: GameService, ObservableObject {
         if !AbilitiesSystem.shared.hasDayWalker && AbilitiesSystem.shared.canUnlock(Ability.dayWalker) {
             AbilitiesSystem.shared.unlockAbility(Ability.dayWalker)
         }
+        
+        if !AbilitiesSystem.shared.hasLordOfBlood && AbilitiesSystem.shared.canUnlock(Ability.lordOfBlood) {
+            AbilitiesSystem.shared.unlockAbility(Ability.lordOfBlood)
+        }
+        
+        if !AbilitiesSystem.shared.hasDarkness && AbilitiesSystem.shared.canUnlock(Ability.darkness) {
+            AbilitiesSystem.shared.unlockAbility(Ability.darkness)
+        }
+        
+        if !AbilitiesSystem.shared.hasUndeadCasanova && AbilitiesSystem.shared.canUnlock(Ability.undeadCasanova) {
+            AbilitiesSystem.shared.unlockAbility(Ability.undeadCasanova)
+        }
     }
 
     func increasePeopleSeducted() {
@@ -174,6 +202,10 @@ class StatisticsService: GameService, ObservableObject {
         if !AbilitiesSystem.shared.hasCommand && AbilitiesSystem.shared.canUnlock(Ability.command) {
             AbilitiesSystem.shared.unlockAbility(Ability.command)
         }
+        
+        if !AbilitiesSystem.shared.hasMasquerade && AbilitiesSystem.shared.canUnlock(Ability.masquerade) {
+            AbilitiesSystem.shared.unlockAbility(Ability.masquerade)
+        }
     }
     
     func increasePeopleDominated() {
@@ -182,10 +214,30 @@ class StatisticsService: GameService, ObservableObject {
         if !AbilitiesSystem.shared.hasEnthralling && AbilitiesSystem.shared.canUnlock(Ability.enthralling) {
             AbilitiesSystem.shared.unlockAbility(Ability.enthralling)
         }
+        
+        if !AbilitiesSystem.shared.hasLordOfBlood && AbilitiesSystem.shared.canUnlock(Ability.lordOfBlood) {
+            AbilitiesSystem.shared.unlockAbility(Ability.lordOfBlood)
+        }
+        
+        if !AbilitiesSystem.shared.hasMemoryErasure && AbilitiesSystem.shared.canUnlock(Ability.memoryErasure) {
+            AbilitiesSystem.shared.unlockAbility(Ability.memoryErasure)
+        }
     }
     
     func increaseBartersCompleted() {
         bartersCompleted += 1
+        
+        if !AbilitiesSystem.shared.hasMysteriousPerson && AbilitiesSystem.shared.canUnlock(Ability.mysteriousPerson) {
+            AbilitiesSystem.shared.unlockAbility(Ability.mysteriousPerson)
+        }
+    }
+    
+    func increaseFoodConsumed() {
+        foodConsumed += 1
+        
+        if !AbilitiesSystem.shared.hasMasquerade && AbilitiesSystem.shared.canUnlock(Ability.masquerade) {
+            AbilitiesSystem.shared.unlockAbility(Ability.masquerade)
+        }
     }
     
     func incrementDaysSurvived() {
@@ -197,6 +249,26 @@ class StatisticsService: GameService, ObservableObject {
         
         if !AbilitiesSystem.shared.hasDayWalker && AbilitiesSystem.shared.canUnlock(Ability.dayWalker) {
             AbilitiesSystem.shared.unlockAbility(Ability.dayWalker)
+        }
+        
+        if !AbilitiesSystem.shared.hasLordOfBlood && AbilitiesSystem.shared.canUnlock(Ability.lordOfBlood) {
+            AbilitiesSystem.shared.unlockAbility(Ability.lordOfBlood)
+        }
+        
+        if !AbilitiesSystem.shared.hasMasquerade && AbilitiesSystem.shared.canUnlock(Ability.masquerade) {
+            AbilitiesSystem.shared.unlockAbility(Ability.masquerade)
+        }
+        
+        if !AbilitiesSystem.shared.hasDarkness && AbilitiesSystem.shared.canUnlock(Ability.darkness) {
+            AbilitiesSystem.shared.unlockAbility(Ability.darkness)
+        }
+        
+        if !AbilitiesSystem.shared.hasMemoryErasure && AbilitiesSystem.shared.canUnlock(Ability.memoryErasure) {
+            AbilitiesSystem.shared.unlockAbility(Ability.memoryErasure)
+        }
+        
+        if !AbilitiesSystem.shared.hasSonOfDracula && AbilitiesSystem.shared.canUnlock(Ability.sonOfDracula) {
+            AbilitiesSystem.shared.unlockAbility(Ability.sonOfDracula)
         }
     }
     
@@ -218,6 +290,10 @@ class StatisticsService: GameService, ObservableObject {
         if !AbilitiesSystem.shared.hasDomination && AbilitiesSystem.shared.canUnlock(Ability.domination) {
             AbilitiesSystem.shared.unlockAbility(Ability.domination)
         }
+        
+        if !AbilitiesSystem.shared.hasSonOfDracula && AbilitiesSystem.shared.canUnlock(Ability.sonOfDracula) {
+            AbilitiesSystem.shared.unlockAbility(Ability.sonOfDracula)
+        }
     }
     
     func incrementPeopleKilled() {
@@ -226,6 +302,34 @@ class StatisticsService: GameService, ObservableObject {
     
     func incrementInvestigations() {
         investigations += 1
+    }
+    
+    func increaseDisappearances() {
+        disappearances += 1
+        
+        if !AbilitiesSystem.shared.hasGhost && AbilitiesSystem.shared.canUnlock(Ability.ghost) {
+            AbilitiesSystem.shared.unlockAbility(Ability.ghost)
+        }
+    }
+    
+    func increaseNightSpentsWithSomeone() {
+        nightSpentsWithSomeone += 1
+        
+        if !AbilitiesSystem.shared.hasUndeadCasanova && AbilitiesSystem.shared.canUnlock(Ability.undeadCasanova) {
+            AbilitiesSystem.shared.unlockAbility(Ability.undeadCasanova)
+        }
+    }
+    
+    func incrementFriendshipsCreated() {
+        friendshipsCreated += 1
+        
+        if !AbilitiesSystem.shared.hasOldFriend && AbilitiesSystem.shared.canUnlock(Ability.oldFriend) {
+            AbilitiesSystem.shared.unlockAbility(Ability.oldFriend)
+        }
+        
+        if !AbilitiesSystem.shared.hasUndeadCasanova && AbilitiesSystem.shared.canUnlock(Ability.undeadCasanova) {
+            AbilitiesSystem.shared.unlockAbility(Ability.undeadCasanova)
+        }
     }
     
     func reset() {
@@ -253,6 +357,10 @@ class StatisticsService: GameService, ObservableObject {
         smithingRecipesUnlocked = 100
         alchemyRecipesUnlocked = 100
         propertiesBought = 100
+        foodConsumed = 100
+        friendshipsCreated = 100
+        nightSpentsWithSomeone = 100
+        disappearances = 100
         
         increaseBribes()
         incrementFeedings()
@@ -270,5 +378,9 @@ class StatisticsService: GameService, ObservableObject {
         increaseAlchemyRecipesUnlocked()
         increaseSmithingRecipesUnlocked()
         increasePropertiesBought()
+        increaseFoodConsumed()
+        incrementFriendshipsCreated()
+        increaseNightSpentsWithSomeone()
+        increaseDisappearances()
     }
 }

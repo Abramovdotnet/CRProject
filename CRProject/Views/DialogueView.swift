@@ -255,12 +255,18 @@ private struct DialogueOptionButton: View {
             return Image(systemName: "person.fill.questionmark")
         case .desiredVictimBribe:
             return Image(systemName: "cedisign")
+        case .askingForFakeAlibies:
+            return Image(systemName: "person.fill.checkmark")
+        case .fakeAlibiesBribe:
+            return Image(systemName: "cedisign.circle")
+        case .overlookActivitiesIntimidation:
+            return Image(systemName: "eye.slash.fill")
         }
     }
     
     private func getIconColor() -> Color {
         switch option.type {
-        case .intimidate, .askingForDesiredVictim:
+        case .intimidate, .askingForDesiredVictim, .overlookActivitiesIntimidation:
             return .red
         case .investigate:
             return .blue
@@ -278,8 +284,10 @@ private struct DialogueOptionButton: View {
             return .red
         case .askingForSmithingPermission:
             return .orange
-        case .askingForAlchemyPermission, .desiredVictimBribe:
+        case .askingForAlchemyPermission, .desiredVictimBribe, .fakeAlibiesBribe:
             return .green
+        case .askingForFakeAlibies:
+            return .mint
         }
     }
     

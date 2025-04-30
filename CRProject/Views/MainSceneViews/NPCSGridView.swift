@@ -112,7 +112,7 @@ struct NPCSGridView: View {
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(spacing: 20) {
                     // Add spacer at the top to ensure proper initial positioning
-                    Color.clear.frame(height: geometry.size.height / 2 - 160)
+                    Color.clear.frame(height: max(20, geometry.size.height / 2 - 160))
                     
                     ForEach(prepareNPCData()) { data in
                         NPCWidget(
@@ -135,7 +135,7 @@ struct NPCSGridView: View {
                     }
                     
                     // Add spacer at the bottom to allow scrolling last item to center
-                    Color.clear.frame(height: geometry.size.height / 2 - 160)
+                    Color.clear.frame(height: max(20, geometry.size.height / 2 - 160))
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.horizontal, 20)

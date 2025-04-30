@@ -4,7 +4,7 @@ class DialogueProcessor {
     private let dialogueSystem: DialogueSystem
     private let player: Player
     private var npc: NPC
-    private var dialogueTree: DialogueTree?
+    var dialogueTree: DialogueTree?
     private var gameTimeService: GameTimeService
     private var gameStateService: GameStateService
     
@@ -77,6 +77,16 @@ class DialogueProcessor {
         
         if !npc.isIntimidated {
             tree = mergeDesiredVictimNodes(into: tree)
+        }
+        
+        // Add fake alibi options if player has the UnholyTongue ability (Silver Tongue)
+        if AbilitiesSystem.shared.hasUnholyTongue && !npc.isIntimidated {
+            tree = mergeFakeAlibiNodes(into: tree)
+        }
+        
+        // Add options to intimidate NPCs to overlook activities if player has Mysterious Person
+        if AbilitiesSystem.shared.hasMysteriousPerson && !npc.isIntimidated {
+            tree = mergeOverlookActivitiesNodes(into: tree)
         }
         
         // Store the complete tree
@@ -154,7 +164,7 @@ class DialogueProcessor {
                     from: "Here's 100 coins. Tell me what you know. [Pay 100 coins]",
                     to: matchingNPCs.isEmpty ? noMatchingNPCsNodeId : bribeSuccessNodeId,
                     type: .desiredVictimBribe,
-                    requirements: DialogueRequirements(minCharisma: nil, minStrength: nil, isNight: nil, isIndoor: nil, coins: 100, minRelationship: nil, maxRelationship: nil)
+                    requirements: DialogueRequirements(isNight: nil, isIndoor: nil, coins: 100, minRelationship: nil, maxRelationship: nil)
                 ),
                 DialogueNodeOption(
                     from: "On second thought, that's too much.",
@@ -253,11 +263,6 @@ class DialogueProcessor {
                             from: "Thank you for the information.",
                             to: "end",
                             type: .normal
-                        ),
-                        DialogueNodeOption(
-                            from: "Is there anything else you can tell me about them?",
-                            to: baseTree.initialNode,
-                            type: .relationshipIncrease
                         )
                     ],
                     requirements: nil
@@ -326,7 +331,7 @@ class DialogueProcessor {
                     from: "What's new in town?",
                     to: "gossip_0",
                     type: .normal,
-                    requirements: DialogueRequirements(minCharisma: nil, minStrength: nil, isNight: nil, isIndoor: nil, coins: nil, minRelationship: 2, maxRelationship: nil)
+                    requirements: DialogueRequirements(isNight: nil, isIndoor: nil, coins: nil, minRelationship: 2, maxRelationship: nil)
                 ))
                 nodes[nodeId] = DialogueNode(text: node.text, options: options, requirements: node.requirements)
             }
@@ -364,9 +369,11 @@ class DialogueProcessor {
         
     }
     
-    func attemptIntimidation() -> Bool {
-        let finalChance = 70
-        return Int.random(in: 1...100) <= finalChance
+    func attemptIntimidation(npc: NPC) -> Bool {
+        let baseChance = 50
+        
+        let finalChance = baseChance - (AbilitiesSystem.shared.hasUnholyTongue ? 20 : 0 - npc.playerRelationship.value)
+        return Int.random(in: 1...100) >= finalChance
     }
     
     func attemptSeduction() -> Bool {
@@ -396,6 +403,13 @@ class DialogueProcessor {
             return false
         }
         
+        // Check if player has enough coins for this option
+        if let requiredCoins = req.coins,
+           let player = gameStateService.player,
+           player.coins.value < requiredCoins {
+            return false
+        }
+        
         return true
     }
     
@@ -408,17 +422,14 @@ class DialogueProcessor {
         // Base chance
         let baseChance = 50
         
-        // Bonus from relationship
-        let relationshipBonus = npc.playerRelationship.value * 2
+        // Bonus from relationship (up to +10)
+        let relationshipBonus = npc.playerRelationship.value
         
-        // Additional bonuses could be added here, for example:
-        // - Player charisma or other stats
-        // - Time of day
-        // - NPC profession or personality
-        // - Player's reputation in town
+        // Bonus from Unholy Tongue ability (+20)
+        let unholyTongueBonus = AbilitiesSystem.shared.hasUnholyTongue ? 20 : 0
         
         // Calculate final chance (capped at 90%)
-        let finalChance = min(90, baseChance + relationshipBonus)
+        let finalChance = min(90, baseChance + relationshipBonus + unholyTongueBonus)
         
         return finalChance
     }
@@ -428,5 +439,196 @@ class DialogueProcessor {
         let successChance = calculatePersuasionSuccessChance(for: npc)
         let roll = Int.random(in: 1...100)
         return roll <= successChance
+    }
+    
+    func mergeFakeAlibiNodes(into baseTree: DialogueTree) -> DialogueTree {
+        var nodes = baseTree.nodes
+        
+        // Create unique node IDs for this dialogue path
+        let askForAlibiNodeId = "ask_for_alibi"
+        let alibiResponseNodeId = "alibi_response"
+        let alibiSuccessNodeId = "alibi_success"
+        let alibiRefuseNodeId = "alibi_refuse"
+        
+        // Create the node for player asking about providing an alibi
+        let askForAlibiNode = DialogueNode(
+            text: "I need someone who can vouch for my whereabouts last night. Could you help me?",
+            options: [
+                DialogueNodeOption(
+                    from: "I'd like you to provide an alibi for me. I can pay 150 coins. [Pay 150 coins]",
+                    to: alibiResponseNodeId,
+                    type: .fakeAlibiesBribe,
+                    requirements: DialogueRequirements(isNight: nil, isIndoor: nil, coins: 150, minRelationship: nil, maxRelationship: nil)
+                ),
+                DialogueNodeOption(
+                    from: "Never mind, it's not important.",
+                    to: baseTree.initialNode,
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[askForAlibiNodeId] = askForAlibiNode
+        
+        // Create the node for NPC response - depends on relationship
+        let alibiResponseNode = DialogueNode(
+            text: "You want me to lie about where you were? Well... for 150 coins, I suppose I could say you were with me.",
+            options: [
+                DialogueNodeOption(
+                    from: "Remember, I was with you all evening.",
+                    to: alibiSuccessNodeId,
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[alibiResponseNodeId] = alibiResponseNode
+        
+        // Create the node for player refusing to proceed
+        let alibiRefuseNode = DialogueNode(
+            text: "Changed your mind? Probably for the best. I'm not sure I'd be very convincing anyway.",
+            options: [
+                DialogueNodeOption(
+                    from: "Let's talk about something else.",
+                    to: baseTree.initialNode,
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[alibiRefuseNodeId] = alibiRefuseNode
+        
+        // Create the node for successful alibi arrangement
+        let alibiSuccessNode = DialogueNode(
+            text: "Of course I remember! We spent the entire evening together. If anyone asks, I'll make sure they know you couldn't possibly have been involved in... whatever happened.",
+            options: [
+                DialogueNodeOption(
+                    from: "Thank you for your help.",
+                    to: "end",
+                    type: .normal
+                ),
+                DialogueNodeOption(
+                    from: "I appreciate your discretion.",
+                    to: "end",
+                    type: .relationshipIncrease
+                )
+            ],
+            requirements: nil
+        )
+        nodes[alibiSuccessNodeId] = alibiSuccessNode
+        
+        // Add the option to ask for alibi to the main greeting node
+        for (nodeId, node) in nodes {
+            if nodeId == baseTree.initialNode {
+                var options = node.options
+                options.append(DialogueNodeOption(
+                    from: "I need to discuss a private matter... [Silver Tongue]",
+                    to: askForAlibiNodeId,
+                    type: .normal
+                ))
+                nodes[nodeId] = DialogueNode(text: node.text, options: options, requirements: node.requirements)
+            }
+        }
+        
+        return DialogueTree(initialNode: baseTree.initialNode, nodes: nodes)
+    }
+    
+    func mergeOverlookActivitiesNodes(into baseTree: DialogueTree) -> DialogueTree {
+        var nodes = baseTree.nodes
+        
+        // Create unique node IDs for this dialogue path
+        let suspiciousActivityNodeId = "suspicious_activity"
+        let intimidateOverlookNodeId = "intimidate_overlook"
+        let overlookSuccessNodeId = "overlook_success"
+        let overlookFailNodeId = "overlook_fail"
+        
+        // Calculate intimidation success chance
+        let successPercentage = 50 + (AbilitiesSystem.shared.hasUnholyTongue ? 20 : 0) + npc.playerRelationship.value
+        
+        // Create the node for NPC noticing suspicious activity
+        let suspiciousActivityNode = DialogueNode(
+            text: "I've been hearing strange things about you lately. Some say you're involved in... questionable activities.",
+            options: [
+                DialogueNodeOption(
+                    from: "Perhaps we could come to an arrangement for you to forget what you've heard. [Intimidation: \(successPercentage)]",
+                    to: intimidateOverlookNodeId,
+                    type: .overlookActivitiesIntimidation
+                ),
+                DialogueNodeOption(
+                    from: "I don't know what you're talking about.",
+                    to: baseTree.initialNode,
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[suspiciousActivityNodeId] = suspiciousActivityNode
+        
+        // Create the node for intimidating the NPC to overlook
+        let intimidateOverlookNode = DialogueNode(
+            text: "Are you threatening me? I... I could report you to the authorities.",
+            options: [
+                DialogueNodeOption(
+                    from: "I'm just suggesting that some things are better left alone. For everyone's sake.",
+                    to: overlookSuccessNodeId,
+                    type: .overlookActivitiesIntimidation
+                ),
+                DialogueNodeOption(
+                    from: "Do what you must. I have nothing to hide.",
+                    to: overlookFailNodeId,
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[intimidateOverlookNodeId] = intimidateOverlookNode
+        
+        // Create the node for successful intimidation
+        let overlookSuccessNode = DialogueNode(
+            text: "Fine. I'll... I'll keep what I've heard to myself. Just leave me alone.",
+            options: [
+                DialogueNodeOption(
+                    from: "A wise decision.",
+                    to: "end", 
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[overlookSuccessNodeId] = overlookSuccessNode
+        
+        // Create the node for failed intimidation
+        let overlookFailNode = DialogueNode(
+            text: "I won't be intimidated. People should know what kind of person you really are.",
+            options: [
+                DialogueNodeOption(
+                    from: "You'll regret this.",
+                    to: "end",
+                    type: .relationshipDecrease
+                ),
+                DialogueNodeOption(
+                    from: "Do what you must.",
+                    to: "end",
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[overlookFailNodeId] = overlookFailNode
+        
+        // Add the option for NPC to mention suspicious activity to the main greeting node
+        for (nodeId, node) in nodes {
+            if nodeId == baseTree.initialNode {
+                var options = node.options
+                options.append(DialogueNodeOption(
+                    from: "Actually, I've been meaning to speak with you about something concerning... [Mysterious Person]",
+                    to: suspiciousActivityNodeId,
+                    type: .normal
+                ))
+                nodes[nodeId] = DialogueNode(text: node.text, options: options, requirements: node.requirements)
+            }
+        }
+        
+        return DialogueTree(initialNode: baseTree.initialNode, nodes: nodes)
     }
 }

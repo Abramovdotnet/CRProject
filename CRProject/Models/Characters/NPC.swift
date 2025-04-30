@@ -37,6 +37,7 @@ class NPC: ObservableObject, Character, Codable {
     @Published var isCrimeWitness = false
     @Published var homeLocationId: Int = 0
     @Published var currentLocationId: Int = 0
+    @Published var spentNightWithPlayer: Bool = false
     @Published var typicalActivities: [NPCActivityType] = []
     @Published var workActivities: [NPCActivityType] = []
     @Published var leisureActivities: [NPCActivityType] = []
@@ -86,7 +87,17 @@ class NPC: ObservableObject, Character, Codable {
     }
     
     func increasePlayerRelationship(with value: Int) {
-        playerRelationship.increase(amount: value)
+        let wouldCheckFriendshipStateChange = playerRelationship.state == .neutral
+        var finalValue = AbilitiesSystem.shared.hasOldFriend ? value * 2 : value
+        
+        if AbilitiesSystem.shared.hasUndeadCasanova && spentNightWithPlayer && (playerRelationship.state == .friend || playerRelationship.state == .ally) {
+            finalValue += value * 2
+        }
+        playerRelationship.increase(amount: AbilitiesSystem.shared.hasOldFriend ? value * 2 : value)
+        
+        if wouldCheckFriendshipStateChange && playerRelationship.state == .friend {
+            StatisticsService.shared.incrementFriendshipsCreated()
+        }
     }
     
     func decreasePlayerRelationship(with value: Int) {
@@ -152,7 +163,7 @@ class NPC: ObservableObject, Character, Codable {
         case specialBehaviorTime, isVampireAttackWitness, isCasualtyWitness, casualtyNpcId, isCrimeWitness
         case homeLocationId, currentLocationId, typicalActivities, workActivities, leisureActivities
         case currentActivity, background, playerRelationship, npcsRelationship, items, lastPlayerInteractionDate
-        case deathStatus, hasInteractedWithPlayer
+        case deathStatus, hasInteractedWithPlayer, spentNightWithPlayer, providedAlibis
         case alliedWithNPCId
     }
 
@@ -184,6 +195,11 @@ class NPC: ObservableObject, Character, Codable {
         isCrimeWitness = try container.decode(Bool.self, forKey: .isCrimeWitness)
         homeLocationId = try container.decode(Int.self, forKey: .homeLocationId)
         currentLocationId = try container.decode(Int.self, forKey: .currentLocationId)
+        
+        if let spentNightValue = try? container.decode(Bool.self, forKey: .spentNightWithPlayer) {
+            spentNightWithPlayer = spentNightValue
+        }
+        
         typicalActivities = try container.decode([NPCActivityType].self, forKey: .typicalActivities)
         workActivities = try container.decode([NPCActivityType].self, forKey: .workActivities)
         leisureActivities = try container.decode([NPCActivityType].self, forKey: .leisureActivities)
@@ -196,11 +212,14 @@ class NPC: ObservableObject, Character, Codable {
         deathStatus = try container.decode(DeathStatus.self, forKey: .deathStatus)
         hasInteractedWithPlayer = try container.decode(Bool.self, forKey: .hasInteractedWithPlayer)
         
-        if let alliedId = try container.decodeIfPresent(Int.self, forKey: .alliedWithNPCId) {
-            // Store the ID; resolution to actual NPC object needs to happen elsewhere
-            // (e.g., after all NPCs are decoded)
-            // For now, we leave alliedWithNPC as nil
+        if let alliedWithNPCId = try? container.decode(Int.self, forKey: .alliedWithNPCId) {
+            // This will be resolved after all NPCs are loaded
+            DebugLogService.shared.log("NPC \(id) is allied with NPC \(alliedWithNPCId)", category: "NPC")
         }
+    }
+    
+    func isTradeAvailable() -> Bool {
+        return profession == .blacksmith || profession == .alchemist || profession == .bookseller || profession == .barmaid || profession == .herbalist || profession == .merchant || profession == .tavernKeeper || profession == .tailor
     }
 
     func encode(to encoder: Encoder) throws {
@@ -242,6 +261,7 @@ class NPC: ObservableObject, Character, Codable {
         try container.encode(lastPlayerInteractionDate, forKey: .lastPlayerInteractionDate)
         try container.encode(deathStatus, forKey: .deathStatus)
         try container.encode(hasInteractedWithPlayer, forKey: .hasInteractedWithPlayer)
+        try container.encode(spentNightWithPlayer, forKey: .spentNightWithPlayer)
         
         try container.encodeIfPresent(alliedWithNPC?.id, forKey: .alliedWithNPCId)
     }

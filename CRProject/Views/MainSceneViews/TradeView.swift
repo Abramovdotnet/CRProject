@@ -342,7 +342,7 @@ struct TradeView: View {
             player.coins.value -= abs(dealTotal)
             npc.coins.value += abs(dealTotal)
         }
-        npc.playerRelationship.increase(amount: 2)
+        npc.playerRelationship.increase(amount: 1)
         
         if dealTotal >= 500 && dealTotal < 1000 {
             StatisticsService.shared.increase500CoinsDeals()

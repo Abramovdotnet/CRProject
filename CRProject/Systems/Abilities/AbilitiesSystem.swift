@@ -30,6 +30,16 @@ class AbilitiesSystem: ObservableObject {
     var hasInvisibility: Bool { playerAbilities.contains(.invisibility) }
     var hasCommand: Bool { playerAbilities.contains(.command) }
     var hasDayWalker: Bool { playerAbilities.contains(.dayWalker) }
+    var hasLordOfBlood: Bool { playerAbilities.contains(.lordOfBlood) }
+    var hasMasquerade: Bool { playerAbilities.contains(.masquerade) }
+    var hasUnholyTongue: Bool { playerAbilities.contains(.unholyTongue) }
+    var hasMysteriousPerson: Bool { playerAbilities.contains(.mysteriousPerson) }
+    var hasDarkness: Bool { playerAbilities.contains(.darkness) }
+    var hasMemoryErasure: Bool { playerAbilities.contains(.memoryErasure) }
+    var hasOldFriend: Bool { playerAbilities.contains(.oldFriend) }
+    var hasUndeadCasanova: Bool { playerAbilities.contains(.undeadCasanova) }
+    var hasSonOfDracula: Bool { playerAbilities.contains(.sonOfDracula) }
+    var hasGhost: Bool { playerAbilities.contains(.ghost) }
     
     func unlockAbility(_ ability: Ability) {
         if !playerAbilities.contains(ability) {
@@ -45,10 +55,6 @@ class AbilitiesSystem: ObservableObject {
     
     func checkIsMeetsDominationRequirements() -> Bool {
         return StatisticsService.shared.peopleSeducted >= 5 && StatisticsService.shared.bribes >= 5 && StatisticsService.shared.feedingsOverDesiredVictims >= 3 && StatisticsService.shared.victimsDrained >= 1
-    }
-    
-    func checkIsMeetsWhisperRequirements() -> Bool {
-        return StatisticsService.shared.peopleSeducted >= 10 && StatisticsService.shared.feedingsOverSleepingVictims >= 5 && StatisticsService.shared.feedingsOverDesiredVictims >= 3
     }
     
     func checkIsMeetsEnthrallingRequirements() -> Bool {
@@ -96,7 +102,11 @@ class AbilitiesSystem: ObservableObject {
     }
     
     func checkIsMeetsInvisibilityRequirements() -> Bool {
-        return StatisticsService.shared.daysSurvived >= 5 && StatisticsService.shared.feedingsOverDesiredVictims >= 5
+        return StatisticsService.shared.daysSurvived >= 5 && StatisticsService.shared.peopleSeducted >= 10 && StatisticsService.shared.feedingsOverDesiredVictims >= 5
+    }
+    
+    func checkIsMeetsWhisperRequirements() -> Bool {
+        return StatisticsService.shared.daysSurvived >= 10 && StatisticsService.shared.peopleSeducted >= 15 && StatisticsService.shared.feedingsOverDesiredVictims >= 10
     }
     
     func checkIsMeetsCommandRequirements() -> Bool {
@@ -105,6 +115,52 @@ class AbilitiesSystem: ObservableObject {
     
     func checkIsMeetsDayWalkerRequirements() -> Bool {
         return StatisticsService.shared.daysSurvived >= 10 && StatisticsService.shared.feedingsOverDesiredVictims >= 10 && StatisticsService.shared.victimsDrained >= 3
+    }
+    
+    func checkIsMeetsLordOfBloodRequirements() -> Bool {
+        return StatisticsService.shared.daysSurvived >= 30 && StatisticsService.shared.feedingsOverDesiredVictims >= 30 && StatisticsService.shared.peopleDominated >= 30
+    }
+    
+    func checkIsMeetsMasqueradeRequirements() -> Bool {
+        return StatisticsService.shared.daysSurvived >= 30 && StatisticsService.shared.foodConsumed >= 100 && StatisticsService.shared.peopleSeducted >= 20
+    }
+    
+    func checkIsMeetsUnholyTongueRequirements() -> Bool {
+        return StatisticsService.shared.bribes >= 20
+    }
+    
+    func checkIsMeetsMysteriousPersonRequirements() -> Bool {
+        return StatisticsService.shared.bribes >= 10 && StatisticsService.shared.bartersCompleted >= 20
+    }
+    
+    func checkIsMeetsDarknessRequirements() -> Bool {
+        return StatisticsService.shared.feedingsOverDesiredVictims >= 15 && 
+               StatisticsService.shared.daysSurvived >= 21 && 
+               StatisticsService.shared.feedingsOverSleepingVictims >= 30
+    }
+    
+    func checkIsMeetsMemoryErasureRequirements() -> Bool {
+        return StatisticsService.shared.daysSurvived >= 40 && 
+               StatisticsService.shared.peopleDominated >= 20
+    }
+    
+    func checkIsMeetsOldFriendRequirements() -> Bool {
+        return StatisticsService.shared.friendshipsCreated >= 10
+    }
+    
+    func checkIsMeetsUndeadCasanovaRequirements() -> Bool {
+        return StatisticsService.shared.friendshipsCreated >= 15 && 
+               StatisticsService.shared.nightSpentsWithSomeone >= 20 &&
+               StatisticsService.shared.feedingsOverDesiredVictims >= 20
+    }
+    
+    func checkIsMeetsSonOfDraculaRequirements() -> Bool {
+        return StatisticsService.shared.daysSurvived >= 100 && 
+               StatisticsService.shared.victimsDrained >= 50
+    }
+    
+    func checkIsMeetsGhostRequirements() -> Bool {
+        return StatisticsService.shared.disappearances >= 30
     }
     
     func canUnlock(_ ability: Ability) -> Bool {
@@ -126,6 +182,16 @@ class AbilitiesSystem: ObservableObject {
         case .invisibility: return checkIsMeetsInvisibilityRequirements()
         case .command: return checkIsMeetsCommandRequirements()
         case .dayWalker: return checkIsMeetsDayWalkerRequirements()
+        case .lordOfBlood: return checkIsMeetsLordOfBloodRequirements()
+        case .masquerade: return checkIsMeetsMasqueradeRequirements()
+        case .unholyTongue: return checkIsMeetsUnholyTongueRequirements()
+        case .mysteriousPerson: return checkIsMeetsMysteriousPersonRequirements()
+        case .darkness: return checkIsMeetsDarknessRequirements()
+        case .memoryErasure: return checkIsMeetsMemoryErasureRequirements()
+        case .oldFriend: return checkIsMeetsOldFriendRequirements()
+        case .undeadCasanova: return checkIsMeetsUndeadCasanovaRequirements()
+        case .sonOfDracula: return checkIsMeetsSonOfDraculaRequirements()
+        case .ghost: return checkIsMeetsGhostRequirements()
         }
     }
     
@@ -154,6 +220,16 @@ enum Ability: String, CaseIterable {
     case trader
     case invisibility
     case dayWalker
+    case lordOfBlood
+    case masquerade
+    case unholyTongue
+    case mysteriousPerson
+    case darkness
+    case memoryErasure
+    case oldFriend
+    case undeadCasanova
+    case sonOfDracula
+    case ghost
     
     var name: String {
          switch self {
@@ -174,6 +250,16 @@ enum Ability: String, CaseIterable {
          case .trader: return "Master Trader"
          case .invisibility: return "Shadow Veil"
          case .dayWalker: return "Day Walker"
+         case .lordOfBlood: return "Lord of Blood"
+         case .masquerade: return "Masquerade"
+         case .unholyTongue: return "Unholy Tongue"
+         case .mysteriousPerson: return "Mysterious Person"
+         case .darkness: return "Darkness"
+         case .memoryErasure: return "Memory Erasure"
+         case .oldFriend: return "Old Friend"
+         case .undeadCasanova: return "Undead Casanova"
+         case .sonOfDracula: return "Son of Dracula"
+         case .ghost: return "Ghost"
          }
      }
     
@@ -213,6 +299,26 @@ enum Ability: String, CaseIterable {
             return "Disappear in shadows"
         case .dayWalker:
             return "Walk under direct sun if blood pool is higher than 70%"
+        case .lordOfBlood:
+            return "Reduce regular blood loss twice"
+        case .masquerade:
+            return "Consuming food reduces awareness twice"
+        case .unholyTongue:
+            return "Increases persuasion success chance to 20%"
+        case .mysteriousPerson:
+            return "Convince persons to make fake alibies for you"
+        case .darkness:
+            return "Turn off all light sources to perform single actions out of witnesses sight"
+        case .memoryErasure:
+            return "Calm person if fleeing, reduce awareness and reset negative relationships to zero"
+        case .oldFriend:
+            return "Increase relationship gain rate twice"
+        case .undeadCasanova:
+            return "Persons who've spent nights with you gain permanent relationship bonuses and can help convince others that gossip about you is false once per day"
+        case .sonOfDracula:
+            return "Each drained victim permanently increases your blood pool by 1"
+        case .ghost:
+            return "Shadow Veil appearance/disappearance does not affect awareness"
         }
     }
     
@@ -222,8 +328,6 @@ enum Ability: String, CaseIterable {
             return "Feed on 5 sleeping victims without witnesses. Feed over 1 desired victim."
         case .domination:
             return "Bribe 5 victims. Seduce 5 victims. Feed over 3 desired victims. Drain 1 victim"
-        case .whisper:
-            return "Use seduction 10 times. Feed over 5 sleeping characters and 3 desired victims"
         case .command:
             return "Use seduction over 5 victims. Feed over 5 desired victims"
         case .enthralling:
@@ -249,9 +353,31 @@ enum Ability: String, CaseIterable {
         case .trader:
             return "Trade 20 times with overall income more than 1000 coins at once"
         case .invisibility:
-            return "Survive 5 days. Feed over 5 desired victims"
+            return "Survive 5 days. Seduce 10 victims. Feed over 5 desired victims"
+        case .whisper:
+            return "Survive 10 days. Seduce 15 victims. Feed over 10 desired victims"
         case .dayWalker:
             return "Survive 10 days. Feed over 10 desired victims. Drain 3 victims"
+        case .lordOfBlood:
+            return "Survive 30 days. Feed over 30 desired victims. Dominate 30 victims"
+        case .masquerade:
+            return "Survive 30 days. Consume food 100 times. Seduce 20 victims"
+        case .unholyTongue:
+            return "Bribe 20 victims"
+        case .mysteriousPerson:
+            return "Perform 10 successful bribes. Complete 20 barters"
+        case .darkness:
+            return "Feed on 15 desired victims. Survive 21 days. Feed over 30 sleeping victims"
+        case .memoryErasure:
+            return "Survive 40 days. Perform 20 dominations"
+        case .oldFriend:
+            return "Create 10 friendships"
+        case .undeadCasanova:
+            return "Create 15 friendships. Spend nights with someone 20 times. Feed on 20 desired victims"
+        case .sonOfDracula:
+            return "Survive 100 days. Drain 50 desired victims"
+        case .ghost:
+            return "Disappear 30 times"
         }
     }
     
@@ -274,6 +400,16 @@ enum Ability: String, CaseIterable {
             case .invisibility: return "eye.slash.fill"
             case .dayWalker: return "sunrise.fill"
             case .command: return "person.wave.2.fill"
+            case .lordOfBlood: return "drop.fill"
+            case .masquerade: return "theatermasks.fill"
+            case .unholyTongue: return "mouth.fill"
+            case .mysteriousPerson: return "person.crop.rectangle.stack"
+            case .darkness: return "lightbulb.slash.fill"
+            case .memoryErasure: return "brain.fill"
+            case .oldFriend: return "person.2.fill"
+            case .undeadCasanova: return "heart.circle.fill"
+            case .sonOfDracula: return "drop.triangle.fill"
+            case .ghost: return "figure.walk.motion"
             }
         }
         
@@ -293,6 +429,26 @@ enum Ability: String, CaseIterable {
                 return .white
             case .command:
                 return .blue
+            case .lordOfBlood:
+                return .red
+            case .masquerade:
+                return .yellow
+            case .unholyTongue:
+                return .orange
+            case .mysteriousPerson:
+                return .mint
+            case .darkness:
+                return .purple
+            case .memoryErasure:
+                return .purple
+            case .oldFriend:
+                return .teal
+            case .undeadCasanova:
+                return .pink
+            case .sonOfDracula:
+                return .red
+            case .ghost:
+                return .gray
             }
         }
 }

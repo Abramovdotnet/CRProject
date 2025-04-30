@@ -48,7 +48,7 @@ class MainSceneViewModel: ObservableObject {
         
         // Create and set player
         let initialPlayer = NPCGenerator.createPlayer()
-        initialPlayer.coins.add(1000)
+        initialPlayer.coins.add(10)
         gameStateService.setPlayer(initialPlayer)
      
         ItemsManagementService.shared.giveItem(itemId: 181, to: initialPlayer)
