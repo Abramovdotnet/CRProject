@@ -234,7 +234,7 @@ struct LocationNode: View {
     let data: LocationNodeData
     
     private var isAccessible: Bool {
-        return GameTimeService.shared.isNightTime && !data.location.isLocked
+        return (GameTimeService.shared.isNightTime || (AbilitiesSystem.shared.hasDayWalker && GameStateService.shared.player?.bloodMeter.currentBlood ?? 0 >= 70)) && !data.location.isLocked
     }
     
     private var relationshipIcon: String {

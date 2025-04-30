@@ -509,7 +509,7 @@ class MainSceneViewModel: ObservableObject {
     }
     
     func isLocationAccessible(_ scene: Scene) -> Bool {
-        return gameTime.isNightTime && !scene.isLocked
+        return (GameTimeService.shared.isNightTime || (AbilitiesSystem.shared.hasDayWalker && GameStateService.shared.player?.bloodMeter.currentBlood ?? 0 >= 70)) && !scene.isLocked
     }
     
     func toggleDebugOverlay() {

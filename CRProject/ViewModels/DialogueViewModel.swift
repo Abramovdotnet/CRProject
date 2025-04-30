@@ -110,6 +110,10 @@ class DialogueViewModel: ObservableObject {
             handleAskingForSmithingPermission(nextNodeId: option.nextNodeId)
         case .askingForAlchemyPermission:
             handleAskingForAlchemyPermission(nextNodeId: option.nextNodeId)
+        case .askingForDesiredVictim:
+            handleAskForDesiredVictim(nextNodeId: option.nextNodeId)
+        case .desiredVictimBribe:
+            handleDesiredVictimBribe(nextNodeId: option.nextNodeId)
         }
     }
     
@@ -137,6 +141,140 @@ class DialogueViewModel: ObservableObject {
         pendingSeductionNode = nextNodeId
         VibrationService.shared.lightTap()
         showHypnosisGame = true
+    }
+    
+    private func handleAskForDesiredVictim(nextNodeId: String) {
+        guard let player = gameStateService.player else { return }
+        
+        // Check if this is the initial request from player (right after asking about someone)
+        if nextNodeId == "offer_payment_for_info" {
+            // Use the DialogueProcessor's method to determine success
+            let success = dialogueProcessor.attemptPersuasion(with: npc)
+            
+            if success {
+                // Successful persuasion - NPC is willing to share information for a price
+                // Process the success node - offer to provide info for payment
+                if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+                    updateDialogue(text: newText, options: newOptions)
+                } else {
+                    shouldDismiss = true
+                }
+                
+                // Show success message
+                showActionResult(success: true, action: "Persuasion")
+                VampireNatureRevealService.shared.increaseAwareness(amount: 5)
+                
+                // Haptic feedback
+                VibrationService.shared.lightTap()
+            } else {
+                // Failed persuasion - NPC is not willing to share information
+                // No money is exchanged
+                
+                // Larger relationship decrease - NPC is offended by the bribe attempt
+                npc.playerRelationship.decrease(amount: 1)
+                
+                // Process the failure node instead
+                if let (newText, newOptions) = dialogueProcessor.processNode("bribe_attempt_fail") {
+                    updateDialogue(text: newText, options: newOptions)
+                } else {
+                    shouldDismiss = true
+                }
+                
+                // Add an event to the game events bus
+                GameEventsBusService.shared.addMessageWithIcon(
+                    type: .common,
+                    location: GameStateService.shared.currentScene?.name ?? "Unknown",
+                    player: player,
+                    secondaryNPC: npc,
+                    interactionType: .conversation,
+                    hasSuccess: true,
+                    isSuccess: false
+                )
+                
+                // Show failure message
+                showActionResult(success: false, action: "Persuasion")
+                VampireNatureRevealService.shared.increaseAwareness(amount: 10)
+                
+                // Haptic feedback
+                VibrationService.shared.errorVibration()
+            }
+            
+            // Advance time for the persuasion attempt
+            GameTimeService.shared.advanceTime()
+            
+            npc.isIntimidated = true
+            npc.intimidationDay = GameTimeService.shared.currentDay
+            return
+        }
+        
+        // For any other nodes in this dialogue chain, just process them normally
+        if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+            updateDialogue(text: newText, options: newOptions)
+        } else {
+            shouldDismiss = true
+        }
+    }
+    
+    private func handleDesiredVictimBribe(nextNodeId: String) {
+        guard let player = gameStateService.player else { return }
+        
+        // Handle payment nodes (after successful persuasion)
+        if nextNodeId == "bribe_success_victim_info" || nextNodeId == "no_matching_npcs" {
+            // Player is paying for information (this happens after successful persuasion)
+            // Update coins
+            CoinsManagementService.shared.moveCoins(from: player, to: npc, amount: 100)
+            
+            // Register a bribe in statistics
+            StatisticsService.shared.increaseBribes()
+            
+            // If this is the success information node
+            if nextNodeId == "bribe_success_victim_info" {
+                // Successful information exchange
+                // Slightly increase the NPC's relationship with the player
+                npc.playerRelationship.increase(amount: 1)
+                
+                // Add an event to the game events bus
+                GameEventsBusService.shared.addMessageWithIcon(
+                    type: .common,
+                    location: GameStateService.shared.currentScene?.name ?? "Unknown",
+                    player: player,
+                    secondaryNPC: npc,
+                    interactionType: .conversation,
+                    hasSuccess: true,
+                    isSuccess: true
+                )
+            } else {
+                CoinsManagementService.shared.moveCoins(from: npc, to: player, amount: 100)
+                
+                // No matching NPCs but payment was made
+                GameEventsBusService.shared.addMessageWithIcon(
+                    type: .common,
+                    location: GameStateService.shared.currentScene?.name ?? "Unknown",
+                    player: player,
+                    secondaryNPC: npc,
+                    interactionType: .conversation,
+                    hasSuccess: true,
+                    isSuccess: nil
+                )
+            }
+            
+            // Process the node
+            if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+                updateDialogue(text: newText, options: newOptions)
+            } else {
+                shouldDismiss = true
+            }
+            
+            // Advance time for the information exchange
+            GameTimeService.shared.advanceTime()
+        } else {
+            // For any other nodes, just process them normally
+            if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {
+                updateDialogue(text: newText, options: newOptions)
+            } else {
+                shouldDismiss = true
+            }
+        }
     }
     
     private func handleInvestigation(nextNodeId: String) {

@@ -75,6 +75,10 @@ class DialogueProcessor {
    
         tree = mergeGossipNodes(into: tree)
         
+        if !npc.isIntimidated {
+            tree = mergeDesiredVictimNodes(into: tree)
+        }
+        
         // Store the complete tree
         self.dialogueTree = tree
         
@@ -87,6 +91,197 @@ class DialogueProcessor {
         }
         
         return nil
+    }
+    
+    private func mergeDesiredVictimNodes(into baseTree: DialogueTree) -> DialogueTree {
+        var nodes = baseTree.nodes
+        
+        guard let desiredVictim = GameStateService.shared.player?.desiredVictim else { return baseTree }
+        
+        // Create unique node IDs for our desiredVictim dialogue flow
+        let askAboutVictimNodeId = "ask_about_desired_victim"
+        let bribeSuccessNodeId = "bribe_success_victim_info"
+        let bribeFailNodeId = "bribe_fail_victim_info"
+        let bribeAttemptFailNodeId = "bribe_attempt_fail"
+        let noMatchingNPCsNodeId = "no_matching_npcs"
+        let offerPaymentNodeId = "offer_payment_for_info"
+        
+        // Get all runtime NPCs to search for matching victims
+        let allNPCs = NPCReader.getNPCs()
+        
+        // Filter NPCs that match the desired victim criteria
+        let matchingNPCs = allNPCs.filter { desiredVictim.isDesiredVictim(npc: $0) && $0.id != npc.id }
+        
+        // Craft the desired victim description based on available criteria
+        let victimDescription = desiredVictim.getDescription()
+        
+        // Calculate persuasion success chance
+        let successChance = calculatePersuasionSuccessChance(for: npc)
+        let successPercentage = String(format: "%d%%", successChance)
+        
+        // Create the initial asking node
+        let askingText = "I'm looking for someone. \(victimDescription.isEmpty ? "Someone special." : "Specifically, someone who is \(victimDescription).")"
+        
+        // First node is the player asking about someone
+        let askAboutVictimNode = DialogueNode(
+            text: "Looking for someone, are you? Why do you want to find such a person?",
+            options: [
+                DialogueNodeOption(
+                    from: "I need to speak with them on an important matter. [Persuasion: \(successPercentage)]",
+                    to: offerPaymentNodeId, // This will be intercepted by ViewModel for persuasion check
+                    type: .askingForDesiredVictim
+                ),
+                DialogueNodeOption(
+                    from: "I have my reasons. Perhaps we could make a deal? [Persuasion: \(successPercentage)]",
+                    to: offerPaymentNodeId, // This will be intercepted by ViewModel for persuasion check
+                    type: .askingForDesiredVictim
+                ),
+                DialogueNodeOption(
+                    from: "Never mind, it's not important.",
+                    to: baseTree.initialNode,
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[askAboutVictimNodeId] = askAboutVictimNode
+        
+        // Node for successful persuasion, offering payment
+        let offerPaymentNode = DialogueNode(
+            text: "I might know something about who you're looking for... For 100 coins, I could tell you what I know.",
+            options: [
+                DialogueNodeOption(
+                    from: "Here's 100 coins. Tell me what you know. [Pay 100 coins]",
+                    to: matchingNPCs.isEmpty ? noMatchingNPCsNodeId : bribeSuccessNodeId,
+                    type: .desiredVictimBribe,
+                    requirements: DialogueRequirements(minCharisma: nil, minStrength: nil, isNight: nil, isIndoor: nil, coins: 100, minRelationship: nil, maxRelationship: nil)
+                ),
+                DialogueNodeOption(
+                    from: "On second thought, that's too much.",
+                    to: bribeFailNodeId,
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[offerPaymentNodeId] = offerPaymentNode
+        
+        // Create the bribe failure node (when player refuses to pay)
+        let bribeFailNode = DialogueNode(
+            text: "Then I'm afraid I can't help you. My knowledge has a price.",
+            options: [
+                DialogueNodeOption(
+                    from: "I understand.",
+                    to: baseTree.initialNode,
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[bribeFailNodeId] = bribeFailNode
+        
+        // Create the bribe attempt failure node (when player's persuasion fails)
+        let bribeAttemptFailNode = DialogueNode(
+            text: "Are you trying to bribe me? I should report you to the guards for such an insulting proposition. Do you think I'm some common informant to be bought with a handful of coins?",
+            options: [
+                DialogueNodeOption(
+                    from: "It was just a misunderstanding.",
+                    to: "end",
+                    type: .relationshipDecrease
+                ),
+                DialogueNodeOption(
+                    from: "My apologies, I meant no offense.",
+                    to: "end",
+                    type: .normal
+                ),
+                DialogueNodeOption(
+                    from: "Forget I asked.",
+                    to: "end",
+                    type: .relationshipDecrease
+                )
+            ],
+            requirements: nil
+        )
+        nodes[bribeAttemptFailNodeId] = bribeAttemptFailNode
+        
+        // Special node for when there are no matching NPCs
+        let noMatchingNPCsNode = DialogueNode(
+            text: "I appreciate the coin, but after thinking about it... I don't know anyone matching that description. So, you could take your money back. Perhaps someone your are looking fore not from around here, or I simply haven't crossed paths with them.",
+            options: [
+                DialogueNodeOption(
+                    from: "Thanks anyway.",
+                    to: "end",
+                    type: .normal
+                )
+            ],
+            requirements: nil
+        )
+        nodes[noMatchingNPCsNodeId] = noMatchingNPCsNode
+        
+        // Create the bribe success node with information about potential victims (only if there are matching NPCs)
+        if !matchingNPCs.isEmpty {
+            // Select a random matching NPC to provide information about
+            if let selectedNPC = matchingNPCs.randomElement() {
+                var bribeSuccessText = "Let me think... Ah, yes."
+                
+                // Get the location information for this NPC
+                if let location = LocationReader.getLocationById(by: selectedNPC.currentLocationId) {
+                    bribeSuccessText += " I know exactly who you're looking for. \(selectedNPC.name), \(selectedNPC.sex == .male ? "he" : "she")'s a \(selectedNPC.profession.rawValue). You can find \(selectedNPC.sex == .male ? "him" : "her") at \(location.name)."
+                    
+                    // Add information about when they're typically there if applicable
+                    let timeInfo = selectedNPC.homeLocationId == selectedNPC.currentLocationId 
+                        ? " That's where \(selectedNPC.sex == .male ? "he" : "she") lives, so you might find \(selectedNPC.sex == .male ? "him" : "her") there most times."
+                        : " \(selectedNPC.sex == .male ? "He" : "She") usually goes there during the day."
+                    
+                    bribeSuccessText += timeInfo
+                    
+                    // Add a hint about the NPC if possible
+                    if selectedNPC.morality == .chaoticEvil {
+                        bribeSuccessText += " Be careful though, \(selectedNPC.sex == .male ? "he" : "she") has a dark reputation."
+                    } else if selectedNPC.morality == .chaoticGood {
+                        bribeSuccessText += " \(selectedNPC.sex == .male ? "He's" : "She's") well-respected around here."
+                    }
+                } else {
+                    bribeSuccessText += " There's someone matching that description, but I'm not sure where to find them right now."
+                }
+                
+                // Create the success node with the information
+                let bribeSuccessNode = DialogueNode(
+                    text: bribeSuccessText,
+                    options: [
+                        DialogueNodeOption(
+                            from: "Thank you for the information.",
+                            to: "end",
+                            type: .normal
+                        ),
+                        DialogueNodeOption(
+                            from: "Is there anything else you can tell me about them?",
+                            to: baseTree.initialNode,
+                            type: .relationshipIncrease
+                        )
+                    ],
+                    requirements: nil
+                )
+                
+                // Add the bribe success node
+                nodes[bribeSuccessNodeId] = bribeSuccessNode
+            }
+        }
+        
+        // Add the option to ask about desired victims to all relevant nodes
+        for (nodeId, node) in nodes {
+            if nodeId == baseTree.initialNode {
+                var options = node.options
+                options.append(DialogueNodeOption(
+                    from: askingText,
+                    to: askAboutVictimNodeId,
+                    type: .normal
+                ))
+                nodes[nodeId] = DialogueNode(text: node.text, options: options, requirements: node.requirements)
+            }
+        }
+        
+        return DialogueTree(initialNode: baseTree.initialNode, nodes: nodes)
     }
     
     private func mergeGossipNodes(into baseTree: DialogueTree) -> DialogueTree {
@@ -206,5 +401,32 @@ class DialogueProcessor {
     
     private func filterAvailableOptions(options: [DialogueNodeOption]) -> [DialogueNodeOption] {
         return options.filter(meetsRequirements)
+    }
+    
+    /// Calculates the persuasion success chance based on player-NPC relationship and other factors
+    func calculatePersuasionSuccessChance(for npc: NPC) -> Int {
+        // Base chance
+        let baseChance = 50
+        
+        // Bonus from relationship
+        let relationshipBonus = npc.playerRelationship.value * 2
+        
+        // Additional bonuses could be added here, for example:
+        // - Player charisma or other stats
+        // - Time of day
+        // - NPC profession or personality
+        // - Player's reputation in town
+        
+        // Calculate final chance (capped at 90%)
+        let finalChance = min(90, baseChance + relationshipBonus)
+        
+        return finalChance
+    }
+    
+    /// Checks if a persuasion attempt is successful based on calculated chance
+    func attemptPersuasion(with npc: NPC) -> Bool {
+        let successChance = calculatePersuasionSuccessChance(for: npc)
+        let roll = Int.random(in: 1...100)
+        return roll <= successChance
     }
 }
