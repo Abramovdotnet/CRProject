@@ -102,7 +102,6 @@ class NPCSGridView: UIView {
                 .dropFirst() // Skip initial value
                 .sink { [weak self, weak npc] _ in
                     guard let npc = npc else { return }
-                    DebugLogService.shared.log("Blood changed for NPC \(npc.name) (ID: \(npc.id)): \(npc.bloodMeter.currentBlood)", category: "NPC")
                     self?.updateNPCCell(for: npc)
                 }
                 .store(in: &cancellables)
@@ -112,7 +111,6 @@ class NPCSGridView: UIView {
                 .dropFirst() // Skip initial value
                 .sink { [weak self, weak npc] _ in
                     guard let npc = npc else { return }
-                    DebugLogService.shared.log("Activity changed for NPC \(npc.name) (ID: \(npc.id)): \(npc.currentActivity.rawValue)", category: "NPC")
                     self?.updateNPCCell(for: npc)
                 }
                 .store(in: &cancellables)
@@ -122,7 +120,6 @@ class NPCSGridView: UIView {
                 .dropFirst() // Skip initial value
                 .sink { [weak self, weak npc] newValue in
                     guard let npc = npc else { return }
-                    DebugLogService.shared.log("Intimidation changed for NPC \(npc.name) (ID: \(npc.id)): \(newValue)", category: "NPC")
                     self?.updateNPCCell(for: npc)
                 }
                 .store(in: &cancellables)
@@ -132,7 +129,6 @@ class NPCSGridView: UIView {
                 .dropFirst() // Skip initial value
                 .sink { [weak self, weak npc] newValue in
                     guard let npc = npc else { return }
-                    DebugLogService.shared.log("Beasy state changed for NPC \(npc.name) (ID: \(npc.id)): \(newValue)", category: "NPC")
                     self?.updateNPCCell(for: npc)
                 }
                 .store(in: &cancellables)
@@ -159,7 +155,6 @@ class NPCSGridView: UIView {
             
             // Find the index of the NPC in the sorted list
             if let index = sortedNPCs.firstIndex(where: { $0.id == npc.id }) {
-                DebugLogService.shared.log("Updating cell for NPC \(npc.name) (ID: \(npc.id)) at index \(index)", category: "NPC")
                 
                 // Find the cell and update it
                 if let cell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? NPCCell {
@@ -173,7 +168,6 @@ class NPCSGridView: UIView {
     }
     
     @objc private func npcManagerDidUpdate() {
-        DebugLogService.shared.log("NPC Manager was updated - reloading collection view", category: "NPC")
         
         // First capture the currently selected NPC ID
         let selectedNPCID = NPCInteractionManager.shared.selectedNPC?.id
@@ -193,7 +187,6 @@ class NPCSGridView: UIView {
                let selectedCell = visibleCells.first(where: { ($0.currentNPC?.id ?? -1) == selectedNPCID }) {
                 // Force layout immediately
                 selectedCell.layoutIfNeeded()
-                DebugLogService.shared.log("Re-applying health indicator to selected NPC after manager update", category: "NPC")
                 
                 // Directly access the health indicator and make it visible
                 if let healthIndicator = selectedCell.layer.sublayers?.first(where: { $0 is CAShapeLayer }) as? CAShapeLayer {
@@ -204,14 +197,12 @@ class NPCSGridView: UIView {
     }
     
     @objc private func handleSceneCharactersChanged(_ notification: Notification) {
-        DebugLogService.shared.log("Scene characters changed - refreshing cells", category: "NPC")
         // Make sure to refresh visible cells when scene characters change
         refreshVisibleCells()
     }
     
     private func prepareNPCData() -> [NPC] {
         let sortedNPCs = npcs.sorted { $0.lastPlayerInteractionDate > $1.lastPlayerInteractionDate }
-        DebugLogService.shared.log("Preparing NPC data with \(npcs.count) NPCs", category: "NPC")
         return Array(sortedNPCs.prefix(100))
     }
     
@@ -254,8 +245,6 @@ class NPCSGridView: UIView {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
-            DebugLogService.shared.log("Refreshing all visible cells", category: "NPC")
-            
             // Get visible cells
             let visibleCellIndexPaths = self.collectionView.indexPathsForVisibleItems
             
@@ -277,7 +266,6 @@ class NPCSGridView: UIView {
                     
                     // If this is the selected cell, ensure health indicator is visible
                     if isSelected {
-                        DebugLogService.shared.log("Refreshed selected NPC cell for \(npc.name)", category: "NPC")
                     }
                 }
             }
@@ -295,7 +283,6 @@ class NPCSGridView: UIView {
 extension NPCSGridView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         let count = prepareNPCData().count
-        DebugLogService.shared.log("Collection view has \(count) items", category: "NPC")
         return count
     }
     
@@ -304,7 +291,6 @@ extension NPCSGridView: UICollectionViewDataSource, UICollectionViewDelegateFlow
         let sortedNPCs = prepareNPCData()
         
         guard indexPath.item < sortedNPCs.count else {
-            DebugLogService.shared.log("Error: Trying to access index out of bounds: \(indexPath.item) in array of size \(sortedNPCs.count)", category: "Error")
             return cell
         }
         
@@ -312,7 +298,6 @@ extension NPCSGridView: UICollectionViewDataSource, UICollectionViewDelegateFlow
         let isSelected = NPCInteractionManager.shared.selectedNPC?.id == npc.id
         let isDisabled = checkIfDisabled(npc: npc)
         
-        DebugLogService.shared.log("Configuring cell for NPC \(npc.name) (ID: \(npc.id)) at index \(indexPath.item), isSelected: \(isSelected)", category: "NPC")
         cell.configure(with: npc, isSelected: isSelected, isDisabled: isDisabled)
         
         // Ensure health indicator is properly visible for selected cells immediately
@@ -363,7 +348,6 @@ extension NPCSGridView: UICollectionViewDataSource, UICollectionViewDelegateFlow
         let sortedNPCs = prepareNPCData()
         
         guard indexPath.item < sortedNPCs.count else {
-            DebugLogService.shared.log("Error: Trying to select index out of bounds: \(indexPath.item) in array of size \(sortedNPCs.count)", category: "Error")
             return
         }
         
@@ -558,7 +542,7 @@ class NPCCell: UICollectionViewCell {
         
         // Add pulsating animation to victim indicator with more dramatic effect
         let pulseAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-        pulseAnimation.duration = 0.8 // Faster animation
+        pulseAnimation.duration = 0.5 // Уменьшено с 0.8 до 0.5
         pulseAnimation.fromValue = 0.3
         pulseAnimation.toValue = 1.0
         pulseAnimation.autoreverses = true
@@ -568,7 +552,7 @@ class NPCCell: UICollectionViewCell {
         
         // Add shadow radius animation for more dramatic glow effect
         let glowAnimation = CABasicAnimation(keyPath: "shadowRadius")
-        glowAnimation.duration = 0.8
+        glowAnimation.duration = 0.5 // Уменьшено с 0.8 до 0.5
         glowAnimation.fromValue = 6
         glowAnimation.toValue = 12
         glowAnimation.autoreverses = true
@@ -582,7 +566,7 @@ class NPCCell: UICollectionViewCell {
         self.currentNPC = npc
         
         // Длительность анимации для всех изменений
-        let animationDuration: TimeInterval = 0.3
+        let animationDuration: TimeInterval = 0.2
         
         // Card background - adjust for selection state (removed red border)
         UIView.animate(withDuration: animationDuration) {
@@ -658,9 +642,6 @@ class NPCCell: UICollectionViewCell {
             CATransaction.setAnimationDuration(animationDuration)
             healthIndicator.path = path.cgPath
             CATransaction.commit()
-            
-            // Log health indicator update
-            DebugLogService.shared.log("Drawing health indicator for NPC \(npc.name) (ID: \(npc.id)): \(npc.bloodMeter.currentBlood)%, selected: \(isSelected)", category: "NPC")
         }
         
         // Profession icon - плавная смена иконки
@@ -745,7 +726,6 @@ class NPCCell: UICollectionViewCell {
             CATransaction.commit()
             
             activityIcon.isHidden = false
-            DebugLogService.shared.log("Setting activity icon for NPC \(npc.name) (ID: \(npc.id)): \(npc.currentActivity.rawValue)", category: "NPC")
         } else {
             UIView.animate(withDuration: animationDuration) {
                 self.activityIcon.alpha = 0.0
@@ -771,9 +751,6 @@ class NPCCell: UICollectionViewCell {
             
             // Ensure health label uses Optima font
             healthPercentageLabel.font = UIFont(name: "Optima", size: 11) ?? UIFont.systemFont(ofSize: 11, weight: .regular)
-            
-            // Log the health text that's being set
-            DebugLogService.shared.log("Setting health text: '\(healthText)' for NPC \(npc.name)", category: "NPC")
             
             // Color the health percentage based on blood level with анимацией
             UIView.animate(withDuration: animationDuration) {
@@ -828,7 +805,7 @@ class NPCCell: UICollectionViewCell {
             // Make sure animation is running with enhanced effects
             if desiredVictimIndicator.layer.animation(forKey: "pulseAnimation") == nil {
                 let pulseAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-                pulseAnimation.duration = 0.8 // Faster animation
+                pulseAnimation.duration = 0.5 // Уменьшено с 0.8 до 0.5
                 pulseAnimation.fromValue = 0.3
                 pulseAnimation.toValue = 1.0
                 pulseAnimation.autoreverses = true
@@ -838,7 +815,7 @@ class NPCCell: UICollectionViewCell {
                 
                 // Add shadow radius animation for more dramatic glow effect
                 let glowAnimation = CABasicAnimation(keyPath: "shadowRadius")
-                glowAnimation.duration = 0.8
+                glowAnimation.duration = 0.5 // Уменьшено с 0.8 до 0.5
                 glowAnimation.fromValue = isSelected ? 10 : 8
                 glowAnimation.toValue = isSelected ? 18 : 15
                 glowAnimation.autoreverses = true
@@ -900,7 +877,6 @@ class NPCCell: UICollectionViewCell {
         super.prepareForReuse()
         
         if let npc = currentNPC {
-            DebugLogService.shared.log("Preparing to reuse cell for NPC \(npc.name) (ID: \(npc.id))", category: "NPC")
         }
         
         currentNPC = nil
@@ -991,9 +967,6 @@ class NPCCell: UICollectionViewCell {
                                         startAngle: startAngle, endAngle: endAngle,
                                         clockwise: true)
                 healthIndicator.path = path.cgPath
-                
-                // Force the layer to redraw
-                healthIndicator.setNeedsDisplay()
             }
         }
     }
@@ -1039,7 +1012,6 @@ struct NPCSGridViewRepresentable: UIViewRepresentable {
     }
     
     func updateUIView(_ uiView: NPCSGridView, context: Context) {
-        DebugLogService.shared.log("Updating NPCSGridView with \(npcs.count) NPCs", category: "NPC")
         uiView.npcs = npcs
         context.coordinator.gridView = uiView
         // The collectionView will be reloaded automatically by the didSet property observer
