@@ -53,7 +53,7 @@ enum SceneType: String, CaseIterable {
         case .military: return "shield.fill"
         case .cathedral: return "building.columns.fill"
         case .cloister: return "building.columns.fill"
-        case .cemetery: return "moon.stars.fill"
+        case .cemetery: return "cross.fill"
         case .blacksmith: return "hammer.fill"
         case .alchemistShop: return "flask.fill"
         case .warehouse: return "building.columns.fill"

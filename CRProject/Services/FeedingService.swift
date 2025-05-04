@@ -38,7 +38,7 @@ class FeedingService: GameService {
         
         var awarenessIncreaseValue: Float = 90.0;
         
-        if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
+        if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer || (AbilitiesSystem.shared.hasLionAmongSheep && prey.playerRelationship.state == .friend) {
             awarenessIncreaseValue -= 86
             vampire.bloodMeter.addBlood(10)
         }
@@ -65,6 +65,9 @@ class FeedingService: GameService {
         
         if !prey.isAlive {
             gameEventsBus.addWarningMessage("* I just killed \(prey.name)! Feel satisfied... *")
+            prey.currentActivity = .casualty
+            prey.deathStatus = .unknown
+            
             // Double awareness increase if killing victim
             vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
         }
@@ -95,7 +98,7 @@ class FeedingService: GameService {
         
         try bloodService.emptyBlood(vampire: vampire, prey: prey)
         
-        var awarenessIncreaseValue: Float = 30;
+        let awarenessIncreaseValue: Float = 30;
         
         if AbilitiesSystem.shared.hasSonOfDracula {
             vampire.bloodMeter.increaseMaxBlood(1)
@@ -106,6 +109,9 @@ class FeedingService: GameService {
         statisticsService.incrementVictimsDrained()
         
         gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
+        
+        prey.currentActivity = .casualty
+        prey.deathStatus = .unknown
         
         NPCInteractionManager.shared.playerInteracted(with: prey)
         

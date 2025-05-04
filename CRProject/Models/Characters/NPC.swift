@@ -52,6 +52,8 @@ class NPC: ObservableObject, Character, Codable {
     @Published var lastPlayerInteractionDate: Date = Date()
     @Published var hasInteractedWithPlayer: Bool = false
     
+    @Published var lastDreamStealDay: Int = 0
+    
     var currentInteractionNPC: NPC? = nil
     
     @Published var deathStatus: DeathStatus = .none
@@ -88,15 +90,22 @@ class NPC: ObservableObject, Character, Codable {
     
     func increasePlayerRelationship(with value: Int) {
         let wouldCheckFriendshipStateChange = playerRelationship.state == .neutral
+        let wouldCheckAllyStateChange = playerRelationship.state != .ally && playerRelationship.state != .friend
         var finalValue = AbilitiesSystem.shared.hasOldFriend ? value * 2 : value
         
         if AbilitiesSystem.shared.hasUndeadCasanova && spentNightWithPlayer && (playerRelationship.state == .friend || playerRelationship.state == .ally) {
             finalValue += value * 2
         }
-        playerRelationship.increase(amount: AbilitiesSystem.shared.hasOldFriend ? value * 2 : value)
+        playerRelationship.increase(amount: finalValue)
         
+        // Check if relationship went from non-friend to friend
         if wouldCheckFriendshipStateChange && playerRelationship.state == .friend {
             StatisticsService.shared.incrementFriendshipsCreated()
+        }
+        
+        // Check if relationship went from non-ally to ally
+        if wouldCheckAllyStateChange && (playerRelationship.state == .ally || playerRelationship.state == .friend) {
+            StatisticsService.shared.incrementAlliesCreated()
         }
     }
     
@@ -164,7 +173,7 @@ class NPC: ObservableObject, Character, Codable {
         case homeLocationId, currentLocationId, typicalActivities, workActivities, leisureActivities
         case currentActivity, background, playerRelationship, npcsRelationship, items, lastPlayerInteractionDate
         case deathStatus, hasInteractedWithPlayer, spentNightWithPlayer, providedAlibis
-        case alliedWithNPCId
+        case alliedWithNPCId, lastDreamStealDay
     }
 
     required init(from decoder: Decoder) throws {
@@ -198,6 +207,10 @@ class NPC: ObservableObject, Character, Codable {
         
         if let spentNightValue = try? container.decode(Bool.self, forKey: .spentNightWithPlayer) {
             spentNightWithPlayer = spentNightValue
+        }
+        
+        if let lastDreamStealDayValue = try? container.decode(Int.self, forKey: .lastDreamStealDay) {
+            lastDreamStealDay = lastDreamStealDayValue
         }
         
         typicalActivities = try container.decode([NPCActivityType].self, forKey: .typicalActivities)
@@ -262,6 +275,7 @@ class NPC: ObservableObject, Character, Codable {
         try container.encode(deathStatus, forKey: .deathStatus)
         try container.encode(hasInteractedWithPlayer, forKey: .hasInteractedWithPlayer)
         try container.encode(spentNightWithPlayer, forKey: .spentNightWithPlayer)
+        try container.encode(lastDreamStealDay, forKey: .lastDreamStealDay)
         
         try container.encodeIfPresent(alliedWithNPC?.id, forKey: .alliedWithNPCId)
     }

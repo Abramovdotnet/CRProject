@@ -19,6 +19,8 @@ class VampireGazeSystem: GameService {
         case dominate  // Forceful control
         case scare // Savage fear
         case follow // Force follow
+        case release // Release from effects
+        case dreamstealer // Steal dreams to improve relationships
         
         static func availableCases(npc: NPC) -> [GazePower] {
             var availablePowers: [GazePower] = []
@@ -35,6 +37,13 @@ class VampireGazeSystem: GameService {
                 availablePowers.append(.dominate)
             }
             
+            let gameTimeService: GameTimeService = DependencyManager.shared.resolve()
+            let currentDay = gameTimeService.currentDay
+            
+            if AbilitiesSystem.shared.hasDreamstealer && npc.currentActivity == .sleep && npc.lastDreamStealDay != currentDay {
+                availablePowers.append(.dreamstealer)
+            }
+            
             if AbilitiesSystem.shared.hasEnthralling {
                 //availablePowers.append(.seduction)
             }
@@ -42,15 +51,22 @@ class VampireGazeSystem: GameService {
             availablePowers.append(.scare)
             availablePowers.append(.follow)
             
-            if npc.currentActivity == .seductedByPlayer {
-                return availablePowers.filter( { $0 != .seduction && $0 != .follow })
-            } else if npc.currentActivity == .allyingPlayer {
-                return availablePowers.filter( { $0 != .seduction && $0 != .dominate })
-            } else if npc.currentActivity == .followingPlayer {
-                return availablePowers.filter( { $0 != .follow })
-            } else {
-                return availablePowers
+            // Filter powers based on NPC's current activity
+            switch npc.currentActivity {
+            case .seductedByPlayer:
+                availablePowers = availablePowers.filter { $0 != .seduction && $0 != .follow }
+                availablePowers.append(.release)
+            case .allyingPlayer:
+                availablePowers = availablePowers.filter { $0 != .seduction && $0 != .dominate }
+                availablePowers.append(.release)
+            case .followingPlayer:
+                availablePowers = availablePowers.filter { $0 != .follow }
+                availablePowers.append(.release)
+            default:
+                availablePowers = availablePowers.filter { $0 != .release }
             }
+            
+            return availablePowers
         }
         
         var icon: String {
@@ -60,6 +76,8 @@ class VampireGazeSystem: GameService {
             case .dominate: return "bolt.fill"
             case .scare: return "figure.run"
             case .follow: return "person.2.fill"
+            case .release: return "lock.open.fill"
+            case .dreamstealer: return "bed.double.fill"
             }
         }
         
@@ -70,6 +88,8 @@ class VampireGazeSystem: GameService {
             case .dominate: return .green
             case .scare: return .red
             case .follow: return .blue
+            case .release: return .gray
+            case .dreamstealer: return .purple
             }
         }
         
@@ -80,6 +100,8 @@ class VampireGazeSystem: GameService {
             case .dominate: return "Forceful control, effective but risky"
             case .scare: return "Savage fear, most effective on weak-willed NPCs"
             case .follow: return "Forces NPC to follow you"
+            case .release: return "Release NPC from any vampire influence, returning them to normal"
+            case .dreamstealer: return "Steal sleeping NPC's dream to increase relationship by 5"
             }
         }
         
@@ -90,6 +112,8 @@ class VampireGazeSystem: GameService {
             case .dominate: return 10
             case .scare: return 10
             case .follow: return 10
+            case .release: return 5
+            case .dreamstealer: return 15
             }
         }
     }
@@ -153,6 +177,17 @@ class VampireGazeSystem: GameService {
         case .follow:
             successChance = 100 - resistance
             awarenessIncrease = 15
+        case .release:
+            successChance = 100 // Always succeeds
+            awarenessIncrease = 1
+        case .dreamstealer:
+            // Dreamstealer is more effective on sleeping NPCs
+            if npc.currentActivity == .sleep {
+                successChance = 100 - (resistance * 0.5) // Half resistance for sleeping targets
+            } else {
+                successChance = 0 // Cannot be used on non-sleeping NPCs
+            }
+            awarenessIncrease = 5 // Low awareness increase as target is asleep
         }
         
         let roll = Float.random(in: 0...100)
@@ -183,6 +218,40 @@ class VampireGazeSystem: GameService {
                 npc.isSpecialBehaviorSet = true
                 npc.specialBehaviorTime = 4
                 npc.currentActivity = .followingPlayer
+            } else if power == .release {
+                npc.isBeasyByPlayerAction = false
+                npc.isSpecialBehaviorSet = false
+                npc.currentActivity = .socialize
+                npc.increasePlayerRelationship(with: 1)
+                
+                gameEventBusService.addMessageWithIcon(
+                    message: "Released \(npc.name) from your influence",
+                    type: .event,
+                    location: GameStateService.shared.currentScene?.name,
+                    primaryNPC: npc,
+                    interactionType: NPCInteraction.observing,
+                    hasSuccess: true,
+                    isSuccess: true
+                )
+                
+                NPCInteractionManager.shared.playerInteracted(with: npc)
+                return true
+            } else if power == .dreamstealer {
+                // Leave the NPC sleeping, just steal their dream
+                npc.increasePlayerRelationship(with: 5)  // Significant relationship boost
+                
+                // Track the last day this ability was used on this NPC to enforce once per day limit
+                npc.lastDreamStealDay = gameTimeService.currentDay
+                
+                gameEventBusService.addMessageWithIcon(
+                    message: "Stole a pleasant dream from \(npc.name), improving your relationship",
+                    type: .event,
+                    location: GameStateService.shared.currentScene?.name,
+                    primaryNPC: npc,
+                    interactionType: NPCInteraction.observing,
+                    hasSuccess: true,
+                    isSuccess: true
+                )
             } else {
                 //npc.isIntimidated = true
                 //npc.intimidationDay = gameTimeService.currentDay + 1 // Effect lasts till next day

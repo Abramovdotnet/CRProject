@@ -40,6 +40,11 @@ class AbilitiesSystem: ObservableObject {
     var hasUndeadCasanova: Bool { playerAbilities.contains(.undeadCasanova) }
     var hasSonOfDracula: Bool { playerAbilities.contains(.sonOfDracula) }
     var hasGhost: Bool { playerAbilities.contains(.ghost) }
+    var hasInsight: Bool { playerAbilities.contains(.insight) }
+    var hasLionAmongSheep: Bool { playerAbilities.contains(.lionAmongSheep) }
+    var hasDreamstealer: Bool { playerAbilities.contains(.dreamstealer) }
+    var hasKingSalamon: Bool { playerAbilities.contains(.kingSalamon) }
+    var hasNoble: Bool { playerAbilities.contains(.noble) }
     
     func unlockAbility(_ ability: Ability) {
         if !playerAbilities.contains(ability) {
@@ -191,11 +196,32 @@ class AbilitiesSystem: ObservableObject {
         return StatisticsService.shared.disappearances >= 30
     }
     
+    func checkIsMeetsInsightRequirements() -> Bool {
+        return StatisticsService.shared.investigations >= 100
+    }
+    
+    func checkIsMeetsLionAmongSheepRequirements() -> Bool {
+        return StatisticsService.shared.alliesCreated >= 10 && StatisticsService.shared.feedingsOverDesiredVictims >= 40
+    }
+    
+    func checkIsMeetsDreamstealerRequirements() -> Bool {
+        return StatisticsService.shared.peopleSeducted >= 20
+    }
+    
+    func checkIsMeetsKingSalamonRequirements() -> Bool {
+        return StatisticsService.shared.peopleDominated >= 10
+    }
+    
+    func checkIsMeetsNobleRequirements() -> Bool {
+        return StatisticsService.shared.friendshipsCreated >= 10
+    }
+    
     func canUnlock(_ ability: Ability) -> Bool {
         switch ability {
         case .seduction: return checkIsMeetsSeductionRequirements()
         case .domination: return checkIsMeetsDominationRequirements()
         case .whisper: return checkIsMeetsWhisperRequirements()
+        case .command: return checkIsMeetsCommandRequirements()
         case .enthralling: return checkIsMeetsEnthrallingRequirements()
         case .smithingNovice: return checkIsMeetsSmithingNoviceRequirements()
         case .smithingApprentice: return checkIsMeetsSmithingApprenticeRequirements()
@@ -208,7 +234,6 @@ class AbilitiesSystem: ObservableObject {
         case .bribe: return checkIsMeetsBribeRequirements()
         case .trader: return checkIsMeetsTraderRequirements()
         case .invisibility: return checkIsMeetsInvisibilityRequirements()
-        case .command: return checkIsMeetsCommandRequirements()
         case .dayWalker: return checkIsMeetsDayWalkerRequirements()
         case .lordOfBlood: return checkIsMeetsLordOfBloodRequirements()
         case .masquerade: return checkIsMeetsMasqueradeRequirements()
@@ -220,6 +245,11 @@ class AbilitiesSystem: ObservableObject {
         case .undeadCasanova: return checkIsMeetsUndeadCasanovaRequirements()
         case .sonOfDracula: return checkIsMeetsSonOfDraculaRequirements()
         case .ghost: return checkIsMeetsGhostRequirements()
+        case .insight: return checkIsMeetsInsightRequirements()
+        case .lionAmongSheep: return checkIsMeetsLionAmongSheepRequirements()
+        case .dreamstealer: return checkIsMeetsDreamstealerRequirements()
+        case .kingSalamon: return checkIsMeetsKingSalamonRequirements()
+        case .noble: return checkIsMeetsNobleRequirements()
         }
     }
     
@@ -258,6 +288,11 @@ enum Ability: String, CaseIterable {
     case undeadCasanova
     case sonOfDracula
     case ghost
+    case insight
+    case lionAmongSheep
+    case dreamstealer
+    case kingSalamon
+    case noble
     
     var name: String {
          switch self {
@@ -288,6 +323,11 @@ enum Ability: String, CaseIterable {
          case .undeadCasanova: return "Undead Casanova"
          case .sonOfDracula: return "Son of Dracula"
          case .ghost: return "Ghost"
+         case .insight: return "Insight"
+         case .lionAmongSheep: return "Lion Among Sheep"
+         case .dreamstealer: return "Dreamstealer"
+         case .kingSalamon: return "King Salamon"
+         case .noble: return "Noble"
          }
      }
     
@@ -347,6 +387,16 @@ enum Ability: String, CaseIterable {
             return "Each drained victim permanently increases your blood pool by 1"
         case .ghost:
             return "Shadow Veil appearance/disappearance does not affect awareness"
+        case .insight:
+            return "Investigate all unknown NPCs immediately after entering location"
+        case .lionAmongSheep:
+            return "Allow you to consume allies' blood without consequences"
+        case .dreamstealer:
+            return "Steal sleeping NPC dream once per day to increase relationship by 5"
+        case .kingSalamon:
+            return "Read others' thoughts to find out their motivations. Permanently increases persuasion chance to selected NPC by 10%"
+        case .noble:
+            return "Every lord friend reduces awareness daily by 1"
         }
     }
     
@@ -406,6 +456,16 @@ enum Ability: String, CaseIterable {
             return "Survive 100 days. Drain 50 desired victims"
         case .ghost:
             return "Disappear 30 times"
+        case .insight:
+            return "Investigate 100 NPCs"
+        case .lionAmongSheep:
+            return "Create 10 allies, feed on 40 desired victims"
+        case .dreamstealer:
+            return "Use seduction 20 times"
+        case .kingSalamon:
+            return "Dominate over 10 victims"
+        case .noble:
+            return "Create friendship with 10 lords"
         }
     }
     
@@ -414,6 +474,7 @@ enum Ability: String, CaseIterable {
             case .seduction: return "heart.fill"
             case .domination: return "brain.head.profile"
             case .whisper: return "waveform"
+            case .command: return "person.wave.2.fill"
             case .enthralling: return "link"
             case .smithingNovice: return "hammer.fill"
             case .smithingApprentice: return "hammer.circle.fill"
@@ -427,7 +488,6 @@ enum Ability: String, CaseIterable {
             case .trader: return "bag.fill"
             case .invisibility: return "eye.slash.fill"
             case .dayWalker: return "sunrise.fill"
-            case .command: return "person.wave.2.fill"
             case .lordOfBlood: return "drop.fill"
             case .masquerade: return "theatermasks.fill"
             case .unholyTongue: return "mouth.fill"
@@ -438,6 +498,11 @@ enum Ability: String, CaseIterable {
             case .undeadCasanova: return "heart.circle.fill"
             case .sonOfDracula: return "drop.triangle.fill"
             case .ghost: return "figure.walk.motion"
+            case .insight: return "eye.fill"
+            case .lionAmongSheep: return "person.3.fill"
+            case .dreamstealer: return "bed.double.fill"
+            case .kingSalamon: return "crown.fill"
+            case .noble: return "building.columns.fill"
             }
         }
         
@@ -477,6 +542,16 @@ enum Ability: String, CaseIterable {
                 return .red
             case .ghost:
                 return .gray
+            case .insight:
+                return .blue
+            case .lionAmongSheep:
+                return .yellow
+            case .dreamstealer:
+                return .purple
+            case .kingSalamon:
+                return .orange
+            case .noble:
+                return .indigo
             }
         }
 }

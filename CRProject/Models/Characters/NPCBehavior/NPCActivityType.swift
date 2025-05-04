@@ -24,6 +24,7 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case cook = "Cooking"
     case transport = "Transporting"
     case protect = "Protection"
+    case tendGraves = "Tending graves"
     
     // Social/Leisure
     case socialize = "Socializing"
@@ -34,6 +35,7 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case bathe = "Bathing"
     case explore = "Exploring"
     case meet = "Meeting"
+    case mourn = "Mourning"
     
     // Special
     case quest = "Questing"
@@ -72,25 +74,27 @@ extension NPCActivityType {
         case .sell: return ["market", "shop", "tavern", "square"]
         case .repair: return []
         case .guardPost: return ["military", "watchtower", "barracks", "manor", "brothel"]
-        case .patrol: return ["quarter", "square", "road", "brothel" ]
+        case .patrol: return ["quarter", "square", "road", "brothel", "cemetery"]
         case .research: return ["bookstore", "cathedral", "monastery", "blacksmith", "alchemistShop"]
         case .train: return ["military", "barracks"]
         case .manage: return ["manor", "keep", "market"]
-        case .clean: return ["house", "manor", "barracks", "keep", "tavern", "brothel"]
+        case .clean: return ["house", "manor", "barracks", "keep", "tavern", "brothel", "cemetery"]
         case .serve: return ["tavern", "manor", "keep"]
         case .entertain: return ["tavern", "brothel", "square", "road"]
         case .harvest: return ["road", "square"] // Gardens/plants
         case .cook: return ["house", "manor", "tavern"]
         case .transport: return ["warehouse", "docks", "market"]
         case .protect: return []
+        case .tendGraves: return ["cemetery"]
         
         // Social/Leisure
-        case .pray: return ["cathedral", "monastery", "crypt"]
+        case .pray: return ["cathedral", "monastery", "crypt", "cemetery"]
         case .study: return ["bookstore", "cathedral"]
         case .drink: return ["tavern", "brothel", "house", "road"]
         case .gamble: return ["tavern", "brothel"]
         case .bathe: return ["bathhouse", "house", "tavern", "brothel"]
-        case .explore: return ["tavern", "market", "manor", "brothel", "blacksmith", "alchemistShop", "bookstore", "road", "square", "military", "bathhouse"] // Exploration sites
+        case .explore: return ["tavern", "market", "manor", "brothel", "blacksmith", "alchemistShop", "bookstore", "road", "square", "military", "bathhouse", "cemetery"] // Exploration sites
+        case .mourn: return ["cemetery"]
         
         // Special
         case .quest: return ["tavern", "keep", "manor"] // Quest givers
@@ -115,7 +119,7 @@ extension NPCActivityType {
         case .seductedByPlayer, .allyingPlayer, .followingPlayer:
             return 4
         case .casualty:
-            return 72
+            return 24 * 7
         default: return 1
         }
     }
@@ -172,6 +176,7 @@ extension NPCActivityType {
         case .cook: return "flame.fill"
         case .transport: return "shippingbox.fill"
         case .protect: return "shield.fill"
+        case .tendGraves: return "apple.meditate.square.stack.fill"
         
         // Social/Leisure
         case .pray: return "cross.fill"
@@ -180,6 +185,7 @@ extension NPCActivityType {
         case .gamble: return "dice.fill"
         case .bathe: return "shower.fill"
         case .explore: return "map.fill"
+        case .mourn: return "bolt.heart.fill"
         
         // Special
         case .quest: return "star.fill"
@@ -196,6 +202,7 @@ extension NPCActivityType {
         case .casualty: return "xmark.circle.fill"
         case .followingPlayer: return "person.2.fill"
         case .allyingPlayer: return "bolt.fill"
+        case .mourn: return "heart.fill"
         }
     }
     
@@ -224,6 +231,7 @@ extension NPCActivityType {
         case .cook: return .orange
         case .transport: return .brown
         case .protect: return .green
+        case .tendGraves: return .pink
         
         // Social/Leisure
         case .socialize: return .purple
@@ -233,6 +241,7 @@ extension NPCActivityType {
         case .gamble: return .red
         case .bathe: return .blue
         case .explore: return .green
+        case .mourn: return .pink
         
         // Special
         case .quest: return .yellow
@@ -248,7 +257,8 @@ extension NPCActivityType {
         case .fleeing: return .red
         case .casualty: return .red
         case .followingPlayer: return .blue
-        case .allyingPlayer : return .green
+        case .allyingPlayer: return .green
+        case .mourn: return .pink
         }
     }
 }
@@ -275,8 +285,8 @@ extension Profession {
         case .militaryOfficer: return [.manage, .train, .patrol]
         
         // Religious
-        case .priest: return [.pray, .study, .manage, .research]
-        case .monk: return [.pray, .study, .clean]
+        case .priest: return [.pray, .study, .manage, .research, .tendGraves]
+        case .monk: return [.pray, .study, .clean, .tendGraves]
         case .religiousScholar: return [.study, .research]
         case .pilgrim: return [.pray, .study]
         
@@ -323,7 +333,7 @@ extension Profession {
     private var leisureActivities: [NPCActivityType] {
         switch self {
         // Nobility/High Status
-        case .lordLady: return [.drink, .gamble, .bathe, .explore]
+        case .lordLady: return [.drink, .gamble, .bathe, .explore, .mourn]
         case .courtesan: return [.drink, .bathe, .entertain, .explore]
         
         // Entertainment Industry
@@ -341,23 +351,23 @@ extension Profession {
         
         // Religious
         case .priest, .monk, .religiousScholar, .pilgrim:
-            return [.pray, .study, .explore]
+            return [.pray, .study, .explore, .mourn]
         
         // Craftsmen/Tradespeople
         case .blacksmith, .carpenter, .tailor, .alchemist, .herbalist:
-            return [.drink, .study, .explore]
+            return [.drink, .study, .explore, .mourn]
         case .merchant, .bookseller:
             return [.drink, .gamble, .explore]
         
         // Laborers
         case .gardener, .stableHand, .maintenanceWorker, .generalLaborer:
-            return [.drink, .explore]
+            return [.drink, .explore, .mourn]
         case .cleaner:
             return [.drink, .bathe, .explore]
         
         // Domestic/Service
         case .servant, .kitchenStaff:
-            return [.socialize, .bathe, .explore]
+            return [.socialize, .bathe, .explore, .mourn]
         
         // Adventurous
         case .adventurer:
@@ -367,7 +377,7 @@ extension Profession {
         
         // Special Cases
         case .apprentice: return [.study, .explore]
-        case .noProfession: return [.idle, .socialize, .gamble, .drink, .entertain, .explore]
+        case .noProfession: return [.idle, .socialize, .gamble, .drink, .entertain, .explore, .mourn]
             
         default:
             return [.drink]

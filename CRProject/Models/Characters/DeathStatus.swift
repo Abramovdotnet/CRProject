@@ -10,4 +10,5 @@ enum DeathStatus : String, Codable, CaseIterable {
     case unknown = "unknown"
     case investigated = "investigated"
     case confirmed = "confirmed"
+    case buried = "buried"
 }

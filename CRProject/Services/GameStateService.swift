@@ -207,6 +207,13 @@ class GameStateService : ObservableObject, GameService{
                 forcePlayerToFindHideout()
             }
         }
+        
+        if AbilitiesSystem.shared.hasInsight {
+            let unknownNpcs = scene.getNPCs().filter { $0.isUnknown }
+            for npc in unknownNpcs {
+                InvestigationService.shared.investigate(inspector: player!, investigationObject: npc)
+            }
+        }
     }
     
     func forcePlayerToFindHideout() {

@@ -122,11 +122,11 @@ struct AbilitiesView: View {
             // Scrollable content with hidden scrollbar
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 16) {
-                    abilitiesSectionView(title: "Vampiric Powers", abilities: [.seduction, .domination, .whisper, .enthralling, .command, .invisibility, .dayWalker, .lordOfBlood, .darkness, .memoryErasure, .sonOfDracula, .ghost])
+                    abilitiesSectionView(title: "Vampiric Powers", abilities: [.seduction, .domination, .whisper, .enthralling, .command, .invisibility, .dayWalker, .lordOfBlood, .darkness, .memoryErasure, .sonOfDracula, .ghost, .insight, .dreamstealer, .kingSalamon])
                     
                     abilitiesSectionView(title: "Crafting Skills", abilities: [.smithingNovice, .smithingApprentice, .smithingExpert, .smithingMaster, .alchemyNovice, .alchemyApprentice, .alchemyExpert, .alchemyMaster])
                     
-                    abilitiesSectionView(title: "Social Skills", abilities: [.bribe, .trader, .masquerade, .unholyTongue, .mysteriousPerson, .oldFriend, .undeadCasanova])
+                    abilitiesSectionView(title: "Social Skills", abilities: [.bribe, .trader, .masquerade, .unholyTongue, .mysteriousPerson, .oldFriend, .undeadCasanova, .lionAmongSheep, .noble])
                 }
                 .padding()
             }
@@ -327,6 +327,22 @@ struct AbilitiesView: View {
                 
             case .ghost:
                 subrequirementRow(label: "Disappearances", current: statisticsService.disappearances, required: 30)
+                
+            case .insight:
+                subrequirementRow(label: "Investigations", current: statisticsService.investigations, required: 100)
+                
+            case .lionAmongSheep:
+                subrequirementRow(label: "Allies created", current: statisticsService.friendshipsCreated, required: 10)
+                subrequirementRow(label: "Desired victims", current: statisticsService.feedingsOverDesiredVictims, required: 40)
+                
+            case .dreamstealer:
+                subrequirementRow(label: "Use seduction", current: statisticsService.peopleSeducted, required: 20)
+                
+            case .kingSalamon:
+                subrequirementRow(label: "Dominate victims", current: statisticsService.peopleDominated, required: 10)
+                
+            case .noble:
+                subrequirementRow(label: "Lord friendships", current: statisticsService.friendshipsCreated, required: 10)
             }
         }
         .padding(.horizontal, 4)
@@ -593,6 +609,16 @@ struct AbilitiesView: View {
             return calculateSonOfDraculaProgress()
         case .ghost:
             return calculateGhostProgress()
+        case .insight:
+            return calculateInsightProgress()
+        case .lionAmongSheep:
+            return calculateLionAmongSheepProgress()
+        case .dreamstealer:
+            return calculateDreamstealerProgress()
+        case .kingSalamon:
+            return calculateKingSalamonProgress()
+        case .noble:
+            return calculateNobleProgress()
         }
     }
     
@@ -741,6 +767,28 @@ struct AbilitiesView: View {
     
     private func calculateGhostProgress() -> Double {
         return min(1.0, Double(statisticsService.disappearances) / 30.0)
+    }
+    
+    private func calculateInsightProgress() -> Double {
+        return min(1.0, Double(statisticsService.investigations) / 100.0)
+    }
+    
+    private func calculateLionAmongSheepProgress() -> Double {
+        let friendshipProgress = min(1.0, Double(statisticsService.friendshipsCreated) / 10.0)
+        let feedingProgress = min(1.0, Double(statisticsService.feedingsOverDesiredVictims) / 40.0)
+        return (friendshipProgress + feedingProgress) / 2.0
+    }
+    
+    private func calculateDreamstealerProgress() -> Double {
+        return min(1.0, Double(statisticsService.peopleSeducted) / 20.0)
+    }
+    
+    private func calculateKingSalamonProgress() -> Double {
+        return min(1.0, Double(statisticsService.peopleDominated) / 10.0)
+    }
+    
+    private func calculateNobleProgress() -> Double {
+        return min(1.0, Double(statisticsService.friendshipsCreated) / 10.0)
     }
 }
 

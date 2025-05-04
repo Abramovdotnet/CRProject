@@ -20,6 +20,7 @@ class StatisticsService: GameService, ObservableObject {
     @Published private(set) var _1000CoinsDeals: Int = 0
     @Published private(set) var foodConsumed: Int = 0
     @Published private(set) var friendshipsCreated: Int = 0
+    @Published private(set) var alliesCreated: Int = 0
     @Published private(set) var nightSpentsWithSomeone: Int = 0
     @Published private(set) var disappearances: Int = 0
     
@@ -206,6 +207,10 @@ class StatisticsService: GameService, ObservableObject {
         if !AbilitiesSystem.shared.hasMasquerade && AbilitiesSystem.shared.canUnlock(Ability.masquerade) {
             AbilitiesSystem.shared.unlockAbility(Ability.masquerade)
         }
+        
+        if !AbilitiesSystem.shared.hasDreamstealer && AbilitiesSystem.shared.canUnlock(Ability.dreamstealer) {
+            AbilitiesSystem.shared.unlockAbility(Ability.dreamstealer)
+        }
     }
     
     func increasePeopleDominated() {
@@ -221,6 +226,10 @@ class StatisticsService: GameService, ObservableObject {
         
         if !AbilitiesSystem.shared.hasMemoryErasure && AbilitiesSystem.shared.canUnlock(Ability.memoryErasure) {
             AbilitiesSystem.shared.unlockAbility(Ability.memoryErasure)
+        }
+        
+        if !AbilitiesSystem.shared.hasKingSalamon && AbilitiesSystem.shared.canUnlock(Ability.kingSalamon) {
+            AbilitiesSystem.shared.unlockAbility(Ability.kingSalamon)
         }
     }
     
@@ -302,6 +311,10 @@ class StatisticsService: GameService, ObservableObject {
     
     func incrementInvestigations() {
         investigations += 1
+        
+        if !AbilitiesSystem.shared.hasInsight && AbilitiesSystem.shared.canUnlock(Ability.insight) {
+            AbilitiesSystem.shared.unlockAbility(Ability.insight)
+        }
     }
     
     func increaseDisappearances() {
@@ -329,6 +342,22 @@ class StatisticsService: GameService, ObservableObject {
         
         if !AbilitiesSystem.shared.hasUndeadCasanova && AbilitiesSystem.shared.canUnlock(Ability.undeadCasanova) {
             AbilitiesSystem.shared.unlockAbility(Ability.undeadCasanova)
+        }
+        
+        if !AbilitiesSystem.shared.hasLionAmongSheep && AbilitiesSystem.shared.canUnlock(Ability.lionAmongSheep) {
+            AbilitiesSystem.shared.unlockAbility(Ability.lionAmongSheep)
+        }
+        
+        if !AbilitiesSystem.shared.hasNoble && AbilitiesSystem.shared.canUnlock(Ability.noble) {
+            AbilitiesSystem.shared.unlockAbility(Ability.noble)
+        }
+    }
+    
+    func incrementAlliesCreated() {
+        alliesCreated += 1
+        
+        if !AbilitiesSystem.shared.hasLionAmongSheep && AbilitiesSystem.shared.canUnlock(Ability.lionAmongSheep) {
+            AbilitiesSystem.shared.unlockAbility(Ability.lionAmongSheep)
         }
     }
     
@@ -359,6 +388,7 @@ class StatisticsService: GameService, ObservableObject {
         propertiesBought = 100
         foodConsumed = 100
         friendshipsCreated = 100
+        alliesCreated = 100
         nightSpentsWithSomeone = 100
         disappearances = 100
         
@@ -380,6 +410,7 @@ class StatisticsService: GameService, ObservableObject {
         increasePropertiesBought()
         increaseFoodConsumed()
         incrementFriendshipsCreated()
+        incrementAlliesCreated()
         increaseNightSpentsWithSomeone()
         increaseDisappearances()
     }

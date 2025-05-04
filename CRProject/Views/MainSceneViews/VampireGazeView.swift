@@ -144,6 +144,10 @@ struct VampireGazeView: View {
                     EnhancedHypnoticSpiralEffect()
                 case .none:
                     EmptyView()
+                case .some(.release):
+                    EnhancedHypnoticSpiralEffect()
+                case .some(.dreamstealer):
+                    EnhancedRedMistEffect()
                 }
             }
             .frame(width: geometry.size.width, height: geometry.size.height)

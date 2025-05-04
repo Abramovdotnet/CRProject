@@ -1103,4 +1103,12 @@
         "isIndoor": true,
         "sceneType": "house"
     },
+    {
+        "id": 142,
+        "name": "The Old Cemetery",
+        "isParent": false,
+        "parentSceneId": 26,
+        "isIndoor": false,
+        "sceneType": "cemetery"
+    }
 ]

@@ -72,6 +72,10 @@ class NPCBehaviorService: GameService {
             : NPCActivityManager.shared.getActivity(for: npc)
         
         if !npc.isAlive {
+            if npc.deathStatus == .confirmed {
+                sendToCemetery(npc: npc)
+                return
+            }
             return
         }
         npc.currentActivity = newActivity
@@ -83,7 +87,7 @@ class NPCBehaviorService: GameService {
             return
         }
         
-        if newActivity == .protect {
+        if newActivity == .protect || newActivity == .patrol || newActivity == .pray {
             let target = NPCReader.getRuntimeNPC(by: npc.npcInteractionTargetNpcId)
             
             if target != nil {
@@ -120,9 +124,16 @@ class NPCBehaviorService: GameService {
         if target.id == npc.currentLocationId {
             activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
         } else {
-            LocationReader.getLocationById(by: npc.currentLocationId)?.removeCharacter(id: npc.id)
-            target.addCharacter(npc)
-            activitiesAssigned.append(assignedActivity(isStay: false, activity: newActivity))
+            do {
+                if npc.currentLocationId > 0 {
+                    let currentLocation = try LocationReader.getRuntimeLocation(by: npc.currentLocationId)
+                    currentLocation.removeCharacter(id: npc.id)
+                }
+                target.addCharacter(npc)
+                activitiesAssigned.append(assignedActivity(isStay: false, activity: newActivity))
+            } catch {
+                gameEventBusService.addDangerMessage(message: "Failed to move \(npc.name) to new location: \(error.localizedDescription)")
+            }
         }
     }
     
@@ -218,6 +229,41 @@ class NPCBehaviorService: GameService {
                 npc.alliedWithNPC?.alliedWithNPC = nil
                 npc.alliedWithNPC = nil
             }
+        }
+    }
+    
+    private func sendToCemetery(npc: NPC) {
+        // Find all cemetery locations
+        let cemeteryLocations = LocationReader.getLocations().filter { $0.sceneType == .cemetery }
+        
+        // If no cemetery found, return
+        if cemeteryLocations.isEmpty {
+            gameEventBusService.addDangerMessage(message: "No cemetery found for burying \(npc.name)")
+            return
+        }
+        
+        // Get a random cemetery
+        let randomCemetery = cemeteryLocations.randomElement()!
+        
+        // Remove NPC from current location and move to cemetery
+        do {
+            let npcCurrentLocation = try LocationReader.getRuntimeLocation(by: npc.currentLocationId)
+            npcCurrentLocation.removeCharacter(id: npc.id)
+            randomCemetery.addCharacter(npc)
+            
+            // Update NPC death status to buried
+            npc.deathStatus = .buried
+            
+            gameEventBusService.addMessageWithIcon(
+                message: "\(npc.name) has been buried in \(randomCemetery.name)",
+                icon: "cross.fill",
+                iconColor: .gray,
+                type: .common
+            )
+            
+            PopUpState.shared.show(title: "Burial", details: "\(npc.name) sent on his final journey. Date: Day \(GameTimeService.shared.currentDay) at \(GameTimeService.shared.currentHour):00", image: .asset(name: "graveIcon"))
+        } catch {
+            gameEventBusService.addDangerMessage(message: "Failed to move \(npc.name) to cemetery: \(error.localizedDescription)")
         }
     }
 }

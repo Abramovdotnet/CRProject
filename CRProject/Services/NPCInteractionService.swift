@@ -39,8 +39,7 @@ class NPCInteractionService : GameService {
     
     func handleNPCInteractionsBehavior() {
         // Use lazy collections and early filtering
-        let scenes = LocationReader.getCurrentHierarchyLocations(GameStateService.shared.currentScene?.parentSceneId ?? -1)
-            .lazy
+        let scenes = LocationReader.getLocations().filter { $0.sceneType != .town && $0.sceneType != .district }
 
         for scene in scenes {
             let npcs = scene.getNPCs().filter { $0.currentActivity != .sleep}
@@ -147,7 +146,7 @@ class NPCInteractionService : GameService {
         case .findOutCasualty:
             handleCasualtyDiscovery(currentNPC: currentNPC, otherNPC: otherNPC)
         case .awareAboutCasualty:
-            handleCasualtyAwareness(currentNPC: currentNPC)
+            handleCasualtyAwareness(currentNPC: currentNPC, otherNPC: otherNPC)
         case .flirt:
             isSuccess = handleFlirtInteraction(currentNPC: currentNPC, otherNPC: otherNPC, scene: scene)
             hasSuccess = true
@@ -206,6 +205,14 @@ class NPCInteractionService : GameService {
         currentNPC.decreaseNPCRelationship(with: 10, of: otherNPC)
         otherNPC.decreaseNPCRelationship(with: 10, of: currentNPC)
         
+        if !currentNPC.isAlive {
+            currentNPC.currentActivity = .casualty
+            currentNPC.deathStatus = .unknown
+        } else if !otherNPC.isAlive {
+            otherNPC.currentActivity = .casualty
+            otherNPC.deathStatus = .unknown
+        }
+        
         return currentNPCWon
     }
     
@@ -222,15 +229,43 @@ class NPCInteractionService : GameService {
         otherNPC.deathStatus = .investigated
     }
     
-    private func handleCasualtyAwareness(currentNPC: NPC) {
+    private func handleCasualtyAwareness(currentNPC: NPC, otherNPC: NPC) {
         currentNPC.isCasualtyWitness = false
         currentNPC.isSpecialBehaviorSet = false
         
         if let casualtyNPC = NPCReader.getRuntimeNPC(by: currentNPC.casualtyNpcId) {
+            // Send guard to check
+            otherNPC.currentActivity = .patrol
+            otherNPC.isNpcInteractionBehaviorSet = true
+            otherNPC.npcInteractionTargetNpcId = casualtyNPC.id
+            otherNPC.npcInteractionSpecialTime = 8
+            
+            // Send priest within
+            let priest = NPCReader.getNPCs().first(where: { $0.isAlive && $0.profession == .priest || $0.profession == .religiousScholar })
+            
+            if priest != nil {
+                priest?.currentActivity = .pray
+                priest?.isNpcInteractionBehaviorSet = true
+                priest?.npcInteractionTargetNpcId = casualtyNPC.id
+                priest?.npcInteractionSpecialTime = 8
+            }
+            
+            // Send friends
+            let friends = NPCReader.getNPCs().filter { $0.isAlive && $0.npcsRelationship.contains(where: { $0.npcId == currentNPC.casualtyNpcId && $0.state == .friend || $0.state == .ally }) }
+            
+            if friends.count > 0 {
+                for friend in friends {
+                    friend.currentActivity = .mourn
+                    friend.isNpcInteractionBehaviorSet = true
+                    friend.npcInteractionTargetNpcId = casualtyNPC.id
+                    friend.npcInteractionSpecialTime = 8
+                }
+            }
+            
             casualtyNPC.deathStatus = .confirmed
             currentNPC.casualtyNpcId = 0
             
-            PopUpState.shared.show(title: "Casualty reported", details: "Guards will arrive soon to check what happened", image: .system(name: NPCInteraction.findOutCasualty.icon, color: NPCInteraction.findOutCasualty.color))
+            PopUpState.shared.show(title: "Casualty reported", details: "Guards arrived to check what happened", image: .system(name: NPCInteraction.findOutCasualty.icon, color: NPCInteraction.findOutCasualty.color))
         }
     }
     
