@@ -84,7 +84,7 @@ class SmithingViewModel: ObservableObject {
         refreshRecipes()
         updatePlayerItems()
         
-        GameTimeService.shared.advanceHours(hours: recipe.productionTime)
+        GameTimeService.shared.advanceHours(hours: AbilitiesSystem.shared.hasSmithingNovice ? Int(Double(recipe.productionTime) * 0.9) : AbilitiesSystem.shared.hasSmithingApprentice ? Int(Double(recipe.productionTime) * 0.8) : recipe.productionTime)
 
         GameEventsBusService.shared.addMessageWithIcon(
             type: .common,

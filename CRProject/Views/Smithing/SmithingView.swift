@@ -192,10 +192,21 @@ struct SmithingView: View {
             
             // Recipe description - using item name instead of description
             if let item = resultItem {
-                Text("A crafting recipe for \(item.name)")
-                    .font(Theme.smallFont.italic())
-                    .foregroundColor(Color.white.opacity(0.8))
-                    .padding(.vertical, 4)
+                HStack {
+                    Text("A crafting recipe for \(item.name)")
+                        .font(Theme.smallFont.italic())
+                        .foregroundColor(Color.white.opacity(0.8))
+                        .padding(.vertical, 4)
+                    Spacer()
+                    Image(systemName: "hourglass.bottomhalf.fill")
+                        .font(Theme.smallFont.italic())
+                        .foregroundColor(Color.white.opacity(0.8))
+                        .padding(.vertical, 4)
+                    Text("Required time: \(AbilitiesSystem.shared.hasSmithingNovice ? Int(Double(recipe.productionTime) * 0.9) : AbilitiesSystem.shared.hasSmithingApprentice ? Int(Double(recipe.productionTime) * 0.8) : recipe.productionTime) hours")
+                        .font(Theme.smallFont)
+                        .foregroundColor(Color.white.opacity(0.8))
+                        .padding(.vertical, 4)
+                }
             }
             
             // Required materials
