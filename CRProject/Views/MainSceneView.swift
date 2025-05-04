@@ -232,8 +232,10 @@ struct MainSceneView: View {
                                         ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
                                             .frame(maxWidth: .infinity)
                                     } else {
-                                        NPCSGridView(
+                                        NPCSGridViewRepresentable(
                                             npcs: viewModel.npcs,
+                                            npcManager: .shared,
+                                            gameStateService: DependencyManager.shared.resolve(),
                                             onAction: viewModel.handleNPCAction
                                         )
                                     }

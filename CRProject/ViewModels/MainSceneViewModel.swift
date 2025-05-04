@@ -98,13 +98,16 @@ class MainSceneViewModel: ObservableObject {
                 self?.updateRelatedLocations(for: scene?.id ?? 0)
                 // Update NPCs when scene changes
                 if let npcs = scene?.getNPCs() {
+                    DebugLogService.shared.log("Found \(npcs.count) NPCs in scene \(scene?.name ?? "unknown")", category: "Scene")
                     self?.npcs = npcs
+                } else {
+                    DebugLogService.shared.log("No NPCs found in scene", category: "Scene")
                 }
             }
             .store(in: &cancellables)
         
         // Subscribe to scene character changes
-        NotificationCenter.default.publisher(for: .sceneCharactersChanged)
+        NotificationCenter.default.publisher(for: Notification.Name("sceneCharactersChanged"))
             .sink { [weak self] notification in
                 guard let scene = notification.object as? Scene,
                       scene.id == self?.currentScene?.id else { return }
@@ -238,18 +241,27 @@ class MainSceneViewModel: ObservableObject {
     func respawnNPCs() {
         DebugLogService.shared.log("Respawning NPCs...", category: "NPC")
         npcs = []
-        let count = Int.random(in: 2...4)
-        DebugLogService.shared.log("Generating \(count) NPCs", category: "NPC")
         
-        npcs = NPCReader.getRandomNPCs(count: Int.random(in: 1...30))
+        let randomCount = Int.random(in: 3...10)
+        DebugLogService.shared.log("Generating \(randomCount) NPCs", category: "NPC")
+        
+        npcs = NPCReader.getRandomNPCs(count: randomCount)
+        
+        DebugLogService.shared.log("Created \(npcs.count) NPCs", category: "NPC")
         
         for npc in npcs {
-            DebugLogService.shared.log("Created NPC: \(npc.name)", category: "NPC")
+            DebugLogService.shared.log("NPC: \(npc.name) with ID \(npc.id)", category: "NPC")
         }
         
+        DebugLogService.shared.log("Setting \(npcs.count) NPCs to current scene: \(gameStateService.currentScene?.name ?? "unknown")", category: "NPC")
         gameStateService.currentScene?.setCharacters(npcs)
         
-        DebugLogService.shared.log("Total NPCs: \(npcs.count)", category: "NPC")
+        // Check if scene received the characters
+        if let sceneNPCs = gameStateService.currentScene?.getNPCs() {
+            DebugLogService.shared.log("Scene now has \(sceneNPCs.count) NPCs", category: "NPC")
+        }
+        
+        DebugLogService.shared.log("Total viewModel NPCs: \(npcs.count)", category: "NPC")
     }
     
     func endGame(){

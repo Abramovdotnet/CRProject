@@ -252,22 +252,9 @@ struct LocationNode: View {
         VStack{
             Button(action: data.onSelected) {
                 ZStack {
-                    Image("iconFrame")
+                    Image(uiImage: UIImage(named: "location\(data.location.id.description)") ?? UIImage(named: "MainSceneBackground")!)
                         .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 70 * 1.05, height: 70 * 1.05)
-                    Circle()
-                        .fill(Color.black.opacity(0.7))
-                        .frame(width: 70 * 0.9, height: 70 * 0.9)
-                        .shadow(color: .black.opacity(0.2), radius: 2, x: 1, y: 1)
-                        .overlay(
-                            Circle()
-                                .stroke(Color.white.opacity(0.2), lineWidth: 1)
-                        )
-                    Image("roundStoneTexture")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 70 * 0.8, height: 70 * 0.8)
+                        .frame(width: 120 * 0.8, height: 60 * 0.8)
                     
                     VStack{
                         HStack{
@@ -581,8 +568,4 @@ extension Array where Element: Identifiable {
         var seen = Set<Element.ID>()
         return filter { seen.insert($0.id).inserted }
     }
-}
-
-#Preview {
-    NavigationDetailView(viewModel: MainSceneViewModel())
 }
