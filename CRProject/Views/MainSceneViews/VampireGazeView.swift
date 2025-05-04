@@ -11,7 +11,7 @@ struct VampireGazeView: View {
     let npc: NPC
     @Environment(\.dismiss) private var dismiss
     @Binding var isPresented: Bool
-    @State private var selectedPower: VampireGaze.GazePower?
+    @State private var selectedPower: VampireGazeSystem.GazePower?
     @State private var showingEffect = false
     @State private var effectOpacity = 0.0
     @State private var backgroundOpacity = 0.0
@@ -20,7 +20,7 @@ struct VampireGazeView: View {
     
     @ObservedObject var mainViewModel: MainSceneViewModel
     
-    private let gazeSystem = VampireGaze.shared
+    private let gazeSystem = VampireGazeSystem.shared
     
     init(npc: NPC, isPresented: Binding<Bool> = .constant(true), mainViewModel: MainSceneViewModel) {
         self.npc = npc
@@ -38,7 +38,7 @@ struct VampireGazeView: View {
                 Image("gaze")
                     .resizable()
                     .ignoresSafeArea()
-                    .opacity(0.3)
+                    .opacity(0.7)
                 
                 DustEmitterView()
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -72,7 +72,7 @@ struct VampireGazeView: View {
                             GridItem(.flexible()),
                             GridItem(.flexible())
                         ], spacing: 8) {
-                            ForEach(VampireGaze.GazePower.availableCases(npc: npc), id: \.self) { power in
+                            ForEach(VampireGazeSystem.GazePower.availableCases(npc: npc), id: \.self) { power in
                                 let data = EnhancedPowerButtonData(
                                     power: power,
                                     isSelected: selectedPower == power,
@@ -150,7 +150,7 @@ struct VampireGazeView: View {
         }
     }
     
-    private func attemptGazePower(_ power: VampireGaze.GazePower) {
+    private func attemptGazePower(_ power: VampireGazeSystem.GazePower) {
         selectedPower = power
         showingEffect = true
         VibrationService.shared.lightTap()
@@ -186,7 +186,7 @@ struct VampireGazeView: View {
 // MARK: - Enhanced Components
 
 struct EnhancedPowerButtonData {
-    let power: VampireGaze.GazePower
+    let power: VampireGazeSystem.GazePower
     let isSelected: Bool
     var isDisabled: Bool
 }

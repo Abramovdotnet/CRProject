@@ -80,7 +80,7 @@ class DialogueProcessor {
         }
         
         // Add fake alibi options if player has the UnholyTongue ability (Silver Tongue)
-        if AbilitiesSystem.shared.hasUnholyTongue && !npc.isIntimidated {
+        if AbilitiesSystem.shared.hasBribe && !npc.isIntimidated {
             tree = mergeFakeAlibiNodes(into: tree)
         }
         

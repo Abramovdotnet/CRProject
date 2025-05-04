@@ -37,6 +37,7 @@ class Player: ObservableObject, Character, Codable {
     @Published var desiredVictim: DesiredVictim = DesiredVictim()
     
     var smithingProgress: ProfessionProgress = ProfessionProgress()
+    var alchemyProgress: ProfessionProgress = ProfessionProgress()
     var medicineProgress: ProfessionProgress = ProfessionProgress()
     var writingProgress: ProfessionProgress = ProfessionProgress()
     var taloringProgress: ProfessionProgress = ProfessionProgress()
@@ -49,6 +50,8 @@ class Player: ObservableObject, Character, Codable {
         self.profession = profession
         self.id = id
         // Initialization of other properties happens automatically
+        self.smithingProgress.profession = .blacksmith
+        self.alchemyProgress.profession = .alchemist
     }
 
     // Default initializer might be needed

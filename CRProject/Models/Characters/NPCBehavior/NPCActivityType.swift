@@ -70,10 +70,10 @@ extension NPCActivityType {
         // Work-Related
         case .craft: return ["blacksmith", "alchemistShop"]
         case .sell: return ["market", "shop", "tavern", "square"]
-        case .repair: return ["blacksmith", "warehouse"]
+        case .repair: return []
         case .guardPost: return ["military", "watchtower", "barracks", "manor", "brothel"]
         case .patrol: return ["quarter", "square", "road", "brothel" ]
-        case .research: return ["bookstore", "cathedral", "monastery", "blacksmith", "alchemistShop", "bookstore"]
+        case .research: return ["bookstore", "cathedral", "monastery", "blacksmith", "alchemistShop"]
         case .train: return ["military", "barracks"]
         case .manage: return ["manor", "keep", "market"]
         case .clean: return ["house", "manor", "barracks", "keep", "tavern", "brothel"]
@@ -264,9 +264,9 @@ extension Profession {
         switch self {
         // Crafting Professions
         case .blacksmith: return [.craft, .repair, .sell, .research]
-        case .carpenter: return [.craft, .repair]
-        case .tailor: return [.craft, .sell]
-        case .alchemist: return [.craft, .research, .sell, .research]
+        case .carpenter: return [.repair]
+        case .tailor: return [.sell]
+        case .alchemist: return [.research, .sell, .research]
         case .herbalist: return [.harvest, .research, .sell, .research]
         
         // Military/Security

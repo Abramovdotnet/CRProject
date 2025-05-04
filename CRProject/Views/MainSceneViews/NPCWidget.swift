@@ -164,12 +164,12 @@ struct NPCWidget: View {
                                             .font(Theme.bodyFont)
                                             .foregroundColor(Theme.textColor)
                                         Spacer()
-                                        Text(String(format: "%.1f%%", VampireGaze.shared.calculateNPCResistance(npc: npc)))
+                                        Text(String(format: "%.1f%%", VampireGazeSystem.shared.calculateNPCResistance(npc: npc)))
                                             .font(Theme.bodyFont)
                                             .foregroundColor(getRelationshipColor())
                                     }
                                     
-                                    GradientProgressBar(value: Float(VampireGaze.shared.calculateNPCResistance(npc: npc)), barColor: Theme.bloodProgressColor.opacity(0.7), backgroundColor: Theme.textColor.opacity(0.3))
+                                    GradientProgressBar(value: Float(VampireGazeSystem.shared.calculateNPCResistance(npc: npc)), barColor: Theme.bloodProgressColor.opacity(0.7), backgroundColor: Theme.textColor.opacity(0.3))
                                         .frame(height: 5)
                                         .shadow(color: Color.green.opacity(0.3), radius: 2)
                                 } else {
@@ -284,7 +284,7 @@ struct NPCWidget: View {
         .disabled(isDisabled)
         .animation(.easeInOut(duration: 0.3), value: isSelected)
         .frame(width: buttonWidth, height: 320)
-        .shadow(color: .black, radius: 10, x: 1, y: 1)
+        .shadow(color: .black, radius: 10)
     }
     
     private func getNPCImage() -> Image {

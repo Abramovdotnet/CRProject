@@ -170,7 +170,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 4},
+            {"resourceId": 1002, "count": 3},
             {"resourceId": 1004, "count": 3},
             {"resourceId": 1005, "count": 3}
         ],
@@ -182,7 +182,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 4},
+            {"resourceId": 1002, "count": 3},
             {"resourceId": 1004, "count": 3},
             {"resourceId": 1006, "count": 3}
         ],
@@ -194,7 +194,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 4},
+            {"resourceId": 1002, "count": 3},
             {"resourceId": 1004, "count": 3},
             {"resourceId": 1006, "count": 3}
         ],
@@ -206,7 +206,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 4},
+            {"resourceId": 1002, "count": 3},
             {"resourceId": 1004, "count": 3},
             {"resourceId": 1006, "count": 3},
             {"resourceId": 1005, "count": 3}
@@ -219,7 +219,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 5},
+            {"resourceId": 1002, "count": 4},
             {"resourceId": 1004, "count": 4},
             {"resourceId": 1006, "count": 4}
         ],
@@ -231,7 +231,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 5},
+            {"resourceId": 1002, "count": 4},
             {"resourceId": 1004, "count": 4},
             {"resourceId": 1005, "count": 4}
         ],
@@ -243,7 +243,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 5},
+            {"resourceId": 1002, "count": 4},
             {"resourceId": 1004, "count": 4},
             {"resourceId": 1006, "count": 4}
         ],
@@ -255,7 +255,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 6},
+            {"resourceId": 1002, "count": 5},
             {"resourceId": 1004, "count": 5},
             {"resourceId": 1006, "count": 5}
         ],
@@ -267,7 +267,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 4},
+            {"resourceId": 1002, "count": 3},
             {"resourceId": 1004, "count": 3},
             {"resourceId": 1005, "count": 2}
         ],
@@ -279,7 +279,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 3},
+            {"resourceId": 1002, "count": 2},
             {"resourceId": 1004, "count": 2},
             {"resourceId": 1005, "count": 2}
         ],
@@ -291,7 +291,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 3},
+            {"resourceId": 1002, "count": 2},
             {"resourceId": 1004, "count": 2},
             {"resourceId": 1005, "count": 2}
         ],
@@ -303,7 +303,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 4},
+            {"resourceId": 1002, "count": 3},
             {"resourceId": 1004, "count": 3},
             {"resourceId": 1005, "count": 3}
         ],
@@ -315,7 +315,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 5},
+            {"resourceId": 1002, "count": 4},
             {"resourceId": 1004, "count": 3},
             {"resourceId": 1005, "count": 3}
         ],
@@ -327,7 +327,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 3},
+            {"resourceId": 1002, "count": 2},
             {"resourceId": 1004, "count": 2},
             {"resourceId": 1005, "count": 2}
         ],
@@ -339,7 +339,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 3},
+            {"resourceId": 1002, "count": 2},
             {"resourceId": 1004, "count": 2},
             {"resourceId": 1005, "count": 2}
         ],
@@ -351,7 +351,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 4},
+            {"resourceId": 1002, "count": 3},
             {"resourceId": 1004, "count": 3},
             {"resourceId": 1005, "count": 3}
         ],
@@ -363,7 +363,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 3},
+            {"resourceId": 1002, "count": 2},
             {"resourceId": 1004, "count": 2},
             {"resourceId": 1005, "count": 2}
         ],
@@ -375,7 +375,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 4},
+            {"resourceId": 1002, "count": 3},
             {"resourceId": 1004, "count": 3},
             {"resourceId": 1005, "count": 3}
         ],
@@ -387,7 +387,7 @@
     {
         "profession": "blacksmith",
         "requiredResources": [
-            {"resourceId": 1002, "count": 3},
+            {"resourceId": 1002, "count": 2},
             {"resourceId": 1004, "count": 2},
             {"resourceId": 1005, "count": 2}
         ],

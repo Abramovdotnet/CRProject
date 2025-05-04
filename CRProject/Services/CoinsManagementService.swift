@@ -33,7 +33,7 @@ class CoinsManagementService : GameService {
         let npcs = NPCReader.getNPCs()
         
         for npc in npcs {
-            if npc.coins.value == 0 {
+            if npc.coins.value < 200 {
                 npc.coins.add(Int.random(in: 1...500))
             }
         }

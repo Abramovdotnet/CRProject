@@ -477,7 +477,7 @@ class DialogueViewModel: ObservableObject {
             npc.playerRelationship.decrease(amount: 1)
             
             // Reduce awareness substantially - the NPC won't report suspicious activities
-            vampireNatureRevealService.decreaseAwareness(amount: 4)
+            vampireNatureRevealService.decreaseAwareness(amount: 10)
             
             // Process the success node
             if let (newText, newOptions) = dialogueProcessor.processNode(nextNodeId) {

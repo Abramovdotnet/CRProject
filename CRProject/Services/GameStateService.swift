@@ -26,7 +26,9 @@ class GameStateService : ObservableObject, GameService{
     //private var npcPopulationService: NPCPopulationService!
     private var npcManager = NPCInteractionManager.shared
     
-    init(gameTime: GameTimeService, 
+    private var locationSwitches: Int = 0
+    
+    init(gameTime: GameTimeService,
          vampireNatureRevealService: VampireNatureRevealService,
          gameEventsBus: GameEventsBusService = DependencyManager.shared.resolve(),
          locationReader: LocationReader = DependencyManager.shared.resolve(),
@@ -122,7 +124,7 @@ class GameStateService : ObservableObject, GameService{
                 }
                 
                 npcManager.selectedNPC = victim
-                VampireGaze.shared.attemptGazePower(power: .follow, on: victim)
+                VampireGazeSystem.shared.attemptGazePower(power: .follow, on: victim)
                 gameEventsBus.addWarningMessage("* \(victim.isUnknown ? "stranger" : victim.name) heard your whisper and obeyed. *")
             } else {
                 gameEventsBus.addWarningMessage("* My whisper left no echo.*")
@@ -150,7 +152,12 @@ class GameStateService : ObservableObject, GameService{
             npcManager.selectedNPC = nil
             
             // Advance time when changing location
-            gameTime.advanceTime()
+            if locationSwitches / 2 == 1 {
+                gameTime.advanceTime()
+                locationSwitches = 0
+            } else {
+                locationSwitches += 1
+            }
         } else {
             DebugLogService.shared.log("Cannot travel to locked location", category: "Location")
             gameEventsBus.addDangerMessage(message: "*I cannot move to this location*")
@@ -184,7 +191,7 @@ class GameStateService : ObservableObject, GameService{
         advanceWorldState()
         
         // Reduce player blood pool
-        player?.bloodMeter.useBlood(AbilitiesSystem.shared.hasLordOfBlood ? 2 : 4)
+        player?.bloodMeter.useBlood(AbilitiesSystem.shared.hasLordOfBlood ? 1 : 2)
         
         // Reset selection if npc left location
         guard let scene = currentScene else { return }
@@ -241,16 +248,11 @@ class GameStateService : ObservableObject, GameService{
         
         let activeNpcs = scene.getNPCs()
             .filter( { $0.isAlive && !$0.isSpecialBehaviorSet && $0.currentActivity != .sleep})
-        
-        if player.hiddenAt == .none && activeNpcs.count > 0 {
-            vampireNatureRevealService.increaseAwareness(amount: 1)
-        }
 
         let currentPlayerBlood = player.bloodMeter.currentBlood
         
         if currentPlayerBlood <= 30 {
             gameEventsBus.addWarningMessage("* I feel huge lack of blood! *")
-            PopUpState.shared.show(title: "Uncontrollable blood lust", details: "If blood pool goes under 10%, you will loose control over your actions and drain empty random victim.", image: .system(name: "drop.fill", color: .red))
         }
         
         if currentPlayerBlood <= 10 {

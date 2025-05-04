@@ -39,12 +39,12 @@ class FeedingService: GameService {
         var awarenessIncreaseValue: Float = 90.0;
         
         if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
-            awarenessIncreaseValue -= 82
+            awarenessIncreaseValue -= 86
             vampire.bloodMeter.addBlood(10)
         }
         
         if prey.currentActivity == .sleep {
-            awarenessIncreaseValue -= 86
+            awarenessIncreaseValue -= 88
             
             StatisticsService.shared.increasefeedingsOverSleepingVictims()
         }
@@ -95,18 +95,7 @@ class FeedingService: GameService {
         
         try bloodService.emptyBlood(vampire: vampire, prey: prey)
         
-        var awarenessIncreaseValue: Float = 90;
-        
-        if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer {
-            awarenessIncreaseValue -= 60
-            vampire.bloodMeter.addBlood(10)
-        } else {
-            prey.decreasePlayerRelationship(with: 100)
-        }
-        
-        if prey.currentActivity == .sleep {
-            awarenessIncreaseValue -= 70
-        }
+        var awarenessIncreaseValue: Float = 30;
         
         if AbilitiesSystem.shared.hasSonOfDracula {
             vampire.bloodMeter.increaseMaxBlood(1)
@@ -139,6 +128,7 @@ class FeedingService: GameService {
         }
         
         if npcs.count > 0 {
+            vampireNatureRevealService.increaseAwareness(amount: 90)
             for npc in npcs {
                 npc.isVampireAttackWitness = true
                 npc.isBeasyByPlayerAction = true

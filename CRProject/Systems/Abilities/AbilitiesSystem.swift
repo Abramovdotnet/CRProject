@@ -46,6 +46,34 @@ class AbilitiesSystem: ObservableObject {
             playerAbilities.append(ability)
             
             PopUpState.shared.show(title: "\(ability.name) ability unlocked", details: "\(ability.description)", image: .system(name: ability.icon, color: ability.color))
+            
+            if ability == .smithingNovice {
+                guard let player = GameStateService.shared.player else { return }
+                player.smithingProgress.level = 2
+            } else if ability == .smithingApprentice {
+                guard let player = GameStateService.shared.player else { return }
+                player.smithingProgress.level = 3
+            } else if ability == .smithingExpert {
+                guard let player = GameStateService.shared.player else { return }
+                player.smithingProgress.level = 4
+            } else if ability == .smithingMaster {
+                guard let player = GameStateService.shared.player else { return }
+                player.smithingProgress.level = 5
+            }
+            
+            if ability == .alchemyNovice {
+                guard let player = GameStateService.shared.player else { return }
+                player.alchemyProgress.level = 2
+            } else if ability == .alchemyApprentice {
+                guard let player = GameStateService.shared.player else { return }
+                player.alchemyProgress.level = 3
+            } else if ability == .alchemyExpert {
+                guard let player = GameStateService.shared.player else { return }
+                player.alchemyProgress.level = 4
+            } else if ability == .alchemyMaster {
+                guard let player = GameStateService.shared.player else { return }
+                player.alchemyProgress.level = 5
+            }
         }
     }
     

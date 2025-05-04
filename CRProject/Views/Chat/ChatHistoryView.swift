@@ -36,7 +36,7 @@ struct ChatHistoryView: View {
         }
         .background(
             RoundedRectangle(cornerRadius: 8)
-                .fill(Color.black.opacity(0.75))
+                .fill(Color.black.opacity(0.7))
         )
     }
 }

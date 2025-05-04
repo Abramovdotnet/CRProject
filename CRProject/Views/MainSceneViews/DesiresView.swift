@@ -53,11 +53,6 @@ struct DesiresView: View {
                             .blur(radius: 4)
                             .opacity(0.7)
                     )
-                    Text("Desires: ")
-                        .font(Theme.bodyFont)
-                        .foregroundColor(Theme.bloodProgressColor)
-                    
-                    
                     if let desiredSex = desiredVictim.desiredSex {
                         Text(desiredSex.rawValue)
                             .font(Theme.bodyFont)

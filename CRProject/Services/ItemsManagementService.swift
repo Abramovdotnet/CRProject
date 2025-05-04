@@ -136,7 +136,7 @@ class ItemsManagementService : GameService {
                 }
                 
                 // Add various resources
-                let resourcesCount = Int.random(in: 80...180)
+                let resourcesCount = Int.random(in: 140...300)
                 for _ in 0..<resourcesCount {
                     if let randomResource = resources.randomElement() {
                         npc.items.append(Item.createUnique(randomResource))
@@ -292,9 +292,9 @@ class ItemsManagementService : GameService {
                 }
             }
             
-            // Ensure NPC doesn't have too many items (max 300)
-            if npc.items.count > 300 {
-                npc.items = Array(npc.items.prefix(300))
+            // Ensure NPC doesn't have too many items (max 500)
+            if npc.items.count > 500 {
+                npc.items = Array(npc.items.prefix(500))
             }
         }
     }

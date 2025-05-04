@@ -136,11 +136,14 @@ class SmithingSystem {
             
             result = Item.createUnique(ItemReader.shared.getItem(by: recipe.resultItemId)!)
             
-            newRecipeUnlocked = Int.random(in: 1...4) == 4
-            
-            if newRecipeUnlocked {
-                unlockNewRecipe(player: player)
-                StatisticsService.shared.increaseSmithingRecipesUnlocked()
+            if recipe.professionLevel == player.smithingProgress.level || RecipeReader.shared.getRecipes()
+                .filter({ $0.professionLevel < player.smithingProgress.level && $0.isUnknown == false }).count > 0 {
+                newRecipeUnlocked = Int.random(in: 1...4) == 4
+                
+                if newRecipeUnlocked {
+                    unlockNewRecipe(player: player)
+                    StatisticsService.shared.increaseSmithingRecipesUnlocked()
+                }
             }
         }
         

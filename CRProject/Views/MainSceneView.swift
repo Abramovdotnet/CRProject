@@ -10,6 +10,7 @@ struct MainSceneView: View {
     @State private var spentTimeWatchScale: CGFloat = 1.0
     @State private var noneHideoutScale: CGFloat = 1.0
     @State private var shadowHideoutScale: CGFloat = 1.0
+    @State private var showHistory = false
     @State private var showSmokeEffect = false
     
     // New enum for navigation destinations
@@ -131,6 +132,14 @@ struct MainSceneView: View {
                                             viewModel.advanceTime()
                                         }
                                     )
+                                    // Swtich NPCs/Chat view
+                                    MainSceneActionButton(
+                                        icon: showHistory ? "person.3.fill" : "widget.large",
+                                        color: Theme.textColor,
+                                        action: {
+                                            showHistory.toggle()
+                                        }
+                                    )
                                     
                                     if viewModel.currentScene?.sceneType == .blacksmith {
                                         MainSceneActionButton(
@@ -218,36 +227,37 @@ struct MainSceneView: View {
                                 Spacer(minLength: 10)
                                 
                                 // Center NPCSGridView
-                                NPCSGridView(
-                                    npcs: viewModel.npcs,
-                                    onAction: viewModel.handleNPCAction
-                                )
+                                VStack {
+                                    if showHistory {
+                                        ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
+                                            .frame(maxWidth: .infinity)
+                                    } else {
+                                        NPCSGridView(
+                                            npcs: viewModel.npcs,
+                                            onAction: viewModel.handleNPCAction
+                                        )
+                                    }
+       
+                                    DesiresView(npc: npcManager.selectedNPC, onAction: viewModel.handleNPCAction, viewModel: viewModel)
+                                }
                                 .layoutPriority(1)
                                 
                                 Spacer(minLength: 10)
                                 
                                 // Information panel
                                 VStack(spacing: 8) {
-                                    // Player information bar
-                                    ZStack {
-                                        HStack {
-                                            HStack(alignment: .top, spacing: 4) {
-                                                DesiresView(npc: npcManager.selectedNPC, onAction: viewModel.handleNPCAction, viewModel: viewModel)
-                                                
-                                                Spacer()
-                                            }
-                                        }
-                                    }
-                                    
                                     if npcManager.selectedNPC != nil {
-                                        HorizontalNPCWidget(npc: npcManager.selectedNPC!)
+                                        //HorizontalNPCWidget(npc: npcManager.selectedNPC!)
+                                        NPCWidget(npc: npcManager.selectedNPC!, isSelected: true, isDisabled: false, showCurrentActivity: true, onTap: { Void() }, onAction: { _ in Void ()})
+                                    } else {
+                                        PlayerWidget(player: GameStateService.shared.player!)
                                     }
                                
                                     // Chat History
-                                    ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
-                                        .frame(maxWidth: .infinity)
+                                    /*ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
+                                        .frame(maxWidth: .infinity)*/
                                 }
-                                .frame(width: 360, alignment: .top)
+
                                 
                                 Spacer(minLength: 10)
                                 
