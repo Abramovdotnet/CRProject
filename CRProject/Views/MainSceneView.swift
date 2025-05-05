@@ -22,6 +22,7 @@ struct MainSceneView: View {
         case inventory
         case smithing
         case abilities
+        case loot
     }
     
     init(viewModel: MainSceneViewModel) {
@@ -291,6 +292,16 @@ struct MainSceneView: View {
                                                         }
                                                     )
                                                 }
+
+                                                if npcManager.selectedNPC != nil {
+                                                    MainSceneActionButton(
+                                                        icon: "bag.fill",
+                                                        color: Theme.textColor,
+                                                        action: {
+                                                            navigationPath.append(NavigationDestination.loot)
+                                                        }
+                                                    )
+                                                }
                                             }
                                             
                                             // Start intimidation
@@ -496,6 +507,25 @@ struct MainSceneView: View {
                                 
                                 AbilitiesView(scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
                                     .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 {
+                                            safePopNavigation()
+                                        }
+                                    }
+                            )
+                            
+                        case .loot:
+                            ZStack {
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                
+                                if let npc = npcManager.selectedNPC {
+                                    LootView(player: gameStateService.player!, npc: npc, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+                                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
+                                }
                             }
                             .navigationBarHidden(true)
                             .gesture(
