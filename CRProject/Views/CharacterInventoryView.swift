@@ -187,7 +187,6 @@ struct CharacterInventoryView: View {
                         .frame(maxWidth: .infinity, alignment: .top)
                         .padding(.top, geometry.safeAreaInsets.top)
                         .foregroundColor(Theme.textColor)
-                        .allowsHitTesting(false)
                     
                     Spacer()
                 }

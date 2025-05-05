@@ -123,7 +123,6 @@ struct NavigationWebView: View {
                             .frame(maxWidth: .infinity, alignment: .top) // Размещаем по верху
                             .padding(.top, geometry.safeAreaInsets.top)
                             .foregroundColor(Theme.textColor)
-                            .allowsHitTesting(false) // Отключаем хит-тест, чтобы касания проходили сквозь
                         
                         HStack {
                             Image(systemName: viewModel.parentScene?.sceneType.iconName ?? "")

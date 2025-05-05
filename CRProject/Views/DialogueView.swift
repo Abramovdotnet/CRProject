@@ -147,7 +147,6 @@ struct DialogueView: View {
                         .padding(.top, geometry.safeAreaInsets.top)
                         .foregroundColor(Theme.textColor)
                         .opacity(viewModel.showLoveScene ? 0 : 1) // Hide if LoveScene is shown
-                        .allowsHitTesting(false) // Отключаем хит-тест этого контейнера, чтобы касания проходили сквозь
                     
                     Spacer()
                 }

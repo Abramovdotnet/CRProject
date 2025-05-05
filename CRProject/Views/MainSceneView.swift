@@ -121,7 +121,6 @@ struct MainSceneView: View {
                                 .frame(height: 35)
                                 .frame(maxWidth: .infinity, alignment: .top)
                                 .background(Color.clear)
-                                .allowsHitTesting(false)
                             
                             // Main content area - now without any padding
                             HStack(spacing: 0) {
