@@ -2662,5 +2662,41 @@
     "morality": "Neutral evil",
     "motivation": "Control",
     "background": "A skilled manipulator who prefers psychological warfare to physical violence. Velvet's network of blackmail and secrets makes her powerful in the criminal underworld. She specializes in ruining reputations and destroying relationships."
-  }
-] 
+  },
+  {
+    "sex": "male",
+    "homeLocationId": 143,
+    "age": 30,
+    "id": 1027,
+    "isVampire": false,
+    "name": "Thor Thomas",
+    "profession": "Guardman",
+    "background": "",
+    "morality": "Chaotic neutral",
+    "motivation": "Power",
+  },
+  {
+    "profession": "Warden",
+    "sex": "female",
+    "age": 43,
+    "homeLocationId": 143,
+    "id": 1089,
+    "name": "Isabelle Weber",
+    "isVampire": false,
+    "background": "",
+    "morality": "Neutral evil",
+    "motivation": "Protection",
+  },
+  {
+    "id": 1013,
+    "sex": "female",
+    "name": "Adela Schneider",
+    "isVampire": false,
+    "background": "",
+    "morality": "True neutral",
+    "motivation": "Control",
+    "profession": "Warden",
+    "homeLocationId": 143,
+    "age": 26
+  },
+]

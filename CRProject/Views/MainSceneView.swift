@@ -283,7 +283,7 @@ struct MainSceneView: View {
                                                     }
                                                 )
                                                 
-                                                if selectedNPC.isTradeAvailable() {
+                                                if selectedNPC.isTradeAvailable() && selectedNPC.currentActivity != .jailed {
                                                     // Trade
                                                     MainSceneActionButton(
                                                         icon: "cart.fill",
@@ -294,7 +294,7 @@ struct MainSceneView: View {
                                                     )
                                                 }
 
-                                                if npcManager.selectedNPC != nil {
+                                                if npcManager.selectedNPC != nil && selectedNPC.currentActivity != .jailed && !selectedNPC.isAlive {
                                                     MainSceneActionButton(
                                                         icon: "bag.fill",
                                                         color: Theme.textColor,
@@ -318,7 +318,7 @@ struct MainSceneView: View {
                                                 }
                                             )
                                             
-                                            if !selectedNPC.isVampire {
+                                            if !selectedNPC.isVampire && selectedNPC.currentActivity != .jailed {
                                                 // Feed
                                                 MainSceneActionButton(
                                                     icon: "drop.halffull",

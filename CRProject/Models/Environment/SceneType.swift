@@ -32,6 +32,7 @@ enum SceneType: String, CaseIterable {
 
     // Misc
     case house
+    case dungeon
 
     
     var displayName: String {
@@ -66,6 +67,7 @@ enum SceneType: String, CaseIterable {
         case .road: return "road.lane.arrowtriangle.2.inward"
         case .docks: return "building.columns.fill"
         case .house: return "house.fill"
+        case .dungeon: return "lock.fill"
         }
     }
     
@@ -120,6 +122,9 @@ enum SceneType: String, CaseIterable {
                 
             // Residential
             case .house:
+                return [.shadow]
+                
+            case .dungeon:
                 return [.shadow]
                 
             // General/Districts

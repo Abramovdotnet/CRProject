@@ -150,6 +150,8 @@ class NPCReader : GameService {
             profession = .thug
         case Profession.cleaner.rawValue:
             profession = .cleaner
+        case Profession.warden.rawValue:
+            profession = .warden
         default:
             DebugLogService.shared.log("Unknown profession '\(professionString)', defaulting to noProfession", category: "Warning")
             profession = .noProfession

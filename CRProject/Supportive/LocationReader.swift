@@ -255,6 +255,8 @@ class LocationReader : GameService {
         case "town": sceneType = .town
         case "brothel": sceneType = .brothel
         case "road": sceneType = .road
+        case "cemetery": sceneType = .cemetery
+        case "dungeon": sceneType = .dungeon
         default:
             DebugLogService.shared.log("Unknown scene type: \(sceneTypeString), defaulting to house", category: "Warning")
             sceneType = .house

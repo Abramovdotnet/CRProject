@@ -1110,5 +1110,14 @@
         "parentSceneId": 26,
         "isIndoor": false,
         "sceneType": "cemetery"
+    },
+    {
+        "id": 143,
+        "name": "Dungeon",
+        "isParent": false,
+        "parentSceneId": 28,
+        "isIndoor": true,
+        "sceneType": "dungeon"
     }
+
 ]

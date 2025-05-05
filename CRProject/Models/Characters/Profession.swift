@@ -36,6 +36,7 @@ enum Profession: String, CaseIterable, Codable {
     case courtesan      = "Courtesan"
     case mercenary      = "Mercenary"
     case thug           = "Thug"
+    case warden         = "Warden"
     case noProfession   = "No profession"
     
     // MARK: - Icon and Color Properties
@@ -76,6 +77,7 @@ enum Profession: String, CaseIterable, Codable {
         case .courtesan:    return "heart.fill"
         case .mercenary:    return "person.badge.shield.checkmark.fill"
         case .thug:         return "figure.wrestling"
+        case .warden:     return "lock.fill"
         case .noProfession: return "person.fill"
         }
     }
@@ -116,6 +118,7 @@ enum Profession: String, CaseIterable, Codable {
         case .courtesan:    return .pink
         case .mercenary:    return .red
         case .thug:         return .red
+        case .warden:       return .orange
         case .noProfession: return .gray
         }
     }

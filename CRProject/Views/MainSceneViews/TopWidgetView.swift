@@ -574,21 +574,11 @@ class TopWidgetUIViewController: UIViewController {
     }
     
     private func updateAwarenessUI(level: Float) {
-        // Debugging
-        print("updateAwarenessUI called with level: \(level)")
-        
         // Анимируем изменения awareness
         animateTextChange(for: awarenessLabel, to: "\(Int(level))%")
         
         // Явно устанавливаем видимость прогресс-бара
         awarenessProgressView.isHidden = false
-        
-        // Если ширина прогресс бара слишком мала - выведем предупреждение
-        if awarenessProgressView.frame.width < 20 {
-            print("WARNING: Awareness progress bar width is too small: \(awarenessProgressView.frame.width)")
-        }
-        
-        print("Awareness progress bar current visibility: hidden=\(awarenessProgressView.isHidden), alpha=\(awarenessProgressView.alpha), width=\(awarenessProgressView.frame.width)")
         
         // Изменяем цвет в зависимости от уровня
         UIView.animate(withDuration: animationDuration) {
@@ -613,26 +603,15 @@ class TopWidgetUIViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
             self.awarenessProgressView.setNeedsDisplay()
             self.awarenessProgressView.layoutIfNeeded()
-            print("After animation awareness progress: width=\(self.awarenessProgressView.frame.width), progress=\(self.awarenessProgressView.progress)")
         }
     }
     
     private func updateBloodUI(percentage: Float) {
-        // Debugging
-        print("updateBloodUI called with percentage: \(percentage)")
-        
         // Анимируем изменения blood meter
         animateTextChange(for: bloodLabel, to: "\(Int(percentage))%")
         
         // Явно устанавливаем видимость прогресс-бара
         bloodProgressView.isHidden = false
-        
-        // Если ширина прогресс бара слишком мала - выведем предупреждение
-        if bloodProgressView.frame.width < 20 {
-            print("WARNING: Blood progress bar width is too small: \(bloodProgressView.frame.width)")
-        }
-        
-        print("Blood progress bar current visibility: hidden=\(bloodProgressView.isHidden), alpha=\(bloodProgressView.alpha), width=\(bloodProgressView.frame.width)")
         
         // Изменяем цвет в зависимости от уровня
         UIView.animate(withDuration: animationDuration) {
@@ -657,7 +636,6 @@ class TopWidgetUIViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
             self.bloodProgressView.setNeedsDisplay()
             self.bloodProgressView.layoutIfNeeded()
-            print("After animation blood progress: width=\(self.bloodProgressView.frame.width), progress=\(self.bloodProgressView.progress)")
         }
     }
     
@@ -705,8 +683,6 @@ class TopWidgetUIViewController: UIViewController {
         
         // Если не хватает места, скрываем некоторые элементы
         if contentWidth > availableWidth {
-            print("WARNING: ContentStackView (\(contentWidth)) wider than view (\(availableWidth))")
-            
             // Скрываем flexibleSpacer в первую очередь
             flexibleSpacerView.isHidden = true
             
@@ -715,11 +691,6 @@ class TopWidgetUIViewController: UIViewController {
                 coinImageView.isHidden = true
                 coinValueLabel.isHidden = true
             }
-            
-            // Выводим информацию о ширине основных элементов для диагностики
-            print("Scene name width: \(sceneNameLabel.frame.width)")
-            print("Awareness progress width: \(awarenessProgressView.frame.width)")
-            print("Blood progress width: \(bloodProgressView.frame.width)")
         } else {
             // Если места достаточно, показываем все элементы
             flexibleSpacerView.isHidden = false
@@ -747,23 +718,17 @@ class TopWidgetUIViewController: UIViewController {
         // Обновляем значения прогресс-баров
         if let bloodPercentage = playerBloodMeter?.bloodPercentage {
             bloodProgressView.progress = bloodPercentage / 100.0
-            print("ViewDidAppear: Updated blood progress to \(bloodPercentage)%")
         }
         
         // Обновляем шкалу awareness
         let awarenessLevel = awarenessService.awarenessLevel
         awarenessProgressView.progress = awarenessLevel / 100.0
-        print("ViewDidAppear: Updated awareness progress to \(awarenessLevel)%")
         
         // Принудительно обновляем UI
         bloodProgressView.setNeedsDisplay()
         bloodProgressView.layoutIfNeeded()
         awarenessProgressView.setNeedsDisplay() 
         awarenessProgressView.layoutIfNeeded()
-        
-        // Проверка видимости обеих шкал
-        print("Blood progress bar: width=\(bloodProgressView.frame.width), visible=\(!bloodProgressView.isHidden)")
-        print("Awareness progress bar: width=\(awarenessProgressView.frame.width), visible=\(!awarenessProgressView.isHidden)")
     }
 }
 

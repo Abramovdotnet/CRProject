@@ -139,7 +139,7 @@ class NPCInteractionService : GameService {
         // Handle special cases
         switch interaction {
         case .drunkFight, .gambleFight:
-            isSuccess = handleFightInteraction(currentNPC: currentNPC, otherNPC: otherNPC)
+            isSuccess = handleFightInteraction(currentNPC: currentNPC, otherNPC: otherNPC, reason: interaction)
             hasSuccess = true
         case .awareAboutVampire:
             handleVampireAwareness(otherNPC: otherNPC)
@@ -166,6 +166,8 @@ class NPCInteractionService : GameService {
             handleCraft(currentNPC: currentNPC, otherNPC: otherNPC)
         case .trade:
             handleTrade(currentNPC: currentNPC, otherNPC: otherNPC)
+        case .theft:
+            handleTheft(currentNPC: currentNPC, otherNPC: otherNPC)
         case .gameOver:
             vampireNatureRevealService.increaseAwareness(amount: 100.0)
         default:
@@ -179,7 +181,7 @@ class NPCInteractionService : GameService {
         }
     }
     
-    private func handleFightInteraction(currentNPC: NPC, otherNPC: NPC) -> Bool {
+    private func handleFightInteraction(currentNPC: NPC, otherNPC: NPC, reason: NPCInteraction) -> Bool {
         let currentNPCHasAdvantage = (currentNPC.profession == .guardman || currentNPC.profession == .cityGuard) &&
             (otherNPC.profession != .guardman && otherNPC.profession != .cityGuard)
         var successCap = currentNPCHasAdvantage ? 30 : 50
@@ -211,6 +213,27 @@ class NPCInteractionService : GameService {
         } else if !otherNPC.isAlive {
             otherNPC.currentActivity = .casualty
             otherNPC.deathStatus = .unknown
+        }
+        
+        let militaryNpc = try? LocationReader.getRuntimeLocation(by: currentNPC.currentLocationId).getNPCs().first(where: { $0.isMilitary && $0.id != currentNPC.id && $0.id != otherNPC.id })
+        
+        if militaryNpc != nil {
+            if !currentNPC.isAlive {
+                handleArrest(currentNPC: militaryNpc!, otherNPC: otherNPC, reason: reason)
+            } else if !otherNPC.isAlive {
+                handleArrest(currentNPC: militaryNpc!, otherNPC: currentNPC, reason: reason)
+            } else {
+                let jailWinner = Int.random(in: 0...10) > 9
+                let jailLooser = Int.random(in: 0...10) > 9
+                
+                if jailWinner {
+                    handleArrest(currentNPC: militaryNpc!, otherNPC: currentNPCWon ? currentNPC : otherNPC, reason: reason)
+                }
+                
+                if jailLooser {
+                    handleArrest(currentNPC: militaryNpc!, otherNPC: currentNPCWon ? otherNPC : currentNPC, reason: reason)
+                }
+            }
         }
         
         return currentNPCWon
@@ -326,6 +349,54 @@ class NPCInteractionService : GameService {
         otherNPC.increaseNPCRelationship(with: 3, of: currentNPC)
     }
     
+    private func handleArrest(currentNPC: NPC, otherNPC: NPC, reason: NPCInteraction)
+    {
+        currentNPC.decreaseNPCRelationship(with: 10, of: otherNPC)
+        otherNPC.decreaseNPCRelationship(with: 10, of: currentNPC)
+        
+        let daysJailed = Int.random(in: 1...7)
+        
+        otherNPC.isNpcInteractionBehaviorSet = true
+        otherNPC.npcInteractionSpecialTime = daysJailed * 24
+        otherNPC.currentActivity = .jailed
+        
+        PopUpState.shared.show(title: "Arrest", details: "\(otherNPC.name) has been arrested by \(currentNPC.name) for \(daysJailed) days by \(reason.rawValue)! You could look at him at Dungeon", image: .system(name: NPCInteraction.arrest.icon, color: NPCInteraction.arrest.color))
+    }
+    
+    private func handleTheft(currentNPC: NPC, otherNPC: NPC) {
+        let militaryNpc = try? LocationReader.getRuntimeLocation(by: currentNPC.currentLocationId).getNPCs().first(where: { $0.isMilitary && $0.id != currentNPC.id && $0.id != otherNPC.id && $0.currentActivity != .sleep })
+        
+        var immediateArrest = false
+        if militaryNpc != nil {
+            immediateArrest = Int.random(in: 0...10) > 7
+            
+            if immediateArrest {
+                handleArrest(currentNPC: currentNPC, otherNPC: militaryNpc!, reason: .theft)
+                
+                otherNPC.decreaseNPCRelationship(with: 10, of: currentNPC)
+                currentNPC.decreaseNPCRelationship(with: 10, of: otherNPC)
+            }
+        }
+        
+        if !immediateArrest {
+            let aimingToStealItem = Int.random(in: 0...1) == 1
+            
+            if aimingToStealItem {
+                let randomItem = otherNPC.items.filter( {$0.type != .armor && $0.type != .weapon} ).first(where: { $0.cost >= 200 })
+                
+                if randomItem != nil {
+                    ItemsManagementService.shared.moveItem(item: randomItem!, from: otherNPC, to: currentNPC)
+                } else {
+                    let coinsToStoleAmount = Int.random(in: 50...otherNPC.coins.value)
+                    CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: coinsToStoleAmount)
+                }
+            } else {
+                let coinsStolenAmount = Int.random(in: 50...otherNPC.coins.value)
+                CoinsManagementService.shared.moveCoins(from: otherNPC, to: currentNPC, amount: coinsStolenAmount)
+            }
+        }
+    }
+    
     private func handleFlirtInteraction(currentNPC: NPC, otherNPC: NPC, scene: Scene) -> Bool {
         let flirtCap = 80 - otherNPC.getNPCRelationshipValue(of: currentNPC)
         let isSuccessful = Int.random(in: 0...100) > flirtCap
@@ -363,6 +434,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
     case askForProtection = "askForProtection"
     case trade = "trade"
     case gameOver = "gameOver"
+    case arrest = "arrest"
     // standalone actions
     case cleaning = "cleans"
     case drinking = "drinks"
@@ -380,6 +452,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
     case harvestingFlowers = "harvesting flowers"
     case cleaningWeapon = "cleaning weapon"
     case bathing = "taking a bath"
+    case theft = "theft"
     
     var description: String {
         switch self {
@@ -420,6 +493,10 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return "asked for protection"
         case .trade:
             return "made a deal with"
+        case .arrest:
+            return "arrested"
+        case .theft:
+            return "stealed goods from"
         case .gameOver:
             return "figure.meditation"
         // standalone actions
@@ -569,6 +646,8 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return 0
         case .vampireMilitaryReport:
             return 0
+        default:
+            return 0
         }
     }
     
@@ -609,6 +688,10 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return NPCActivityType.protect.icon
         case .trade:
             return NPCActivityType.sell.icon
+        case .arrest:
+            return NPCActivityType.jailed.icon
+        case .theft:
+            return "hand.raised.fingers.spread"
         case .gameOver:
             return "figure.meditation"
         // standalone actions
@@ -687,6 +770,10 @@ enum NPCInteraction : String, CaseIterable, Codable {
             return NPCActivityType.protect.color
         case .trade:
             return NPCActivityType.sell.color
+        case .arrest:
+            return NPCActivityType.jailed.color
+        case .theft:
+            return Color.red
         case .gameOver:
             return Theme.bloodProgressColor
         // standalone actions
@@ -841,7 +928,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             }
             
             // Patrol
-            if currentNPC.isMilitary && !otherNPC.isMilitary && otherNPC.profession != .lordLady {
+            if currentNPC.isMilitary && !otherNPC.isMilitary && otherNPC.profession != .lordLady && !otherNPC.isMilitary {
                 if currentNPC.currentActivity == .patrol || currentNPC.currentActivity == .guardPost {
                     let wouldInteract = Int.random(in: 0...100) > (gameTimeService.isNightTime ? 40 : 70)
                     
@@ -989,6 +1076,25 @@ enum NPCInteraction : String, CaseIterable, Codable {
                             }
                         }
                     }
+                }
+            }
+            
+            // Theft
+            if currentNPC.profession == .thug && currentNPC.currentActivity == .thieving && !otherNPC.isMilitary && otherNPC.profession != .thug {
+                var wouldStealChance = 50
+                
+                if gameTimeService.isNightTime {
+                    wouldStealChance += 25
+                }
+                
+                if otherNPC.currentActivity == .sleep {
+                    wouldStealChance += 25
+                }
+                
+                let wouldSteal = Int.random(in: 0...100) < wouldStealChance
+                
+                if wouldSteal {
+                    return .theft
                 }
             }
             

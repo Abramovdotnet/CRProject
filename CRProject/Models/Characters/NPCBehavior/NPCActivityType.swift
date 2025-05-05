@@ -25,6 +25,8 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case transport = "Transporting"
     case protect = "Protection"
     case tendGraves = "Tending graves"
+    case watchOver = "Watching"
+    case thieving = "Thieving"
     
     // Social/Leisure
     case socialize = "Socializing"
@@ -45,6 +47,7 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case flirt = "Flirting"
     case duzzled = "Duzzled"
     case casualty = "Casualty"
+    case jailed = "Jailed"
     
     // Action activities
     case seductedByPlayer = "Seducted"
@@ -73,19 +76,21 @@ extension NPCActivityType {
         case .craft: return ["blacksmith", "alchemistShop"]
         case .sell: return ["market", "shop", "tavern", "square"]
         case .repair: return []
-        case .guardPost: return ["military", "watchtower", "barracks", "manor", "brothel"]
-        case .patrol: return ["quarter", "square", "road", "brothel", "cemetery"]
+        case .guardPost: return ["military", "watchtower", "barracks", "manor", "brothel", "dungeon"]
+        case .patrol: return ["quarter", "square", "road", "brothel", "cemetery", "dungeon"]
         case .research: return ["bookstore", "cathedral", "monastery", "blacksmith", "alchemistShop"]
         case .train: return ["military", "barracks"]
         case .manage: return ["manor", "keep", "market"]
         case .clean: return ["house", "manor", "barracks", "keep", "tavern", "brothel", "cemetery"]
         case .serve: return ["tavern", "manor", "keep"]
         case .entertain: return ["tavern", "brothel", "square", "road"]
-        case .harvest: return ["road", "square"] // Gardens/plants
+        case .harvest: return ["road", "square"]
         case .cook: return ["house", "manor", "tavern"]
         case .transport: return ["warehouse", "docks", "market"]
         case .protect: return []
         case .tendGraves: return ["cemetery"]
+        case .watchOver: return ["dungeon"]
+        case .thieving: return ["tavern", "market", "brothel", "house", "square", "road", "blacksmith", "alchemistShop", "manor", "cathedral", "house", "heep", "warehouse"]
         
         // Social/Leisure
         case .pray: return ["cathedral", "monastery", "crypt", "cemetery"]
@@ -93,16 +98,17 @@ extension NPCActivityType {
         case .drink: return ["tavern", "brothel", "house", "road"]
         case .gamble: return ["tavern", "brothel"]
         case .bathe: return ["bathhouse", "house", "tavern", "brothel"]
-        case .explore: return ["tavern", "market", "manor", "brothel", "blacksmith", "alchemistShop", "bookstore", "road", "square", "military", "bathhouse", "cemetery"] // Exploration sites
+        case .explore: return ["tavern", "market", "manor", "brothel", "blacksmith", "alchemistShop", "bookstore", "road", "square", "military", "bathhouse", "cemetery"]
         case .mourn: return ["cemetery"]
         
         // Special
-        case .quest: return ["tavern", "keep", "manor"] // Quest givers
+        case .quest: return ["tavern", "keep", "manor"]
         case .smuggle: return ["docks", "warehouse"]
         case .spy: return ["brothel", "tavern", "road"]
         case .love: return []
         case .flirt: return []
         case .lookingForProtection: return ["tavern", "manor"]
+        case .jailed: return ["dungeon"]
             
         // Action
         case .seductedByPlayer: return []
@@ -147,6 +153,26 @@ extension NPCActivityType {
             return validLocationTypes
         }
     }
+    
+    // Add a function to get locations by profession
+    func getValidLocations(for profession: Profession) -> [String] {
+        // Special case for prisoner - they can only be in dungeon
+        if profession == .warden {
+            return ["dungeon"] // Prisoners are confined to dungeons
+        }
+        
+        // For guard professions that patrol or guard dungeons
+        if (self == .guardPost || self == .patrol) && 
+           (profession == .guardman || profession == .cityGuard || profession == .militaryOfficer) {
+            var locations = validLocationTypes
+            if !locations.contains("dungeon") {
+                locations.append("dungeon")
+            }
+            return locations
+        }
+        
+        return validLocationTypes
+    }
 }
 
 extension NPCActivityType {
@@ -177,6 +203,8 @@ extension NPCActivityType {
         case .transport: return "shippingbox.fill"
         case .protect: return "shield.fill"
         case .tendGraves: return "apple.meditate.square.stack.fill"
+        case .watchOver: return "eye"
+        case .thieving: return "hand.pinch.fill"
         
         // Social/Leisure
         case .pray: return "cross.fill"
@@ -194,6 +222,7 @@ extension NPCActivityType {
         case .love: return "heart.fill"
         case .flirt: return "heart"
         case .lookingForProtection: return "hand.thumbsup.fill"
+        case .jailed: return "lock.shield.fill"
             
         // Action
         case .seductedByPlayer: return "heart.fill"
@@ -231,6 +260,8 @@ extension NPCActivityType {
         case .transport: return .brown
         case .protect: return .green
         case .tendGraves: return .pink
+        case .watchOver: return .blue
+        case .thieving: return .red
         
         // Social/Leisure
         case .socialize: return .purple
@@ -240,7 +271,6 @@ extension NPCActivityType {
         case .gamble: return .red
         case .bathe: return .blue
         case .explore: return .green
-        case .mourn: return .pink
         
         // Special
         case .quest: return .yellow
@@ -249,6 +279,7 @@ extension NPCActivityType {
         case .love: return .pink
         case .flirt: return .red
         case .lookingForProtection: return .pink
+        case .jailed: return .orange
             
         // Action
         case .seductedByPlayer: return .red
@@ -318,9 +349,10 @@ extension Profession {
         case .servant: return [.serve, .clean]
         
         // Specialized
-        case .adventurer: return [.explore, .quest]
+        case .adventurer: return [.explore]
         case .mercenary: return [.explore]
-        case .thug: return [.socialize, .train, .explore]
+        case .thug: return [.socialize, .thieving]
+        case .warden: return [.watchOver]
         
         // Learning/Unemployed
         case .apprentice: return [.study, .craft]
@@ -373,6 +405,10 @@ extension Profession {
             return [.drink, .gamble, .explore]
         case .mercenary:
             return [.drink, .gamble, .explore, .train]
+            
+        // Prisoner - extremely limited activities
+        case .warden:
+            return []
         
         // Special Cases
         case .apprentice: return [.study, .explore]
