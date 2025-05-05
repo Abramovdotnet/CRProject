@@ -117,11 +117,13 @@ struct NavigationWebView: View {
                     .scaleEffect(scale)
                     
                     // Top widget overlay that stays fixed at the top
-                    VStack {
+                    VStack(alignment: .leading) {
                         TopWidgetView(viewModel: viewModel)
-                            .frame(maxWidth: .infinity)
+                            .frame(height: 35) // Ограничиваем высоту виджета
+                            .frame(maxWidth: .infinity, alignment: .top) // Размещаем по верху
                             .padding(.top, geometry.safeAreaInsets.top)
                             .foregroundColor(Theme.textColor)
+                            .allowsHitTesting(false) // Отключаем хит-тест, чтобы касания проходили сквозь
                         
                         HStack {
                             Image(systemName: viewModel.parentScene?.sceneType.iconName ?? "")
@@ -131,8 +133,8 @@ struct NavigationWebView: View {
                                 .font(Theme.captionFont)
                                 .foregroundColor(Theme.textColor)
                             Spacer()
-                    
                         }
+                        
                         Spacer()
                     }
                 }

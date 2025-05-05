@@ -102,10 +102,16 @@ struct VampireGazeView: View {
             }
             .frame(width: geometry.size.width, height: geometry.size.height)
             
-            TopWidgetView(viewModel: mainViewModel)
-                .frame(maxWidth: .infinity)
-                .padding(.top, geometry.safeAreaInsets.top)
-                .foregroundColor(Theme.textColor)
+            VStack(alignment: .leading) {
+                TopWidgetView(viewModel: mainViewModel)
+                    .frame(height: 35)
+                    .frame(maxWidth: .infinity, alignment: .top)
+                    .padding(.top, geometry.safeAreaInsets.top)
+                    .foregroundColor(Theme.textColor)
+                    .allowsHitTesting(false)
+                
+                Spacer()
+            }
         }
         .onAppear {
             withAnimation(.easeIn(duration: 0.3)) {

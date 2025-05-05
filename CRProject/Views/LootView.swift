@@ -2,6 +2,8 @@ import UIKit
 import SwiftUI
 import Combine
 
+
+
 // MARK: - BackgroundImageViewController
 class BackgroundImageViewController: UIViewController {
     // Background components
@@ -104,6 +106,10 @@ class LootViewController: BackgroundImageViewController {
     private let npcItemsTableView = UITableView()
     private let playerItemsTableView = UITableView()
     
+    // Top Widget
+    private var topWidgetViewController: TopWidgetUIViewController?
+    private let topWidgetContainerView = UIView()
+    
     // Data
     private var npcItems: [ItemGroup] = []
     private var playerItems: [ItemGroup] = []
@@ -123,6 +129,7 @@ class LootViewController: BackgroundImageViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupTopWidget()
         setupContainers()
         setupTableViews()
         setupConstraints()
@@ -136,6 +143,32 @@ class LootViewController: BackgroundImageViewController {
     }
     
     // MARK: - Setup
+    private func setupTopWidget() {
+        // Создаем контейнер для виджета
+        topWidgetContainerView.translatesAutoresizingMaskIntoConstraints = false
+        topWidgetContainerView.backgroundColor = .clear
+        topWidgetContainerView.layer.cornerRadius = 12
+        view.addSubview(topWidgetContainerView)
+        
+        // Создаем и добавляем виджет
+        let widgetVC = TopWidgetUIViewController(viewModel: mainViewModel)
+        addChild(widgetVC)
+        topWidgetContainerView.addSubview(widgetVC.view)
+        widgetVC.view.translatesAutoresizingMaskIntoConstraints = false
+        widgetVC.didMove(toParent: self)
+        
+        // Устанавливаем констрейнты для виджета внутри контейнера
+        NSLayoutConstraint.activate([
+            widgetVC.view.topAnchor.constraint(equalTo: topWidgetContainerView.topAnchor, constant: 2),
+            widgetVC.view.leadingAnchor.constraint(equalTo: topWidgetContainerView.leadingAnchor, constant: 2),
+            widgetVC.view.trailingAnchor.constraint(equalTo: topWidgetContainerView.trailingAnchor, constant: -2),
+            widgetVC.view.bottomAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: -2)
+        ])
+        
+        // Сохраняем ссылку на VC
+        self.topWidgetViewController = widgetVC
+    }
+    
     private func setupContainers() {
         // Player Container (LEFT)
         playerContainerView.translatesAutoresizingMaskIntoConstraints = false
@@ -322,8 +355,14 @@ class LootViewController: BackgroundImageViewController {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
+            // Top Widget Container
+            topWidgetContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 0),
+            topWidgetContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            topWidgetContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            topWidgetContainerView.heightAnchor.constraint(equalToConstant: 35),
+            
             // Player Container (LEFT)
-            playerContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
+            playerContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 16),
             playerContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             playerContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -25),
             playerContainerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.45),
@@ -341,7 +380,7 @@ class LootViewController: BackgroundImageViewController {
             playerItemsTableView.bottomAnchor.constraint(equalTo: playerContainerView.bottomAnchor, constant: -8),
             
             // NPC Container (RIGHT)
-            npcContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
+            npcContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 16),
             npcContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
             npcContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -25),
             npcContainerView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.45),

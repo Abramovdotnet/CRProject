@@ -202,7 +202,6 @@ extension NPCActivityType {
         case .casualty: return "xmark.circle.fill"
         case .followingPlayer: return "person.2.fill"
         case .allyingPlayer: return "bolt.fill"
-        case .mourn: return "heart.fill"
         }
     }
     

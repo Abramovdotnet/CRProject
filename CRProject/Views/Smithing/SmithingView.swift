@@ -26,12 +26,18 @@ struct SmithingView: View {
                 backgroundView()
                 
                 // Content
-                VStack(alignment: .leading) {
-                    // Top bar
-                    topBar(geometry: geometry)
+                VStack(alignment: .leading, spacing: 0) {
+                    // Top widget
+                    TopWidgetView(viewModel: mainViewModel)
+                        .frame(height: 35)
+                        .frame(maxWidth: .infinity, alignment: .top)
+                        .padding(.top, geometry.safeAreaInsets.top)
+                        .foregroundColor(Theme.textColor)
+                        .allowsHitTesting(false)
                     
                     // Main content
                     mainContentView(geometry: geometry)
+                        .padding(.top, 10) // Добавляем небольшой отступ от виджета
                 }
             }
             .onAppear {
@@ -75,9 +81,11 @@ struct SmithingView: View {
     
     private func topBar(geometry: GeometryProxy) -> some View {
         TopWidgetView(viewModel: mainViewModel)
-            .frame(maxWidth: .infinity)
+            .frame(height: 35)
+            .frame(maxWidth: .infinity, alignment: .top)
             .padding(.top, geometry.safeAreaInsets.top)
             .foregroundColor(Theme.textColor)
+            .allowsHitTesting(false)
     }
     
     private func mainContentView(geometry: GeometryProxy) -> some View {

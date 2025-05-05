@@ -118,8 +118,10 @@ struct MainSceneView: View {
                         
                         VStack(spacing: 0) {
                             TopWidgetView(viewModel: viewModel)
-                                .frame(maxWidth: .infinity)
+                                .frame(height: 35)
+                                .frame(maxWidth: .infinity, alignment: .top)
                                 .background(Color.clear)
+                                .allowsHitTesting(false)
                             
                             // Main content area - now without any padding
                             HStack(spacing: 0) {

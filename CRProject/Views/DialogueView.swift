@@ -140,12 +140,18 @@ struct DialogueView: View {
                 }
                 
                 // Top Widget - Rendered below Love Scene if active
-                TopWidgetView(viewModel: mainViewModel)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-                    .padding(.top, geometry.safeAreaInsets.top)
-                    .foregroundColor(Theme.textColor)
-                    .opacity(viewModel.showLoveScene ? 0 : 1) // Hide if LoveScene is shown
-                    .zIndex(2) // Above Action Result
+                VStack(alignment: .leading) {
+                    TopWidgetView(viewModel: mainViewModel)
+                        .frame(height: 35) // Ограничиваем высоту виджета
+                        .frame(maxWidth: .infinity, alignment: .top) // Располагаем по верху, не занимая всю высоту
+                        .padding(.top, geometry.safeAreaInsets.top)
+                        .foregroundColor(Theme.textColor)
+                        .opacity(viewModel.showLoveScene ? 0 : 1) // Hide if LoveScene is shown
+                        .allowsHitTesting(false) // Отключаем хит-тест этого контейнера, чтобы касания проходили сквозь
+                    
+                    Spacer()
+                }
+                .zIndex(2) // Above Action Result
 
                 // Love Scene Overlay - Now covers everything including TopWidget
                 if viewModel.showLoveScene {

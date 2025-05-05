@@ -287,9 +287,12 @@ struct TradeView: View {
                 }
                 VStack(alignment: .leading) {
                     TopWidgetView(viewModel: mainViewModel)
-                        .frame(maxWidth: .infinity)
+                        .frame(height: 35)
+                        .frame(maxWidth: .infinity, alignment: .top)
                         .padding(.top, geometry.safeAreaInsets.top)
                         .foregroundColor(Theme.textColor)
+                        .allowsHitTesting(false)
+                    
                     Spacer()
                 }
             }
