@@ -1,0 +1,101 @@
+. Общее Описание Системы Диалогов
+1.1. Назначение и основные возможности.
+1.2. Ключевые файлы, где реализована система (кратко, для общей ориентации: DialogueSystem.swift, DialogueProcessor.swift, DialogueViewModel.swift, DialogueActionTypes.swift и т.д.).
+1.3. Типы диалогов (общие, профессиональные, уникальные NPC, специфичные сценарии типа fakeAlibiNodes).
+2. Структура JSON Диалогов
+2.1. DialogueTree (Корневой объект JSON-файла диалога)
+initialNode (String): ID стартового узла.
+nodes (Dictionary<String, DialogueNode>): Словарь узлов диалога.
+2.2. DialogueNode (Узел диалога)
+text (String): Текст, произносимый NPC (может содержать плейсхолдеры типа {player_name}, {if:first_meeting}{else}{endif}).
+options (Array<DialogueNodeOption>): Варианты ответов/действий игрока.
+requirements (DialogueRequirements?): Опциональные общие требования для отображения всего узла (используется ли это сейчас?).
+2.3. DialogueNodeOption (Опция игрока)
+text (String): Текст опции, видимый игроку.
+type (String, см. секцию 3 "Типы Опций Диалога"): Тип опции.
+nextNode (String): ID следующего узла или специальные значения ("end", "RETURN_TO_MAIN_DIALOGUE_ROOT", "PROCEED_TO_END").
+requirements (DialogueRequirements?): Опциональные требования для отображения этой опции.
+failureNode (String?): Опциональный ID узла, на который происходит переход при провале проверки (например, для type: "persuasion").
+successActions (Array<DialogueAction>?): Опциональный массив действий при успешном выборе/проверке.
+failureActions (Array<DialogueAction>?): Опциональный массив действий при неудачном выборе/проверке.
+2.4. DialogueRequirements (Требования)
+isNight (Bool?): Требуется ли ночь.
+isIndoor (Bool?): Требуется ли нахождение в помещении.
+coins (Int?): Требуемое количество монет у игрока.
+minRelationship (Int?): Минимальное значение отношений с NPC.
+maxRelationship (Int?): Максимальное значение отношений с NPC.
+(Добавьте другие, если есть)
+2.5. Плейсхолдеры в тексте:
+{player_name}
+{if:first_meeting} ... {else} ... {endif}
+(Добавьте другие, если есть)
+3. Типы Опций Диалога (DialogueOptionType.swift)
+Для каждого актуального типа из вашего enum DialogueOptionType:
+normal: Описание (стандартный переход, выполняет successActions).
+persuasion: Описание (проверка Убеждения, использует nextNode для успеха, failureNode для провала, выполняет successActions/failureActions).
+relationshipIncrease: Описание (увеличивает отношения, затем переход).
+relationshipDecrease: Описание (уменьшает отношения, затем переход).
+(Перечислите ВСЕ актуальные типы и их точное поведение в DialogueViewModel)
+4. Система Действий (DialogueActionTypes.swift и DialogueViewModel.swift)
+4.1. DialogueAction (Структура действия)
+type (String, см. 4.2 DialogueAction.ActionType): Тип действия.
+parameters (Dictionary<String, ActionParameterValue>): Параметры действия.
+4.2. DialogueAction.ActionType (Типы действий)
+modifyStat: Описание (изменяет стат цели). Необходимые параметры в parameters:
+"target" (String, см. 4.3 ActionTarget)
+"stat" (String, см. 4.4 StatIdentifier)
+"value" (Int или другое, в зависимости от стата)
+triggerGameEvent: Описание (запускает игровое событие). Необходимые параметры в parameters:
+"eventName" (String, см. 4.5 "Игровые События")
+(другие параметры, специфичные для события, например, "statName" для "StatisticIncrement")
+4.3. ActionTarget (Цели действия)
+player: Описание.
+npc: Описание.
+global: Описание.
+4.4. StatIdentifier (Идентификаторы статов/флагов)
+Для target: .npc:
+relationship: Описание (как value влияет).
+isIntimidated: Описание (value: 0/1).
+Для target: .player:
+coins: Описание (положительное value - дать игроку от NPC, отрицательное - забрать у игрока и отдать NPC).
+health: Описание.
+Для target: .global:
+awareness: Описание.
+gameFlag: Описание (как используется, например, flagName, value).
+questStatus: Описание (как используется, например, questId, value для стадии).
+(Перечислите ВСЕ актуальные статы)
+4.5. Игровые События (eventName для triggerGameEvent)
+JailPlayer: Описание. Параметры? (Нет).
+TimeAdvance: Описание. Параметры? (Нет).
+LoveScene: Описание. Параметры? (Нет).
+StatisticIncrement: Описание. Параметры:
+"statName" (String): bribes, nightSpentsWithSomeone, и т.д.
+(Перечислите ВСЕ актуальные eventName и их параметры)
+4.6. ActionParameterValue: Описание (как передавать значения разных типов: string, int, bool, double).
+5. Механика Убеждения (DialogueProcessor.swift)
+5.1. Формула расчета шанса (например, baseChance + relationshipEffect/2 + unholyTongueBonus).
+5.2. Значения (базовый шанс, бонусы/штрафы).
+5.3. Как результат проверки влияет на диалог (использование nextNode/failureNode, successActions/failureActions).
+6. Специальные Под-диалоги и Их Слияние
+6.1. fakeAlibiNodes.json: Назначение, как и когда добавляется в основной диалог (условие на AbilitiesSystem.shared.hasBribe && !npc.isIntimidated).
+6.2. overlookActivitiesNodes.json: Назначение, как и когда добавляется (условие на AbilitiesSystem.shared.hasMysteriousPerson && !npc.isIntimidated).
+6.3. desiredVictimNodes: Логика генерации (когда игрок ищет жертву), как добавляется.
+6.4. gossipNodes: Логика генерации, как добавляется.
+6.5. Плейсхолдеры для возврата/завершения в под-диалогах:
+"RETURN_TO_MAIN_DIALOGUE_ROOT"
+"PROCEED_TO_END"
+7. Правила и Рекомендации по Созданию Диалогов
+7.1. Соглашения по именованию ID узлов (если есть).
+7.2. Рекомендации по длине текста, количеству опций.
+7.3. Стиль и тон диалогов (общие рекомендации).
+7.4. Как обрабатывать квестовые шаги (например, через gameFlag или questStatus в successActions).
+8. Примеры JSON Диалогов
+8.1. Пример простого диалога.
+8.2. Пример диалога с проверкой убеждения и разными исходами.
+8.3. Пример диалога с использованием triggerGameEvent для квестового действия.
+8.4. Пример использования fakeAlibiNodes (как выглядит опция-вход и результат).
+9. Контекст Мира Игры (Опционально, но полезно для генерации текста)
+9.1. Краткое описание сеттинга.
+9.2. Основные фракции, их цели и отношения.
+9.3. Ключевые NPC и их архетипы (если есть повторяющиеся).
+9.4. Общий тон повествования (мрачный, героический, циничный и т.д.).

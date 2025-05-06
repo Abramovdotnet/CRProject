@@ -224,6 +224,17 @@ class GameStateService : ObservableObject, GameService{
                 player.arrestTime = 0
             }
         }
+
+        // Update quest indicators for NPCs in the current scene
+        let questService = QuestService.shared
+        for npc in scene.getNPCs() { // Assuming scene.getNPCs() returns an array of NPC objects
+            // Предполагаем, что свойства в NPC теперь Bool
+            npc.hasNewQuests = questService.hasAvailableNewQuests(for: npc.id)
+            npc.questStageUpdateAvaiting = questService.isNPCAwaitingPlayerActionInActiveQuests(for: npc.id)
+            // Если свойства Int, то:
+            // npc.hasNewQuests = questService.hasAvailableNewQuests(for: npc.id) ? 1 : 0
+            // npc.questStageUpdateAvaiting = questService.isNPCAwaitingPlayerActionInActiveQuests(for: npc.id) ? 1 : 0
+        }
     }
     
     func forcePlayerToFindHideout() {

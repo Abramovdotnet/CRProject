@@ -1,0 +1,90 @@
+{
+  "initialNode": "q_es_start",
+  "nodes": {
+    "q_es_start": {
+      "text": "(NPC {npc_id_3441} выглядит очень расстроенным, переминаясь с ноги на ногу)",
+      "options": [
+        {
+          "text": "Что случилось, {npc_name_3441}? Ты сам не свой.",
+          "type": "normal",
+          "nextNode": "q_es_problem"
+        },
+        {
+          "text": "Извини, сейчас не до разговоров.",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    },
+    "q_es_problem": {
+      "text": "Ох, {player_name}... Представляешь, я... я хотел сделать подарок одной особе, {npc_name_6243}. Коралловые серьги, такие изящные (Предмет ID 180). А вчера вечером... проклятые карты! Продул их этому вертиле хвосту, {npc_name_3575}! Теперь не знаю, что и делать.",
+      "options": [
+        {
+          "text": "Может, я могу чем-то помочь?",
+          "type": "normal",
+          "nextNode": "q_es_request_help"
+        },
+        {
+          "text": "Дела... Сочувствую, но азартные игры - зло.",
+          "type": "normal",
+          "nextNode": "q_es_refuse_early"
+        }
+      ]
+    },
+    "q_es_request_help": {
+      "text": "Правда? О, {player_name}, ты бы меня очень выручил! Может, ты сможешь поговорить с {npc_name_3575}? Уверен, он где-то в таверне 'Лунный Бокал' или 'Драконий Очаг' прохлаждается. Попробуй уговорить его вернуть серьги. Я бы сам, но... он только посмеется.",
+      "options": [
+        {
+          "text": "Хорошо, я попробую с ним потолковать.",
+          "type": "normal",
+          "nextNode": "accept_quest_task",
+          "successActions": [
+            {
+              "type": "modifyStat",
+              "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_quest_accepted", "value": 1 }
+            },
+            {
+              "type": "triggerGameEvent",
+              "parameters": { "eventName": "requestQuestStart", "questId": "lost_and_found_earrings" }
+            }
+          ]
+        },
+        {
+          "text": "Знаешь, не хочу ввязываться в ваши картежные разборки.",
+          "type": "normal",
+          "nextNode": "q_es_refuse_help"
+        }
+      ]
+    },
+    "accept_quest_task": {
+      "text": "Спасибо тебе огромное, {player_name}! Я твой должник. {npc_name_3575} обычно ошивается в тавернах, поищи его там. Надеюсь, у тебя получится.",
+      "options": [
+        {
+          "text": "[Закончить разговор]",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "q_es_refuse_early": {
+      "text": "Да, ты прав... сам виноват. Эх.",
+      "options": [
+        {
+          "text": "[Уйти]",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    },
+    "q_es_refuse_help": {
+      "text": "Понимаю... Ладно, что уж теперь. Спасибо, что выслушал.",
+      "options": [
+        {
+          "text": "[Пожать плечами и уйти]",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    }
+  }
+} 

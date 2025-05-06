@@ -1,0 +1,82 @@
+{
+  "initialNode": "q_pgrm_offer_job",
+  "nodes": {
+    "q_pgrm_offer_job": {
+      "text": "Слушай, есть работа. Капитан стражи ищет людей для охраны темницы. Платят неплохо, хоть и работа грязная. Что скажешь?",
+      "options": [
+        {
+          "text": "Это не просто охрана, это шанс показать себя и заработать уважение стражи. Да и деньги лишними не будут. [Убеждение]",
+          "type": "persuasion",
+          "nextNode": "q_pgrm_accept",
+          "failureNode": "q_pgrm_refuse",
+          "successActions": [
+            { 
+              "type": "modifyStat", 
+              "parameters": { 
+                "target": "global", 
+                "stat": "gameFlag", 
+                "flagName": "pg_mercenary_recruited",
+                "value": 1
+              } 
+            },
+            {
+              "type": "modifyStat", 
+              "parameters": { "target": "npc", "stat": "relationship", "value": 5 } 
+            },
+            {
+              "type": "modifyStat",
+              "parameters": { "target": "npc", "stat": "isSpecialBehaviorSet", "value": 1 }
+            },
+            {
+              "type": "modifyStat",
+              "parameters": { "target": "npc", "stat": "specialBehaviorTime", "value": 168 }
+            },
+            {
+              "type": "modifyStat",
+              "parameters": { "target": "npc", "stat": "activity", "activityName": "Watching" }
+            }
+          ],
+          "failureActions": [
+            {
+              "type": "markQuestInteractionComplete",
+              "parameters": {
+                "questId": "prison_guard_recruitment", 
+                "stageId": "02_find_mercenary",
+                "interactionId": "recruit_persuasion_attempt"
+              }
+            },
+            {
+              "type": "modifyStat", 
+              "parameters": { "target": "npc", "stat": "relationship", "value": -3 }
+            }
+          ]
+        },
+        {
+          "text": "Я передумал(а).",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    },
+    "q_pgrm_accept": {
+      "text": "Хм, охранять тюрьму... Ладно, уговорил. Звучит лучше, чем сидеть без дела. Передай капитану, что я скоро буду.",
+      "options": [
+        {
+          "text": "Отлично!",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "q_pgrm_refuse": {
+      "text": "Охранять крыс в клетках? Нет уж, спасибо. Я предпочитаю сражения, а не тюремную вонь. Поищи дурака в другом месте.",
+      "options": [
+        {
+          "text": "Как знаешь.",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    }
+  }
+} 

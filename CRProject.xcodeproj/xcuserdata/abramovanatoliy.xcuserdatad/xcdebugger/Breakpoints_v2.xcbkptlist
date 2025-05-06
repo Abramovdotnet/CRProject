@@ -272,7 +272,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "268"
             endingLineNumber = "268"
-            landmarkName = "advanceWorldState(advanceSafe:)"
+            landmarkName = "handleSafeTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -336,7 +336,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "236"
             endingLineNumber = "236"
-            landmarkName = "forcePlayerToFindHideout()"
+            landmarkName = "handleTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -400,7 +400,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "372"
             endingLineNumber = "372"
-            landmarkName = "processNode(_:)"
+            landmarkName = "mergeGossipNodes(into:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -752,8 +752,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "25"
             endingLineNumber = "25"
-            landmarkName = "init(npc:player:specificDialogueFilename:)"
-            landmarkType = "7">
+            landmarkName = "DialogueViewModel"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -982,8 +982,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "127"
             endingLineNumber = "127"
-            landmarkName = "DialogueViewModel"
-            landmarkType = "3">
+            landmarkName = "selectOption(_:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1013,7 +1013,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "427"
-            endingLineNumber = "427">
+            endingLineNumber = "427"
+            landmarkName = "create(text:type:nextNodeId:failureNode:successActions:failureActions:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1027,7 +1029,9 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "428"
-            endingLineNumber = "428">
+            endingLineNumber = "428"
+            landmarkName = "create(text:type:nextNodeId:failureNode:successActions:failureActions:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1042,7 +1046,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "139"
             endingLineNumber = "139"
-            landmarkName = "handlePersuasion(option:)"
+            landmarkName = "selectOption(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1050,7 +1054,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "E682F7C5-7873-42FD-983D-44A266CA030C"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CRProject/ViewModels/DialogueViewModel.swift"
@@ -1058,38 +1062,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "129"
             endingLineNumber = "129"
-            landmarkName = "handlePersuasion(option:)"
+            landmarkName = "selectOption(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "E682F7C5-7873-42FD-983D-44A266CA030C - 227f9605c3babc8a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CRProject.DialogueViewModel.handlePersuasion(option: CRProject.DialogueOption) -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/ViewModels/DialogueViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "130"
-                  endingLineNumber = "130">
-               </Location>
-               <Location
-                  uuid = "E682F7C5-7873-42FD-983D-44A266CA030C - 227f9605c3babc69"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CRProject.DialogueViewModel.handlePersuasion(option: CRProject.DialogueOption) -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/ViewModels/DialogueViewModel.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "129"
-                  endingLineNumber = "129">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1104,7 +1078,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "140"
             endingLineNumber = "140"
-            landmarkName = "handlePersuasion(option:)"
+            landmarkName = "selectOption(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1136,7 +1110,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "99"
             endingLineNumber = "99"
-            landmarkName = "selectOption(_:)"
+            landmarkName = "updateDialogue(text:options:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1152,7 +1126,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "321"
             endingLineNumber = "321"
-            landmarkName = "executeTriggerGameEventAction(_:player:npc:)"
+            landmarkName = "executeModifyStatAction(_:player:npc:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1168,7 +1142,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "322"
             endingLineNumber = "322"
-            landmarkName = "executeTriggerGameEventAction(_:player:npc:)"
+            landmarkName = "executeModifyStatAction(_:player:npc:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1184,7 +1158,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "323"
             endingLineNumber = "323"
-            landmarkName = "executeTriggerGameEventAction(_:player:npc:)"
+            landmarkName = "executeModifyStatAction(_:player:npc:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

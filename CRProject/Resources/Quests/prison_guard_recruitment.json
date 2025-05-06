@@ -1,0 +1,73 @@
+{
+  "id": "prison_guard_recruitment",
+  "title": "Требуются стражники",
+  "description": "Капитан стражи тюрьмы попросил найти и убедить наемника поступить на службу по охране заключенных.",
+  "startingNPCId": 1013,
+  "prerequisites": null,
+  "stages": [
+    {
+      "id": "01_talk_to_captain",
+      "objective": "Поговорить с капитаном стражи (NPC 1013) о работе.",
+      "dialogueFilename": "Quest_PrisonGuard_Start.json",
+      "activationActions": null,
+      "completionConditions": [
+        {
+          "type": "checkGameFlag",
+          "parameters": { "flagName": "pg_quest_accepted", "value": 1 }
+        }
+      ],
+      "completionActions": [
+        {
+          "type": "modifyStat",
+          "parameters": { "target": "global", "stat": "gameFlag", "flagName": "pg_stage1_complete", "value": 1 }
+        }
+      ]
+    },
+    {
+      "id": "02_find_mercenary",
+      "objective": "Найти наемника (профессия Mercenary) и убедить его стать стражником.",
+      "dialogueFilename": "Quest_PrisonGuard_RecruitMerc.json",
+      "restrictToProfession": "Mercenary",
+      "associatedNPCId": null,
+      "activationActions": null,
+      "completionConditions": [
+        {
+          "type": "checkGameFlag",
+          "parameters": { "flagName": "pg_mercenary_recruited", "value": 1 }
+        }
+      ],
+      "completionActions": [
+        {
+          "type": "modifyStat",
+          "parameters": { "target": "global", "stat": "gameFlag", "flagName": "pg_stage2_complete", "value": 1 }
+        }
+      ]
+    },
+    {
+      "id": "03_report_to_captain",
+      "objective": "Доложить капитану стражи (NPC 1013) об успехах.",
+      "dialogueFilename": "Quest_PrisonGuard_Complete.json",
+      "associatedNPCId": 1013,
+      "activationActions": null,
+      "completionConditions": [
+        {
+          "type": "checkGameFlag",
+          "parameters": { "flagName": "pg_reported_success", "value": 1 }
+        }
+      ],
+      "completionActions": null
+    }
+  ],
+  "rewards": {
+    "coins": 150,
+    "items": [
+      { "itemId": 2004, "quantity": 1 }
+    ],
+    "rewardActions": [
+      {
+        "type": "modifyStat",
+        "parameters": { "target": "global", "stat": "gameFlag", "flagName": "pg_quest_completed", "value": 1 }
+      }
+    ]
+  }
+} 

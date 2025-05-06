@@ -24,6 +24,7 @@ struct MainSceneView: View {
         case smithing
         case abilities
         case loot
+        case questJournal
     }
     
     init(viewModel: MainSceneViewModel) {
@@ -163,6 +164,15 @@ struct MainSceneView: View {
                                             }
                                         )
                                     }
+                                    
+                                    // Quest Journal Button - Moved here
+                                    MainSceneActionButton(
+                                        icon: "book.closed.fill", // Or another icon like "list.star"
+                                        color: Theme.textColor,
+                                        action: {
+                                            navigationPath.append(NavigationDestination.questJournal)
+                                        }
+                                    )
                                     
                                     if !isPlayerHidden && !isPlayerArrested {
                                         // Show navigation
@@ -309,7 +319,7 @@ struct MainSceneView: View {
                                                     )
                                                 }
 
-                                                if npcManager.selectedNPC != nil && selectedNPC.currentActivity != .jailed && !selectedNPC.isAlive && !isPlayerArrested {
+                                                if npcManager.selectedNPC != nil && selectedNPC.currentActivity != .jailed && !isPlayerArrested {
                                                     MainSceneActionButton(
                                                         icon: "bag.fill",
                                                         color: Theme.textColor,
@@ -358,6 +368,8 @@ struct MainSceneView: View {
                                     Spacer()
                                 }
                                 .frame(width: 60)
+                                
+                                Spacer(minLength: 10)
                             }
                             .padding(.top)
                             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -558,6 +570,22 @@ struct MainSceneView: View {
                                         }
                                     }
                             )
+                            
+                        case .questJournal:
+                            ZStack { // Wrap in ZStack for background and gesture
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                // Передаем viewModel из MainSceneView в QuestJournalView
+                                QuestJournalView(mainSceneViewModel: viewModel)
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 { // Standard swipe distance
+                                            safePopNavigation()
+                                        }
+                                    }
+                            )
                         }
                     }
                 }
@@ -570,25 +598,70 @@ struct MainSceneView: View {
                     object: nil,
                     queue: .main
                 ) { [self] notification in
+                    guard let userInfo = notification.userInfo else {
+                        DebugLogService.shared.log("Error: Received .openDialogueTrigger notification with nil userInfo.", category: "Error")
+                        return
+                    }
 
-                    if let userInfo = notification.userInfo,
-                       let reportingNPC = userInfo["reportingNPC"] as? NPC,
-                       let player = gameStateService.player,
-                       let dialogueFilename = userInfo["dialogueFilename"] as? String {
-                        
-                        // Create DialogueViewModel using the filename from userInfo
-                        let dialogueVM = DialogueViewModel(npc: reportingNPC, player: player, specificDialogueFilename: dialogueFilename)
-                        
-                        // Сохраняем VM в локальную переменную
-                        activeDialogueViewModel = dialogueVM
-                        
-                        // Сбрасываем навигационный путь и открываем диалог
-                        DispatchQueue.main.async {
-                            navigationPath = NavigationPath()
-                            navigationPath.append(NavigationDestination.dialogue)
+                    guard let dialogueFilename = userInfo["specificDialogueFilename"] as? String else {
+                        DebugLogService.shared.log("Error: .openDialogueTrigger missing 'specificDialogueFilename' in userInfo: \\(userInfo)", category: "Error")
+                        return
+                    }
+
+                    let forceOpen = userInfo["forceOpen"] as? Bool ?? false
+                    let targetNPCId = userInfo["targetNPCId"] as? Int
+                    let interactingNPCIdFromQuest = userInfo["interactingNPCId"] as? Int
+                    
+                    DebugLogService.shared.log("Received .openDialogueTrigger: file='\\(dialogueFilename)', targetNPCId=\\(targetNPCId ?? -1), forceOpen=\\(forceOpen), interactingFromQuest=\\(interactingNPCIdFromQuest ?? -1)", category: "DialogueTrigger")
+
+                    var npcForDialogue: NPC? = nil
+
+                    if forceOpen {
+                        if let npcId = targetNPCId {
+                            npcForDialogue = NPCReader.getRuntimeNPC(by: npcId)
+                            if npcForDialogue == nil {
+                                DebugLogService.shared.log("Warning: forceOpen dialogue trigger for targetNPCId \\(npcId) but NPC not found.", category: "DialogueTrigger")
+                            }
                         }
                     } else {
-                        DebugLogService.shared.log("Error: Received openDialogueTrigger notification with invalid or missing userInfo.", category: "Error")
+                        let currentInteractingNPC = npcManager.selectedNPC
+
+                        if let tid = targetNPCId {
+                            if currentInteractingNPC?.id == tid {
+                                npcForDialogue = currentInteractingNPC
+                            } else {
+                                DebugLogService.shared.log("Info: .openDialogueTrigger for targetNPCId \\(tid) but current NPC is \\(currentInteractingNPC?.id ?? -1). Dialogue not opened.", category: "DialogueTrigger")
+                                // if let targetNpcName = npcManager.getNPC(by: tid)?.name {
+                                //     PopUpState.shared.show(message: "Нужно поговорить с \\(targetNpcName).")
+                                // }
+                                return 
+                            }
+                        } else if let qNPCId = interactingNPCIdFromQuest {
+                            if currentInteractingNPC?.id == qNPCId {
+                                npcForDialogue = currentInteractingNPC
+                            } else {
+                                 DebugLogService.shared.log("Info: .openDialogueTrigger with interactingNPCIdFromQuest \\(qNPCId) but current NPC is \\(currentInteractingNPC?.id ?? -1). Dialogue not opened.", category: "DialogueTrigger")
+                                 return
+                            }
+                        } else if currentInteractingNPC != nil {
+                            npcForDialogue = currentInteractingNPC
+                        } else {
+                            DebugLogService.shared.log("Warning: .openDialogueTrigger (not forced) but no NPC context available (target, quest, or current). Dialogue not opened.", category: "DialogueTrigger")
+                            return
+                        }
+                    }
+
+                    guard let player = gameStateService.player else {
+                        DebugLogService.shared.log("Error: .openDialogueTrigger - player object is nil.", category: "Error")
+                        return
+                    }
+
+                    let dialogueVM = DialogueViewModel(npc: npcForDialogue!, player: player, specificDialogueFilename: dialogueFilename)
+                    activeDialogueViewModel = dialogueVM
+
+                    DispatchQueue.main.async {
+                        navigationPath = NavigationPath() 
+                        navigationPath.append(NavigationDestination.dialogue)
                     }
                 }
             }

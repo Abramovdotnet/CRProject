@@ -26,6 +26,7 @@ struct CRProjectApp: App {
             gameTime: dependencyManager.resolve(),
             vampireNatureRevealService: dependencyManager.resolve()
         ))
+        dependencyManager.register(QuestService())
         
         VibrationService.shared.successVibration()
     }

@@ -20,6 +20,9 @@ enum StatIdentifier: String, Codable {
     // NPC Specific
     case relationship
     case isIntimidated // Could use 0 for false, 1 for true
+    case isSpecialBehaviorSet // Для npc.isNpcInteractionBehaviorSet
+    case specialBehaviorTime  // Для npc.npcInteractionSpecialTime
+    case activity             // Для npc.currentActivity (будем использовать строковое значение)
     // TODO: Add other NPC stats (e.g., specific mood, suspicion level)
 
     // Player Specific
@@ -43,7 +46,8 @@ struct DialogueAction: Codable, Equatable {
     enum ActionType: String, Codable {
         case modifyStat
         case triggerGameEvent
-        // TODO: Add other action types (e.g., addItem, setLocationFlag)
+        case markQuestInteractionComplete
+        // TODO: Add other action types (e.g., addItem, setLocationFlag, startQuest)
     }
     
     // Helper to make parameters Codable while allowing different underlying types
@@ -98,5 +102,14 @@ struct DialogueAction: Codable, Equatable {
         var fullParams = params
         fullParams["eventName"] = .string(name)
         return DialogueAction(type: .triggerGameEvent, parameters: fullParams)
+    }
+    
+    // Convenience static constructor for marking quest interaction
+    static func markQuestInteraction(questId: String, stageId: String, interactionId: String) -> DialogueAction {
+        return DialogueAction(type: .markQuestInteractionComplete, parameters: [
+            "questId": .string(questId),
+            "stageId": .string(stageId),
+            "interactionId": .string(interactionId)
+        ])
     }
 } 

@@ -1,0 +1,95 @@
+{
+  "initialNode": "q_pgs_start",
+  "nodes": {
+    "q_pgs_start": {
+      "text": "Проклятье, {player_name}! В этой дыре вечно не хватает людей. Особенно сейчас, когда заключенных все больше, а стражи разбегаются.",
+      "options": [
+        {
+          "text": "В чем дело, капитан?",
+          "type": "normal",
+          "nextNode": "q_pgs_problem"
+        },
+        {
+          "text": "Не мои проблемы.",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    },
+    "q_pgs_problem": {
+      "text": "Дело в том, что мне нужны крепкие руки для охраны темницы. Надежные, опытные бойцы. Своих не хватает, а городская управа жмется выделить средства на нормальных солдат. Говорят, нанимай кого подешевле.",
+      "options": [
+        {
+          "text": "И вы хотите, чтобы я нашел вам кого-то?",
+          "type": "normal",
+          "nextNode": "q_pgs_offer"
+        },
+        {
+          "text": "Звучит рискованно.",
+          "type": "normal",
+          "nextNode": "q_pgs_risk"
+        }
+      ]
+    },
+    "q_pgs_risk": {
+      "text": "Рискованно? Конечно! Это охрана тюрьмы, а не прогулка по саду. Но и плата соответствующая. Мне нужен результат, а не твои сомнения.",
+      "options": [
+        {
+          "text": "Хорошо, расскажите подробнее.",
+          "type": "normal",
+          "nextNode": "q_pgs_offer"
+        },
+        {
+          "text": "Я пас.",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    },
+    "q_pgs_offer": {
+      "text": "Именно. Полно наемников (Mercenary) шляется по городу и тавернам без дела. Найди одного толкового, кто не побоится смотреть в рожи этим отбросам за решеткой. Убеди его поступить на службу. Заплачу 150 монет, как только он явится ко мне.",
+      "options": [
+        {
+          "text": "Я возьмусь за это.",
+          "type": "normal",
+          "nextNode": "accept_task",
+          "successActions": [
+            {
+              "type": "modifyStat",
+              "parameters": { "target": "global", "stat": "gameFlag", "flagName": "pg_quest_accepted", "value": 1 }
+            },
+            {
+              "type": "triggerGameEvent",
+              "parameters": { "eventName": "requestQuestStart", "questId": "prison_guard_recruitment" }
+            }
+          ]
+        },
+        {
+          "text": "Нет, это не для меня.",
+          "type": "normal",
+          "nextNode": "q_pgs_refusal"
+        }
+      ]
+    },
+    "accept_task": {
+      "text": "Отлично! Жду хороших новостей. И поторопись, мне долго ждать некогда.",
+      "options": [
+        {
+          "text": "[Закончить разговор]",
+          "type": "normal",
+          "nextNode": "end"
+        }
+      ]
+    },
+    "q_pgs_refusal": {
+      "text": "Как знаешь. Дело твое. Но если передумаешь - дай знать.",
+       "options": [
+        {
+          "text": "[Уйти]",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    }
+  }
+} 

@@ -99,7 +99,12 @@ class ItemsManagementService : GameService {
     }
     
     func giveItem(itemId: Int, to: Player) {
-        to.items.append(Item.createUnique(ItemReader.shared.getItem(by: itemId)!))
+        if let itemPrototype = ItemReader.shared.getItem(by: itemId) {
+            to.items.append(Item.createUnique(itemPrototype))
+            print("[Items] Successfully gave item \(itemPrototype.name) (ID: \(itemId)) to player.")
+        } else {
+            print("[Items] Error: Could not find item with ID \(itemId) to give to player.")
+        }
     }
     
     func distributeDailyItems() {

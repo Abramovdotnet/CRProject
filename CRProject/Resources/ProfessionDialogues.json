@@ -274,48 +274,75 @@
         "initialNode": "courtesan_greeting",
         "nodes": {
             "courtesan_greeting": {
-                "text": "Hello honey. How you doing?",
+                "text": "Looking for some company, darling?",
                 "options": [
                     {
-                        "text": "Im just looking for company.",
+                        "text": "Perhaps... what do you offer?",
                         "type": "normal",
                         "nextNode": "courtesan_interaction"
+                    },
+                    {
+                        "text": "Not right now.",
+                        "type": "normal",
+                        "nextNode": "courtesan_farewell"
                     }
                 ]
             },
             "courtesan_interaction": {
-                "text": "So, then, let me share pleasure with you... Do you have money?",
+                "text": "I can offer you an unforgettable night... for the right price, of course.",
                 "options": [
                     {
-                        "text": "Sure, take it. (200) [Love For Sail]",
-                        "type": "loveForSail",
-                        "nextNode": "courtesan_scene",
-                        "requirements": {
-                            "coins": 200
-                        }
+                        "text": "I'm interested. (Pay 50 coins)",
+                        "type": "normal",
+                        "nextNode": "courtesan_accept_offer",
+                        "requirements": { "coins": 50 },
+                        "successActions": [
+                            {
+                                "type": "modifyStat",
+                                "parameters": { "target": "player", "stat": "coins", "value": -50 }
+                            },
+                            {
+                                "type": "triggerGameEvent",
+                                "parameters": { "eventName": "LoveScene" }
+                            },
+                            {
+                                "type": "triggerGameEvent",
+                                "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" }
+                            }
+                        ]
                     },
                     {
-                        "text": "Not today, sweety.",
+                        "text": "Too rich for my blood.",
                         "type": "normal",
-                        "nextNode": "courtesan_end"
+                        "nextNode": "courtesan_decline_offer"
                     }
                 ]
             },
-            "courtesan_scene": {
-                "text": "That was unbelieveble... Come back to me as soon as you wish.",
+            "courtesan_accept_offer": {
+                "text": "Follow me then, my dear... It will be a night to remember.",
                 "options": [
                     {
-                        "text": "Leave",
+                        "text": "(Continue)",
                         "type": "normal",
                         "nextNode": "end"
                     }
                 ]
             },
-            "courtesan_end": {
-                "text": "Well, please dont waste my time.",
+            "courtesan_decline_offer": {
+                "text": "A pity. Perhaps another time, when your purse is heavier.",
                 "options": [
                     {
-                        "text": "Leave",
+                        "text": "Perhaps.",
+                        "type": "normal",
+                        "nextNode": "courtesan_farewell"
+                    }
+                ]
+            },
+            "courtesan_farewell": {
+                "text": "Farewell then, darling. Come back if you change your mind.",
+                "options": [
+                    {
+                        "text": "Goodbye.",
                         "type": "normal",
                         "nextNode": "end"
                     }

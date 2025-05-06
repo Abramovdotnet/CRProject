@@ -44,6 +44,11 @@ class Player: ObservableObject, Character, Codable {
     var writingProgress: ProfessionProgress = ProfessionProgress()
     var taloringProgress: ProfessionProgress = ProfessionProgress()
 
+    // --- НОВОЕ СВОЙСТВО ДЛЯ КВЕСТОВ ---
+    @Published var activeQuests: [String: PlayerQuestState] = [:] // Словарь [QuestID: State]
+    var completedQuestInteractions: Set<String> = [] // Множество ключей завершенных/неповторяемых квестовых взаимодействий
+    var completedQuestIDs: Set<String>? = Set()
+
     // --- Initializer ---
     init(name: String, sex: Sex, age: Int, profession: Profession, id: Int) {
         self.name = name
@@ -90,6 +95,8 @@ class Player: ObservableObject, Character, Codable {
     enum CodingKeys: String, CodingKey {
         // Include all properties that need saving, published or not
         case id, index, name, sex, age, profession, bloodMeter, coins, isVampire, isAlive, isUnknown, isIntimidated, isBeasyByPlayerAction, intimidationDay, homeLocationId, currentLocationId, hiddenAt, items, desiredVictim, processedRelationshipDialogueNodes, isArrested, arrestTime
+        case activeQuests
+        case completedQuestInteractions
     }
 
     required init(from decoder: Decoder) throws {
@@ -116,6 +123,10 @@ class Player: ObservableObject, Character, Codable {
         desiredVictim = try container.decode(DesiredVictim.self, forKey: .desiredVictim)
         isArrested = try container.decode(Bool.self, forKey: .isArrested)
         arrestTime = try container.decode(Int.self, forKey: .arrestTime)
+        // <<< Декодируем activeQuests, используем decodeIfPresent для обратной совместимости, если сохранений без этого поля еще нет
+        activeQuests = try container.decodeIfPresent([String: PlayerQuestState].self, forKey: .activeQuests) ?? [:]
+        // <<< Декодируем completedQuestInteractions
+        completedQuestInteractions = try container.decodeIfPresent(Set<String>.self, forKey: .completedQuestInteractions) ?? []
     }
 
     func encode(to encoder: Encoder) throws {
@@ -142,5 +153,9 @@ class Player: ObservableObject, Character, Codable {
         try container.encode(desiredVictim, forKey: .desiredVictim)
         try container.encode(isArrested, forKey: .isArrested)
         try container.encode(arrestTime, forKey: .arrestTime)
+        // <<< Кодируем activeQuests
+        try container.encode(activeQuests, forKey: .activeQuests)
+        // <<< Кодируем completedQuestInteractions
+        try container.encode(completedQuestInteractions, forKey: .completedQuestInteractions)
     }
 }

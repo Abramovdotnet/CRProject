@@ -52,12 +52,34 @@ class DialogueSystem {
     }
     
     private func loadSpecificDialogueTrees() {
-        let specificFiles = ["CasualtySuspicionDialogue", "fakeAlibiNodes", "overlookActivitiesNodes"]
-        for fileName in specificFiles {
+        // Список всех специфичных диалогов (включая квестовые)
+        let specificDialogueFilenames = [
+            "CasualtySuspicionDialogue", 
+            "fakeAlibiNodes", 
+            "overlookActivitiesNodes",
+            "Quest_PrisonGuard_Start",
+            "Quest_PrisonGuard_RecruitMerc",
+            "Quest_PrisonGuard_Complete",
+            "Quest_Earrings_Start",
+            "Quest_Earrings_Gambler"
+            // Добавлять сюда другие по мере необходимости
+        ]
+        
+        DebugLogService.shared.log("DialogueSystem: Loading specific dialogue trees...", category: "DialogueLoading")
+        var loadedCount = 0
+        for fileName in specificDialogueFilenames {
+            // loadDialogueTree ожидает имя файла без .json
             if let tree = loadDialogueTree(fromFile: fileName) {
-                specificDialogueTrees[fileName + ".json"] = tree
+                // Сохраняем в словарь с полным именем файла как ключ
+                let fullFilename = fileName + ".json"
+                specificDialogueTrees[fullFilename] = tree
+                // DebugLogService.shared.log("DialogueSystem: Successfully loaded and stored specific dialogue: \(fullFilename)", category: "DialogueLoading") // Лог уже есть в loadDialogueTree
+                loadedCount += 1
+            } else {
+                 DebugLogService.shared.log("DialogueSystem Warning: Failed to load specific dialogue file: \(fileName).json", category: "DialogueLoading")
             }
         }
+         DebugLogService.shared.log("DialogueSystem: Finished loading specific dialogues. Total loaded: \(loadedCount) out of \(specificDialogueFilenames.count) listed.", category: "DialogueLoading")
     }
     
     private func loadDialogueTree(fromFile fileName: String) -> DialogueTree? {

@@ -20,6 +20,10 @@ class DialogueViewModel: ObservableObject {
     private let gameStateService: GameStateService = DependencyManager.shared.resolve()
     private let gameEventBusService: GameEventsBusService = DependencyManager.shared.resolve()
     private let investigationService: InvestigationService = DependencyManager.shared.resolve()
+    private var questService: QuestService = DependencyManager.shared.resolve()
+    private var player: Player? { gameStateService.player }
+    var currentNPC: NPC?
+    private let specificDialogueFilename: String?
     
     init(npc: NPC, player: Player, specificDialogueFilename: String? = nil) {
         self.npc = npc
@@ -28,6 +32,8 @@ class DialogueViewModel: ObservableObject {
             player: player,
             npc: npc
         )
+        self.currentNPC = npc
+        self.specificDialogueFilename = specificDialogueFilename
         
         DebugLogService.shared.log("Initializing dialogue for NPC: \(npc.name), specific file: \(specificDialogueFilename ?? "None")", category: "Dialogue")
         loadInitialDialogue(specificFilename: specificDialogueFilename)
@@ -40,7 +46,7 @@ class DialogueViewModel: ObservableObject {
         var dialogueLoaded = false
         if let filename = specificFilename {
             DebugLogService.shared.log("Attempting to load specific dialogue file: \(filename)", category: "DialogueVM")
-            if let specificDialogue = dialogueProcessor.loadSpecificDialogue(filename: filename) {
+            if let specificDialogue = dialogueProcessor.loadSpecificDialogue(filename: filename, npc: self.npc) {
                 DebugLogService.shared.log("✅ Successfully loaded specific dialogue: \(filename)", category: "DialogueVM")
                 updateDialogue(text: specificDialogue.text, options: specificDialogue.options)
                 dialogueLoaded = true
@@ -98,10 +104,14 @@ class DialogueViewModel: ObservableObject {
     func selectOption(_ option: DialogueOption) {
         DebugLogService.shared.log("Selected option leading to node: \(option.nextNodeId)", category: "DialogueVM")
         
-        if option.nextNodeId == "end" && option.successActions?.isEmpty ?? true {
-            // All necessary actions (like jailing) should have been triggered by successActions
-            // of the option that led to this "end" state.
-            shouldDismiss = true 
+        if option.nextNodeId == "end" {
+            executeActions(option.successActions)
+            shouldDismiss = true
+            if let activeQuests = player?.activeQuests {
+                for (questId, _) in activeQuests {
+                    questService.completeStage(questId: questId, interactorNPC: self.currentNPC)
+                }
+            }
             return
         }
 
@@ -109,18 +119,25 @@ class DialogueViewModel: ObservableObject {
         case .persuasion:
             handlePersuasion(option: option)
         case .relationshipIncrease:
+            executeActions(option.successActions)
             dialogueProcessor.normalizeRelationshipNode(option.text)
             handleRelationshipIncrease(nextNodeId: option.nextNodeId, option: option.text)
         case .relationshipDecrease:
+            executeActions(option.successActions)
             dialogueProcessor.normalizeRelationshipNode(option.text)
             handleRelationshipDecrease(nextNodeId: option.nextNodeId, option: option.text)
         case .normal:
             executeActions(option.successActions) 
-
-            if let (newText, newOptions) = dialogueProcessor.processNode(option.nextNodeId) {
+            if let (newText, newOptions) = dialogueProcessor.processNode(option.nextNodeId, npc: currentNPC) {
                 updateDialogue(text: newText, options: newOptions)
             } else {
                 shouldDismiss = true
+            }
+        }
+        
+        if let activeQuests = player?.activeQuests {
+            for (questId, _) in activeQuests {
+                questService.completeStage(questId: questId, interactorNPC: self.currentNPC)
             }
         }
     }
@@ -240,6 +257,10 @@ class DialogueViewModel: ObservableObject {
             
             case .triggerGameEvent:
                 executeTriggerGameEventAction(action.parameters, player: player, npc: npc)
+
+            case .markQuestInteractionComplete:
+                DebugLogService.shared.log("DialogueVM: Encountered markQuestInteractionComplete action. Intended for QuestService. Params: \(action.parameters)", category: "DialogueAction")
+                break
             }
         }
     }
@@ -248,25 +269,57 @@ class DialogueViewModel: ObservableObject {
         guard let targetValue = parameters["target"]?.stringValue, 
               let target = ActionTarget(rawValue: targetValue), 
               let statValue = parameters["stat"]?.stringValue, 
-              let stat = StatIdentifier(rawValue: statValue), 
-              let value = parameters["value"]?.intValue else {
+              let stat = StatIdentifier(rawValue: statValue) 
+              else {
             DebugLogService.shared.log("Error: Invalid parameters for modifyStat action: \(parameters)", category: "DialogueVM")
             return
         }
+        
+        let value = parameters["value"]?.intValue
 
         switch target {
         case .npc:
             switch stat {
             case .relationship:
-                if value > 0 {
-                    npc.playerRelationship.increase(amount: value)
-                } else if value < 0 {
-                    npc.playerRelationship.decrease(amount: abs(value))
+                guard let changeValue = value else { 
+                    DebugLogService.shared.log("DialogueVM Error: Missing value for relationship modifyStat: \(parameters)", category: "Error")
+                    return 
+                }
+                if changeValue > 0 {
+                    npc.playerRelationship.increase(amount: changeValue)
+                } else if changeValue < 0 {
+                    npc.playerRelationship.decrease(amount: abs(changeValue))
                 }
             case .isIntimidated:
-                npc.isIntimidated = (value != 0)
+                guard let v = value else { 
+                    DebugLogService.shared.log("DialogueVM Error: Missing value for isIntimidated modifyStat: \(parameters)", category: "Error")
+                    return 
+                }
+                npc.isIntimidated = (v != 0)
                 if npc.isIntimidated {
                     npc.intimidationDay = GameTimeService.shared.currentDay
+                }
+            case .isSpecialBehaviorSet:
+                guard let v = value else { 
+                    DebugLogService.shared.log("DialogueVM Error: Missing value for isSpecialBehaviorSet modifyStat: \(parameters)", category: "Error")
+                    return 
+                }
+                npc.isNpcInteractionBehaviorSet = (v != 0)
+                DebugLogService.shared.log("DialogueVM: NPC \(npc.id) isSpecialBehaviorSet set to \(npc.isNpcInteractionBehaviorSet)", category: "DialogueAction")
+            case .specialBehaviorTime:
+                guard let timeValue = value else { 
+                    DebugLogService.shared.log("DialogueVM Error: Missing value for specialBehaviorTime modifyStat: \(parameters)", category: "Error")
+                    return 
+                }
+                npc.npcInteractionSpecialTime = timeValue
+                DebugLogService.shared.log("DialogueVM: NPC \(npc.id) specialBehaviorTime set to \(npc.npcInteractionSpecialTime)", category: "DialogueAction")
+            case .activity:
+                if let activityName = parameters["activityName"]?.stringValue,
+                   let newActivity = NPCActivityType(rawValue: activityName) {
+                    npc.currentActivity = newActivity
+                    DebugLogService.shared.log("DialogueVM: NPC \(npc.id) currentActivity set to \(newActivity.rawValue)", category: "DialogueAction")
+                } else {
+                    DebugLogService.shared.log("DialogueVM Error: Invalid or missing activityName for .activity stat. Provided: \(parameters["activityName"]?.stringValue ?? "nil")", category: "Error")
                 }
             default:
                 DebugLogService.shared.log("Warning: Unhandled NPC stat for modifyStat: \(stat)", category: "DialogueVM")
@@ -275,10 +328,14 @@ class DialogueViewModel: ObservableObject {
         case .player:
             switch stat {
             case .coins:
-                if value > 0 {
-                    CoinsManagementService.shared.moveCoins(from: player, to: npc, amount: value)
-                } else if value < 0 {
-                    CoinsManagementService.shared.moveCoins(from: npc, to: player, amount: value)
+                guard let changeValue = value else {
+                    DebugLogService.shared.log("DialogueVM Error: Missing value for coins modifyStat (player): \(parameters)", category: "Error")
+                    return
+                }
+                if changeValue > 0 {
+                    CoinsManagementService.shared.moveCoins(from: player, to: npc, amount: changeValue)
+                } else if changeValue < 0 {
+                    CoinsManagementService.shared.moveCoins(from: npc, to: player, amount: changeValue)
                 }
             default:
                  DebugLogService.shared.log("Warning: Unhandled Player stat for modifyStat: \(stat)", category: "DialogueVM")
@@ -287,16 +344,26 @@ class DialogueViewModel: ObservableObject {
         case .global:
             switch stat {
             case .awareness:
-                if value > 0 {
-                    vampireNatureRevealService.increaseAwareness(amount: Float(value))
-                } else if value < 0 {
-                    vampireNatureRevealService.decreaseAwareness(amount: Float(abs(value)))
+                guard let awarenessValue = value else {
+                    DebugLogService.shared.log("DialogueVM Error: Missing value for awareness modifyStat: \(parameters)", category: "Error")
+                    return
+                }
+                if awarenessValue > 0 {
+                    vampireNatureRevealService.increaseAwareness(amount: Float(awarenessValue))
+                } else if awarenessValue < 0 {
+                    vampireNatureRevealService.decreaseAwareness(amount: Float(abs(awarenessValue)))
                 }
             case .questStatus:
-                 DebugLogService.shared.log("Quest Status modification triggered: Quest \(parameters["questId"]?.stringValue ?? "N/A"), Status \(value)", category: "DialogueVM")
+                 DebugLogService.shared.log("Quest Status modification triggered: Quest \(parameters["questId"]?.stringValue ?? "N/A"), Status \(value ?? -1)", category: "DialogueVM")
                  break
             case .gameFlag:
-                 DebugLogService.shared.log("Game Flag modification triggered: Flag \(parameters["flagName"]?.stringValue ?? "N/A"), Value \(value)", category: "DialogueVM")
+                 guard let flagName = parameters["flagName"]?.stringValue,
+                       let flagValue = value else {
+                     DebugLogService.shared.log("DialogueVM Error: Missing flagName or value for gameFlag modifyStat: \(parameters)", category: "Error")
+                     return
+                 }
+                 DebugLogService.shared.log("DialogueVM: Processing modifyStat for gameFlag. Flag: \(flagName), Value: \(flagValue)", category: "DialogueVM")
+                 questService.setGlobalFlag(name: flagName, value: flagValue)
                  break
             default:
                  DebugLogService.shared.log("Warning: Unhandled Global stat for modifyStat: \(stat)", category: "DialogueVM")
@@ -319,6 +386,13 @@ class DialogueViewModel: ObservableObject {
             GameTimeService.shared.advanceTime()
         case "LoveScene":
             loveForSale()
+        case "requestQuestStart":
+            if let questId = parameters["questId"]?.stringValue {
+                DebugLogService.shared.log("DialogueVM: Event 'requestQuestStart' received for quest: \(questId). Starting NPC: \(self.npc.name)", category: "QuestIntegration")
+                questService.startQuest(questId: questId, startingNPC: self.npc)
+            } else {
+                DebugLogService.shared.log("DialogueVM Error: Missing questId for requestQuestStart event. Parameters: \(parameters)", category: "Error")
+            }
         case "StatisticIncrement":
             if let statName = parameters["statName"]?.stringValue {
                 if statName == "bribes" {

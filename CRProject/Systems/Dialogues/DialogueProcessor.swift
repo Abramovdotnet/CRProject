@@ -66,6 +66,49 @@ class DialogueProcessor {
     }
     
     func loadDialogue(npc: NPC) -> (text: String, options: [DialogueNodeOption])? {
+        // --- НОВАЯ ЛОГИКА: СНАЧАЛА ПРОВЕРЯЕМ КВЕСТОВЫЕ ДИАЛОГИ ---
+        let questService = QuestService.shared
+
+        // 1. Проверить активные квесты для этого NPC
+        if let activeQuestFile = questService.getActiveQuestDialogueForNPC(npcId: npc.id, player: self.player) {
+            if let specificDialogue = self.loadSpecificDialogue(filename: activeQuestFile, npc: npc) { // Передаем npc
+                DebugLogService.shared.log("DialogueProcessor: Loaded ACTIVE quest dialogue '\(activeQuestFile)' for NPC \(npc.id)", category: "QuestIntegration")
+                self.dialogueTree = DialogueTree(initialNode: specificDialogue.initialNodeId, nodes: specificDialogue.nodes) // Сохраняем дерево
+                currentNodeId = specificDialogue.initialNodeId
+                if let node = self.dialogueTree?.nodes[currentNodeId!] { // Используем self.dialogueTree
+                    currentNode = node
+                    let processedText = processConditionalText(node.text)
+                    return (processedText, filterAvailableOptions(options: node.options))
+                } else {
+                     DebugLogService.shared.log("DialogueProcessor Error: Initial node not found in active quest dialogue '\(activeQuestFile)'", category: "Error")
+                }
+            } else {
+                DebugLogService.shared.log("DialogueProcessor Warning: Failed to load tree for active quest dialogue file '\(activeQuestFile)' for NPC \(npc.id)", category: "QuestIntegration")
+            }
+        }
+
+        // 2. Проверить доступные для старта квесты для этого NPC
+        if let availableQuestFile = questService.getAvailableQuestDialogueForNPC(npcId: npc.id, player: self.player) {
+            // Этот диалог должен вести к старту квеста через DialogueAction или последующий вызов QuestService
+            if let specificDialogue = self.loadSpecificDialogue(filename: availableQuestFile, npc: npc) { // Передаем npc
+                DebugLogService.shared.log("DialogueProcessor: Loaded AVAILABLE quest dialogue '\(availableQuestFile)' for NPC \(npc.id)", category: "QuestIntegration")
+                self.dialogueTree = DialogueTree(initialNode: specificDialogue.initialNodeId, nodes: specificDialogue.nodes) // Сохраняем дерево
+                currentNodeId = specificDialogue.initialNodeId
+                if let node = self.dialogueTree?.nodes[currentNodeId!] { // Используем self.dialogueTree
+                    currentNode = node
+                    let processedText = processConditionalText(node.text)
+                    return (processedText, filterAvailableOptions(options: node.options))
+                } else {
+                     DebugLogService.shared.log("DialogueProcessor Error: Initial node not found in available quest dialogue '\(availableQuestFile)'", category: "Error")
+                }
+            } else {
+                 DebugLogService.shared.log("DialogueProcessor Warning: Failed to load tree for available quest dialogue file '\(availableQuestFile)' for NPC \(npc.id)", category: "QuestIntegration")
+            }
+        }
+        
+        // --- СТАРАЯ ЛОГИКА ЗАГРУЗКИ, ЕСЛИ КВЕСТОВЫХ ДИАЛОГОВ НЕТ ---
+        DebugLogService.shared.log("DialogueProcessor: No overriding quest dialogues found for NPC \(npc.id). Proceeding with standard dialogue loading.", category: "QuestIntegration")
+        
         // Step 1: Load base dialogue tree
         var baseTree: DialogueTree?
         if let uniqueTree = dialogueSystem.getDialogueTree(for: npc.profession.rawValue, player: player, npcId: npc.id) {
@@ -358,7 +401,7 @@ class DialogueProcessor {
         return DialogueTree(initialNode: baseTree.initialNode, nodes: nodes)
     }
     
-    func processNode(_ nodeId: String) -> (text: String, options: [DialogueNodeOption])? {
+    func processNode(_ nodeId: String, npc: NPC? = nil) -> (text: String, options: [DialogueNodeOption])? {
         if nodeId == "end" {
             DebugLogService.shared.log("Dialogue ended via explicit 'end' node ID.", category: "Dialogue")
             return nil
@@ -510,28 +553,27 @@ class DialogueProcessor {
     // func loadCasualtySuspicionDialogue() -> (text: String, options: [DialogueNodeOption])? { ... }
 
     // <<< Added new method to load by filename >>>
-    func loadSpecificDialogue(filename: String) -> (text: String, options: [DialogueNodeOption])? {
-        DebugLogService.shared.log("Attempting to load specific dialogue: \(filename)", category: "DialogueProcessor")
-        // Try to get the specific dialogue tree by filename
-        if let specificTree = dialogueSystem.getDialogueTree(byFilename: filename) {
-            // Store the tree for future reference
-            self.dialogueTree = specificTree
-            
-            // Get initial node
-            let initialNodeId = specificTree.initialNode
-            if let node = specificTree.nodes[initialNodeId] {
-                currentNode = node
-                currentNodeId = initialNodeId
-                let processedText = processConditionalText(node.text)
-                DebugLogService.shared.log("Successfully loaded specific dialogue: \(filename)", category: "DialogueProcessor")
-                return (processedText, filterAvailableOptions(options: node.options))
-            }
-             DebugLogService.shared.log("Error: Initial node '\(initialNodeId)' not found in \(filename)", category: "Error")
-        } else {
-             DebugLogService.shared.log("Error: Dialogue tree not found for filename: \(filename)", category: "Error")
+    func loadSpecificDialogue(filename: String, npc: NPC) -> (text: String, options: [DialogueNodeOption], initialNodeId: String, nodes: [String: DialogueNode])? {
+        guard let tree = dialogueSystem.getDialogueTree(byFilename: filename) else {
+            DebugLogService.shared.log("Specific dialogue file not found: \(filename)", category: "DialogueProcessor")
+            return nil
         }
         
-        return nil // Return nil if loading failed
+        // Важно: здесь мы НЕ сливаем узлы (gossip, alibi и т.д.) в специфичные диалоги.
+        // Специфичные диалоги (включая квестовые) должны быть самодостаточными.
+        // Однако, нормализация отношений может быть полезна.
+        dialogueSystem.normalizeProcessedRelationshipNodes(player: player, tree: tree) 
+        
+        self.dialogueTree = tree // Store the specific tree
+        self.npc = npc // Update npc context if loading specific dialogue
+
+        let initialNodeId = tree.initialNode
+        if let node = tree.nodes[initialNodeId] {
+            currentNode = node
+            let processedText = processConditionalText(node.text)
+            return (processedText, filterAvailableOptions(options: node.options), initialNodeId, tree.nodes)
+        }
+        return nil
     }
 
     // <<< New Helper Function >>>

@@ -1,0 +1,88 @@
+{
+  "id": "lost_and_found_earrings",
+  "title": "Потерянные серьги",
+  "description": "NPC_NAME_3441 просит помочь вернуть ценное украшение, которое он проиграл в карты.",
+  "startingNPCId": 3441,
+  "prerequisites": null,
+  "stages": [
+    {
+      "id": "01_talk_to_loverboy",
+      "objective": "Расспросить NPC_NAME_3441 о его проблеме.",
+      "dialogueFilename": "Quest_Earrings_Start.json",
+      "associatedNPCId": 3441,
+      "activationActions": null,
+      "completionConditions": [
+        { "type": "checkGameFlag", "parameters": { "flagName": "earrings_quest_accepted", "value": 1 } }
+      ],
+      "completionActions": [
+        { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_stage1_complete", "value": 1 } }
+      ]
+    },
+    {
+      "id": "02_find_gambler",
+      "objective": "Найти NPC_NAME_3575, который выиграл серьги.",
+      "dialogueFilename": "Quest_Earrings_Gambler.json",
+      "associatedNPCId": 3575,
+      "activationActions": null,
+      "completionConditions": [
+        { "type": "checkGameFlag", "parameters": { "flagName": "earrings_gambler_task_given", "value": 1 } }
+      ],
+      "completionActions": [
+        { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_stage2_complete", "value": 1 } }
+      ]
+    },
+    {
+      "id": "03_get_scroll_from_priest",
+      "objective": "Добыть Старый Свиток (ID 268) у NPC_NAME_321.",
+      "dialogueFilename": "Quest_Earrings_Priest.json",
+      "associatedNPCId": 321,
+      "activationActions": null,
+      "completionConditions": [
+        { "type": "checkGameFlag", "parameters": { "flagName": "earrings_priest_resolved", "value": 1 } }
+      ],
+      "completionActions": [
+        { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_stage3_complete", "value": 1 } }
+      ]
+    },
+    {
+      "id": "04_return_to_gambler",
+      "objective": "Вернуться к NPC_NAME_3575.",
+      "dialogueFilename": "Quest_Earrings_Gambler_Return.json",
+      "associatedNPCId": 3575,
+      "activationActions": null,
+      "completionConditions": [
+        { "type": "checkGameFlag", "parameters": { "flagName": "earrings_got_earrings_from_gambler", "value": 1 } }
+      ],
+      "completionActions": [
+        { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_stage4_complete", "value": 1 } }
+      ]
+    },
+    {
+      "id": "05_deliver_earrings_and_message",
+      "objective": "Отдать Коралловые Серьги NPC_NAME_6243 по просьбе NPC_NAME_3441.",
+      "dialogueFilename": "Quest_Earrings_Loverboy_Return.json", 
+      "associatedNPCId": 3441, 
+      "activationActions": null,
+      "completionConditions": [
+        { "type": "checkGameFlag", "parameters": { "flagName": "earrings_recipient_got_earrings", "value": 1 } }
+      ],
+      "completionActions": [
+        { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_stage5_complete", "value": 1 } }
+      ]
+    },
+    {
+      "id": "06_final_report_to_loverboy",
+      "objective": "Сообщить NPC_NAME_3441 ответ от NPC_NAME_6243.",
+      "dialogueFilename": "Quest_Earrings_Loverboy_Final.json",
+      "associatedNPCId": 3441,
+      "activationActions": null,
+      "completionConditions": [
+        { "type": "checkGameFlag", "parameters": { "flagName": "earrings_final_report_done", "value": 1 } }
+      ],
+      "completionActions": null 
+    }
+  ],
+  "rewards": {
+    "coins": 500
+  }
+} 
