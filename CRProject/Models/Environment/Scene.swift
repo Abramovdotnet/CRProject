@@ -78,7 +78,8 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
                                  sceneType != .road &&
                                  sceneType != .town &&
                                  sceneType != .tavern &&
-                                 sceneType != .brothel)
+                                 sceneType != .brothel &&
+                                 sceneType != .dungeon)
         
         if isLockableBuilding {
             if characters.count == 0 {

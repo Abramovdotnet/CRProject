@@ -20,7 +20,6 @@ class MainSceneViewModel: ObservableObject {
     @Published private(set) var visibleLocations: Set<Int> = []
     @Published var isDebugOverlayVisible = false
     @Published var playerCoinsValue: Int = 0
-    @Published var activeDialogueViewModel: DialogueViewModel? = nil
     @Published var isShowingVampireGazeView = false
     
     private var cancellables = Set<AnyCancellable>()
@@ -48,7 +47,7 @@ class MainSceneViewModel: ObservableObject {
         
         // Create and set player
         let initialPlayer = NPCGenerator.createPlayer()
-        initialPlayer.coins.add(10)
+        initialPlayer.coins.add(1000)
         gameStateService.setPlayer(initialPlayer)
      
         ItemsManagementService.shared.giveItem(itemId: 181, to: initialPlayer)
@@ -542,13 +541,10 @@ class MainSceneViewModel: ObservableObject {
     func handleNPCAction(_ action: NPCAction) {
         switch action {
         case .startConversation(let npc):
-            guard let player = GameStateService.shared.player else { return }
-            // Create and store the ViewModel
-            self.activeDialogueViewModel = DialogueViewModel(npc: npc, player: player)
-            // Now trigger the sheet presentation (using the existing mechanism)
-            npcManager.startConversation(with: npc) // Assuming this sets npcManager.isShowingDialogue = true
-        case .startIntimidation(let npc): // Keep other cases if handled here
-             showVampireGaze(npc: npc)
+            // Просто обрабатываем событие для NPCManager
+            npcManager.startConversation(with: npc)
+        case .startIntimidation(let npc):
+            showVampireGaze(npc: npc)
         case .feed(let npc):
             feedOnCharacter(npc)
             npcManager.playerInteracted(with: npc)
@@ -561,10 +557,16 @@ class MainSceneViewModel: ObservableObject {
         }
     }
     
-    // Make sure supporting methods are also in the ViewModel
     private func showVampireGaze(npc: NPC) {
         npcManager.selectedNPC = npc
         isShowingVampireGazeView = true
+    }
+    
+    // Новый метод, который создает DialogueViewModel для разговора с NPC
+    func createDialogueViewModel(for npc: NPC) -> DialogueViewModel? {
+        guard let player = GameStateService.shared.player else { return nil }
+        // Создаем DialogueViewModel
+        return DialogueViewModel(npc: npc, player: player)
     }
 }
 

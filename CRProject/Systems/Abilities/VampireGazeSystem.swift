@@ -48,8 +48,10 @@ class VampireGazeSystem: GameService {
                 //availablePowers.append(.seduction)
             }
             
-            availablePowers.append(.scare)
-            availablePowers.append(.follow)
+            if GameStateService.shared.player?.isArrested == false {
+                availablePowers.append(.scare)
+                availablePowers.append(.follow)
+            }
             
             // Filter powers based on NPC's current activity
             switch npc.currentActivity {

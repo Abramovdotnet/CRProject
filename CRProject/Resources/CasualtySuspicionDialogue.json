@@ -1,0 +1,133 @@
+{
+    "initialNode": "suspicion_greeting",
+    "nodes": {
+        "suspicion_greeting": {
+            "text": "Hold there. I've been looking for you. There's been a murder, and your name has come up in the investigation. What do you have to say for yourself?",
+            "options": [
+                {
+                    "text": "I confess. I was involved.",
+                    "type": "normal",
+                    "nextNode": "suspicion_confess_arrest"
+                },
+                {
+                    "text": "This is a misunderstanding. I had nothing to do with it.",
+                    "type": "persuasion",
+                    "nextNode": "suspicion_persuade_success",
+                    "failureNode": "suspicion_persuade_fail",
+                    "successActions": [
+                        { "type": "modifyStat", "parameters": { "target": "global", "stat": "awareness", "value": -15 } }, 
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 1 } }
+                    ],
+                    "failureActions": [
+                        { "type": "modifyStat", "parameters": { "target": "global", "stat": "awareness", "value": 10 } }, 
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": -1 } }
+                    ]
+                },
+                {
+                    "text": "Perhaps a contribution could clear this up? [Offer 200 coins]",
+                    "type": "persuasion",
+                    "nextNode": "suspicion_bribe_success",
+                    "failureNode": "suspicion_bribe_fail",
+                    "requirements": { "coins": 1000 },
+                    "successActions": [
+                        { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -1000 } }, 
+                        { "type": "modifyStat", "parameters": { "target": "global", "stat": "awareness", "value": -20 } }, 
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } }, 
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "bribes" } }
+                    ],
+                    "failureActions": [
+                        { "type": "modifyStat", "parameters": { "target": "global", "stat": "awareness", "value": 20 } }, 
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": -2 } }
+                    ]
+                },
+                {
+                    "text": "I have nothing to say to you.",
+                    "type": "normal",
+                    "nextNode": "suspicion_silent_arrest"
+                }
+            ]
+        },
+        "suspicion_confess_arrest": {
+            "text": "Is that so? Then you'll be coming with me. Guards! Take this one to the dungeon!",
+            "options": [
+                { 
+                    "text": "[Go to jail]", 
+                    "type": "normal", 
+                    "nextNode": "end",
+                    "successActions": [
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "JailPlayer" } }
+                    ]
+                }
+            ]
+        },
+        "suspicion_persuade_success": {
+            "text": "Hmm, you sound convincing enough. Perhaps I was mistaken. You're free to go, but don't leave town.",
+            "options": [
+                { 
+                    "text": "[Leave]", 
+                    "type": "normal", 
+                    "nextNode": "end",
+                    "successActions": [
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+                    ]
+                }
+            ]
+        },
+        "suspicion_persuade_fail": {
+            "text": "I don't believe you. Your story is full of holes. I'm taking you in for further questioning. Guards!",
+            "options": [
+                { 
+                    "text": "[Go to jail]", 
+                    "type": "normal", 
+                    "nextNode": "end",
+                    "successActions": [
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "JailPlayer" } }
+                    ]
+                }
+            ]
+        },
+        "suspicion_bribe_success": {
+            "text": "*Pockets the coins* Well, well. Perhaps there's been a misunderstanding after all. Be more careful next time. You're free to go.",
+            "options": [
+                { 
+                    "text": "[Leave]", 
+                    "type": "normal", 
+                    "nextNode": "end",
+                    "successActions": [
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+                    ] 
+                }
+            ]
+        },
+        "suspicion_bribe_fail": {
+            "text": "Are you trying to bribe me?! That only confirms my suspicions! I'm taking you in. Guards!",
+            "options": [
+                { 
+                    "text": "[Go to jail]", 
+                    "type": "normal", 
+                    "nextNode": "end",
+                    "successActions": [
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "JailPlayer" } }
+                    ]
+                }
+            ]
+        },
+        "suspicion_silent_arrest": {
+            "text": "Silence, eh? That's as good as a confession in my book. Guards! Take them away!",
+            "options": [
+                { 
+                    "text": "[Go to jail]", 
+                    "type": "normal", 
+                    "nextNode": "end",
+                    "successActions": [
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "JailPlayer" } }
+                    ]
+                }
+            ]
+        }
+    }
+} 

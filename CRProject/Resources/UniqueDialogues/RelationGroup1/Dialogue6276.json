@@ -95,9 +95,16 @@
           "nextNode": "6276_reading_people"
         },
         {
-          "text": "I'm interested in your services. (200) [Discreet Company]",
-          "type": "loveForSail",
+          "text": "I'm interested in your services. [200 coins]",
+          "type": "normal",
           "nextNode": "6276_scene",
+          "successActions": [
+            { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+            { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+          ],
           "requirements": {
             "coins": 200
           }
@@ -128,9 +135,16 @@
         "text": "Perhaps. But a professional reading comes at the usual price. Or perhaps you'd prefer to simply tell me what you desire?",
         "options": [
            {
-             "text": "I'm interested in your services. (200) [Discreet Company]",
-             "type": "loveForSail",
+             "text": "I'm interested in your services. [200 coins]",
+             "type": "normal",
              "nextNode": "6276_scene",
+             "successActions": [
+              { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+              { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+              { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+              { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+              { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+             ],
              "requirements": {
                "coins": 200
              }
@@ -209,9 +223,16 @@
                 "nextNode": "6276_greeting_return"
             },
             {
-                "text": "Perhaps we could discuss my future needs? (200) [Discreet Company]",
-                 "type": "loveForSail",
+                "text": "Perhaps we could discuss my future needs? [200 coins]",
+                 "type": "normal",
                  "nextNode": "6276_scene",
+                 "successActions": [
+                  { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+                  { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+                 ],
                  "requirements": {
                    "coins": 200
                  }
@@ -300,9 +321,16 @@
           }
         },
         {
-          "text": "I'm interested in your services again. (200) [Discreet Company]",
-          "type": "loveForSail",
+          "text": "I'm interested in your services again. [200 coins]",
+          "type": "normal",
           "nextNode": "6276_scene",
+          "successActions": [
+            { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+            { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+          ],
           "requirements": {
             "coins": 200
           }
@@ -331,9 +359,16 @@
                  }
             },
              {
-                "text": "Actually, I was hoping for an arrangement. (200) [Discreet Company]",
-                "type": "loveForSail",
+                "text": "Actually, I was hoping for an arrangement. [200 coins]",
+                "type": "normal",
                 "nextNode": "6276_scene",
+                "successActions": [
+                  { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+                  { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+                ],
                 "requirements": {
                     "coins": 200
                 }

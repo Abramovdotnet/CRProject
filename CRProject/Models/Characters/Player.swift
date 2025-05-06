@@ -33,6 +33,8 @@ class Player: ObservableObject, Character, Codable {
     var homeLocationId: Int = 0
     var hiddenAt: HidingCell = .none
     var onCraftingProcess: Bool = false
+    @Published var isArrested: Bool = false
+    @Published var arrestTime: Int = 0
 
     @Published var desiredVictim: DesiredVictim = DesiredVictim()
     
@@ -77,11 +79,17 @@ class Player: ObservableObject, Character, Codable {
     func checkIsRelationshipDialogueNodeOptionProcessed(option: String) -> Bool {
         return processedRelationshipDialogueNodeOptions.contains(option)
     }
+    
+    func arrestPlayer() {
+        StatisticsService.shared.increaseTimesArrested()
+        isArrested = true
+        arrestTime = StatisticsService.shared.timesArrested * 24
+    }
 
     // --- Codable Conformance ---
     enum CodingKeys: String, CodingKey {
         // Include all properties that need saving, published or not
-        case id, index, name, sex, age, profession, bloodMeter, coins, isVampire, isAlive, isUnknown, isIntimidated, isBeasyByPlayerAction, intimidationDay, homeLocationId, currentLocationId, hiddenAt, items, desiredVictim, processedRelationshipDialogueNodes
+        case id, index, name, sex, age, profession, bloodMeter, coins, isVampire, isAlive, isUnknown, isIntimidated, isBeasyByPlayerAction, intimidationDay, homeLocationId, currentLocationId, hiddenAt, items, desiredVictim, processedRelationshipDialogueNodes, isArrested, arrestTime
     }
 
     required init(from decoder: Decoder) throws {
@@ -106,6 +114,8 @@ class Player: ObservableObject, Character, Codable {
         hiddenAt = try container.decode(HidingCell.self, forKey: .hiddenAt)
         items = try container.decode([Item].self, forKey: .items)
         desiredVictim = try container.decode(DesiredVictim.self, forKey: .desiredVictim)
+        isArrested = try container.decode(Bool.self, forKey: .isArrested)
+        arrestTime = try container.decode(Int.self, forKey: .arrestTime)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -130,5 +140,7 @@ class Player: ObservableObject, Character, Codable {
         try container.encode(hiddenAt, forKey: .hiddenAt)
         try container.encode(items, forKey: .items)
         try container.encode(desiredVictim, forKey: .desiredVictim)
+        try container.encode(isArrested, forKey: .isArrested)
+        try container.encode(arrestTime, forKey: .arrestTime)
     }
 }

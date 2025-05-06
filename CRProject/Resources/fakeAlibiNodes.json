@@ -1,0 +1,85 @@
+{
+    "initialNode": "ask_for_alibi",
+    "nodes": {
+        "ask_for_alibi": {
+            "text": "I need someone who can vouch for my whereabouts last night. Could you help me?",
+            "options": [
+                {
+                    "text": "I'd like you to provide an alibi for me. I can pay 150 coins. [Pay 150 coins]",
+                    "type": "persuasion",
+                    "nextNode": "alibi_response",
+                    "failureNode": "alibi_bribe_fail_reaction",
+                    "requirements": { "coins": 150 },
+                    "successActions": [
+                        { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -150 } }, 
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+                        { "type": "modifyStat", "parameters": { "target": "global", "stat": "awareness", "value": -15 } },
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "isIntimidated", "value": 1 } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "bribes" } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+                    ],
+                    "failureActions": [
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": -2 } },
+                        { "type": "modifyStat", "parameters": { "target": "global", "stat": "awareness", "value": 10 } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+                    ]
+                },
+                {
+                    "text": "Never mind, it's not important.",
+                    "type": "normal",
+                    "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT" 
+                }
+            ],
+            "requirements": null
+        },
+        "alibi_response": {
+            "text": "You want me to lie about where you were? Well... for 150 coins, I suppose I could say you were with me.",
+            "options": [
+                {
+                    "text": "Remember, I was with you all evening.",
+                    "type": "normal",
+                    "nextNode": "alibi_success"
+                }
+            ],
+            "requirements": null
+        },
+        "alibi_success": {
+            "text": "Of course I remember! We spent the entire evening together. If anyone asks, I'll make sure they know you couldn't possibly have been involved in... whatever happened.",
+            "options": [
+                {
+                    "text": "Thank you for your help.",
+                    "type": "normal",
+                    "nextNode": "end" 
+                },
+                {
+                    "text": "I appreciate your discretion.",
+                    "type": "relationshipIncrease",
+                    "nextNode": "end" 
+                }
+            ],
+            "requirements": null
+        },
+        "alibi_refuse_placeholder": { 
+            "text": "Changed your mind? Probably for the best. I'm not sure I'd be very convincing anyway.",
+            "options": [
+                {
+                    "text": "Let's talk about something else.",
+                    "type": "normal",
+                    "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+                }
+            ],
+            "requirements": null
+        },
+        "alibi_bribe_fail_reaction": {
+            "text": "Are you trying to bribe AND intimidate me now? Get out of my sight before I call the guards!",
+            "options": [
+                {
+                    "text": "[Leave]",
+                    "type": "normal",
+                    "nextNode": "PROCEED_TO_END"
+                }
+            ],
+            "requirements": null
+        }
+    }
+} 

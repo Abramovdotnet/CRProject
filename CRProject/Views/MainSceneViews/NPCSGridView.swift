@@ -69,6 +69,11 @@ class NPCSGridView: UIView {
             collectionView.leadingAnchor.constraint(equalTo: leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: trailingAnchor)
         ])
+        
+        // Add tap gesture recognizer to detect taps on empty spaces
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleBackgroundTap(_:)))
+        tapGesture.cancelsTouchesInView = false
+        collectionView.addGestureRecognizer(tapGesture)
     }
     
     private func setupObservers() {
@@ -276,6 +281,34 @@ class NPCSGridView: UIView {
         // When NPC selection changes, refresh cells to ensure health indicator is shown
         DispatchQueue.main.async { [weak self] in
             self?.refreshVisibleCells()
+        }
+    }
+    
+    // Handle taps on the empty space of the grid
+    @objc private func handleBackgroundTap(_ gesture: UITapGestureRecognizer) {
+        let location = gesture.location(in: collectionView)
+        
+        // Check if the tap was on a cell
+        if let indexPath = collectionView.indexPathForItem(at: location) {
+            // Tap was on a cell, don't do anything here as it will be handled by didSelectItemAt
+            return
+        }
+        
+        // Tap was on empty space, deselect any selected NPC
+        if npcManager.selectedNPC != nil {
+            // Store reference to previously selected NPC to update its cell
+            let previouslySelected = npcManager.selectedNPC
+            
+            // Clear the selection
+            npcManager.selectedNPC = nil
+            
+            // Update UI for the previously selected NPC's cell
+            if let prevNPC = previouslySelected {
+                updateNPCCell(for: prevNPC)
+            }
+            
+            // Post notification to update other views
+            NotificationCenter.default.post(name: Notification.Name("npcSelectionChanged"), object: nil)
         }
     }
 }

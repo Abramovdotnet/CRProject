@@ -13,11 +13,18 @@ struct DialogueView: View {
     @ObservedObject var viewModel: DialogueViewModel
     @ObservedObject var mainViewModel: MainSceneViewModel
     @Environment(\.dismiss) private var dismiss
+    var isSkipable: Bool = true
     
     @State private var backgroundOpacity = 0.0
     @State private var moonPhase: Double = 0.0
     @State private var contentOpacity = 0.0
     @State private var isDraggingDialogues = false
+    
+    // Computed property to determine if we should allow dismissal
+    private var allowDismissal: Bool {
+        // Otherwise, respect the isSkipable parameter
+        return isSkipable
+    }
     
     // MARK: - Body
     var body: some View {
@@ -162,7 +169,7 @@ struct DialogueView: View {
                 }
             }
             .foregroundColor(Theme.textColor) // Apply default text color to ZStack
-            .interactiveDismissDisabled(viewModel.showHypnosisGame)
+            .interactiveDismissDisabled(!allowDismissal)
             .onAppear {
                 withAnimation(.easeIn(duration: 0.3)) {
                     backgroundOpacity = 1
@@ -236,63 +243,27 @@ private struct DialogueOptionButton: View {
     
     private func getInteractionIcon() -> Image {
         switch option.type {
-        case .intimidate:
+        case .persuasion:
             return Image(systemName: "exclamationmark.triangle")
-        case .investigate:
-            return Image(systemName: "person.fill.questionmark")
         case .normal:
             return Image(systemName: "message.fill")
-        case .seduce:
-            return Image(systemName: "heart.fill")
-        case .intrigue:
-            return Image(systemName: "heart.fill")
-        case .loveForSail:
-            return Image(systemName: "heart.fill")
         case .relationshipIncrease:
             return Image(systemName: "arrow.up.heart.fill")
         case .relationshipDecrease:
             return Image(systemName: "arrow.down.heart.fill")
-        case .askingForSmithingPermission:
-            return Image(systemName: "hammer.fill")
-        case .askingForAlchemyPermission:
-            return Image(systemName: "flask.fill")
-        case .askingForDesiredVictim:
-            return Image(systemName: "person.fill.questionmark")
-        case .desiredVictimBribe:
-            return Image(systemName: "cedisign")
-        case .askingForFakeAlibies:
-            return Image(systemName: "person.fill.checkmark")
-        case .fakeAlibiesBribe:
-            return Image(systemName: "cedisign.circle")
-        case .overlookActivitiesIntimidation:
-            return Image(systemName: "eye.slash.fill")
         }
     }
     
     private func getIconColor() -> Color {
         switch option.type {
-        case .intimidate, .askingForDesiredVictim, .overlookActivitiesIntimidation:
+        case .persuasion:
             return .red
-        case .investigate:
-            return .blue
         case .normal:
             return .white
-        case .seduce:
-            return .pink
-        case .intrigue:
-            return .purple
-        case .loveForSail:
-            return .pink
         case .relationshipIncrease:
             return .green
         case .relationshipDecrease:
             return .red
-        case .askingForSmithingPermission:
-            return .orange
-        case .askingForAlchemyPermission, .desiredVictimBribe, .fakeAlibiesBribe:
-            return .green
-        case .askingForFakeAlibies:
-            return .mint
         }
     }
     

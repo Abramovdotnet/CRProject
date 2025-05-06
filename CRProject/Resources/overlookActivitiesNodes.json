@@ -1,0 +1,70 @@
+{
+    "initialNode": "suspicious_activity_heard",
+    "nodes": {
+        "suspicious_activity_heard": {
+            "text": "I've been hearing strange things about you lately. Some say you're involved in... questionable activities.",
+            "options": [
+                {
+                    "text": "Perhaps we could come to an arrangement for you to forget what you've heard.", 
+                    "type": "normal",
+                    "nextNode": "intimidate_to_overlook",
+                    "failureNode": null
+                },
+                {
+                    "text": "I don't know what you're talking about.",
+                    "type": "normal",
+                    "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+                }
+            ],
+            "requirements": null
+        },
+        "intimidate_to_overlook": {
+            "text": "Are you threatening me? I... I could report you to the authorities.",
+            "options": [
+                {
+                    "text": "I'm just suggesting that some things are better left alone. For everyone's sake.",
+                    "type": "persuasion",
+                    "nextNode": "overlook_activities_success",
+                    "failureNode": "overlook_activities_fail",
+                    "successActions": [
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 1 } },
+                        { "type": "modifyStat", "parameters": { "target": "global", "stat": "awareness", "value": -10 } },
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "isIntimidated", "value": 1 } }
+                    ],
+                    "failureActions": [
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": -2 } },
+                        { "type": "modifyStat", "parameters": { "target": "global", "stat": "awareness", "value": 10 } }
+                    ]
+                },
+                {
+                    "text": "Do what you must. I have nothing to hide.",
+                    "type": "normal",
+                    "nextNode": "overlook_activities_fail"
+                }
+            ],
+            "requirements": null
+        },
+        "overlook_activities_success": {
+            "text": "Fine. I'll... I'll keep what I've heard to myself. Just leave me alone.",
+            "options": [
+                {
+                    "text": "A wise decision.",
+                    "type": "normal",
+                    "nextNode": "PROCEED_TO_END"
+                }
+            ],
+            "requirements": null
+        },
+        "overlook_activities_fail": {
+            "text": "I won't be intimidated. People should know what kind of person you really are.",
+            "options": [
+                {
+                    "text": "As you say so.",
+                    "type": "normal",
+                    "nextNode": "PROCEED_TO_END"
+                }
+            ],
+            "requirements": null
+        }
+    }
+} 

@@ -45,7 +45,7 @@
                 "options": [
                     {
                         "text": "Lead the way...",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "baker_end"
                     }
                 ]
@@ -125,7 +125,7 @@
                 "options": [
                     {
                         "text": "How generous of you...",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "merchant_end"
                     }
                 ]
@@ -180,7 +180,7 @@
                 "options": [
                     {
                         "text": "Do tell...",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "guard_end"
                     }
                 ]
@@ -253,7 +253,7 @@
                 "options": [
                     {
                         "text": "I'd love to see them",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "blacksmith_end"
                     }
                 ]
@@ -379,7 +379,7 @@
                 "options": [
                     {
                         "text": "Lead the way",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "miller_end"
                     }
                 ]
@@ -452,7 +452,7 @@
                 "options": [
                     {
                         "text": "Indeed...",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "priest_end"
                     }
                 ]
@@ -525,7 +525,7 @@
                 "options": [
                     {
                         "text": "Do tell",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "innkeeper_end"
                     }
                 ]
@@ -598,7 +598,7 @@
                 "options": [
                     {
                         "text": "I'm intrigued",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "alchemist_end"
                     }
                 ]
@@ -671,7 +671,7 @@
                 "options": [
                     {
                         "text": "I'd love to hear it",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "minstrel_end"
                     }
                 ]
@@ -744,7 +744,7 @@
                 "options": [
                     {
                         "text": "Lead the way",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "scribe_end"
                     }
                 ]
@@ -817,7 +817,7 @@
                 "options": [
                     {
                         "text": "Lead the way",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "hunter_end"
                     }
                 ]
@@ -890,7 +890,7 @@
                 "options": [
                     {
                         "text": "Lead on",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "apothecary_end"
                     }
                 ]
@@ -963,7 +963,7 @@
                 "options": [
                     {
                         "text": "Do tell",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "herald_end"
                     }
                 ]
@@ -1036,7 +1036,7 @@
                 "options": [
                     {
                         "text": "Lead the way",
-                        "type": "seduce",
+                        "type": "normal",
                         "nextNode": "cooper_end"
                     }
                 ]

@@ -153,9 +153,16 @@
                     "nextNode": "6270_offended"
                 },
                 {
-                    "text": "I'm interested in your... services (200) [Love For Sail]",
-                    "type": "loveForSail",
+                    "text": "I'm interested in your... services [200 coins]",
+                    "type": "normal",
                     "nextNode": "6270_scene",
+                    "successActions": [
+                        { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+                    ],
                     "requirements": {
                         "coins": 200
                     }
@@ -244,9 +251,16 @@
             "text": "For someone who has shown such appreciation for my establishment's values, I might make an exception... but my time is still worth 200 coins.",
             "options": [
                 {
-                    "text": "That's a fair arrangement (200) [Love For Sail]",
-                    "type": "loveForSail",
+                    "text": "That's a fair arrangement [200 coins]",
+                    "type": "normal",
                     "nextNode": "6270_scene",
+                    "successActions": [
+                        { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+                        { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+                        { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+                    ],
                     "requirements": {
                         "coins": 200
                     }

@@ -11,12 +11,21 @@ class DialogueProcessor {
     var currentNode: DialogueNode?
     var currentNodeId: String?
     
+    // Constants for placeholders
+    private static let returnToMainPlaceholder = "RETURN_TO_MAIN_DIALOGUE_ROOT"
+    private static let proceedToEndPlaceholder = "PROCEED_TO_END"
+
     init(dialogueSystem: DialogueSystem, player: Player, npc: NPC) {
         self.dialogueSystem = dialogueSystem
         self.player = player
         self.npc = npc
         self.gameTimeService = DependencyManager.shared.resolve()
         self.gameStateService = DependencyManager.shared.resolve()
+    }
+    
+    // Public method to get the current node ID
+    func getCurrentNodeId() -> String? {
+        return currentNodeId
     }
     
     private func processConditionalText(_ text: String) -> String {
@@ -125,10 +134,6 @@ class DialogueProcessor {
         // Craft the desired victim description based on available criteria
         let victimDescription = desiredVictim.getDescription()
         
-        // Calculate persuasion success chance
-        let successChance = calculatePersuasionSuccessChance(for: npc)
-        let successPercentage = String(format: "%d%%", successChance)
-        
         // Create the initial asking node
         let askingText = "I'm looking for someone. \(victimDescription.isEmpty ? "Someone special." : "Specifically, someone who is \(victimDescription).")"
         
@@ -137,14 +142,24 @@ class DialogueProcessor {
             text: "Looking for someone, are you? Why do you want to find such a person?",
             options: [
                 DialogueNodeOption(
-                    from: "I need to speak with them on an important matter. [Persuasion: \(successPercentage)]",
-                    to: offerPaymentNodeId, // This will be intercepted by ViewModel for persuasion check
-                    type: .askingForDesiredVictim
+                    from: "I need to speak with them on an important matter. [Persuasion]",
+                    to: offerPaymentNodeId,
+                    type: .persuasion,
+                    failureNode: bribeAttemptFailNodeId,
+                    failureActions: [
+                        DialogueAction.modifyStat(target: .npc, stat: .relationship, value: -5),
+                        DialogueAction.modifyStat(target: .global, stat: .awareness, value: 10)
+                    ]
                 ),
                 DialogueNodeOption(
-                    from: "I have my reasons. Perhaps we could make a deal? [Persuasion: \(successPercentage)]",
-                    to: offerPaymentNodeId, // This will be intercepted by ViewModel for persuasion check
-                    type: .askingForDesiredVictim
+                    from: "I have my reasons. Perhaps we could make a deal? [Persuasion]",
+                    to: offerPaymentNodeId,
+                    type: .persuasion,
+                    failureNode: bribeAttemptFailNodeId,
+                    failureActions: [
+                        DialogueAction.modifyStat(target: .npc, stat: .relationship, value: -5),
+                        DialogueAction.modifyStat(target: .global, stat: .awareness, value: 10)
+                    ]
                 ),
                 DialogueNodeOption(
                     from: "Never mind, it's not important.",
@@ -161,10 +176,13 @@ class DialogueProcessor {
             text: "I might know something about who you're looking for... For 100 coins, I could tell you what I know.",
             options: [
                 DialogueNodeOption(
-                    from: "Here's 100 coins. Tell me what you know. [Pay 100 coins]",
+                    from: "Here's 100 coins. Tell me what you know. [100 coins]",
                     to: matchingNPCs.isEmpty ? noMatchingNPCsNodeId : bribeSuccessNodeId,
-                    type: .desiredVictimBribe,
-                    requirements: DialogueRequirements(isNight: nil, isIndoor: nil, coins: 100, minRelationship: nil, maxRelationship: nil)
+                    type: .normal,
+                    requirements: DialogueRequirements(isNight: nil, isIndoor: nil, coins: 100, minRelationship: nil, maxRelationship: nil),
+                    successActions: [
+                        DialogueAction.modifyStat(target: .player, stat: .coins, value: -100)
+                    ]
                 ),
                 DialogueNodeOption(
                     from: "On second thought, that's too much.",
@@ -197,7 +215,7 @@ class DialogueProcessor {
                 DialogueNodeOption(
                     from: "It was just a misunderstanding.",
                     to: "end",
-                    type: .relationshipDecrease
+                    type: .normal
                 ),
                 DialogueNodeOption(
                     from: "My apologies, I meant no offense.",
@@ -207,7 +225,7 @@ class DialogueProcessor {
                 DialogueNodeOption(
                     from: "Forget I asked.",
                     to: "end",
-                    type: .relationshipDecrease
+                    type: .normal
                 )
             ],
             requirements: nil
@@ -358,26 +376,43 @@ class DialogueProcessor {
         return (processedText, filterAvailableOptions(options: node.options))
     }
     
-    func normalizeRelationshipNode( _ nodeText: String) {
+    func normalizeRelationshipNode(_ nodeText: String) {
         guard let options = currentNode?.options else { return }
         
-        for option in options {
-            if option.text == nodeText && option.type == .relationshipIncrease || option.type == .relationshipDecrease {
-                option.type = .normal
+        for optionInLoop in options {
+            if optionInLoop.text == nodeText && (optionInLoop.type == .relationshipIncrease || optionInLoop.type == .relationshipDecrease) {
+                optionInLoop.type = .normal
             }
         }
-        
     }
     
-    func attemptIntimidation(npc: NPC) -> Bool {
-        let baseChance = 50
+    // Example method: attempt a persuasion check against an NPC
+    func attemptPersuasion(npc: NPC) -> Bool {
+        let successChance = calculatePersuasionSuccessChance(for: npc)
+        let roll = Int.random(in: 1...100)
         
-        let finalChance = baseChance - (AbilitiesSystem.shared.hasUnholyTongue ? 20 : 0 - npc.playerRelationship.value)
-        return Int.random(in: 1...100) >= finalChance
+        return roll <= successChance
     }
     
-    func attemptSeduction() -> Bool {
-        return true
+    // Calculate persuasion success chance based on various factors
+    // Renamed from calculateIntimidationSuccessChance, logic was already updated for persuasion
+    private func calculatePersuasionSuccessChance(for npc: NPC) -> Int {
+        var baseChance = 50 // Base chance for persuasion
+        
+        // Relationship with player influence
+        let relationshipEffect = npc.playerRelationship.value / 2 // Positive relationship helps
+        baseChance += relationshipEffect
+        
+        // Influence of UnholyTongue ability
+        if AbilitiesSystem.shared.hasUnholyTongue {
+            baseChance += 20 // UnholyTongue increases success chance by 20%
+        }
+        
+        // Player skills (Placeholder - needs actual skill system integration)
+        // Example: if player.skills.persuasion > npc.resistance.persuasion { baseChance += 15 }
+        
+        // Ensure chance is within 0-100%
+        return max(0, min(100, baseChance))
     }
     
     private func meetsRequirements(_ option: DialogueNodeOption) -> Bool {
@@ -417,218 +452,129 @@ class DialogueProcessor {
         return options.filter(meetsRequirements)
     }
     
-    /// Calculates the persuasion success chance based on player-NPC relationship and other factors
-    func calculatePersuasionSuccessChance(for npc: NPC) -> Int {
-        // Base chance
-        let baseChance = 50
-        
-        // Bonus from relationship (up to +10)
-        let relationshipBonus = npc.playerRelationship.value
-        
-        // Bonus from Unholy Tongue ability (+20)
-        let unholyTongueBonus = AbilitiesSystem.shared.hasUnholyTongue ? 20 : 0
-        
-        // Calculate final chance (capped at 90%)
-        let finalChance = min(90, baseChance + relationshipBonus + unholyTongueBonus)
-        
-        return finalChance
-    }
-    
-    /// Checks if a persuasion attempt is successful based on calculated chance
-    func attemptPersuasion(with npc: NPC) -> Bool {
-        let successChance = calculatePersuasionSuccessChance(for: npc)
-        let roll = Int.random(in: 1...100)
-        return roll <= successChance
-    }
-    
     func mergeFakeAlibiNodes(into baseTree: DialogueTree) -> DialogueTree {
-        var nodes = baseTree.nodes
-        
-        // Create unique node IDs for this dialogue path
-        let askForAlibiNodeId = "ask_for_alibi"
-        let alibiResponseNodeId = "alibi_response"
-        let alibiSuccessNodeId = "alibi_success"
-        let alibiRefuseNodeId = "alibi_refuse"
-        
-        // Create the node for player asking about providing an alibi
-        let askForAlibiNode = DialogueNode(
-            text: "I need someone who can vouch for my whereabouts last night. Could you help me?",
-            options: [
-                DialogueNodeOption(
-                    from: "I'd like you to provide an alibi for me. I can pay 150 coins. [Pay 150 coins]",
-                    to: alibiResponseNodeId,
-                    type: .fakeAlibiesBribe,
-                    requirements: DialogueRequirements(isNight: nil, isIndoor: nil, coins: 150, minRelationship: nil, maxRelationship: nil)
-                ),
-                DialogueNodeOption(
-                    from: "Never mind, it's not important.",
-                    to: baseTree.initialNode,
-                    type: .normal
-                )
-            ],
-            requirements: nil
-        )
-        nodes[askForAlibiNodeId] = askForAlibiNode
-        
-        // Create the node for NPC response - depends on relationship
-        let alibiResponseNode = DialogueNode(
-            text: "You want me to lie about where you were? Well... for 150 coins, I suppose I could say you were with me.",
-            options: [
-                DialogueNodeOption(
-                    from: "Remember, I was with you all evening.",
-                    to: alibiSuccessNodeId,
-                    type: .normal
-                )
-            ],
-            requirements: nil
-        )
-        nodes[alibiResponseNodeId] = alibiResponseNode
-        
-        // Create the node for player refusing to proceed
-        let alibiRefuseNode = DialogueNode(
-            text: "Changed your mind? Probably for the best. I'm not sure I'd be very convincing anyway.",
-            options: [
-                DialogueNodeOption(
-                    from: "Let's talk about something else.",
-                    to: baseTree.initialNode,
-                    type: .normal
-                )
-            ],
-            requirements: nil
-        )
-        nodes[alibiRefuseNodeId] = alibiRefuseNode
-        
-        // Create the node for successful alibi arrangement
-        let alibiSuccessNode = DialogueNode(
-            text: "Of course I remember! We spent the entire evening together. If anyone asks, I'll make sure they know you couldn't possibly have been involved in... whatever happened.",
-            options: [
-                DialogueNodeOption(
-                    from: "Thank you for your help.",
-                    to: "end",
-                    type: .normal
-                ),
-                DialogueNodeOption(
-                    from: "I appreciate your discretion.",
-                    to: "end",
-                    type: .relationshipIncrease
-                )
-            ],
-            requirements: nil
-        )
-        nodes[alibiSuccessNodeId] = alibiSuccessNode
-        
-        // Add the option to ask for alibi to the main greeting node
-        for (nodeId, node) in nodes {
-            if nodeId == baseTree.initialNode {
-                var options = node.options
-                options.append(DialogueNodeOption(
-                    from: "I need to discuss a private matter... [Silver Tongue]",
-                    to: askForAlibiNodeId,
-                    type: .normal
-                ))
-                nodes[nodeId] = DialogueNode(text: node.text, options: options, requirements: node.requirements)
-            }
+        guard let alibiTree = dialogueSystem.getFakeAlibiDialogueTree() else {
+            DebugLogService.shared.log("Fake Alibi dialogue tree not found. Skipping merge.", category: "DialogueProcessor")
+            return baseTree
         }
+
+        // 1. Merge and resolve nodes from the alibi subtree
+        var mergedNodes = mergeAndResolveSubTreeNodes(subTree: alibiTree, 
+                                                    baseTreeInitialNodeId: baseTree.initialNode, 
+                                                    into: baseTree.nodes)
+
+        // 2. Define the entry point option
+        let entryOption = DialogueNodeOption(
+            from: "I need to discuss a private matter... [Silver Tongue]", // TODO: Consider making this text a constant
+            to: alibiTree.initialNode, // Points to the start of the alibi tree
+            type: .normal, 
+            requirements: nil // TODO: Add requirement for Silver Tongue ability if needed
+        )
+
+        // 3. Add the entry point option to the base tree's initial node
+        mergedNodes = addEntryPointOption(to: mergedNodes, 
+                                        baseTreeInitialNodeId: baseTree.initialNode, 
+                                        entryOption: entryOption)
         
-        return DialogueTree(initialNode: baseTree.initialNode, nodes: nodes)
+        return DialogueTree(initialNode: baseTree.initialNode, nodes: mergedNodes)
     }
     
     func mergeOverlookActivitiesNodes(into baseTree: DialogueTree) -> DialogueTree {
-        var nodes = baseTree.nodes
-        
-        // Create unique node IDs for this dialogue path
-        let suspiciousActivityNodeId = "suspicious_activity"
-        let intimidateOverlookNodeId = "intimidate_overlook"
-        let overlookSuccessNodeId = "overlook_success"
-        let overlookFailNodeId = "overlook_fail"
-        
-        // Calculate intimidation success chance
-        let successPercentage = 50 + (AbilitiesSystem.shared.hasUnholyTongue ? 20 : 0) + npc.playerRelationship.value
-        
-        // Create the node for NPC noticing suspicious activity
-        let suspiciousActivityNode = DialogueNode(
-            text: "I've been hearing strange things about you lately. Some say you're involved in... questionable activities.",
-            options: [
-                DialogueNodeOption(
-                    from: "Perhaps we could come to an arrangement for you to forget what you've heard. [Intimidation: \(successPercentage)]",
-                    to: intimidateOverlookNodeId,
-                    type: .overlookActivitiesIntimidation
-                ),
-                DialogueNodeOption(
-                    from: "I don't know what you're talking about.",
-                    to: baseTree.initialNode,
-                    type: .normal
-                )
-            ],
-            requirements: nil
+        guard let overlookTree = dialogueSystem.getOverlookActivitiesDialogueTree() else {
+            DebugLogService.shared.log("Overlook Activities dialogue tree not found. Skipping merge.", category: "DialogueProcessor")
+            return baseTree
+        }
+
+        // 1. Merge and resolve nodes from the overlook subtree
+        var mergedNodes = mergeAndResolveSubTreeNodes(subTree: overlookTree, 
+                                                    baseTreeInitialNodeId: baseTree.initialNode, 
+                                                    into: baseTree.nodes)
+
+        // 2. Define the entry point option
+        let entryOption = DialogueNodeOption(
+            from: "Actually, I've been meaning to speak with you about something concerning... [Mysterious Person]", // TODO: Consider making this text a constant
+            to: overlookTree.initialNode, // Points to the start of the overlook tree
+            type: .normal, 
+            requirements: nil // TODO: Add requirement for Mysterious Person ability if needed
         )
-        nodes[suspiciousActivityNodeId] = suspiciousActivityNode
+
+        // 3. Add the entry point option to the base tree's initial node
+        mergedNodes = addEntryPointOption(to: mergedNodes, 
+                                        baseTreeInitialNodeId: baseTree.initialNode, 
+                                        entryOption: entryOption)
         
-        // Create the node for intimidating the NPC to overlook
-        let intimidateOverlookNode = DialogueNode(
-            text: "Are you threatening me? I... I could report you to the authorities.",
-            options: [
-                DialogueNodeOption(
-                    from: "I'm just suggesting that some things are better left alone. For everyone's sake.",
-                    to: overlookSuccessNodeId,
-                    type: .overlookActivitiesIntimidation
-                ),
-                DialogueNodeOption(
-                    from: "Do what you must. I have nothing to hide.",
-                    to: overlookFailNodeId,
-                    type: .normal
-                )
-            ],
-            requirements: nil
-        )
-        nodes[intimidateOverlookNodeId] = intimidateOverlookNode
-        
-        // Create the node for successful intimidation
-        let overlookSuccessNode = DialogueNode(
-            text: "Fine. I'll... I'll keep what I've heard to myself. Just leave me alone.",
-            options: [
-                DialogueNodeOption(
-                    from: "A wise decision.",
-                    to: "end", 
-                    type: .normal
-                )
-            ],
-            requirements: nil
-        )
-        nodes[overlookSuccessNodeId] = overlookSuccessNode
-        
-        // Create the node for failed intimidation
-        let overlookFailNode = DialogueNode(
-            text: "I won't be intimidated. People should know what kind of person you really are.",
-            options: [
-                DialogueNodeOption(
-                    from: "You'll regret this.",
-                    to: "end",
-                    type: .relationshipDecrease
-                ),
-                DialogueNodeOption(
-                    from: "Do what you must.",
-                    to: "end",
-                    type: .normal
-                )
-            ],
-            requirements: nil
-        )
-        nodes[overlookFailNodeId] = overlookFailNode
-        
-        // Add the option for NPC to mention suspicious activity to the main greeting node
-        for (nodeId, node) in nodes {
-            if nodeId == baseTree.initialNode {
-                var options = node.options
-                options.append(DialogueNodeOption(
-                    from: "Actually, I've been meaning to speak with you about something concerning... [Mysterious Person]",
-                    to: suspiciousActivityNodeId,
-                    type: .normal
-                ))
-                nodes[nodeId] = DialogueNode(text: node.text, options: options, requirements: node.requirements)
+        return DialogueTree(initialNode: baseTree.initialNode, nodes: mergedNodes)
+    }
+    
+    // Method removed, replaced by loadSpecificDialogue
+    // func loadCasualtySuspicionDialogue() -> (text: String, options: [DialogueNodeOption])? { ... }
+
+    // <<< Added new method to load by filename >>>
+    func loadSpecificDialogue(filename: String) -> (text: String, options: [DialogueNodeOption])? {
+        DebugLogService.shared.log("Attempting to load specific dialogue: \(filename)", category: "DialogueProcessor")
+        // Try to get the specific dialogue tree by filename
+        if let specificTree = dialogueSystem.getDialogueTree(byFilename: filename) {
+            // Store the tree for future reference
+            self.dialogueTree = specificTree
+            
+            // Get initial node
+            let initialNodeId = specificTree.initialNode
+            if let node = specificTree.nodes[initialNodeId] {
+                currentNode = node
+                currentNodeId = initialNodeId
+                let processedText = processConditionalText(node.text)
+                DebugLogService.shared.log("Successfully loaded specific dialogue: \(filename)", category: "DialogueProcessor")
+                return (processedText, filterAvailableOptions(options: node.options))
             }
+             DebugLogService.shared.log("Error: Initial node '\(initialNodeId)' not found in \(filename)", category: "Error")
+        } else {
+             DebugLogService.shared.log("Error: Dialogue tree not found for filename: \(filename)", category: "Error")
         }
         
-        return DialogueTree(initialNode: baseTree.initialNode, nodes: nodes)
+        return nil // Return nil if loading failed
+    }
+
+    // <<< New Helper Function >>>
+    private func mergeAndResolveSubTreeNodes(subTree: DialogueTree, baseTreeInitialNodeId: String, into nodes: [String: DialogueNode]) -> [String: DialogueNode] {
+        var mergedNodes = nodes
+
+        for (nodeId, node) in subTree.nodes {
+            let resolvedOptions = node.options.map { option -> DialogueNodeOption in
+                var nextNodeTarget = option.nextNode
+                if option.nextNode == DialogueProcessor.returnToMainPlaceholder {
+                    nextNodeTarget = baseTreeInitialNodeId
+                } else if option.nextNode == DialogueProcessor.proceedToEndPlaceholder {
+                    nextNodeTarget = "end" 
+                }
+                // Create a new instance, ensuring ALL relevant fields are passed
+                return DialogueNodeOption(from: option.text, 
+                                          to: nextNodeTarget, 
+                                          type: option.type, 
+                                          requirements: option.requirements,
+                                          failureNode: option.failureNode,
+                                          successActions: option.successActions, // <<< Pass successActions
+                                          failureActions: option.failureActions) // <<< Pass failureActions
+            }
+            mergedNodes[nodeId] = DialogueNode(text: node.text, options: resolvedOptions, requirements: node.requirements)
+        }
+        return mergedNodes
+    }
+
+    // <<< New Helper Function >>>
+    private func addEntryPointOption(to nodes: [String: DialogueNode], baseTreeInitialNodeId: String, entryOption: DialogueNodeOption) -> [String: DialogueNode] {
+        var updatedNodes = nodes
+        // Add the option to the specified entry point(s) in the base tree
+        // Currently targets only the initial node of the base tree.
+        if let entryNode = updatedNodes[baseTreeInitialNodeId] {
+            var mutableOptions = entryNode.options
+            // Avoid adding duplicate entry options if the merge function is called multiple times somehow
+            if !mutableOptions.contains(where: { $0.nextNode == entryOption.nextNode && $0.text == entryOption.text }) {
+                mutableOptions.append(entryOption)
+                updatedNodes[baseTreeInitialNodeId] = DialogueNode(text: entryNode.text, options: mutableOptions, requirements: entryNode.requirements)
+            }
+        } else {
+            DebugLogService.shared.log("Initial node \(baseTreeInitialNodeId) of baseTree not found for adding entry point option: \(entryOption.text)", category: "DialogueProcessor")
+        }
+        return updatedNodes
     }
 }

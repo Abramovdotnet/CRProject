@@ -12,6 +12,7 @@ struct MainSceneView: View {
     @State private var shadowHideoutScale: CGFloat = 1.0
     @State private var showHistory = false
     @State private var showSmokeEffect = false
+    @State private var activeDialogueViewModel: DialogueViewModel? = nil
     
     // New enum for navigation destinations
     enum NavigationDestination: Hashable {
@@ -51,6 +52,11 @@ struct MainSceneView: View {
         return player.hiddenAt != .none
     }
     
+    private var isPlayerArrested: Bool {
+        guard let player = gameStateService.getPlayer() else { return false }
+        return player.isArrested
+    }
+    
     // Computed property for red overlay opacity based on blood
     private var lowBloodRedOpacity: Double {
         let blood = viewModel.playerBloodPercentage
@@ -72,6 +78,11 @@ struct MainSceneView: View {
             // Global background to ensure no white edges
             ZStack {
                 Color.black.edgesIgnoringSafeArea(.all)
+                
+                // Прозрачная область для обнаружения тапов на фон
+                Color.clear
+                    .contentShape(Rectangle())
+                    .ignoresSafeArea()
                 
                 NavigationStack(path: $navigationPath) {
                     ZStack {
@@ -153,7 +164,7 @@ struct MainSceneView: View {
                                         )
                                     }
                                     
-                                    if !isPlayerHidden {
+                                    if !isPlayerHidden && !isPlayerArrested {
                                         // Show navigation
                                         MainSceneActionButton(
                                             icon: "map.fill",
@@ -206,13 +217,15 @@ struct MainSceneView: View {
                                         }
                                     }
                                     
-                                    MainSceneActionButton(
-                                        icon: "duffle.bag.fill",
-                                        color: Theme.bloodProgressColor,
-                                        action: {
-                                            navigationPath.append(NavigationDestination.inventory)
-                                        }
-                                    )
+                                    if !isPlayerArrested {
+                                        MainSceneActionButton(
+                                            icon: "duffle.bag.fill",
+                                            color: Theme.bloodProgressColor,
+                                            action: {
+                                                navigationPath.append(NavigationDestination.inventory)
+                                            }
+                                        )
+                                    }
                                     
                                     MainSceneActionButton(
                                         icon: "moon.stars.circle.fill",
@@ -276,14 +289,16 @@ struct MainSceneView: View {
                                                     color: Theme.textColor,
                                                     action: {
                                                         viewModel.handleNPCAction(.startConversation(selectedNPC))
-                                                        // Add a slight delay to let the viewModel update activeDialogueViewModel
-                                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                                        
+                                                        // Создаем DialogueViewModel и открываем диалог
+                                                        if let dialogueVM = viewModel.createDialogueViewModel(for: selectedNPC) {
+                                                            activeDialogueViewModel = dialogueVM
                                                             navigationPath.append(NavigationDestination.dialogue)
                                                         }
                                                     }
                                                 )
                                                 
-                                                if selectedNPC.isTradeAvailable() && selectedNPC.currentActivity != .jailed {
+                                                if selectedNPC.isTradeAvailable() && selectedNPC.currentActivity != .jailed && !isPlayerArrested {
                                                     // Trade
                                                     MainSceneActionButton(
                                                         icon: "cart.fill",
@@ -294,7 +309,7 @@ struct MainSceneView: View {
                                                     )
                                                 }
 
-                                                if npcManager.selectedNPC != nil && selectedNPC.currentActivity != .jailed && !selectedNPC.isAlive {
+                                                if npcManager.selectedNPC != nil && selectedNPC.currentActivity != .jailed && !selectedNPC.isAlive && !isPlayerArrested {
                                                     MainSceneActionButton(
                                                         icon: "bag.fill",
                                                         color: Theme.textColor,
@@ -318,7 +333,7 @@ struct MainSceneView: View {
                                                 }
                                             )
                                             
-                                            if !selectedNPC.isVampire && selectedNPC.currentActivity != .jailed {
+                                            if !selectedNPC.isVampire && selectedNPC.currentActivity != .jailed && !isPlayerArrested {
                                                 // Feed
                                                 MainSceneActionButton(
                                                     icon: "drop.halffull",
@@ -397,11 +412,15 @@ struct MainSceneView: View {
                             ZStack {
                                 Color.black.edgesIgnoringSafeArea(.all)
                                 
-                                if let dialogueViewModel = viewModel.activeDialogueViewModel {
-                                    DialogueView(viewModel: dialogueViewModel, mainViewModel: viewModel)
+                                if let dialogueViewModel = activeDialogueViewModel {
+                                    DialogueView(
+                                        viewModel: dialogueViewModel, 
+                                        mainViewModel: viewModel,
+                                        isSkipable: !dialogueViewModel.isSpecificDialogueSet
+                                    )
                                         .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                                         .onDisappear {
-                                            viewModel.activeDialogueViewModel = nil
+                                            activeDialogueViewModel = nil
                                         }
                                 } else {
                                     Text("Loading Dialogue...")
@@ -419,9 +438,11 @@ struct MainSceneView: View {
                             .gesture(
                                 DragGesture()
                                     .onEnded { gesture in
-                                        if gesture.translation.width > 100 {
+                                        // Разрешаем закрытие жестом только для обычных диалогов
+                                        if gesture.translation.width > 100 && 
+                                            activeDialogueViewModel?.isSpecificDialogueSet == false {
                                             safePopNavigation()
-                                            viewModel.activeDialogueViewModel = nil
+                                            activeDialogueViewModel = nil
                                         }
                                     }
                             )
@@ -540,6 +561,39 @@ struct MainSceneView: View {
                         }
                     }
                 }
+       
+            }
+            .onAppear {
+
+                NotificationCenter.default.addObserver(
+                    forName: Notification.Name("openDialogueTrigger"),
+                    object: nil,
+                    queue: .main
+                ) { [self] notification in
+
+                    if let userInfo = notification.userInfo,
+                       let reportingNPC = userInfo["reportingNPC"] as? NPC,
+                       let player = gameStateService.player,
+                       let dialogueFilename = userInfo["dialogueFilename"] as? String {
+                        
+                        // Create DialogueViewModel using the filename from userInfo
+                        let dialogueVM = DialogueViewModel(npc: reportingNPC, player: player, specificDialogueFilename: dialogueFilename)
+                        
+                        // Сохраняем VM в локальную переменную
+                        activeDialogueViewModel = dialogueVM
+                        
+                        // Сбрасываем навигационный путь и открываем диалог
+                        DispatchQueue.main.async {
+                            navigationPath = NavigationPath()
+                            navigationPath.append(NavigationDestination.dialogue)
+                        }
+                    } else {
+                        DebugLogService.shared.log("Error: Received openDialogueTrigger notification with invalid or missing userInfo.", category: "Error")
+                    }
+                }
+            }
+            .onDisappear {
+                NotificationCenter.default.removeObserver(self, name: Notification.Name("openDialogueTrigger"), object: nil)
             }
         }
     }
@@ -588,27 +642,6 @@ enum NPCAction {
     case drain(NPC)
     case investigate(NPC)
 }
-
-// MARK: - Bottom Widget
-private struct BottomWidgetView: View {
-    @ObservedObject var viewModel: MainSceneViewModel
-    
-    var body: some View {
-        HStack {
-            Text("Debug:")
-                .font(Theme.bodyFont)
-            
-            Spacer()
-            
-            Text("Blood: \(Int(viewModel.playerBloodPercentage))%")
-                .font(Theme.bodyFont)
-            
-        }
-        .padding(.top, 5)
-        .padding(.bottom, 5)
-    }
-}
-
 
 struct MainSceneActionButton: View {
     let icon: String

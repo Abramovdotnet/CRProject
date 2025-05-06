@@ -96,8 +96,15 @@
         },
         {
           "text": "I require your company. (200) [Refined Experience]",
-          "type": "loveForSail",
+          "type": "normal",
           "nextNode": "6243_scene",
+          "successActions": [
+            { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+            { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ],
           "requirements": {
             "coins": 200
           }
@@ -129,8 +136,15 @@
         "options": [
            {
              "text": "Let's proceed with the arrangement. (200) [Refined Experience]",
-             "type": "loveForSail",
+             "type": "normal",
              "nextNode": "6243_scene",
+             "successActions": [
+              { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+              { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+              { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+              { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+              { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+             ],
              "requirements": {
                "coins": 200
              }
@@ -195,8 +209,15 @@
             },
             {
                 "text": "My immediate plan involves your company. (200) [Refined Experience]",
-                 "type": "loveForSail",
+                 "type": "normal",
                  "nextNode": "6243_scene",
+                 "successActions": [
+                  { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+                  { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+              ],
                  "requirements": {
                    "coins": 200
                  }
@@ -289,8 +310,15 @@
         },
         {
           "text": "I require your company again. (200) [Refined Experience]",
-          "type": "loveForSail",
+          "type": "normal",
           "nextNode": "6243_scene",
+          "successActions": [
+            { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+            { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+          ],
           "requirements": {
             "coins": 200
           }
@@ -320,8 +348,15 @@
             },
              {
                 "text": "I was hoping for another arrangement. (200) [Refined Experience]",
-                "type": "loveForSail",
+                "type": "normal",
                 "nextNode": "6243_scene",
+                "successActions": [
+                  { "type": "modifyStat", "parameters": { "target": "player", "stat": "coins", "value": -200 } }, 
+                  { "type": "modifyStat", "parameters": { "target": "npc", "stat": "relationship", "value": 2 } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "StatisticIncrement", "statName": "nightSpentsWithSomeone" } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "LoveScene" } },
+                  { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+                ],
                 "requirements": {
                     "coins": 200
                 }

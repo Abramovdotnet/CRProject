@@ -122,17 +122,6 @@ class NPCInteractionService : GameService {
             return
         }
         
-        /*
-        if let (message, icon, color) = interactionMessages[interaction] {
-            gameEventBusService.addMessageWithIcon(
-                message: "\(currentNPC.name), \(currentNPC.profession.rawValue) \(message) \(otherNPC.name), \(otherNPC.profession.rawValue) at \(scene.name.capitalized). Relation: \(currentNPC.getNPCRelationshipValue(of: otherNPC)), State: \(currentNPC.getNPCRelationshipState(of: otherNPC)?.description ?? "Unknown")",
-                icon: icon,
-                iconColor: color,
-                type: .common
-            )
-        }
-        */
-        
         var hasSuccess = false
         var isSuccess = false
         
@@ -223,8 +212,8 @@ class NPCInteractionService : GameService {
             } else if !otherNPC.isAlive {
                 handleArrest(currentNPC: militaryNpc!, otherNPC: currentNPC, reason: reason)
             } else {
-                let jailWinner = Int.random(in: 0...10) > 9
-                let jailLooser = Int.random(in: 0...10) > 9
+                let jailWinner = Int.random(in: 0...100) > 95
+                let jailLooser = Int.random(in: 0...100) > 95
                 
                 if jailWinner {
                     handleArrest(currentNPC: militaryNpc!, otherNPC: currentNPCWon ? currentNPC : otherNPC, reason: reason)
@@ -250,6 +239,9 @@ class NPCInteractionService : GameService {
         currentNPC.specialBehaviorTime = NPCActivityType.casualty.specialBehaviorTime
         currentNPC.casualtyNpcId = otherNPC.id
         otherNPC.deathStatus = .investigated
+        
+        
+        PopUpState.shared.show(title: "Casualty discovered", details: "Guards will arrive soon to check what happened", image: .system(name: NPCInteraction.findOutCasualty.icon, color: NPCInteraction.findOutCasualty.color))
     }
     
     private func handleCasualtyAwareness(currentNPC: NPC, otherNPC: NPC) {
@@ -287,8 +279,27 @@ class NPCInteractionService : GameService {
             
             casualtyNPC.deathStatus = .confirmed
             currentNPC.casualtyNpcId = 0
-            
-            PopUpState.shared.show(title: "Casualty reported", details: "Guards arrived to check what happened", image: .system(name: NPCInteraction.findOutCasualty.icon, color: NPCInteraction.findOutCasualty.color))
+
+            // Check if player is in the same location as the casualty
+            if let currentPlayerScene = GameStateService.shared.currentScene,
+               currentPlayerScene.id == casualtyNPC.currentLocationId {
+                
+                DebugLogService.shared.log("Player is in same location as casualty. Triggering suspicion dialogue.", category: "Dialogue")
+                
+                // Post notification for view models to handle
+                let userInfo: [String: Any] = [
+                    "reportingNPC": otherNPC,
+                    "dialogueFilename": "CasualtySuspicionDialogue.json"
+                ]
+                
+                NotificationCenter.default.post(
+                    name: Notification.Name("openDialogueTrigger"),
+                    object: nil, 
+                    userInfo: userInfo
+                )
+                
+                DebugLogService.shared.log("Casualty suspicion dialogue triggered for \(otherNPC.name)", category: "Dialogue")
+            }
         }
     }
     

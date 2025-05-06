@@ -214,6 +214,16 @@ class GameStateService : ObservableObject, GameService{
                 InvestigationService.shared.investigate(inspector: player!, investigationObject: npc)
             }
         }
+        
+        guard let player = player else { return }
+        if player.isArrested {
+            if player.arrestTime > 0 {
+                player.arrestTime -= 1
+            } else {
+                player.isArrested = false
+                player.arrestTime = 0
+            }
+        }
     }
     
     func forcePlayerToFindHideout() {

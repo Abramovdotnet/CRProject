@@ -249,7 +249,7 @@
                 },
                 {
                     "text": "Perfect...",
-                    "type": "seduce",
+                    "type": "normal",
                     "nextNode": "end"
                 }
             ]

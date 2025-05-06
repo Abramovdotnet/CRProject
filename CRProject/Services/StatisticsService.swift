@@ -23,6 +23,7 @@ class StatisticsService: GameService, ObservableObject {
     @Published private(set) var alliesCreated: Int = 0
     @Published private(set) var nightSpentsWithSomeone: Int = 0
     @Published private(set) var disappearances: Int = 0
+    @Published private(set) var timesArrested: Int = 0
     
     static let shared: StatisticsService = DependencyManager.shared.resolve()
     
@@ -325,6 +326,10 @@ class StatisticsService: GameService, ObservableObject {
         }
     }
     
+    func increaseTimesArrested() {
+        timesArrested += 1
+    }
+    
     func increaseNightSpentsWithSomeone() {
         nightSpentsWithSomeone += 1
         
@@ -391,6 +396,7 @@ class StatisticsService: GameService, ObservableObject {
         alliesCreated = 100
         nightSpentsWithSomeone = 100
         disappearances = 100
+        timesArrested = 100
         
         increaseBribes()
         incrementFeedings()

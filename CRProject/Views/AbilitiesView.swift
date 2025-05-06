@@ -491,7 +491,8 @@ struct AbilitiesView: View {
             ("Barters Completed", "\(statisticsService.bartersCompleted)"),
             ("500+ Coins Deals", "\(statisticsService._500CoinsDeals)"),
             ("1000+ Coins Deals", "\(statisticsService._1000CoinsDeals)"),
-            ("Properties Owned", "\(statisticsService.propertiesBought)")
+            ("Properties Owned", "\(statisticsService.propertiesBought)"),
+            ("Times Arrested", "\(statisticsService.timesArrested)")
         ]
     }
     
