@@ -50,9 +50,9 @@
         "suspicion_confess_arrest": {
             "text": "Is that so? Then you'll be coming with me. Guards! Take this one to the dungeon!",
             "options": [
-                { 
+                {
                     "text": "[Go to jail]", 
-                    "type": "normal", 
+                    "type": "normal",
                     "nextNode": "end",
                     "successActions": [
                         { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } },
@@ -64,9 +64,9 @@
         "suspicion_persuade_success": {
             "text": "Hmm, you sound convincing enough. Perhaps I was mistaken. You're free to go, but don't leave town.",
             "options": [
-                { 
+                {
                     "text": "[Leave]", 
-                    "type": "normal", 
+                    "type": "normal",
                     "nextNode": "end",
                     "successActions": [
                         { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
@@ -77,9 +77,9 @@
         "suspicion_persuade_fail": {
             "text": "I don't believe you. Your story is full of holes. I'm taking you in for further questioning. Guards!",
             "options": [
-                { 
+                {
                     "text": "[Go to jail]", 
-                    "type": "normal", 
+                    "type": "normal",
                     "nextNode": "end",
                     "successActions": [
                         { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } },
@@ -91,9 +91,9 @@
         "suspicion_bribe_success": {
             "text": "*Pockets the coins* Well, well. Perhaps there's been a misunderstanding after all. Be more careful next time. You're free to go.",
             "options": [
-                { 
+                {
                     "text": "[Leave]", 
-                    "type": "normal", 
+                    "type": "normal",
                     "nextNode": "end",
                     "successActions": [
                         { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
@@ -104,9 +104,9 @@
         "suspicion_bribe_fail": {
             "text": "Are you trying to bribe me?! That only confirms my suspicions! I'm taking you in. Guards!",
             "options": [
-                { 
+                {
                     "text": "[Go to jail]", 
-                    "type": "normal", 
+                    "type": "normal",
                     "nextNode": "end",
                     "successActions": [
                         { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } },
@@ -118,9 +118,9 @@
         "suspicion_silent_arrest": {
             "text": "Silence, eh? That's as good as a confession in my book. Guards! Take them away!",
             "options": [
-                { 
+                {
                     "text": "[Go to jail]", 
-                    "type": "normal", 
+                    "type": "normal",
                     "nextNode": "end",
                     "successActions": [
                         { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } },

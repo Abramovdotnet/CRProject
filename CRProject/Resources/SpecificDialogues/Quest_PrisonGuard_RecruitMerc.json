@@ -2,10 +2,10 @@
   "initialNode": "q_pgrm_offer_job",
   "nodes": {
     "q_pgrm_offer_job": {
-      "text": "Слушай, есть работа. Капитан стражи ищет людей для охраны темницы. Платят неплохо, хоть и работа грязная. Что скажешь?",
+      "text": "Listen, there's a job. The guard captain is looking for people to guard the dungeon. Pays decent, though the work is dirty. What do you say?",
       "options": [
         {
-          "text": "Это не просто охрана, это шанс показать себя и заработать уважение стражи. Да и деньги лишними не будут. [Убеждение]",
+          "text": "It's not just guard duty, it's a chance to prove yourself and earn the guard's respect. Plus, the money won't hurt. [Persuasion]",
           "type": "persuasion",
           "nextNode": "q_pgrm_accept",
           "failureNode": "q_pgrm_refuse",
@@ -52,29 +52,38 @@
           ]
         },
         {
-          "text": "Я передумал(а).",
+          "text": "I changed my mind.",
           "type": "normal",
-          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT",
+          "successActions": [
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ]
         }
       ]
     },
     "q_pgrm_accept": {
-      "text": "Хм, охранять тюрьму... Ладно, уговорил. Звучит лучше, чем сидеть без дела. Передай капитану, что я скоро буду.",
+      "text": "Hmm, guarding a prison... Alright, you convinced me. Sounds better than sitting around doing nothing. Tell the captain I'll be there soon.",
       "options": [
         {
-          "text": "Отлично!",
+          "text": "Excellent!",
           "type": "normal",
-          "nextNode": "end"
+          "nextNode": "end",
+          "successActions": [
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ]
         }
       ]
     },
     "q_pgrm_refuse": {
-      "text": "Охранять крыс в клетках? Нет уж, спасибо. Я предпочитаю сражения, а не тюремную вонь. Поищи дурака в другом месте.",
+      "text": "Guard rats in cages? No thanks. I prefer battles, not the prison stench. Look for a fool elsewhere.",
       "options": [
         {
-          "text": "Как знаешь.",
+          "text": "As you wish.",
           "type": "normal",
-          "nextNode": "end"
+          "nextNode": "end",
+          "successActions": [
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ]
         }
       ]
     }

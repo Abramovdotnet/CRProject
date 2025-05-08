@@ -231,6 +231,7 @@ class GameStateService : ObservableObject, GameService{
             // Предполагаем, что свойства в NPC теперь Bool
             npc.hasNewQuests = questService.hasAvailableNewQuests(for: npc.id)
             npc.questStageUpdateAvaiting = questService.isNPCAwaitingPlayerActionInActiveQuests(for: npc.id)
+            npc.isImportantNpc = questService.isImportantNpc(npcId: npc.id)
             // Если свойства Int, то:
             // npc.hasNewQuests = questService.hasAvailableNewQuests(for: npc.id) ? 1 : 0
             // npc.questStageUpdateAvaiting = questService.isNPCAwaitingPlayerActionInActiveQuests(for: npc.id) ? 1 : 0
@@ -251,7 +252,6 @@ class GameStateService : ObservableObject, GameService{
     func handleNightAppears() {
         player?.desiredVictim.updateDesiredVictim()
         
-
         CoinsManagementService.shared.updateWorldEconomy()
         ItemsManagementService.shared.distributeDailyItems()
     }

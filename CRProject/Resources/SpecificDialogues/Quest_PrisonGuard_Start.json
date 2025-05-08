@@ -2,55 +2,61 @@
   "initialNode": "q_pgs_start",
   "nodes": {
     "q_pgs_start": {
-      "text": "Проклятье, {player_name}! В этой дыре вечно не хватает людей. Особенно сейчас, когда заключенных все больше, а стражи разбегаются.",
+      "text": "Damn it, {player_name}! This hole is always short on people. Especially now, with more prisoners and guards running off.",
       "options": [
         {
-          "text": "В чем дело, капитан?",
+          "text": "What's the matter, Captain?",
           "type": "normal",
           "nextNode": "q_pgs_problem"
         },
         {
-          "text": "Не мои проблемы.",
+          "text": "Not my problem.",
           "type": "normal",
-          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT",
+          "successActions": [
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ]
         }
       ]
     },
     "q_pgs_problem": {
-      "text": "Дело в том, что мне нужны крепкие руки для охраны темницы. Надежные, опытные бойцы. Своих не хватает, а городская управа жмется выделить средства на нормальных солдат. Говорят, нанимай кого подешевле.",
+      "text": "The fact is, I need strong arms to guard the dungeon. Reliable, experienced fighters. I don't have enough of my own, and the city council is stingy about funds for proper soldiers. They say hire someone cheaper.",
       "options": [
         {
-          "text": "И вы хотите, чтобы я нашел вам кого-то?",
+          "text": "And you want me to find someone for you?",
           "type": "normal",
           "nextNode": "q_pgs_offer"
         },
         {
-          "text": "Звучит рискованно.",
+          "text": "Sounds risky.",
           "type": "normal",
           "nextNode": "q_pgs_risk"
         }
       ]
     },
     "q_pgs_risk": {
-      "text": "Рискованно? Конечно! Это охрана тюрьмы, а не прогулка по саду. Но и плата соответствующая. Мне нужен результат, а не твои сомнения.",
+      "text": "Risky? Of course! This is prison guard duty, not a walk in the park. But the pay is appropriate. I need results, not your doubts.",
       "options": [
         {
-          "text": "Хорошо, расскажите подробнее.",
+          "text": "Alright, tell me more.",
           "type": "normal",
           "nextNode": "q_pgs_offer"
         },
         {
-          "text": "Я пас.",
+          "text": "I'm out.",
           "type": "normal",
-          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT",
+          "successActions": [
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ]
         }
       ]
     },
     "q_pgs_offer": {
-      "text": "Именно. Полно наемников (Mercenary) шляется по городу и тавернам без дела. Найди одного толкового, кто не побоится смотреть в рожи этим отбросам за решеткой. Убеди его поступить на службу. Заплачу 150 монет, как только он явится ко мне.",
+      "text": "Exactly. Plenty of mercenaries (Mercenary) wandering the city and taverns with nothing to do. Find a capable one who isn't afraid to look these scum behind bars in the face. Convince him to enlist. I'll pay 150 coins as soon as he reports to me.",
       "options": [
         {
-          "text": "Я возьмусь за это.",
+          "text": "I'll take the job.",
           "type": "normal",
           "nextNode": "accept_task",
           "successActions": [
@@ -65,29 +71,35 @@
           ]
         },
         {
-          "text": "Нет, это не для меня.",
+          "text": "No, that's not for me.",
           "type": "normal",
           "nextNode": "q_pgs_refusal"
         }
       ]
     },
     "accept_task": {
-      "text": "Отлично! Жду хороших новостей. И поторопись, мне долго ждать некогда.",
+      "text": "Excellent! I await good news. And hurry, I don't have long to wait.",
       "options": [
         {
-          "text": "[Закончить разговор]",
+          "text": "[End conversation]",
           "type": "normal",
-          "nextNode": "end"
+          "nextNode": "end",
+          "successActions": [
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ]
         }
       ]
     },
     "q_pgs_refusal": {
-      "text": "Как знаешь. Дело твое. Но если передумаешь - дай знать.",
+      "text": "As you wish. Your choice. But if you change your mind - let me know.",
        "options": [
         {
-          "text": "[Уйти]",
+          "text": "[Leave]",
           "type": "normal",
-          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT",
+          "successActions": [
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ]
         }
       ]
     }

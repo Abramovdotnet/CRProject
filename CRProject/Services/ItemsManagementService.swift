@@ -287,12 +287,12 @@ class ItemsManagementService : GameService {
                 }
                 
             default:
-                // For other professions, add 1-2 random items
-                let randomItems = allItems.filter { $0.type != .artefact }
-                let itemCount = Int.random(in: 1...2)
-                for _ in 0..<itemCount {
-                    if let randomItem = randomItems.randomElement() {
-                        npc.items.append(Item.createUnique(randomItem))
+                // Add some common items for other professions
+                let commonItems = allItems.filter { $0.type == .drink || $0.type == .food }
+                let commonItemCount = Int.random(in: 1...3)
+                for _ in 0..<commonItemCount {
+                    if let randomCommon = commonItems.randomElement() {
+                        npc.items.append(Item.createUnique(randomCommon))
                     }
                 }
             }
@@ -302,5 +302,18 @@ class ItemsManagementService : GameService {
                 npc.items = Array(npc.items.prefix(500))
             }
         }
+    }
+    
+    /// Checks if the player has a specific item in the required quantity.
+    /// - Parameters:
+    ///   - player: The player whose inventory is to be checked.
+    ///   - itemId: The ID of the item prototype to check for (corresponds to item.id).
+    ///   - quantity: The minimum quantity required.
+    /// - Returns: True if the player has at least the specified quantity of the item, false otherwise.
+    public func playerHasItem(player: Player, itemId: Int, quantity: Int) -> Bool {
+        // Filter items in player's inventory by item.id (type of item)
+        let countOfItem = player.items.filter { $0.id == itemId }.count
+        // Return true if the count of found items is not less than the required quantity
+        return countOfItem >= quantity
     }
 }

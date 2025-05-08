@@ -1,3 +1,5 @@
+import Foundation
+
 // MARK: - Dialogue Processor
 
 class DialogueProcessor {
@@ -14,7 +16,7 @@ class DialogueProcessor {
     // Constants for placeholders
     private static let returnToMainPlaceholder = "RETURN_TO_MAIN_DIALOGUE_ROOT"
     private static let proceedToEndPlaceholder = "PROCEED_TO_END"
-
+    
     init(dialogueSystem: DialogueSystem, player: Player, npc: NPC) {
         self.dialogueSystem = dialogueSystem
         self.player = player
@@ -61,6 +63,45 @@ class DialogueProcessor {
                 with: player.name
             )
         }
+
+        // --- НОВАЯ ЛОГИКА ЗАМЕНЫ ПЛЕЙСХОЛДЕРОВ NPC И ПРЕДМЕТОВ ---
+
+        // Замена {npc:ID}
+        let npcRegex = try! NSRegularExpression(pattern: "\\{npc:(\\d+)\\}")
+        let npcMatches = npcRegex.matches(in: processedText, range: NSRange(processedText.startIndex..., in: processedText))
+        
+        // Собираем замены в обратном порядке, чтобы не нарушать диапазоны
+        for match in npcMatches.reversed() {
+            if let idRange = Range(match.range(at: 1), in: processedText),
+               let npcId = Int(processedText[idRange]) {
+                // Используем NPCReader для получения NPC по ID
+                // NPCReader.getRuntimeNPC(id:) теперь в npcManager?
+                // Попробуем получить через npcManager, если он доступен здесь
+                // ИЛИ если NPCReader имеет статический метод getRuntimeNPC
+                // Предположу, что NPCReader.getRuntimeNPC доступен
+                 let npcName = NPCReader.getRuntimeNPC(by: npcId)?.name ?? "Неизвестный NPC"
+                 if let placeholderRange = Range(match.range, in: processedText) {
+                    processedText.replaceSubrange(placeholderRange, with: npcName)
+                 }
+            }
+        }
+
+        // Замена {item:ID}
+        let itemRegex = try! NSRegularExpression(pattern: "\\{item:(\\d+)\\}")
+        let itemMatches = itemRegex.matches(in: processedText, range: NSRange(processedText.startIndex..., in: processedText))
+        
+        // Собираем замены в обратном порядке
+        for match in itemMatches.reversed() {
+            if let idRange = Range(match.range(at: 1), in: processedText),
+               let itemId = Int(processedText[idRange]) {
+                 // Используем ItemReader для получения предмета по ID
+                 let itemName = ItemReader.shared.getItem(by: itemId)?.name ?? "Неизвестный предмет"
+                 if let placeholderRange = Range(match.range, in: processedText) {
+                    processedText.replaceSubrange(placeholderRange, with: itemName)
+                 }
+            }
+        }
+        // --- КОНЕЦ НОВОЙ ЛОГИКИ ---
         
         return processedText
     }
@@ -78,7 +119,20 @@ class DialogueProcessor {
                 if let node = self.dialogueTree?.nodes[currentNodeId!] { // Используем self.dialogueTree
                     currentNode = node
                     let processedText = processConditionalText(node.text)
-                    return (processedText, filterAvailableOptions(options: node.options))
+                    let filteredOptions = filterAvailableOptions(options: node.options)
+                    let processedOptions = filteredOptions.map { option -> DialogueNodeOption in
+                        let processedOptionText = processConditionalText(option.text)
+                        return DialogueNodeOption(
+                            from: processedOptionText,
+                            to: option.nextNode,
+                            type: option.type,
+                            requirements: option.requirements,
+                            failureNode: option.failureNode,
+                            successActions: option.successActions,
+                            failureActions: option.failureActions
+                        )
+                    }
+                    return (processedText, processedOptions)
                 } else {
                      DebugLogService.shared.log("DialogueProcessor Error: Initial node not found in active quest dialogue '\(activeQuestFile)'", category: "Error")
                 }
@@ -97,7 +151,20 @@ class DialogueProcessor {
                 if let node = self.dialogueTree?.nodes[currentNodeId!] { // Используем self.dialogueTree
                     currentNode = node
                     let processedText = processConditionalText(node.text)
-                    return (processedText, filterAvailableOptions(options: node.options))
+                    let filteredOptions = filterAvailableOptions(options: node.options)
+                    let processedOptions = filteredOptions.map { option -> DialogueNodeOption in
+                        let processedOptionText = processConditionalText(option.text)
+                        return DialogueNodeOption(
+                            from: processedOptionText,
+                            to: option.nextNode,
+                            type: option.type,
+                            requirements: option.requirements,
+                            failureNode: option.failureNode,
+                            successActions: option.successActions,
+                            failureActions: option.failureActions
+                        )
+                    }
+                    return (processedText, processedOptions)
                 } else {
                      DebugLogService.shared.log("DialogueProcessor Error: Initial node not found in available quest dialogue '\(availableQuestFile)'", category: "Error")
                 }
@@ -149,7 +216,20 @@ class DialogueProcessor {
         if let node = tree.nodes[initialNodeId] {
             currentNode = node
             let processedText = processConditionalText(node.text)
-            return (processedText, filterAvailableOptions(options: node.options))
+            let filteredOptions = filterAvailableOptions(options: node.options)
+            let processedOptions = filteredOptions.map { option -> DialogueNodeOption in
+                let processedOptionText = processConditionalText(option.text)
+                return DialogueNodeOption(
+                    from: processedOptionText,
+                    to: option.nextNode,
+                    type: option.type,
+                    requirements: option.requirements,
+                    failureNode: option.failureNode,
+                    successActions: option.successActions,
+                    failureActions: option.failureActions
+                )
+            }
+            return (processedText, processedOptions)
         }
         
         return nil
@@ -222,7 +302,7 @@ class DialogueProcessor {
                     from: "Here's 100 coins. Tell me what you know. [100 coins]",
                     to: matchingNPCs.isEmpty ? noMatchingNPCsNodeId : bribeSuccessNodeId,
                     type: .normal,
-                    requirements: DialogueRequirements(isNight: nil, isIndoor: nil, coins: 100, minRelationship: nil, maxRelationship: nil),
+                    requirements: DialogueRequirements(isNight: nil, isIndoor: nil, coins: 100, minRelationship: nil, maxRelationship: nil, inventoryItems: nil),
                     successActions: [
                         DialogueAction.modifyStat(target: .player, stat: .coins, value: -100)
                     ]
@@ -392,7 +472,7 @@ class DialogueProcessor {
                     from: "What's new in town?",
                     to: "gossip_0",
                     type: .normal,
-                    requirements: DialogueRequirements(isNight: nil, isIndoor: nil, coins: nil, minRelationship: 2, maxRelationship: nil)
+                    requirements: DialogueRequirements(isNight: nil, isIndoor: nil, coins: nil, minRelationship: 2, maxRelationship: nil, inventoryItems: nil)
                 ))
                 nodes[nodeId] = DialogueNode(text: node.text, options: options, requirements: node.requirements)
             }
@@ -416,7 +496,20 @@ class DialogueProcessor {
         currentNode = node
         currentNodeId = nodeId
         let processedText = processConditionalText(node.text)
-        return (processedText, filterAvailableOptions(options: node.options))
+        let filteredOptions = filterAvailableOptions(options: node.options)
+        let processedOptions = filteredOptions.map { option -> DialogueNodeOption in
+            let processedOptionText = processConditionalText(option.text)
+            return DialogueNodeOption(
+                from: processedOptionText,
+                to: option.nextNode,
+                type: option.type,
+                requirements: option.requirements,
+                failureNode: option.failureNode,
+                successActions: option.successActions,
+                failureActions: option.failureActions
+            )
+        }
+        return (processedText, processedOptions)
     }
     
     func normalizeRelationshipNode(_ nodeText: String) {
@@ -483,10 +576,34 @@ class DialogueProcessor {
         
         // Check if player has enough coins for this option
         if let requiredCoins = req.coins,
-           let player = gameStateService.player,
-           player.coins.value < requiredCoins {
+           // gameStateService.player может быть nil, если игрок еще не установлен.
+           // self.player должен быть всегда доступен в DialogueProcessor.
+           self.player.coins.value < requiredCoins { 
             return false
         }
+
+        // НОВАЯ ЛОГИКА для проверки предметов:
+        if let requiredItems = req.inventoryItems {
+            let itemsManagement = ItemsManagementService.shared
+            for itemRequirement in requiredItems {
+                if !itemsManagement.playerHasItem(player: self.player, itemId: itemRequirement.itemId, quantity: itemRequirement.quantity) {
+                    // Если хотя бы одного требуемого предмета нет в нужном количестве
+                    return false 
+                }
+            }
+        }
+        
+        // Логика для gameFlags (если будет добавлена позже)
+        /*
+        if let requiredFlags = req.gameFlags {
+            for flagRequirement in requiredFlags {
+                // ... (код проверки флагов)
+                if !conditionMet {
+                    return false
+                }
+            }
+        }
+        */
         
         return true
     }
@@ -571,7 +688,20 @@ class DialogueProcessor {
         if let node = tree.nodes[initialNodeId] {
             currentNode = node
             let processedText = processConditionalText(node.text)
-            return (processedText, filterAvailableOptions(options: node.options), initialNodeId, tree.nodes)
+            let filteredOptions = filterAvailableOptions(options: node.options)
+            let processedOptions = filteredOptions.map { option -> DialogueNodeOption in
+                let processedOptionText = processConditionalText(option.text)
+                return DialogueNodeOption(
+                    from: processedOptionText,
+                    to: option.nextNode,
+                    type: option.type,
+                    requirements: option.requirements,
+                    failureNode: option.failureNode,
+                    successActions: option.successActions,
+                    failureActions: option.failureActions
+                )
+            }
+            return (processedText, processedOptions, initialNodeId, tree.nodes)
         }
         return nil
     }

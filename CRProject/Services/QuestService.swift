@@ -354,6 +354,8 @@ class QuestService: GameService {
                  executeTriggerGameEventAction(action.parameters, player: player, npc: npcContext)
              case .markQuestInteractionComplete:
                  executeMarkInteractionComplete(action.parameters, player: player, npc: npcContext)
+             case .modifyPlayerInventory:
+                 executeModifyPlayerInventoryAction(action.parameters, player: player)
              }
          }
     }
@@ -539,6 +541,33 @@ class QuestService: GameService {
         DebugLogService.shared.log("QuestService: Marked quest interaction as complete: \(interactionKey)", category: "QuestAction")
     }
     
+    private func executeModifyPlayerInventoryAction(_ parameters: [String: DialogueAction.ActionParameterValue], player: Player) {
+        guard let itemId = parameters["itemId"]?.intValue,
+              let quantity = parameters["quantity"]?.intValue,
+              let actionStr = parameters["action"]?.stringValue else {
+            DebugLogService.shared.log("DialogueVM Error: Missing parameters for modifyPlayerInventory action. Params: \(parameters)", category: "Error")
+            return
+        }
+
+        DebugLogService.shared.log("DialogueVM: Executing modifyPlayerInventory. ItemID: \(itemId), Quantity: \(quantity), Action: \(actionStr)", category: "DialogueAction")
+
+        let itemsService = ItemsManagementService.shared
+
+        if actionStr.lowercased() == "add" {
+            for _ in 0..<quantity {
+                itemsService.giveItem(itemId: itemId, to: player)
+            }
+            DebugLogService.shared.log("DialogueVM: Added \(quantity) of item \(itemId) to player.", category: "DialogueAction")
+        } else if actionStr.lowercased() == "remove" {
+            for _ in 0..<quantity {
+                itemsService.removeFirstItemById(id: itemId, from: player)
+            }
+            DebugLogService.shared.log("DialogueVM: Removed \(quantity) of item \(itemId) from player.", category: "DialogueAction")
+        } else {
+            DebugLogService.shared.log("DialogueVM Error: Unknown action '\(actionStr)' for modifyPlayerInventory.", category: "Error")
+        }
+    }
+    
     func setGlobalFlag(name: String, value: Int) {
         globalFlags[name] = value
         DebugLogService.shared.log("QuestService: Global flag '\(name)' set to \(value)", category: "QuestFlag")
@@ -703,6 +732,120 @@ class QuestService: GameService {
                 // AND this NPC is the quest starting NPC, they might be relevant.
                 // However, this logic can become complex. For now, we focus on explicit associations.
                 // Awaiting player action usually means specific dialogue or conditions linked to this NPC.
+            }
+        }
+        return false
+    }
+
+    // MARK: - NPC Criticality Check (НОВЫЙ МЕТОД)
+
+    public func isImportantNpc(npcId: Int) -> Bool {
+        guard let player = self.player else {
+            DebugLogService.shared.log("QuestService: Player not available for isNPCCritical check.", category: "Error")
+            // В случае отсутствия игрока, безопаснее считать NPC критичным, чтобы избежать его убийства по ошибке
+            return true 
+        }
+
+        for quest in allQuests.values {
+            // --- 1. Является ли NPC стартовым для не начатого и не завершенного квеста? ---
+            if quest.startingNPCId == npcId {
+                let isQuestActive = player.activeQuests.keys.contains(quest.id)
+                let isQuestCompleted = player.completedQuestIDs?.contains(quest.id) ?? false
+                if !isQuestActive && !isQuestCompleted {
+                    DebugLogService.shared.log("NPC \(npcId) is CRITICAL: Starts uncompleted quest '\(quest.id) - \(quest.title)'.", category: "QuestCritCheck")
+                    return true
+                }
+            }
+
+            // --- 2. Участвует ли NPC в этапах не завершенных (активных или будущих) квестов? ---
+            let isQuestCompletedOverall = player.completedQuestIDs?.contains(quest.id) ?? false
+            if !isQuestCompletedOverall {
+                // Этот квест либо активен, либо еще не начат игроком.
+                for stage in quest.stages {
+                    var isStageAlreadyCompletedByPlayerInActiveQuest = false
+                    if let activeQuestState = player.activeQuests[quest.id] {
+                        if activeQuestState.completedStages.contains(stage.id) {
+                            isStageAlreadyCompletedByPlayerInActiveQuest = true
+                        }
+                    }
+
+                    if !isStageAlreadyCompletedByPlayerInActiveQuest {
+                        // Этот этап еще не пройден в рамках текущей активной попытки (или квест еще не активен)
+
+                        // Проверка прямого участия как associatedNPCId
+                        if stage.associatedNPCId == npcId {
+                            DebugLogService.shared.log("NPC \(npcId) is CRITICAL: Is associatedNPCId for stage '\(stage.id)' in quest '\(quest.id) - \(quest.title)'.", category: "QuestCritCheck")
+                            return true
+                        }
+
+                        // Проверка участия в activationActions
+                        if let activationActions = stage.activationActions {
+                            for action in activationActions {
+                                if checkActionParametersForNpcId(parameters: action.parameters, npcId: npcId) {
+                                    DebugLogService.shared.log("NPC \(npcId) is CRITICAL: Involved in activation action for stage '\(stage.id)' in quest '\(quest.id) - \(quest.title)'.", category: "QuestCritCheck")
+                                    return true
+                                }
+                            }
+                        }
+
+                        // Проверка участия в completionActions
+                        if let completionActions = stage.completionActions {
+                            for action in completionActions {
+                                if checkActionParametersForNpcId(parameters: action.parameters, npcId: npcId) {
+                                    DebugLogService.shared.log("NPC \(npcId) is CRITICAL: Involved in completion action for stage '\(stage.id)' in quest '\(quest.id) - \(quest.title)'.", category: "QuestCritCheck")
+                                    return true
+                                }
+                            }
+                        }
+
+                        // Проверка участия в completionConditions
+                        if !stage.completionConditions.isEmpty {
+                            for condition in stage.completionConditions {
+                                if checkConditionParametersForNpcId(parameters: condition.parameters, npcId: npcId, conditionType: condition.type) {
+                                    DebugLogService.shared.log("NPC \(npcId) is CRITICAL: Involved in completion condition for stage '\(stage.id)' in quest '\(quest.id) - \(quest.title)'.", category: "QuestCritCheck")
+                                    return true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        DebugLogService.shared.log("NPC \(npcId) is NOT critical based on current quest states.", category: "QuestCritCheck")
+        return false
+    }
+
+    private func checkActionParametersForNpcId(parameters: [String: DialogueAction.ActionParameterValue]?, npcId: Int) -> Bool {
+        guard let params = parameters else { return false }
+        // Основные ключи, по которым может быть ID NPC в параметрах действий
+        let npcIdKeys = ["npcId", "targetNPCId", "npcID", "associatedNPCId", "interactingNPCId"]
+        
+        for key in npcIdKeys {
+            if case .int(let val) = params[key], val == npcId {
+                return true
+            }
+        }
+        return false
+    }
+
+    private func checkConditionParametersForNpcId(parameters: [String: ActionParameterValue]?, npcId: Int, conditionType: QuestConditionType) -> Bool {
+        guard let params = parameters else { return false }
+        // Основные ключи для ID NPC в условиях
+        let npcIdKeys = ["npcId", "targetNPCId", "npcID", "associatedNPCId"]
+
+        for key in npcIdKeys {
+            // Используем .intValue, которое есть у ActionParameterValue
+            if params[key]?.intValue == npcId { 
+                return true
+            }
+        }
+        
+        // Особая проверка для .defeatNPC, если ID там под другим ключом
+        if conditionType == .defeatNPC {
+            // Пример, если бы ключ был "defeatedNpcId"
+            if params["defeatedNpcId"]?.intValue == npcId { 
+                return true
             }
         }
         return false

@@ -1,0 +1,83 @@
+{
+  "initialNode": "q_egr_start",
+  "nodes": {
+    "q_egr_start": {
+      "text": "Well now, {player_name}, you're back? Hope you're not empty-handed. How's our little saint, {npc:321}? Was he cooperative?",
+      "options": [
+        {
+          "text": "Here's your {item:268}.",
+          "type": "normal",
+          "nextNode": "q_egr_has_scroll",
+          "requirements": {
+            "inventoryItems": [ { "itemId": 268, "quantity": 1 } ], 
+            "gameFlags": [ { "flagName": "earrings_got_scroll_successfully", "value": 1 } ]
+          }
+        },
+        {
+          "text": "There were... some difficulties with item {item:268}.",
+          "type": "normal",
+          "nextNode": "q_egr_no_scroll_jailed",
+          "requirements": {
+            "gameFlags": [ { "flagName": "earrings_player_jailed_by_priest", "value": 1 } ]
+          }
+        },
+        {
+          "text": "I couldn't obtain {item:268}.",
+          "type": "normal",
+          "nextNode": "q_egr_no_scroll_generic_fail",
+          "requirements": { 
+            "gameFlags": [ 
+              { "flagName": "earrings_got_scroll_successfully", "value": 0, "checkType": "equals" },
+              { "flagName": "earrings_player_jailed_by_priest", "value": 0, "checkType": "equals" }
+            ]
+          }
+        }
+      ]
+    },
+    "q_egr_has_scroll": {
+      "text": "Excellent! (Checks {item:268}) Just what I needed! Well done, {player_name}, you didn't let me down. As agreed, item {item:180} is yours. Here you go.",
+      "options": [
+        {
+          "text": "Thanks. Pleasure doing business with you.",
+          "type": "normal",
+          "nextNode": "end",
+          "successActions": [
+            { "type": "modifyPlayerInventory", "parameters": { "itemId": 268, "quantity": 1, "action": "remove" } },
+            { "type": "modifyPlayerInventory", "parameters": { "itemId": 180, "quantity": 1, "action": "add" } },
+            { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_got_earrings_from_gambler", "value": 1 } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+          ]
+        }
+      ]
+    },
+    "q_egr_no_scroll_jailed": {
+      "text": "Difficulties? (Chuckles, noticing your roughed-up appearance) Seems the little saint wasn't so harmless after all. I heard the guards arrested someone at the cathedral. Was that you? Haha! Well, since you suffered so much for my errand... you know what? Take this item ({item:180}). For your persistence and... let's call it, for moral damages.",
+      "options": [
+        {
+          "text": "Um... thanks. Unexpected.",
+          "type": "normal",
+          "nextNode": "end",
+          "successActions": [
+            { "type": "modifyPlayerInventory", "parameters": { "itemId": 180, "quantity": 1, "action": "add" } },
+            { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_got_earrings_from_gambler", "value": 1 } },
+            { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_player_was_pitied", "value": 1 } },
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+          ]
+        }
+      ]
+    },
+    "q_egr_no_scroll_generic_fail": {
+      "text": "Couldn't get it, you say? A pity, a pity. Well, then no earrings for you. I keep my promises, but you didn't keep yours. Come back when you have something to show for yourself.",
+      "options": [
+        {
+          "text": "[Leave empty-handed]",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT",
+          "successActions": [
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ]
+        }
+      ]
+    }
+  }
+} 

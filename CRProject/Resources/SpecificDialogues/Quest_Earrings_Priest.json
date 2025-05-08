@@ -1,0 +1,120 @@
+{
+  "initialNode": "q_ep_start",
+  "nodes": {
+    "q_ep_start": {
+      "text": "(You find {npc:321} in prayerful solitude in the Black Cathedral. He raises a stern gaze at you.)\\nHow may I serve you, my child? Speak quickly, I am busy serving the Almighty.",
+      "options": [
+        {
+          "text": "Father, I am looking for item {item:268}. They say you have it.",
+          "type": "normal",
+          "nextNode": "q_ep_ask_scroll"
+        },
+        {
+          "text": "My apologies, I won't disturb you.",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    },
+    "q_ep_ask_scroll": {
+      "text": "The ancient scroll? (Frowns) Are you talking about the relic {item:268}? It is indeed under my care. And why would I discuss it with you?",
+      "options": [
+        {
+          "text": "This {item:268} is very important for a certain matter. May I obtain it?",
+          "type": "normal",
+          "nextNode": "q_ep_priest_refuse_initial"
+        }
+      ]
+    },
+    "q_ep_priest_refuse_initial": {
+      "text": "Obtain it? This holy relic? (Shakes his head) Out of the question. It is not for prying eyes, let alone for being handed over. It is the church's property.",
+      "options": [
+        {
+          "text": "I am willing to pay for it. Generously.",
+          "type": "normal",
+          "nextNode": "q_ep_bribe_attempt"
+        },
+        {
+          "text": "(Lie) This {item:268} is needed to save an innocent life!",
+          "type": "normal",
+          "nextNode": "q_ep_persuade_lie_works"
+        },
+        {
+          "text": "Perhaps you misunderstood. I NEED it.",
+          "type": "normal",
+          "nextNode": "q_ep_threaten_attempt"
+        },
+        {
+          "text": "I see. Sorry to bother you.",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    },
+    "q_ep_bribe_attempt": {
+      "text": "My relics are not for sale, child. Your money won't help here. I have a duty to my faith.",
+      "options": [
+        {
+          "text": "Then I'll have to take it by force.",
+          "type": "normal",
+          "nextNode": "q_ep_threaten_attempt"
+        },
+        {
+          "text": "I understand. I won't insist further.",
+          "type": "normal",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    },
+    "q_ep_persuade_lie_works": { 
+      "text": "(The priest looks at you for a long time, then sighs heavily.)\\nSaving a life... If that's true, then it is my duty to help. Very well. I will give you {item:268}. But use it wisely and not for evil.",
+      "options": [
+        {
+          "text": "Thank you, Father! Your kindness will be rewarded.",
+          "type": "normal",
+          "nextNode": "q_ep_give_scroll"
+        }
+      ]
+    },
+    "q_ep_give_scroll": {
+      "text": "(The priest reluctantly hands you {item:268}.)\\nMay the Almighty keep you on the righteous path.",
+      "options": [
+        {
+          "text": "[Take the scroll and leave]",
+          "type": "normal",
+          "nextNode": "end",
+          "successActions": [
+            { "type": "modifyPlayerInventory", "parameters": { "itemId": 268, "quantity": 1, "action": "add" } },
+            { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_got_scroll_successfully", "value": 1 } },
+            { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_priest_interaction_complete", "value": 1 } }
+          ]
+        }
+      ]
+    },
+    "q_ep_threaten_attempt": {
+      "text": "By force? In a holy place? ({npc:321}'s eyes flash with anger) You are committing terrible blasphemy! I will not allow this! Guards!",
+      "options": [
+        {
+          "text": "(The guards who rushed in seize you)",
+          "type": "normal",
+          "nextNode": "q_ep_arrested_text"
+        }
+      ]
+    },
+    "q_ep_arrested_text": {
+        "text": "{npc:321}: The guards are already here! For blasphemy in this holy place, you will spend the next day behind bars reflecting on your behavior! Take him away!",
+        "options": [
+            {
+              "text": "[Accept fate]",
+              "type": "normal",
+              "nextNode": "end",
+              "successActions": [
+                { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_player_jailed_by_priest", "value": 1 } },
+                { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_priest_interaction_complete", "value": 1 } },
+                { "type": "triggerGameEvent", "parameters": { "eventName": "JailPlayer", "durationInGameHours": 24 } }
+              ]
+            }
+        ]
+    }
+  }
+} 

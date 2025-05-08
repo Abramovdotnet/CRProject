@@ -2,25 +2,25 @@
   "initialNode": "q_pgc_report",
   "nodes": {
     "q_pgc_report": {
-      "text": "Ну что, {player_name}? Нашел кого-нибудь стоящего для моей темницы?",
+      "text": "Well, {player_name}? Did you find someone worthy for my dungeon?",
       "options": [
         {
-          "text": "Да, капитан. Я нашел подходящего наемника, он скоро явится к вам.",
+          "text": "Yes, Captain. I found a suitable mercenary, he'll report to you soon.",
           "type": "normal",
           "nextNode": "q_pgc_success" 
         },
         {
-          "text": "Я все еще в поисках.",
+          "text": "I'm still looking.",
           "type": "normal",
           "nextNode": "q_pgc_still_searching" 
         }
       ]
     },
     "q_pgc_success": {
-      "text": "Вот это отличные новости! Наконец-то. Надеюсь, он окажется крепким малым. Вот твоя награда, как и договаривались.",
+      "text": "That's excellent news! Finally. I hope he proves to be a tough one. Here's your reward, as agreed.",
       "options": [
         {
-          "text": "Спасибо, капитан.",
+          "text": "Thank you, Captain.",
           "type": "normal",
           "nextNode": "quest_complete",
           "successActions": [
@@ -36,7 +36,7 @@
           ]
         },
         {
-          "text": "Всегда рад помочь страже.",
+          "text": "Always happy to help the guard.",
           "type": "relationshipIncrease", 
           "nextNode": "quest_complete",
           "successActions": [
@@ -54,22 +54,28 @@
       ]
     },
     "quest_complete": {
-      "text": "Не за что. А теперь ступай, дел у меня по горло.",
+      "text": "You're welcome. Now go, I have plenty of work to do.",
       "options": [
         {
-          "text": "[Закончить разговор]",
+          "text": "[End conversation]",
           "type": "normal",
-          "nextNode": "end"
+          "nextNode": "end",
+          "successActions": [
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ]
         }
       ]
     },
     "q_pgc_still_searching": {
-      "text": "Тогда чего пришел? Возвращайся, когда будет результат.",
+      "text": "Then why did you come? Return when you have results.",
        "options": [
         {
-          "text": "[Уйти]",
+          "text": "[Leave]",
           "type": "normal",
-          "nextNode": "end"
+          "nextNode": "end",
+          "successActions": [
+            { "type": "triggerGameEvent", "parameters": { "eventName": "TimeAdvance" } }
+        ]
         }
       ]
     }

@@ -54,6 +54,7 @@ class NPC: ObservableObject, Character, Codable {
     
     @Published var lastDreamStealDay: Int = 0
     @Published var hasNewQuests: Bool = false
+    @Published var isImportantNpc: Bool = false
     @Published var questStageUpdateAvaiting: Bool = false
     
     var currentInteractionNPC: NPC? = nil

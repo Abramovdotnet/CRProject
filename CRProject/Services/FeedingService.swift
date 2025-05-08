@@ -32,51 +32,55 @@ class FeedingService: GameService {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
         
-        prey.isBeasyByPlayerAction = true
-        
-        try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
-        
-        var awarenessIncreaseValue: Float = 90.0;
-        
-        if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer || (AbilitiesSystem.shared.hasLionAmongSheep && prey.playerRelationship.state == .friend) {
-            awarenessIncreaseValue -= 86
-            vampire.bloodMeter.addBlood(10)
-        }
-        
-        if prey.currentActivity == .sleep {
-            awarenessIncreaseValue -= 88
+        if prey.bloodMeter.currentBlood - amount <= 0 && QuestService.shared.isImportantNpc(npcId: prey.id) {
+            PopUpState.shared.show(title: "Fate", details: "\(prey.name) didn't played his role im my life yet. I cannot kill him for now.", image: .system(name: NPCActivityType.quest.icon, color: NPCActivityType.quest.color))
+        } else {
+            prey.isBeasyByPlayerAction = true
             
-            StatisticsService.shared.increasefeedingsOverSleepingVictims()
-        }
-        
-        if vampire.desiredVictim.isDesiredVictim(npc: prey){
-            vampire.bloodMeter.addBlood(amount * 3)
-            vampire.desiredVictim.updateDesiredVictim()
+            try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
             
-            StatisticsService.shared.increasefeedingsOverDesiredVictims()
+            var awarenessIncreaseValue: Float = 90.0;
             
-            gameEventsBus.addDangerMessage(message: "Player consumed DESIRED victims blood.")
-        }
-        
-        // Increase awareness in the scene where feeding occurred
-        vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
-        statisticsService.incrementFeedings()
-        gameEventsBus.addDangerMessage(message: "Player consumed \(prey.name) blood.")
-        
-        if !prey.isAlive {
-            gameEventsBus.addWarningMessage("* I just killed \(prey.name)! Feel satisfied... *")
-            prey.currentActivity = .casualty
-            prey.deathStatus = .unknown
+            if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer || (AbilitiesSystem.shared.hasLionAmongSheep && prey.playerRelationship.state == .friend) {
+                awarenessIncreaseValue -= 86
+                vampire.bloodMeter.addBlood(10)
+            }
             
-            // Double awareness increase if killing victim
+            if prey.currentActivity == .sleep {
+                awarenessIncreaseValue -= 88
+                
+                StatisticsService.shared.increasefeedingsOverSleepingVictims()
+            }
+            
+            if vampire.desiredVictim.isDesiredVictim(npc: prey){
+                vampire.bloodMeter.addBlood(amount * 3)
+                vampire.desiredVictim.updateDesiredVictim()
+                
+                StatisticsService.shared.increasefeedingsOverDesiredVictims()
+                
+                gameEventsBus.addDangerMessage(message: "Player consumed DESIRED victims blood.")
+            }
+            
+            // Increase awareness in the scene where feeding occurred
             vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
+            statisticsService.incrementFeedings()
+            gameEventsBus.addDangerMessage(message: "Player consumed \(prey.name) blood.")
+            
+            if !prey.isAlive {
+                gameEventsBus.addWarningMessage("* I just killed \(prey.name)! Feel satisfied... *")
+                prey.currentActivity = .casualty
+                prey.deathStatus = .unknown
+                
+                // Double awareness increase if killing victim
+                vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
+            }
+            
+            NPCInteractionManager.shared.playerInteracted(with: prey)
+            
+            setWitnessesIfExists(sceneId: sceneId)
+            
+            gameTime.advanceTime()
         }
-        
-        NPCInteractionManager.shared.playerInteracted(with: prey)
-        
-        setWitnessesIfExists(sceneId: sceneId)
-        
-        gameTime.advanceTime()
     }
     
     func consumeFood(vampire: Player, food: Item) {
@@ -96,28 +100,33 @@ class FeedingService: GameService {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
         
-        try bloodService.emptyBlood(vampire: vampire, prey: prey)
-        
-        let awarenessIncreaseValue: Float = 30;
-        
-        if AbilitiesSystem.shared.hasSonOfDracula {
-            vampire.bloodMeter.increaseMaxBlood(1)
+        if QuestService.shared.isImportantNpc(npcId: prey.id) {
+            
+            PopUpState.shared.show(title: "Fate", details: "\(prey.name) didn't played his role im my life yet. I cannot kill him for now.", image: .system(name: NPCActivityType.quest.icon, color: NPCActivityType.quest.color))
+        } else {
+            try bloodService.emptyBlood(vampire: vampire, prey: prey)
+            
+            let awarenessIncreaseValue: Float = 30;
+            
+            if AbilitiesSystem.shared.hasSonOfDracula {
+                vampire.bloodMeter.increaseMaxBlood(1)
+            }
+            
+            // Increase awareness in the scene where feeding occurred
+            vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
+            statisticsService.incrementVictimsDrained()
+            
+            gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
+            
+            prey.currentActivity = .casualty
+            prey.deathStatus = .unknown
+            
+            NPCInteractionManager.shared.playerInteracted(with: prey)
+            
+            setWitnessesIfExists(sceneId: sceneId)
+            
+            gameTime.advanceTime()
         }
-        
-        // Increase awareness in the scene where feeding occurred
-        vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
-        statisticsService.incrementVictimsDrained()
-        
-        gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
-        
-        prey.currentActivity = .casualty
-        prey.deathStatus = .unknown
-        
-        NPCInteractionManager.shared.playerInteracted(with: prey)
-        
-        setWitnessesIfExists(sceneId: sceneId)
-        
-        gameTime.advanceTime()
     }
     
     func setWitnessesIfExists(sceneId: Int) {

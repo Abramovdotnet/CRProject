@@ -2,98 +2,83 @@
   "initialNode": "q_eg_start",
   "nodes": {
     "q_eg_start": {
-      "text": "(Вы подходите к {npc_name_3575}. Он ухмыляется, перебирая карты или монеты.)\nНу-ка, ну-ка, кого это к нам занесло? Если за игрой, то милости прошу, если поглазеть – не мешай фортуне улыбаться лучшим из нас.",
+      "text": "(You approach {npc:3575}. He smirks, shuffling cards or coins.)\\nWell, well, look who it is. If you're here to play, be my guest. If you're just watching – don't disturb fortune smiling upon the best of us.",
       "options": [
         {
-          "text": "Я насчет Коралловых сережек. Говорят, они у тебя.",
+          "text": "I'm asking about item {item:180}. They say you have it.",
           "type": "normal",
           "nextNode": "q_eg_earrings_mention"
         },
         {
-          "text": "Просто осматриваюсь.",
-          "type": "normal",
-          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT" 
-        }
-      ]
-    },
-    "q_eg_earrings_mention": {
-      "text": "А, сережки! (Смеется) Точно, были такие. Бедняга {npc_name_3441}, так сокрушался, когда их продул. Красивая вещица, ничего не скажешь. И что же, он послал тебя их выпрашивать?",
-      "options": [
-        {
-          "text": "Он просил их вернуть. Возможно, за вознаграждение?",
-          "type": "normal",
-          "nextNode": "q_eg_ask_return"
-        },
-        {
-          "text": "Просто хотел убедиться, что они в 'надежных' руках.",
-          "type": "normal",
-          "nextNode": "q_eg_sarcasm_reply"
-        }
-      ]
-    },
-    "q_eg_sarcasm_reply": {
-      "text": "(Усмехается) О, будь спокоен, надежнее некуда. Лежат, ждут своего часа. Может, сам их кому подарю. Или продам подороже, чем тот растяпа {npc_name_3441} за них заплатил.",
-      "options": [
-        {
-          "text": "Все же, {npc_name_3441} очень хотел бы их вернуть.",
-          "type": "normal",
-          "nextNode": "q_eg_ask_return"
-        },
-        {
-          "text": "Понятно. Удачи с продажей.",
+          "text": "Just looking.",
           "type": "normal",
           "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
         }
       ]
     },
-    "q_eg_ask_return": {
-      "text": "Вернуть? Просто так? (Смеется еще громче) Ты меня с кем-то путаешь, дружок. Я свои выигрыши ценю. Но... так уж и быть, я человек не бездушный. Есть у меня одно дельце. Выполнишь – серьги твои.",
+    "q_eg_earrings_mention": {
+      "text": "Ah, {item:180}! (Laughs) Right, I remember that one. Poor {npc:3441}, he was so upset when he lost it. Nice piece, can't deny it. So, did he send you to beg for it back?",
       "options": [
         {
-          "text": "Что за дельце?",
+          "text": "He asked for it back. Perhaps for a reward?",
           "type": "normal",
-          "nextNode": "q_eg_task_offer"
+          "nextNode": "q_eg_refuse_reward"
         },
         {
-          "text": "Спасибо, но я не посыльный.",
+          "text": "I'm here on my own behalf. Give back {item:180}.",
+          "type": "normal",
+          "nextNode": "q_eg_demand_fail"
+        }
+      ]
+    },
+    "q_eg_refuse_reward": {
+      "text": "A reward? (Snorts) I don't need his pennies. But you know, I could return {item:180}... if you do something for me. A favor for a favor, so to speak.",
+      "options": [
+        {
+          "text": "What kind of favor?",
+          "type": "normal",
+          "nextNode": "q_eg_give_task"
+        },
+        {
+          "text": "I don't run errands.",
           "type": "normal",
           "nextNode": "q_eg_refuse_task"
         }
       ]
     },
-    "q_eg_task_offer": {
-      "text": "Есть один старый свиток (Предмет ID 268), который мне очень нужен. Хранится он у одного святоши, {npc_name_321}, в Черном Соборе. Принеси мне этот свиток, и серьги – твои. Можешь попробовать его уговорить, подкупить, или... ну, ты понял. Мне нужен результат.",
+    "q_eg_demand_fail": {
+      "text": "Give it back? (Laughs louder) Why should I? I won it fair and square. Get lost before I get angry.",
       "options": [
         {
-          "text": "Хорошо, я добуду для тебя этот свиток.",
+          "text": "[Leave]",
           "type": "normal",
-          "nextNode": "q_eg_accept_task",
+          "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
+        }
+      ]
+    },
+    "q_eg_give_task": {
+      "text": "There's a bothersome priest, {npc:321}, in the Black Cathedral. He owes me... let's just say, not money. I need an old scroll ({item:268}) that he keeps. Bring it to me, and {item:180} is yours. Just no funny business, try not to kill him, I don't need the extra trouble.",
+      "options": [
+        {
+          "text": "Alright, I'll get {item:268} from {npc:321}.",
+          "type": "normal",
+          "nextNode": "end",
           "successActions": [
-            { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_gambler_task_given", "value": 1 } }
+             { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_gambler_task_given", "value": 1 } }
           ]
         },
         {
-          "text": "Связываться со священниками ради твоего барахла? Уволь.",
+          "text": "I'm not getting involved with priests.",
           "type": "normal",
           "nextNode": "q_eg_refuse_task"
-        }
-      ]
-    },
-    "q_eg_accept_task": {
-      "text": "Вот это я понимаю! Деловой подход. Жду тебя здесь со свитком, {player_name}. Не подведи.",
-      "options": [
-        {
-          "text": "[Закончить разговор]",
-          "type": "normal",
-          "nextNode": "end"
         }
       ]
     },
     "q_eg_refuse_task": {
-      "text": "(Пожимает плечами) Ну и сиди без сережек. А {npc_name_3441} пусть дальше локти кусает. Мне-то что.",
+      "text": "Your choice. Means you won't see the earrings either.",
       "options": [
         {
-          "text": "[Уйти]",
+          "text": "[Leave]",
           "type": "normal",
           "nextNode": "RETURN_TO_MAIN_DIALOGUE_ROOT"
         }

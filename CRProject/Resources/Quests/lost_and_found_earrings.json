@@ -1,13 +1,13 @@
 {
   "id": "lost_and_found_earrings",
-  "title": "Потерянные серьги",
-  "description": "NPC_NAME_3441 просит помочь вернуть ценное украшение, которое он проиграл в карты.",
+  "title": "Lost Earrings",
+  "description": "{npc:3441} asks for help retrieving a valuable piece of jewelry {item:180}, which he lost in a card game.",
   "startingNPCId": 3441,
   "prerequisites": null,
   "stages": [
     {
       "id": "01_talk_to_loverboy",
-      "objective": "Расспросить NPC_NAME_3441 о его проблеме.",
+      "objective": "Ask {npc:3441} about his problem.",
       "dialogueFilename": "Quest_Earrings_Start.json",
       "associatedNPCId": 3441,
       "activationActions": null,
@@ -20,7 +20,7 @@
     },
     {
       "id": "02_find_gambler",
-      "objective": "Найти NPC_NAME_3575, который выиграл серьги.",
+      "objective": "Find {npc:3575}, who won {item:180}.",
       "dialogueFilename": "Quest_Earrings_Gambler.json",
       "associatedNPCId": 3575,
       "activationActions": null,
@@ -33,12 +33,12 @@
     },
     {
       "id": "03_get_scroll_from_priest",
-      "objective": "Добыть Старый Свиток (ID 268) у NPC_NAME_321.",
+      "objective": "Obtain {item:268} from {npc:321}.",
       "dialogueFilename": "Quest_Earrings_Priest.json",
       "associatedNPCId": 321,
       "activationActions": null,
       "completionConditions": [
-        { "type": "checkGameFlag", "parameters": { "flagName": "earrings_priest_resolved", "value": 1 } }
+        { "type": "checkGameFlag", "parameters": { "flagName": "earrings_priest_interaction_complete", "value": 1 } }
       ],
       "completionActions": [
         { "type": "modifyStat", "parameters": { "target": "global", "stat": "gameFlag", "flagName": "earrings_stage3_complete", "value": 1 } }
@@ -46,7 +46,7 @@
     },
     {
       "id": "04_return_to_gambler",
-      "objective": "Вернуться к NPC_NAME_3575.",
+      "objective": "Return to {npc:3575}.",
       "dialogueFilename": "Quest_Earrings_Gambler_Return.json",
       "associatedNPCId": 3575,
       "activationActions": null,
@@ -59,7 +59,7 @@
     },
     {
       "id": "05_deliver_earrings_and_message",
-      "objective": "Отдать Коралловые Серьги NPC_NAME_6243 по просьбе NPC_NAME_3441.",
+      "objective": "Give {item:180} to {npc:6243} at {npc:3441}'s request.",
       "dialogueFilename": "Quest_Earrings_Loverboy_Return.json", 
       "associatedNPCId": 3441, 
       "activationActions": null,
@@ -72,7 +72,7 @@
     },
     {
       "id": "06_final_report_to_loverboy",
-      "objective": "Сообщить NPC_NAME_3441 ответ от NPC_NAME_6243.",
+      "objective": "Report {npc:6243}'s response to {npc:3441}.",
       "dialogueFilename": "Quest_Earrings_Loverboy_Final.json",
       "associatedNPCId": 3441,
       "activationActions": null,

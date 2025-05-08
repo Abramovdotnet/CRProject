@@ -61,7 +61,9 @@ class DialogueSystem {
             "Quest_PrisonGuard_RecruitMerc",
             "Quest_PrisonGuard_Complete",
             "Quest_Earrings_Start",
-            "Quest_Earrings_Gambler"
+            "Quest_Earrings_Gambler",
+            "Quest_Earrings_Priest",
+            "Quest_Earrings_Gambler_Return"
             // Добавлять сюда другие по мере необходимости
         ]
         
@@ -247,12 +249,19 @@ struct DialogueRequirements: Codable, Equatable {
     let coins: Int?
     let minRelationship: Int?
     let maxRelationship: Int?
+    let inventoryItems: [RequiredItem]?
     
     static func == (lhs: DialogueRequirements, rhs: DialogueRequirements) -> Bool {
         return lhs.isNight == rhs.isNight &&
                lhs.isIndoor == rhs.isIndoor &&
                lhs.coins == rhs.coins &&
                lhs.minRelationship == rhs.minRelationship &&
-               lhs.maxRelationship == rhs.maxRelationship
+               lhs.maxRelationship == rhs.maxRelationship &&
+               lhs.inventoryItems == rhs.inventoryItems
     }
+}
+
+struct RequiredItem: Codable, Equatable {
+    let itemId: Int
+    let quantity: Int
 }

@@ -58,11 +58,11 @@ class DialogueViewModel: ObservableObject {
         
         if !dialogueLoaded {
             DebugLogService.shared.log("Loading standard dialogue for NPC: \(npc.name), profession: \(npc.profession.rawValue)", category: "DialogueVM")
-            if let dialogue = dialogueProcessor.loadDialogue(npc: npc) {
+        if let dialogue = dialogueProcessor.loadDialogue(npc: npc) {
                 DebugLogService.shared.log("✅ Successfully loaded standard dialogue for \(npc.profession.rawValue)", category: "DialogueVM")
-                updateDialogue(text: dialogue.text, options: dialogue.options)
+            updateDialogue(text: dialogue.text, options: dialogue.options)
                 dialogueLoaded = true
-            } else {
+        } else {
                 DebugLogService.shared.log("❌ Failed to load ANY dialogue for \(npc.profession.rawValue)", category: "Error")
             }
         }
@@ -114,7 +114,7 @@ class DialogueViewModel: ObservableObject {
             }
             return
         }
-
+        
         switch option.type {
         case .persuasion:
             handlePersuasion(option: option)
@@ -146,11 +146,11 @@ class DialogueViewModel: ObservableObject {
         guard let failureNodeId = option.failureNode else { 
             DebugLogService.shared.log("Error: failureNode is nil for .persuasion option: \(option.text). Proceeding to nextNode only.", category: "DialogueVM")
             if let (newText, newOptions) = dialogueProcessor.processNode(option.nextNodeId) {
-                 updateDialogue(text: newText, options: newOptions)
-             } else {
-                 shouldDismiss = true
-             }
-            return 
+                    updateDialogue(text: newText, options: newOptions)
+                } else {
+                    shouldDismiss = true
+                }
+            return
         }
         let successNodeId = option.nextNodeId
         
@@ -235,11 +235,11 @@ class DialogueViewModel: ObservableObject {
             }
         }
 
-        GameEventsBusService.shared.addMessageWithIcon(
-            type: .common,
-            location: GameStateService.shared.currentScene?.name ?? "Unknown",
+            GameEventsBusService.shared.addMessageWithIcon(
+                type: .common,
+                location: GameStateService.shared.currentScene?.name ?? "Unknown",
             player: GameStateService.shared.player!,
-            secondaryNPC: npc,
+                secondaryNPC: npc,
             interactionType: NPCInteraction.prostitution,
             hasSuccess: false,
             isSuccess: nil
@@ -247,22 +247,40 @@ class DialogueViewModel: ObservableObject {
     }
     
     private func executeActions(_ actions: [DialogueAction]?) {
-        guard let actions = actions, !actions.isEmpty else { return }
-        guard let player = gameStateService.player else { return }
+        guard let actions = actions, !actions.isEmpty else { 
+            // DebugLogService.shared.log("DialogueVM: executeActions called with no actions.", category: "DialogueAction") // Можно раскомментировать для отладки
+            return 
+        }
+        guard let player = gameStateService.player else { 
+            DebugLogService.shared.log("DialogueVM Error: executeActions called but player is nil.", category: "Error")
+            return 
+        }
+
+        DebugLogService.shared.log("DialogueVM: executeActions called with \(actions.count) actions.", category: "DialogueAction") // <-- ЛОГ 1
 
         for action in actions {
+            DebugLogService.shared.log("DialogueVM: Processing action: Type=\(action.type), Params=\(action.parameters)", category: "DialogueAction") // <-- ЛОГ 2
             switch action.type {
             case .modifyStat:
+                DebugLogService.shared.log("DialogueVM: Matched action type .modifyStat", category: "DialogueAction") // <-- ЛОГ 3а
                 executeModifyStatAction(action.parameters, player: player, npc: npc)
             
             case .triggerGameEvent:
+                DebugLogService.shared.log("DialogueVM: Matched action type .triggerGameEvent", category: "DialogueAction") // <-- ЛОГ 3б
                 executeTriggerGameEventAction(action.parameters, player: player, npc: npc)
 
             case .markQuestInteractionComplete:
-                DebugLogService.shared.log("DialogueVM: Encountered markQuestInteractionComplete action. Intended for QuestService. Params: \(action.parameters)", category: "DialogueAction")
+                DebugLogService.shared.log("DialogueVM: Matched action type .markQuestInteractionComplete (Ignored in VM)", category: "DialogueAction") // <-- ЛОГ 3в
                 break
+            case .modifyPlayerInventory:
+                DebugLogService.shared.log("DialogueVM: Matched action type .modifyPlayerInventory", category: "DialogueAction") // <-- ЛОГ 3г
+                executeModifyPlayerInventoryAction(action.parameters, player: player)
+            // Если есть default, добавить лог и для него
+            // default: 
+            //     DebugLogService.shared.log("DialogueVM: Matched UNKNOWN action type in executeActions switch", category: "Error")
             }
         }
+         DebugLogService.shared.log("DialogueVM: Finished executing actions.", category: "DialogueAction") // <-- ЛОГ 4
     }
     
     private func executeModifyStatAction(_ parameters: [String: DialogueAction.ActionParameterValue], player: Player, npc: NPC) {
@@ -318,7 +336,7 @@ class DialogueViewModel: ObservableObject {
                    let newActivity = NPCActivityType(rawValue: activityName) {
                     npc.currentActivity = newActivity
                     DebugLogService.shared.log("DialogueVM: NPC \(npc.id) currentActivity set to \(newActivity.rawValue)", category: "DialogueAction")
-                } else {
+            } else {
                     DebugLogService.shared.log("DialogueVM Error: Invalid or missing activityName for .activity stat. Provided: \(parameters["activityName"]?.stringValue ?? "nil")", category: "Error")
                 }
             default:
@@ -407,6 +425,33 @@ class DialogueViewModel: ObservableObject {
             }
         default:
             DebugLogService.shared.log("Warning: Unhandled eventName '\(eventName)' for triggerGameEvent action.", category: "DialogueVM")
+        }
+    }
+
+    private func executeModifyPlayerInventoryAction(_ parameters: [String: DialogueAction.ActionParameterValue], player: Player) {
+        guard let itemId = parameters["itemId"]?.intValue,
+              let quantity = parameters["quantity"]?.intValue,
+              let actionStr = parameters["action"]?.stringValue else {
+            DebugLogService.shared.log("DialogueVM Error: Missing parameters for modifyPlayerInventory action. Params: \(parameters)", category: "Error")
+            return
+        }
+
+        DebugLogService.shared.log("DialogueVM: Executing modifyPlayerInventory. ItemID: \(itemId), Quantity: \(quantity), Action: \(actionStr)", category: "DialogueAction")
+
+        let itemsService = ItemsManagementService.shared
+
+        if actionStr.lowercased() == "add" {
+            for _ in 0..<quantity {
+                itemsService.giveItem(itemId: itemId, to: player)
+            }
+            DebugLogService.shared.log("DialogueVM: Added \(quantity) of item \(itemId) to player.", category: "DialogueAction")
+        } else if actionStr.lowercased() == "remove" {
+            for _ in 0..<quantity {
+                itemsService.removeFirstItemById(id: itemId, from: player)
+            }
+            DebugLogService.shared.log("DialogueVM: Removed \(quantity) of item \(itemId) from player.", category: "DialogueAction")
+        } else {
+            DebugLogService.shared.log("DialogueVM Error: Unknown action '\(actionStr)' for modifyPlayerInventory.", category: "Error")
         }
     }
 }

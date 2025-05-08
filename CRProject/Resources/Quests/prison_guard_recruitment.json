@@ -1,13 +1,13 @@
 {
   "id": "prison_guard_recruitment",
-  "title": "Требуются стражники",
-  "description": "Капитан стражи тюрьмы попросил найти и убедить наемника поступить на службу по охране заключенных.",
+  "title": "Guards Wanted",
+  "description": "The city guard captain {npc:1013} is looking for new recruits. Perhaps this is a chance to earn some coin and reputation.",
   "startingNPCId": 1013,
   "prerequisites": null,
   "stages": [
     {
       "id": "01_talk_to_captain",
-      "objective": "Поговорить с капитаном стражи (NPC 1013) о работе.",
+      "objective": "Talk to the guard captain ({npc:1013}) about the job.",
       "dialogueFilename": "Quest_PrisonGuard_Start.json",
       "activationActions": null,
       "completionConditions": [
@@ -25,7 +25,7 @@
     },
     {
       "id": "02_find_mercenary",
-      "objective": "Найти наемника (профессия Mercenary) и убедить его стать стражником.",
+      "objective": "Find and hire a suitable mercenary.",
       "dialogueFilename": "Quest_PrisonGuard_RecruitMerc.json",
       "restrictToProfession": "Mercenary",
       "associatedNPCId": null,
@@ -45,7 +45,7 @@
     },
     {
       "id": "03_report_to_captain",
-      "objective": "Доложить капитану стражи (NPC 1013) об успехах.",
+      "objective": "Report your success to the guard captain ({npc:1013}).",
       "dialogueFilename": "Quest_PrisonGuard_Complete.json",
       "associatedNPCId": 1013,
       "activationActions": null,

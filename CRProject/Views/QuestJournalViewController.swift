@@ -337,6 +337,58 @@ class QuestJournalViewController: UIViewController, UITableViewDataSource, UITab
         segmentedControl.addTarget(self, action: #selector(segmentedControlChanged(_:)), for: .valueChanged)
     }
 
+    // MARK: - Helper Methods (НОВЫЙ РАЗДЕЛ)
+
+    private func processPlaceholders(in text: String) -> String {
+        var processedText = text
+
+        // Замена {npc:ID}
+        // Используем NSRegularExpression, который требует import Foundation (уже должен быть)
+        do {
+            let npcRegex = try NSRegularExpression(pattern: "\\{npc:(\\d+)\\}")
+            let npcMatches = npcRegex.matches(in: processedText, range: NSRange(processedText.startIndex..., in: processedText))
+
+            for match in npcMatches.reversed() { // Обратный порядок важен для корректной замены диапазонов
+                if let idRange = Range(match.range(at: 1), in: processedText),
+                   let npcId = Int(String(processedText[idRange])) {
+                    let npcName = NPCReader.getRuntimeNPC(by: npcId)?.name ?? "Неизвестный NPC"
+                    if let placeholderRange = Range(match.range, in: processedText) {
+                        processedText.replaceSubrange(placeholderRange, with: npcName)
+                    }
+                }
+            }
+        } catch {
+            DebugLogService.shared.log("Error creating NPC regex: \(error)", category: "QuestJournal")
+        }
+
+        // Замена {item:ID}
+        do {
+            let itemRegex = try NSRegularExpression(pattern: "\\{item:(\\d+)\\}")
+            let itemMatches = itemRegex.matches(in: processedText, range: NSRange(processedText.startIndex..., in: processedText))
+
+            for match in itemMatches.reversed() { // Обратный порядок
+                if let idRange = Range(match.range(at: 1), in: processedText),
+                   let itemId = Int(String(processedText[idRange])) {
+                    let itemName = ItemReader.shared.getItem(by: itemId)?.name ?? "Неизвестный предмет"
+                    if let placeholderRange = Range(match.range, in: processedText) {
+                        processedText.replaceSubrange(placeholderRange, with: itemName)
+                    }
+                }
+            }
+        } catch {
+            DebugLogService.shared.log("Error creating item regex: \(error)", category: "QuestJournal")
+        }
+        
+        // Можно добавить замену {player_name} если это используется в текстах квестов
+        // if processedText.contains("{player_name}") {
+        //     if let playerName = GameStateService.shared.player?.name {
+        //         processedText = processedText.replacingOccurrences(of: "{player_name}", with: playerName)
+        //     }
+        // }
+
+        return processedText
+    }
+
     // MARK: - Data Handling
     private func loadQuestData() {
         // Это пример. Вам нужно будет получить реальные данные от QuestService
@@ -403,149 +455,164 @@ class QuestJournalViewController: UIViewController, UITableViewDataSource, UITab
     }
 
     private func updateDetailView() {
-        guard let quest = selectedQuest, let player = GameStateService.shared.player else {
+        guard let quest = selectedQuest else {
             clearDetailView()
             return
         }
 
-        questTitleLabel.text = quest.title
-        questDescriptionView.text = quest.description
+        questDetailView.isHidden = false
+        self.selectedQuest = quest
+
+        // --- ОБНОВЛЕНИЕ ДЛЯ ОБРАБОТКИ ПЛЕЙСХОЛДЕРОВ И ПОЛУЧЕНИЯ ЭТАПОВ ---
+        questTitleLabel.text = processPlaceholders(in: quest.title)
+        questDescriptionView.text = processPlaceholders(in: quest.description)
+
+        var currentObjectiveText = "Цели выполнены или не заданы."
+        var currentStageForDisplay: QuestStage? = nil
+
+        // Получаем состояние квеста у игрока
+        if let player = GameStateService.shared.player, // Убедимся, что player доступен
+           let playerQuestState = player.activeQuests[quest.id] { // playerQuestState здесь PlayerQuestState (не опционал)
+            // currentStageId является неопциональным свойством PlayerQuestState, получаем его напрямую
+            let currentStageId = playerQuestState.currentStageId 
+            currentStageForDisplay = quest.stages.first(where: { $0.id == currentStageId })
+        }
         
-        // --- Отображение иконки квеста ---
-        // Удаляем старую иконку (если была)
-        questDetailIconView.subviews.forEach { $0.removeFromSuperview() }
-
-        // TODO: Получать имя иконки из quest.iconName когда это поле будет добавлено в модель Quest
-        let defaultQuestIconName = "scroll" // Заглушка
-        let iconView = createStyledIconView(
-            sfSymbolName: defaultQuestIconName, 
-            symbolColor: UIColor.white.withAlphaComponent(0.9), 
-            backgroundColor: UIColor.black.withAlphaComponent(0.3),
-            borderColor: UIColor.white.withAlphaComponent(0.5),
-            iconSize: 20, // Чуть меньше, чем в ячейке
-            symbolPointSize: 11
-        )
-        questDetailIconView.addSubview(iconView)
-        // Констрейнты для iconView внутри questDetailIconView (чтобы она занимала все место)
-        // createStyledIconView уже создает внутренние констрейнты для imageView внутри своего containerView.
-        // Здесь мы просто добавляем созданный containerView (iconView) в questDetailIconView.
-        // Размеры questDetailIconView уже заданы в setupLayout.
-        // Чтобы iconView (который вернула createStyledIconView) заполнил questDetailIconView,
-        // мы можем либо положиться на то, что questDetailIconView уже имеет правильный размер (22x22), 
-        // а iconView тоже создается с размером 20x20 и будет отцентрирован,
-        // либо добавить констрейнты для iconView к границам questDetailIconView.
-        // Пока оставим так, createStyledIconView возвращает UIView с заданными размерами.
-        // --- Конец отображения иконки квеста ---
-
-        // --- Отображение иконки текущей цели ---
-        currentObjectiveIconView.subviews.forEach { $0.removeFromSuperview() } // Очищаем старую иконку цели
-        var currentObjectiveIconName: String? = nil
-
-        if let questState = player.activeQuests[quest.id], 
-           let stageDetails = quest.stages.first(where: { $0.id == questState.currentStageId }) {
-            currentObjectiveLabel.text = "Текущая цель: \(stageDetails.objective)"
-            // TODO: Определять имя иконки на основе типа цели/стадии
-            currentObjectiveIconName = "target" // Заглушка
-        } else if player.completedQuestIDs?.contains(quest.id) ?? false { // Если квест завершен
-            currentObjectiveLabel.text = "Квест завершен."
-            currentObjectiveIconName = "checkmark.seal" // Иконка для завершенного квеста
-        } else { // Если квест не активен и не завершен (маловероятно для выбранного квеста, но на всякий случай)
-            currentObjectiveLabel.text = ""
-        }
-
-        if let iconName = currentObjectiveIconName {
-            let objectiveIcon = createStyledIconView(
-                sfSymbolName: iconName, 
-                symbolColor: UIColor.lightGray, // Можно настроить
-                backgroundColor: .clear, // Без фона для этой иконки
-                borderColor: .clear, // Без рамки
-                iconSize: 18, 
-                symbolPointSize: 10
-            )
-            currentObjectiveIconView.addSubview(objectiveIcon)
-        }
-        // --- Конец отображения иконки текущей цели ---
-
-        // Отображение этапов
-        let stagesText = NSMutableAttributedString()
-        // Переопределяем цвета здесь, так как они из локальной области setupStyles()
-        let localSecondaryTextColor = UIColor.lightGray 
-        let localPrimaryTextColor = UIColor.white
-        let localPassedStageColor = UIColor.darkGray // Цвет для пройденных этапов
-
-        // Абзацный стиль для отступов между строками этапов
-        let stageParagraphStyle = NSMutableParagraphStyle()
-        // stageParagraphStyle.paragraphSpacing = 30.0 // Этот способ не дал нужного эффекта, убираем
-
-        // Базовый размер шрифта для этапов (для расчета bounds аттачмента)
-        let stageBaseFont = UIFont(name: "Optima-Regular", size: 10) ?? UIFont.systemFont(ofSize: 10)
-
-        // Атрибуты для этапов теперь включают paragraphStyle
-        let currentStageAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "Optima-Bold", size: 10) ?? UIFont.boldSystemFont(ofSize: 10),
-            .foregroundColor: localPrimaryTextColor,
-            .paragraphStyle: stageParagraphStyle
-        ]
-        let passedStageAttributes: [NSAttributedString.Key: Any] = [
-            .font: UIFont(name: "Optima-Regular", size: 10) ?? UIFont.systemFont(ofSize: 10),
-            .foregroundColor: localPassedStageColor,
-            .paragraphStyle: stageParagraphStyle
-        ]
-
-        if player.completedQuestIDs?.contains(quest.id) ?? false {
-            // Все этапы завершенного квеста отображаем как пройденные
-            for stage in quest.stages.sorted(by: { $0.id < $1.id }) {
-                let stageString = "\(stage.objective)"
-                stagesText.append(NSAttributedString(string: stageString + "\n", attributes: passedStageAttributes))
+        // Если не удалось получить текущий этап из состояния (например, квест только что добавлен, но еще не обработан сервисом до конца)
+        // или если это завершенный квест (у него нет player.activeQuests[quest.id])
+        // Попробуем взять последний этап для завершенных или первый для остальных случаев
+        if currentStageForDisplay == nil {
+            if GameStateService.shared.player?.completedQuestIDs?.contains(quest.id) ?? false {
+                currentStageForDisplay = quest.stages.last // Для завершенных показываем цель последнего этапа (или специальный текст)
+            } else {
+                currentStageForDisplay = quest.stages.first // Для активных, но без явного текущего, берем первый
             }
-        } else if let questState = player.activeQuests[quest.id] {
-            // Активный квест: показываем пройденные и текущий
-            for stage in quest.stages.sorted(by: { $0.id < $1.id }) {
-                guard stage.id <= questState.currentStageId else { continue } // Пропускаем будущие этапы
-                
-                let stageString = "\(stage.objective)"
-                var attributes = passedStageAttributes
-                var iconName = "checkmark" // Изменено на 'checkmark'
-                var iconColor = UIColor.systemGreen
-                // Размер символа иконки для этапа
-                let symbolPointSizePoints: CGFloat = 10 // Немного увеличим для лучшей видимости
-                // Размер области, которую иконка займет в строке (для bounds)
-                let iconDisplaySizePoints: CGFloat = 12 
+        }
 
-                if stage.id == questState.currentStageId {
-                    attributes = currentStageAttributes
-                    iconName = "arrow.right" // Изменено на 'arrow.right'
-                    iconColor = localPrimaryTextColor // Белый для текущего этапа
-                }
+        if let stage = currentStageForDisplay {
+            if !stage.objective.isEmpty {
+                currentObjectiveText = processPlaceholders(in: stage.objective)
+            }
+        } else if GameStateService.shared.player?.completedQuestIDs?.contains(quest.id) ?? false {
+            currentObjectiveText = "Квест завершен."
+        }
+        
+        currentObjectiveLabel.text = currentObjectiveText
+        // --- КОНЕЦ ОБНОВЛЕНИЯ ---
 
-                // 1. Создаем UIImage для иконки напрямую
+        // Обновление отображения этапов
+        updateQuestStagesDisplay(quest: quest)
+    }
+
+    private func updateQuestStagesDisplay(quest: Quest) {
+        let optimaRegular10 = UIFont(name: "Optima-Regular", size: 10) ?? UIFont.systemFont(ofSize: 10)
+        let optimaBold10 = UIFont(name: "Optima-Bold", size: 10) ?? UIFont.boldSystemFont(ofSize: 10)
+        
+        let primaryTextColor = UIColor.white
+        let completedStageColor = UIColor.darkGray // Цвет для пройденных этапов
+        // let futureStageColor = UIColor.lightGray  // Пока не используется, можно закомментировать или удалить
+
+        let attributedString = NSMutableAttributedString()
+        // Получаем состояние квеста у игрока
+        var playerQuestState: PlayerQuestState? = nil
+        if let player = GameStateService.shared.player { // Убедимся, что player доступен
+            playerQuestState = player.activeQuests[quest.id]
+        }
+        
+        let currentStageId = playerQuestState?.currentStageId
+        let passedStageIds = playerQuestState?.completedStages ?? Set()
+
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.paragraphSpacing = 1.0
+        paragraphStyle.lineSpacing = 2.0
+
+        let isQuestCompleted = GameStateService.shared.player?.completedQuestIDs?.contains(quest.id) ?? false
+
+        for stage in quest.stages {
+            // Пропускаем системные ID
+            if stage.id.starts(with: "sys_") { continue }
+
+            // --- НОВАЯ ЛОГИКА: ПРОВЕРКА, НУЖНО ЛИ ОТОБРАЖАТЬ ЭТАП --- 
+            let shouldDisplayStage: Bool
+            if isQuestCompleted {
+                shouldDisplayStage = true // Показываем все этапы для завершенных квестов
+            } else {
+                shouldDisplayStage = (stage.id == currentStageId || passedStageIds.contains(stage.id))
+            }
+
+            guard shouldDisplayStage else { 
+                continue // Пропускаем будущие этапы для активных квестов
+            }
+            // --- КОНЕЦ НОВОЙ ЛОГИКИ ---
+
+            let stageObjective = processPlaceholders(in: stage.objective)
+
+            var iconName: String? = nil
+            var iconColor: UIColor? = nil
+            let symbolPointSizePoints: CGFloat = 10 
+            let iconDisplaySizePoints: CGFloat = 12
+
+            var attributes: [NSAttributedString.Key: Any] = [
+                .font: optimaRegular10,
+                .paragraphStyle: paragraphStyle,
+                .foregroundColor: primaryTextColor // По умолчанию основной цвет текста
+            ]
+
+            if stage.id == currentStageId {
+                attributes = [
+                    .font: optimaBold10,
+                    .foregroundColor: primaryTextColor,
+                    .paragraphStyle: paragraphStyle
+                ]
+                iconName = "arrow.right" // Иконка для текущего
+                iconColor = primaryTextColor
+            } else if passedStageIds.contains(stage.id) { // Используем passedStageIds
+                attributes = [
+                    .font: optimaRegular10, // Обычный для пройденных
+                    .foregroundColor: completedStageColor, // Цвет для пройденных этапов
+                    .paragraphStyle: paragraphStyle
+                ]
+                iconName = "checkmark" // Иконка для пройденного
+                iconColor = completedStageColor // Цвет иконки как у текста
+            }
+            
+            // Если квест завершен, все этапы показываются как пройденные
+            if isQuestCompleted {
+                 attributes = [
+                    .font: optimaRegular10, 
+                    .foregroundColor: completedStageColor, 
+                    .paragraphStyle: paragraphStyle
+                 ]
+                 iconName = "checkmark"
+                 iconColor = completedStageColor
+            }
+
+            // Добавляем иконку, если она определена для этого статуса
+            if let name = iconName, let color = iconColor {
                 let symbolConfig = UIImage.SymbolConfiguration(pointSize: symbolPointSizePoints)
-                if let baseImage = UIImage(systemName: iconName, withConfiguration: symbolConfig) {
-                    let iconImage = baseImage.withTintColor(iconColor, renderingMode: .alwaysOriginal)
-                    
+                if let baseImage = UIImage(systemName: name, withConfiguration: symbolConfig) {
+                    let iconImage = baseImage.withTintColor(color, renderingMode: .alwaysOriginal)
                     let attachment = NSTextAttachment()
                     attachment.image = iconImage
-                    // Настройка bounds для выравнивания по строке
-                    let yOffset = -2.5 // Смещение вниз для лучшего выравнивания с текстом (Optima 10pt)
+                    let yOffset = -2.5 // Смещение вниз для выравнивания
                     attachment.bounds = CGRect(x: 0, y: yOffset, width: iconDisplaySizePoints, height: iconDisplaySizePoints)
-                    stagesText.append(NSAttributedString(attachment: attachment))
-                    stagesText.append(NSAttributedString(string: " ")) // Пробел после иконки
+                    attributedString.append(NSAttributedString(attachment: attachment))
+                    attributedString.append(NSAttributedString(string: " ")) // Пробел после иконки
                 } else {
-                    print("[QuestJournalVC] Failed to create UIImage for stage icon: \(iconName)")
-                }
-
-                stagesText.append(NSAttributedString(string: stageString + "\n", attributes: attributes))
-                // Добавляем еще один перевод строки для увеличения вертикального пространства
-                if stage.id != quest.stages.sorted(by: { $0.id < $1.id }).last?.id { // Не добавлять после последнего этапа
-                    let emptyLineFont = UIFont.systemFont(ofSize: 6) // Маленький шрифт для пустой строки, чтобы отступ был не слишком большим
-                    stagesText.append(NSAttributedString(string: "\n", attributes: [.font: emptyLineFont]))
+                    DebugLogService.shared.log("Failed to create UIImage for stage icon: \(name)", category: "QuestJournal")
                 }
             }
-        } // Будущие этапы для еще не взятых квестов не отображаем (если selectedQuest не может быть неактивным)
+
+            attributedString.append(NSAttributedString(string: stageObjective + "\n", attributes: attributes))
+            
+            // Добавляем пустую строку для отступа между этапами
+            // TODO: Убедиться, что это не последний этап?
+             let emptyLineFont = UIFont.systemFont(ofSize: 6) // Маленький шрифт для пустой строки
+             attributedString.append(NSAttributedString(string: "\n", attributes: [.font: emptyLineFont, .paragraphStyle: paragraphStyle]))
+
+        }
         
-        // Отладочный print
-        print("Updating stages. Text: \(stagesText.string)")
-        questStagesTextView.attributedText = stagesText
+        questStagesTextView.attributedText = attributedString
     }
     
     private func clearDetailView() {
@@ -595,10 +662,6 @@ class QuestJournalViewController: UIViewController, UITableViewDataSource, UITab
                                                   backgroundColor: iconBgColor, 
                                                   borderColor: iconBorderColor)
         
-        if styledIconView == nil {
-            print("[QuestJournalVC] cellForRowAt: styledIconView IS NIL for quest '\(quest.title)'") // DEBUG
-        }
-
         cell.configure(with: quest.title, iconView: styledIconView)
         cell.backgroundColor = .clear
         
@@ -749,3 +812,4 @@ class QuestCell: UITableViewCell {
         textLabelLeadingConstraint?.isActive = true
     }
 } 
+

@@ -183,14 +183,19 @@ class NPCInteractionService : GameService {
                 successCap -= 10
             }
         }
-        let currentNPCWon = Int.random(in: 0...100) > successCap
-        
-        if currentNPCWon {
-            currentNPC.bloodMeter.useBlood(Float.random(in: 10.0...30.0))
-            otherNPC.bloodMeter.useBlood(Float.random(in: 30.0...50.0))
+    
+        if QuestService.shared.isImportantNpc(npcId: currentNPC.id) {
+            let availableAmount = currentNPC.bloodMeter.currentBlood < 40 ? 30 : currentNPC.bloodMeter.currentBlood
+            currentNPC.bloodMeter.useBlood(Float.random(in: 10.0...availableAmount))
         } else {
-            currentNPC.bloodMeter.useBlood(Float.random(in: 20.0...50.0))
-            otherNPC.bloodMeter.useBlood(Float.random(in: 20.0...50.0))
+            currentNPC.bloodMeter.useBlood(Float.random(in: 10.0...20.0))
+        }
+        
+        if QuestService.shared.isImportantNpc(npcId: otherNPC.id) {
+            let availableAmount = otherNPC.bloodMeter.currentBlood < 40 ? 30 : otherNPC.bloodMeter.currentBlood
+            otherNPC.bloodMeter.useBlood(Float.random(in: 10.0...availableAmount))
+        } else {
+            otherNPC.bloodMeter.useBlood(Float.random(in: 10.0...20.0))
         }
         
         currentNPC.decreaseNPCRelationship(with: 10, of: otherNPC)
@@ -212,20 +217,20 @@ class NPCInteractionService : GameService {
             } else if !otherNPC.isAlive {
                 handleArrest(currentNPC: militaryNpc!, otherNPC: currentNPC, reason: reason)
             } else {
-                let jailWinner = Int.random(in: 0...100) > 95
-                let jailLooser = Int.random(in: 0...100) > 95
+                let jailStarter = Int.random(in: 0...100) > 95
+                let jailAssigned = Int.random(in: 0...100) > 95
                 
-                if jailWinner {
-                    handleArrest(currentNPC: militaryNpc!, otherNPC: currentNPCWon ? currentNPC : otherNPC, reason: reason)
+                if jailStarter {
+                    handleArrest(currentNPC: militaryNpc!, otherNPC: currentNPC, reason: reason)
                 }
                 
-                if jailLooser {
-                    handleArrest(currentNPC: militaryNpc!, otherNPC: currentNPCWon ? otherNPC : currentNPC, reason: reason)
+                if jailAssigned {
+                    handleArrest(currentNPC: militaryNpc!, otherNPC: otherNPC, reason: reason)
                 }
             }
         }
         
-        return currentNPCWon
+        return true
     }
     
     private func handleVampireAwareness(otherNPC: NPC) {

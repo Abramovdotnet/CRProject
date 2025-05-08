@@ -47,6 +47,7 @@ struct DialogueAction: Codable, Equatable {
         case modifyStat
         case triggerGameEvent
         case markQuestInteractionComplete
+        case modifyPlayerInventory
         // TODO: Add other action types (e.g., addItem, setLocationFlag, startQuest)
     }
     
@@ -110,6 +111,15 @@ struct DialogueAction: Codable, Equatable {
             "questId": .string(questId),
             "stageId": .string(stageId),
             "interactionId": .string(interactionId)
+        ])
+    }
+
+    // НОВЫЙ УДОБНЫЙ КОНСТРУКТОР для modifyPlayerInventory
+    static func modifyPlayerInventory(itemId: Int, quantity: Int, action: String) -> DialogueAction {
+        return DialogueAction(type: .modifyPlayerInventory, parameters: [
+            "itemId": .int(itemId),
+            "quantity": .int(quantity),
+            "action": .string(action) // "add" или "remove"
         ])
     }
 } 
