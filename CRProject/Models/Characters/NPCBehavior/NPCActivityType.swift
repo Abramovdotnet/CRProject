@@ -67,10 +67,10 @@ extension NPCActivityType {
         // Core Activities
         case .sleep: return ["house", "manor", "cottage", "barracks", "keep", "brothel"]
         case .eat: return ["tavern", "house", "manor", "keep", "barracks"]
-        case .idle: return [] // Can idle anywhere
+        case .idle: return ["shop", "temple"] // Can idle anywhere, добавим shop и temple как явные места
         case .travel: return [] // Anywhere during travel
         case .meet: return []
-        case .socialize: return ["tavern", "square", "market", "bathhouse", "manor", "cathedral", "brothel", "house"]
+        case .socialize: return ["tavern", "square", "market", "bathhouse", "manor", "cathedral", "brothel", "house", "shop", "temple"]
         
         // Work-Related
         case .craft: return ["blacksmith", "alchemistShop"]
@@ -78,10 +78,10 @@ extension NPCActivityType {
         case .repair: return []
         case .guardPost: return ["military", "watchtower", "barracks", "manor", "brothel", "dungeon"]
         case .patrol: return ["quarter", "square", "road", "brothel", "cemetery", "dungeon"]
-        case .research: return ["bookstore", "cathedral", "monastery", "blacksmith", "alchemistShop"]
+        case .research: return ["bookstore", "cathedral", "monastery", "blacksmith", "alchemistShop", "temple"]
         case .train: return ["military", "barracks"]
         case .manage: return ["manor", "keep", "market"]
-        case .clean: return ["house", "manor", "barracks", "keep", "tavern", "brothel", "cemetery"]
+        case .clean: return ["house", "manor", "barracks", "keep", "tavern", "brothel", "cemetery", "shop", "temple"]
         case .serve: return ["tavern", "manor", "keep"]
         case .entertain: return ["tavern", "brothel", "square", "road"]
         case .harvest: return ["road", "square"]
@@ -90,15 +90,15 @@ extension NPCActivityType {
         case .protect: return []
         case .tendGraves: return ["cemetery"]
         case .watchOver: return ["dungeon"]
-        case .thieving: return ["tavern", "market", "brothel", "house", "square", "road", "blacksmith", "alchemistShop", "manor", "cathedral", "house", "heep", "warehouse"]
+        case .thieving: return ["tavern", "market", "brothel", "house", "square", "road", "blacksmith", "alchemistShop", "manor", "cathedral", "shop", "warehouse"] // Добавил shop, убрал дубликат house, heep
         
         // Social/Leisure
-        case .pray: return ["cathedral", "monastery", "crypt", "cemetery"]
-        case .study: return ["bookstore", "cathedral"]
+        case .pray: return ["cathedral", "monastery", "crypt", "cemetery", "temple"]
+        case .study: return ["bookstore", "cathedral", "temple"]
         case .drink: return ["tavern", "brothel", "house", "road"]
         case .gamble: return ["tavern", "brothel"]
         case .bathe: return ["bathhouse", "house", "tavern", "brothel"]
-        case .explore: return ["tavern", "market", "manor", "brothel", "blacksmith", "alchemistShop", "bookstore", "road", "square", "military", "bathhouse", "cemetery"]
+        case .explore: return ["tavern", "market", "manor", "brothel", "blacksmith", "alchemistShop", "bookstore", "road", "square", "military", "bathhouse", "cemetery", "shop", "temple"]
         case .mourn: return ["cemetery"]
         
         // Special

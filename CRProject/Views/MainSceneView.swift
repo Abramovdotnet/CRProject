@@ -291,6 +291,15 @@ struct MainSceneView: View {
                                 // Right buttons - aligned to the right edge
                                 VStack(alignment: .center, spacing: 4) {
                                     if let selectedNPC = npcManager.selectedNPC {
+                                        if selectedNPC.currentActivity != .jailed && !isPlayerArrested && !selectedNPC.isAlive {
+                                            MainSceneActionButton(
+                                                icon: "bag.fill",
+                                                color: Theme.textColor,
+                                                action: {
+                                                    navigationPath.append(NavigationDestination.loot)
+                                                }
+                                            )
+                                        }
                                         if !selectedNPC.isUnknown && selectedNPC.isAlive {
                                             if selectedNPC.currentActivity != .sleep && selectedNPC.currentActivity != .fleeing && selectedNPC.currentActivity != .bathe {
                                                 // Start conversation
@@ -315,16 +324,6 @@ struct MainSceneView: View {
                                                         color: Theme.textColor,
                                                         action: {
                                                             navigationPath.append(NavigationDestination.trade)
-                                                        }
-                                                    )
-                                                }
-
-                                                if npcManager.selectedNPC != nil && selectedNPC.currentActivity != .jailed && !isPlayerArrested {
-                                                    MainSceneActionButton(
-                                                        icon: "bag.fill",
-                                                        color: Theme.textColor,
-                                                        action: {
-                                                            navigationPath.append(NavigationDestination.loot)
                                                         }
                                                     )
                                                 }
@@ -390,36 +389,8 @@ struct MainSceneView: View {
                     .navigationDestination(for: NavigationDestination.self) { destination in
                         switch destination {
                         case .navigation:
-                            ZStack {
-                                Color.black.edgesIgnoringSafeArea(.all)
-                                
-                                GeometryReader { geometry in
-                                    NavigationWebView(
-                                        viewModel: viewModel,
-                                        offset: .constant(.zero),
-                                        scale: .constant(1.0),
-                                        geometry: geometry,
-                                        onLocationSelected: { location in
-                                            if viewModel.isLocationAccessible(location) {
-                                                safePopNavigation()
-                                                viewModel.navigateToLocation(location)
-                                            }
-                                        }
-                                    )
-                                    .background(Color.black.edgesIgnoringSafeArea(.all))
-                                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
-                                }
-                            }
-                            .navigationBarHidden(true)
-                            .gesture(
-                                DragGesture()
-                                    .onEnded { gesture in
-                                        if gesture.translation.width > 100 {
-                                            safePopNavigation()
-                                        }
-                                    }
-                            )
-                            
+                            WorldMapViewRepresentable()
+                                .edgesIgnoringSafeArea(.all)
                         case .dialogue:
                             ZStack {
                                 Color.black.edgesIgnoringSafeArea(.all)

@@ -1,6 +1,7 @@
-enum SceneType: String, CaseIterable {
+enum SceneType: String, CaseIterable, Codable {
     // General
     case town
+    case castle
     
     // Districts
     case district
@@ -9,6 +10,8 @@ enum SceneType: String, CaseIterable {
     case cathedral
     case cloister
     case cemetery
+    case temple
+    case crypt
     
     // Administrative Buildings
     case manor
@@ -19,6 +22,8 @@ enum SceneType: String, CaseIterable {
     case alchemistShop
     case warehouse
     case bookstore
+    case shop
+    case mine
     
     // Entertainment Buildings
     case tavern
@@ -30,6 +35,11 @@ enum SceneType: String, CaseIterable {
     case docks
     case road
 
+    // Natural/Wilderness
+    case forest
+    case cave
+    case ruins
+    
     // Misc
     case house
     case dungeon
@@ -65,9 +75,17 @@ enum SceneType: String, CaseIterable {
         case .square: return "square.fill"
         case .town: return "house.fill"
         case .road: return "road.lane.arrowtriangle.2.inward"
-        case .docks: return "building.columns.fill"
+        case .docks: return "water.waves"
         case .house: return "house.fill"
         case .dungeon: return "lock.fill"
+        case .shop: return "tag.fill"
+        case .temple: return "staroflife.fill"
+        case .castle: return "shield.lefthalf.filled.slash"
+        case .crypt: return "archivebox.fill"
+        case .mine: return "pickaxe.fill"
+        case .forest: return "tree.fill"
+        case .cave: return "circle.bottomhalf.filled"
+        case .ruins: return "building.columns.fill"
         }
     }
     
@@ -80,11 +98,17 @@ enum SceneType: String, CaseIterable {
             case .cemetery:
                 return [.shadow]
                 
+            case .crypt:
+                return [.shadow]
+                
             // Administrative
             case .manor:
                 return [.shadow]
                 
             case .military:
+                return [.shadow]
+                
+            case .castle:
                 return [.shadow]
                 
             // Commercial
@@ -98,6 +122,9 @@ enum SceneType: String, CaseIterable {
                 return [.shadow]
                 
             case .bookstore:
+                return [.shadow]
+                
+            case .mine:
                 return [.shadow]
                 
             // Entertainment
@@ -120,6 +147,16 @@ enum SceneType: String, CaseIterable {
             case .road:
                 return [.none]
                 
+            // Natural/Wilderness
+            case .forest:
+                return [.shadow, .none]
+                
+            case .cave:
+                return [.shadow]
+                
+            case .ruins:
+                return [.shadow]
+                
             // Residential
             case .house:
                 return [.shadow]
@@ -130,6 +167,12 @@ enum SceneType: String, CaseIterable {
             // General/Districts
             case .town, .district:
                 return [.none]
+                
+            // Новые типы    
+            case .shop:
+                return []
+            case .temple:
+                return []
                 
             @unknown default:
                 return []

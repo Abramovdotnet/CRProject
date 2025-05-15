@@ -222,75 +222,82 @@ class LocationReader : GameService {
             throw LocationError.invalidData
         }
         
-        // Handle parent scene ID
-        var parentSceneId: Int
+        let x = data["x"] as? Int ?? 0
+        let y = data["y"] as? Int ?? 0
+
+        var connectionsArray: [SceneConnection] = []
+        if let connectionsData = data["connections"] as? [[String: Any]] {
+            for connData in connectionsData {
+                if let connectedId = connData["connectedSceneId"] as? Int {
+                    let travelTime = connData["travelTime"] as? Double ?? 1.0
+                    connectionsArray.append(SceneConnection(connectedSceneId: connectedId, travelTime: travelTime))
+                }
+            }
+        }
+
+        var parentSceneIdValue: Int
         if let parentId = data["parentSceneId"] as? Int {
-            parentSceneId = parentId
+            parentSceneIdValue = parentId
         } else {
-            parentSceneId = 0
+            parentSceneIdValue = 0
         }
         
-        // Handle isParent property
         let isParent = data["isParent"] as? Bool ?? false
         
-        // Convert sceneType string to SceneType enum
         let sceneType: SceneType
-        switch sceneTypeString {
-        case "alchemistShop": sceneType = .alchemistShop
+        switch sceneTypeString.lowercased() {
+        case "alchemistshop": sceneType = .alchemistShop
         case "bathhouse": sceneType = .bathhouse
         case "blacksmith": sceneType = .blacksmith
         case "bookstore": sceneType = .bookstore
-        case "brotherl": sceneType = .brothel
+        case "brothel": sceneType = .brothel
         case "cathedral": sceneType = .cathedral
         case "cemetery": sceneType = .cemetery
         case "cloister": sceneType = .cloister
         case "district": sceneType = .district
         case "docks": sceneType = .docks
+        case "dungeon": sceneType = .dungeon
         case "house": sceneType = .house
         case "manor": sceneType = .manor
         case "military": sceneType = .military
+        case "road": sceneType = .road
+        case "shop": sceneType = .shop
         case "square": sceneType = .square
         case "tavern": sceneType = .tavern
-        case "warehouse": sceneType = .warehouse
+        case "temple": sceneType = .temple
         case "town": sceneType = .town
-        case "brothel": sceneType = .brothel
-        case "road": sceneType = .road
-        case "cemetery": sceneType = .cemetery
-        case "dungeon": sceneType = .dungeon
+        case "warehouse": sceneType = .warehouse
+        case "castle": sceneType = .castle
+        case "crypt": sceneType = .crypt
+        case "mine": sceneType = .mine
+        case "forest": sceneType = .forest
+        case "cave": sceneType = .cave
+        case "ruins": sceneType = .ruins
         default:
-            DebugLogService.shared.log("Unknown scene type: \(sceneTypeString), defaulting to house", category: "Warning")
-            sceneType = .house
+            DebugLogService.shared.log("Unknown scene type: \(sceneTypeString), defaulting to .house", category: "Warning")
+            sceneType = .house // Default to .house if unknown
         }
         
-        let scene = Scene()
-        scene.id = id
-        scene.name = name
-        scene.isIndoor = isIndoor
-        scene.parentSceneId = parentSceneId
-        scene.sceneType = sceneType
-        scene.isParent = isParent
+        let description = data["description"] as? String ?? ""
         
-        // Handle hubSceneIds if present
+        let scene = Scene(id: id, name: name, 
+                          isParent: isParent, parentSceneId: parentSceneIdValue, 
+                          parentSceneName: "", 
+                          parentSceneType: .house,
+                          isIndoor: isIndoor, sceneType: sceneType, 
+                          x: x, y: y, connections: connectionsArray)
+
+        if let childIds = data["childSceneIds"] as? [Int] {
+            scene.childSceneIds = childIds
+        }
         if let hubIds = data["hubSceneIds"] as? [Int] {
             scene.hubSceneIds = hubIds
         }
         
-        // Handle childSceneIds if present
-        if let childIds = data["childSceneIds"] as? [Int] {
-            scene.childSceneIds = childIds
-        }
-        
-        // Initialize empty characters dictionary
-        scene.setCharacters([])
-        
-        // Get parent scene info if parentSceneId exists
-        if parentSceneId != 0 {
-            if let parentScene = try? getLocation(by: parentSceneId) {
-                scene.parentSceneName = parentScene.name
-                scene.parentSceneType = parentScene.sceneType
-            }
-        }
-        
         return scene
+    }
+    
+    static func initializeGameServices() {
+        // ... existing code ...
     }
 } 
