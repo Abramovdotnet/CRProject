@@ -291,6 +291,15 @@ struct MainSceneView: View {
                                 // Right buttons - aligned to the right edge
                                 VStack(alignment: .center, spacing: 4) {
                                     if let selectedNPC = npcManager.selectedNPC {
+                                        if selectedNPC.currentActivity != .jailed && !isPlayerArrested && !selectedNPC.isAlive {
+                                            MainSceneActionButton(
+                                                icon: "bag.fill",
+                                                color: Theme.textColor,
+                                                action: {
+                                                    navigationPath.append(NavigationDestination.loot)
+                                                }
+                                            )
+                                        }
                                         if !selectedNPC.isUnknown && selectedNPC.isAlive {
                                             if selectedNPC.currentActivity != .sleep && selectedNPC.currentActivity != .fleeing && selectedNPC.currentActivity != .bathe {
                                                 // Start conversation
@@ -315,16 +324,6 @@ struct MainSceneView: View {
                                                         color: Theme.textColor,
                                                         action: {
                                                             navigationPath.append(NavigationDestination.trade)
-                                                        }
-                                                    )
-                                                }
-
-                                                if npcManager.selectedNPC != nil && selectedNPC.currentActivity != .jailed && !isPlayerArrested {
-                                                    MainSceneActionButton(
-                                                        icon: "bag.fill",
-                                                        color: Theme.textColor,
-                                                        action: {
-                                                            navigationPath.append(NavigationDestination.loot)
                                                         }
                                                     )
                                                 }
@@ -419,7 +418,6 @@ struct MainSceneView: View {
                                         }
                                     }
                             )
-                            
                         case .dialogue:
                             ZStack {
                                 Color.black.edgesIgnoringSafeArea(.all)

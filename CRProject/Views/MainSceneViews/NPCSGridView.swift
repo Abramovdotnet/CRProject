@@ -21,8 +21,8 @@ class NPCSGridView: UIView {
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 5
-        layout.minimumInteritemSpacing = 10
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 5
         layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -56,7 +56,6 @@ class NPCSGridView: UIView {
     }
     
     private func setupViews() {
-        backgroundColor = UIColor.black.withAlphaComponent(0.6)
         layer.cornerRadius = 12
         layer.borderWidth = 0
         layer.borderColor = UIColor.clear.cgColor

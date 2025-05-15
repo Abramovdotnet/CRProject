@@ -13,7 +13,7 @@ import Combine
 
 class NPCCell: UICollectionViewCell {
     private let avatarImageView = UIImageView()
-    private let nameLabel = UILabel()
+    private let avatarShadowContainer = UIView()
     private let professionIcon = UIImageView()
     private let activityIcon = UIImageView()
     let healthIndicator = CAShapeLayer()
@@ -39,25 +39,42 @@ class NPCCell: UICollectionViewCell {
     
     private func setupViews() {
         // Card background with transparent background and subtle border
-        cardBackground.frame = bounds.insetBy(dx: 2, dy: 2)
-        cardBackground.backgroundColor = UIColor.clear // Remove black background
+        cardBackground.frame = bounds // Use full bounds
+        cardBackground.backgroundColor = UIColor.clear
         cardBackground.layer.cornerRadius = 12
-        cardBackground.layer.borderWidth = 1
-        cardBackground.layer.borderColor = UIColor.gray.withAlphaComponent(0.2).cgColor
+        cardBackground.layer.borderWidth = 0 // Remove border
+        cardBackground.clipsToBounds = false // Ensure shadow isn't clipped by card background
+        cardBackground.layer.masksToBounds = false // Explicitly set masksToBounds to false
         contentView.addSubview(cardBackground)
         
-        // Avatar setup - reduced size
-        avatarImageView.frame = CGRect(x: (bounds.width - 70) / 2, y: 8, width: 70, height: 70)
+        // Avatar setup - increased size by 20%
+        let newAvatarSize: CGFloat = 84
+        let newAvatarRadius: CGFloat = newAvatarSize / 2
+        let avatarFrame = CGRect(x: (bounds.width - newAvatarSize) / 2, y: 8, width: newAvatarSize, height: newAvatarSize)
+        
+        // Setup shadow container
+        avatarShadowContainer.frame = avatarFrame
+        avatarShadowContainer.layer.cornerRadius = newAvatarRadius
+        avatarShadowContainer.layer.shadowColor = UIColor.black.cgColor
+        avatarShadowContainer.layer.shadowRadius = 10 // Increased radius further
+        avatarShadowContainer.layer.shadowOpacity = 0.8 // Increased opacity further
+        avatarShadowContainer.layer.shadowOffset = CGSize(width: 0, height: 2)
+        avatarShadowContainer.backgroundColor = .clear // Ensure it doesn't obscure anything
+        avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: avatarShadowContainer.layer.cornerRadius).cgPath // Set shadow path
+        cardBackground.addSubview(avatarShadowContainer) // Add shadow view first
+
+        // Setup avatar image view
+        avatarImageView.frame = avatarFrame
         avatarImageView.contentMode = .scaleAspectFill
-        avatarImageView.clipsToBounds = true
-        avatarImageView.layer.cornerRadius = 35
-        avatarImageView.layer.borderWidth = 1
-        avatarImageView.layer.borderColor = UIColor.white.withAlphaComponent(0.3).cgColor
-        cardBackground.addSubview(avatarImageView)
+        avatarImageView.clipsToBounds = true // Keep clipping for circular shape
+        avatarImageView.layer.cornerRadius = newAvatarRadius
+        avatarImageView.layer.borderWidth = 1 // Increased border width
+        avatarImageView.layer.borderColor = UIColor.black.cgColor // Added default black border color
+        cardBackground.addSubview(avatarImageView) // Add image view on top of shadow view
         
         // Selection glow
-        selectionGlowLayer.frame = avatarImageView.frame
-        selectionGlowLayer.cornerRadius = 35
+        selectionGlowLayer.frame = avatarFrame
+        selectionGlowLayer.cornerRadius = newAvatarRadius
         selectionGlowLayer.shadowColor = UIColor.red.cgColor
         selectionGlowLayer.shadowRadius = 8
         selectionGlowLayer.shadowOpacity = 0 // Hidden by default
@@ -66,9 +83,9 @@ class NPCCell: UICollectionViewCell {
         
         // Health indicator - initially hidden, positioned on outer border with glow
         // Create a slightly larger frame to position at the outer edge
-        let healthIndicatorSize = avatarImageView.frame.width + 6 // Add 6 points to position on outer edge
-        let healthIndicatorX = avatarImageView.frame.midX - healthIndicatorSize/2
-        let healthIndicatorY = avatarImageView.frame.midY - healthIndicatorSize/2
+        let healthIndicatorSize = avatarFrame.width + 6 // Adjusted based on new avatarFrame
+        let healthIndicatorX = avatarFrame.midX - healthIndicatorSize/2
+        let healthIndicatorY = avatarFrame.midY - healthIndicatorSize/2
         healthIndicator.frame = CGRect(x: healthIndicatorX, y: healthIndicatorY, width: healthIndicatorSize, height: healthIndicatorSize)
         healthIndicator.lineWidth = 3
         healthIndicator.fillColor = UIColor.clear.cgColor
@@ -86,10 +103,6 @@ class NPCCell: UICollectionViewCell {
         
         // Create a consistent font to use for both name and health - using Optima to match Theme.bodyFont
         let textFont = UIFont(name: "Optima", size: 11) ?? UIFont.systemFont(ofSize: 11, weight: .regular)
-        
-        // Increased icon size for better visibility when crossing avatar border
-        // let iconSize: CGFloat = 22 // No longer needed here, moved to class level
-        let avatarFrame = avatarImageView.frame
         
         // Health percentage positioned right at the bottom edge of the avatar
         let healthWidth: CGFloat = 40
@@ -109,7 +122,7 @@ class NPCCell: UICollectionViewCell {
         cardBackground.addSubview(healthPercentageLabel)
         
         // Profession icon - positioned on the left edge of the avatar
-        let avatarRadius = avatarFrame.width / 2
+        let avatarRadius = avatarFrame.width / 2 // Adjusted based on new avatarFrame
         let profX = avatarFrame.minX - 10 // Closer to avatar (adjusted from -15)
         let profY = avatarFrame.maxY - iconSize - 8 // Maintained same vertical position
         
@@ -168,11 +181,8 @@ class NPCCell: UICollectionViewCell {
         cardBackground.addSubview(activityIcon)
         
         // Quest Indicator Icon
-        let questIconCenterX = avatarFrame.midX
-        // Позиционируем так, чтобы НИЖНИЙ КРАЙ иконки был на НИЖНЕМ КРАЕ healthIndicator
-        // healthIndicator.frame.maxY - это нижняя точка healthIndicator
-        // iconSize - это высота иконки. Y координата frame - это верхний левый угол.
-        // Сдвигаем еще на 4 пикселя вниз
+        let questIconCenterX = avatarFrame.midX // Adjusted based on new avatarFrame
+        // Position calculation depends on healthIndicator frame, which is now updated
         let questIconY = healthIndicator.frame.maxY - iconSize + 4
 
         questIndicatorIcon.frame = CGRect(x: questIconCenterX - iconSize / 2, y: questIconY, width: iconSize, height: iconSize)
@@ -187,26 +197,9 @@ class NPCCell: UICollectionViewCell {
         questIndicatorIcon.isHidden = true 
         cardBackground.addSubview(questIndicatorIcon)
         
-        // Name label - adjust spacing based on frame size
-        // Calculate distance from bottom of avatar to bottom of card, and position name closer to avatar
-        let avatarBottomToCardBottom = bounds.height - avatarFrame.maxY
-        let nameY = avatarFrame.maxY + 10 // Fixed 10pt spacing from bottom of avatar
-        nameLabel.frame = CGRect(x: 5, y: nameY, width: bounds.width - 10, height: 20)
-        nameLabel.font = textFont // Reduced size
-        nameLabel.textColor = UIColor.white
-        nameLabel.textAlignment = .center
-        nameLabel.adjustsFontSizeToFitWidth = false // Prevent font size adjustment
-        nameLabel.lineBreakMode = .byTruncatingTail // Truncate if needed
-        nameLabel.backgroundColor = UIColor.clear // Remove black background
-        nameLabel.layer.shadowColor = UIColor.black.cgColor
-        nameLabel.layer.shadowOpacity = 1.0
-        nameLabel.layer.shadowRadius = 2
-        nameLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
-        cardBackground.addSubview(nameLabel)
-        
         // Desired victim indicator - positioned at top of avatar with red glow
-        let desiredX = avatarFrame.midX - iconSize/2
-        let desiredY = avatarFrame.minY - iconSize/2 - 4 // Опускаем на 1 пиксель (было -5)
+        let desiredX = avatarFrame.midX - iconSize/2 // Adjusted based on new avatarFrame
+        let desiredY = avatarFrame.minY - iconSize/2 - 4 // Adjusted based on new avatarFrame
         desiredVictimIndicator.frame = CGRect(x: desiredX, y: desiredY, width: iconSize, height: iconSize)
         desiredVictimIndicator.contentMode = .scaleAspectFit
         desiredVictimIndicator.layer.shadowColor = UIColor.red.cgColor // Red shadow
@@ -257,6 +250,13 @@ class NPCCell: UICollectionViewCell {
             }
         }
         
+        // Explicitly set shadow container opacity based on selection state
+        if npc.isUnknown && isSelected {
+            avatarShadowContainer.layer.shadowOpacity = 0.8 // Show shadow if unknown AND selected
+        } else {
+            avatarShadowContainer.layer.shadowOpacity = isSelected ? 0 : 0.8 // Standard logic for other cases
+        }
+        
         // Avatar image - плавная смена изображения
         let newImage = npc.isUnknown ?
             UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder") :
@@ -271,29 +271,15 @@ class NPCCell: UICollectionViewCell {
             }, completion: nil)
         }
         
-        // Name - плавное обновление текста
-        let newName = npc.isUnknown ? "Unknown" : npc.name
-        if nameLabel.text != newName {
-            UIView.transition(with: nameLabel,
-                             duration: animationDuration,
-                             options: .transitionCrossDissolve,
-                             animations: {
-                self.nameLabel.text = newName
-            }, completion: nil)
-        }
-        
-        // Ensure name label uses Optima font
-        nameLabel.font = UIFont(name: "Optima", size: 11) ?? UIFont.systemFont(ofSize: 11, weight: .regular)
-        
-        // Selection state - animate the glow and stroke
+        // Set avatar border based on selection
         UIView.animate(withDuration: animationDuration) {
-            // Set border color with animation
-            self.avatarImageView.layer.borderColor = isSelected ? 
-                UIColor.red.withAlphaComponent(0.6).cgColor : 
-                UIColor.white.withAlphaComponent(0.3).cgColor
-                
-            // Плавная анимация для тени/свечения
-            self.selectionGlowLayer.shadowOpacity = isSelected ? 0.7 : 0
+            if npc.isUnknown && isSelected {
+                self.avatarImageView.layer.borderWidth = 1 // Keep border if unknown AND selected
+                self.avatarImageView.layer.borderColor = UIColor.black.cgColor
+            } else {
+                self.avatarImageView.layer.borderWidth = isSelected ? 0 : 1 // Standard logic for other cases
+                self.avatarImageView.layer.borderColor = UIColor.black.cgColor // Ensure black for unselected
+            }
         }
         
         // Health indicator - ensure it's visible when selected with glow effect
@@ -426,9 +412,6 @@ class NPCCell: UICollectionViewCell {
             }
             
             healthPercentageLabel.isHidden = false
-            
-            // Ensure health label uses Optima font
-            healthPercentageLabel.font = UIFont(name: "Optima", size: 11) ?? UIFont.systemFont(ofSize: 11, weight: .regular)
             
             // Color the health percentage based on blood level with анимацией
             UIView.animate(withDuration: animationDuration) {
@@ -575,6 +558,12 @@ class NPCCell: UICollectionViewCell {
             questIndicatorIcon.layer.removeAnimation(forKey: "questGlowAnimation")
             questIndicatorIcon.layer.shadowOpacity = 0 // Выключаем свечение
         }
+
+        // Selection state - animate the glow
+        UIView.animate(withDuration: animationDuration) {
+            // Плавная анимация для тени/свечения (только glow, без рамки)
+            self.selectionGlowLayer.shadowOpacity = isSelected ? 0.7 : 0
+        }
     }
     
     // Helper method to convert SwiftUI Color to UIColor
@@ -630,60 +619,58 @@ class NPCCell: UICollectionViewCell {
         desiredVictimIndicator.layer.removeAnimation(forKey: "pulseAnimation")
         desiredVictimIndicator.layer.removeAnimation(forKey: "glowAnimation")
         
-        // Reset border style
-        cardBackground.layer.borderColor = UIColor.gray.withAlphaComponent(0.2).cgColor
-        cardBackground.layer.borderWidth = 1
+        // Reset background style (removed border setting)
+        // cardBackground.layer.borderColor = UIColor.gray.withAlphaComponent(0.2).cgColor
+        // cardBackground.layer.borderWidth = 1
+        
+        // Reset avatar border
+        avatarImageView.layer.borderWidth = 1 // Use new border width
+        avatarImageView.layer.borderColor = UIColor.black.cgColor
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
         // Update positions in case of frame changes
-        cardBackground.frame = bounds.insetBy(dx: 2, dy: 2)
+        cardBackground.frame = bounds // Use full bounds
         
-        // Reduced avatar size
-        let avatarFrame = CGRect(x: (bounds.width - 70) / 2, y: 8, width: 70, height: 70)
-        avatarImageView.frame = avatarFrame
+        // Increased avatar size by 20%
+        let newAvatarSizeLayout: CGFloat = 84
+        let newAvatarRadiusLayout: CGFloat = newAvatarSizeLayout / 2
+        let avatarFrameLayout = CGRect(x: (bounds.width - newAvatarSizeLayout) / 2, y: 8, width: newAvatarSizeLayout, height: newAvatarSizeLayout)
+        avatarImageView.frame = avatarFrameLayout
+        avatarShadowContainer.frame = avatarFrameLayout // Update shadow container frame as well
+        avatarShadowContainer.layer.cornerRadius = newAvatarRadiusLayout // Ensure corner radius updates
+        avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: avatarShadowContainer.layer.cornerRadius).cgPath // Update shadow path on layout change
         
         // Health percentage positioned right at the bottom edge of the avatar
         let healthWidth: CGFloat = 40
         let healthHeight: CGFloat = 18
-        let healthX = avatarFrame.midX - healthWidth/2
-        let healthY = avatarFrame.maxY // Position right at the bottom edge
+        let healthX = avatarFrameLayout.midX - healthWidth/2 // Use layout frame
+        let healthY = avatarFrameLayout.maxY // Use layout frame
         healthPercentageLabel.frame = CGRect(x: healthX, y: healthY, width: healthWidth, height: healthHeight)
         
         // Profession icon - positioned on the left edge of the avatar
-        let avatarRadius = avatarFrame.width / 2
-        let profX = avatarFrame.minX - 10 // Closer to avatar (adjusted from -15)
-        let profY = avatarFrame.maxY - iconSize - 8 // Maintained same vertical position
+        let avatarRadiusLayout = avatarFrameLayout.width / 2 // Use layout frame
+        let profX = avatarFrameLayout.minX - 10 // Use layout frame
+        let profY = avatarFrameLayout.maxY - iconSize - 8 // Use layout frame
         professionIcon.frame = CGRect(x: profX, y: profY, width: iconSize, height: iconSize)
         professionIcon.layer.cornerRadius = iconSize / 2 // Ensure circular shape in layout updates
         
         // Activity icon - positioned on the right edge of the avatar
-        let activityX = avatarFrame.maxX - iconSize + 10 // Closer to avatar (adjusted from +15)
-        let activityY = avatarFrame.maxY - iconSize - 8 // Maintained same vertical position
+        let activityX = avatarFrameLayout.maxX - iconSize + 10 // Use layout frame
+        let activityY = avatarFrameLayout.maxY - iconSize - 8 // Use layout frame
         activityIcon.frame = CGRect(x: activityX, y: activityY, width: iconSize, height: iconSize)
         activityIcon.layer.cornerRadius = iconSize / 2 // Ensure circular shape in layout updates
         
-        // Name label - adjust spacing based on frame size
-        // Calculate distance from bottom of avatar to bottom of card, and position name closer to avatar
-        let avatarBottomToCardBottom = bounds.height - avatarFrame.maxY
-        let nameY = avatarFrame.maxY + 10 // Fixed 10pt spacing from bottom of avatar
-        nameLabel.frame = CGRect(x: 5, y: nameY, width: bounds.width - 10, height: 20)
-        
-        // Desired victim indicator - positioned at top of avatar
-        let desiredX = avatarFrame.midX - iconSize/2
-        let desiredY = avatarFrame.minY - iconSize/2 - 4 // Опускаем на 1 пиксель (было -5)
-        desiredVictimIndicator.frame = CGRect(x: desiredX, y: desiredY, width: iconSize, height: iconSize)
-        
         // Position health indicator circle on the outer border of the avatar
-        let healthIndicatorSize = avatarFrame.width + 6
-        let healthIndicatorX = avatarFrame.midX - healthIndicatorSize/2
-        let healthIndicatorY = avatarFrame.midY - healthIndicatorSize/2
+        let healthIndicatorSize = avatarFrameLayout.width + 6 // Use layout frame
+        let healthIndicatorX = avatarFrameLayout.midX - healthIndicatorSize/2 // Use layout frame
+        let healthIndicatorY = avatarFrameLayout.midY - healthIndicatorSize/2 // Use layout frame
         healthIndicator.frame = CGRect(x: healthIndicatorX, y: healthIndicatorY, width: healthIndicatorSize, height: healthIndicatorSize)
         
         // Update the selection glow layer frame to match the avatar
-        selectionGlowLayer.frame = avatarFrame
+        selectionGlowLayer.frame = avatarFrameLayout // Use layout frame
         
         // Always check if this cell should show health indicator
         if let npc = currentNPC, NPCInteractionManager.shared.selectedNPC?.id == npc.id {
