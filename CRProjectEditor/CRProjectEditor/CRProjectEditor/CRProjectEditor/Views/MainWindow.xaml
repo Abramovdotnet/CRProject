@@ -30,7 +30,7 @@
         </DataTemplate>
     </Window.Resources>
 
-    <Grid>
+    <Grid Background="{DynamicResource BackgroundBrush}">
         <TabControl ItemsSource="{Binding TabViewModels}"
                     SelectedItem="{Binding SelectedViewModel}">
             <TabControl.ItemTemplate>

@@ -4,9 +4,61 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CRProjectEditor.Views"
+             xmlns:viewModels="clr-namespace:CRProjectEditor.ViewModels"
+             xmlns:models="clr-namespace:CRProjectEditor.Models" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DesignHeight="600" d:DesignWidth="1000">
     <Grid>
-        <TextBlock Text="World View" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" MinWidth="250"/> <!-- 30%, MinWidth для читаемости -->
+            <ColumnDefinition Width="7*"/> <!-- 70% -->
+        </Grid.ColumnDefinitions>
+
+        <!-- Левая колонка (Генератор) -->
+        <Border Grid.Column="0" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="0,0,1,0" Padding="10">
+            <StackPanel>
+                <TextBlock Text="Генератор Локаций" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                
+                <TextBlock Text="Имя локации:" Margin="0,5,0,2"/>
+                <TextBox Text="{Binding NewLocationName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+
+                <TextBlock Text="Количество сцен по типам:" Margin="0,5,0,5"/>
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="400"> <!-- MaxHeight, чтобы не растягивать бесконечно -->
+                    <ItemsControl ItemsSource="{Binding SceneTypeConfigs}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="{x:Type viewModels:SceneTypeCountSetting}">
+                                <Grid Margin="0,2">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Grid.Column="0" Text="{Binding SceneTypeName}" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Column="1" Text="{Binding Count, UpdateSourceTrigger=PropertyChanged}" Width="50" Margin="5,0,0,0" HorizontalContentAlignment="Right"/>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <Button Content="Сгенерировать и сохранить" Command="{Binding GenerateLocationCommand}" Margin="0,15,0,0" Padding="10,5"/>
+            </StackPanel>
+        </Border>
+        
+        <!-- Правая колонка (DataGrid) -->
+        <DataGrid Grid.Column="1" ItemsSource="{Binding Scenes}"                        
+                  AlternationCount="2">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="SizeToHeader" MinWidth="40" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" MinWidth="150" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Type" Binding="{Binding SceneType}" Width="SizeToCells" MinWidth="80" IsReadOnly="True"/>
+                <DataGridCheckBoxColumn Header="Indoor" Binding="{Binding IsIndoor}" Width="SizeToHeader" MinWidth="60" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Parent ID" Binding="{Binding ParentSceneId}" Width="SizeToHeader" MinWidth="70" IsReadOnly="True"/>
+                <DataGridTextColumn Header="X" Binding="{Binding X}" Width="SizeToHeader" MinWidth="50" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Y" Binding="{Binding Y}" Width="SizeToHeader" MinWidth="50" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Child IDs" Binding="{Binding ChildSceneIds, Converter={StaticResource IntListToStringConverter}}" Width="SizeToCells" MinWidth="100" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Hub IDs" Binding="{Binding HubSceneIds, Converter={StaticResource IntListToStringConverter}}" Width="SizeToCells" MinWidth="100" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="2*" MinWidth="200" IsReadOnly="True"/>
+            </DataGrid.Columns>
+        </DataGrid>
     </Grid>
 </UserControl> 
