@@ -32,6 +32,53 @@ namespace CRProjectEditor.Views
         
         private Point _canvasCenter = new Point(0,0); 
 
+        // Fields for marker dragging
+        private FrameworkElement? _draggedMarker;
+        private Scene? _draggedScene;
+        private Point _markerDragStartOffset; // Offset from marker's top-left to mouse click point
+        private bool _isDraggingMarker = false;
+        // Store lines connected to each scene for easier update during drag
+        private Dictionary<int, List<Line>> _sceneAssociatedLines = new Dictionary<int, List<Line>>();
+
+        // Fields for coordinate transformation
+        private double _currentRenderMinX;
+        private double _currentRenderMinY;
+        private double _currentRenderContentWidth;
+        private double _currentRenderContentHeight;
+        private double _canvasActualWidth;
+        private double _canvasActualHeight;
+        private double _currentWpfRenderScale;
+        private double _currentOffsetX;
+        private double _currentOffsetY;
+
+        // Selected Scene
+        private Scene? _selectedScene;
+        public Scene? SelectedScene 
+        {
+            get => _selectedScene;
+            private set
+            {
+                if (_selectedScene != value)
+                {
+                    // Restore border of previously selected marker
+                    if (_selectedScene != null && _sceneMarkers.TryGetValue(_selectedScene.Id, out var prevMarker))
+                    {
+                        if (prevMarker is Border b) b.BorderBrush = Brushes.DarkSlateGray; // Default border
+                    }
+                    
+                    _selectedScene = value;
+                    
+                    // Highlight new selected marker
+                    if (_selectedScene != null && _sceneMarkers.TryGetValue(_selectedScene.Id, out var currentMarker))
+                    {
+                         if (currentMarker is Border b) b.BorderBrush = Brushes.Gold; // Highlight border
+                    }
+                    SceneSelected?.Invoke(_selectedScene);
+                }
+            }
+        }
+        public event Action<Scene?>? SceneSelected;
+
         // Helper to get color for scene type
         private Brush GetSceneTypeBrush(SceneType sceneType)
         {
@@ -169,39 +216,69 @@ namespace CRProjectEditor.Views
             }
             Debug.WriteLine("InteractiveMapView: PopulateScenesRenderInfo - Proceeding with calculations.");
 
-            double minX = Scenes.Min(s => s.X);
+            _currentWpfRenderScale = wpfRenderScale; // Store the scale used for this population
+            _canvasActualWidth = MapCanvas.ActualWidth;
+            _canvasActualHeight = MapCanvas.ActualHeight;
+
+            _currentRenderMinX = Scenes.Min(s => s.X);
+            _currentRenderMinY = Scenes.Min(s => s.Y);
             double maxX = Scenes.Max(s => s.X);
-            double minY = Scenes.Min(s => s.Y);
             double maxY = Scenes.Max(s => s.Y);
-
-            // Effective width/height of the scene content after wpfRenderScale
-            double scenesContentWidth = (maxX - minX) * wpfRenderScale;
-            double scenesContentHeight = (maxY - minY) * wpfRenderScale;
             
-            // If there's only one scene or all scenes are at the same point,
-            // ensure content width/height is not zero to avoid division by zero or tiny scales.
-            // Use a nominal size (e.g., wpfRenderScale itself) for a single point.
-            if (scenesContentWidth == 0) scenesContentWidth = wpfRenderScale;
-            if (scenesContentHeight == 0) scenesContentHeight = wpfRenderScale;
+            _currentRenderContentWidth = (maxX - _currentRenderMinX) * _currentWpfRenderScale;
+            _currentRenderContentHeight = (maxY - _currentRenderMinY) * _currentWpfRenderScale;
 
+            if (_currentRenderContentWidth == 0) _currentRenderContentWidth = _currentWpfRenderScale; // Avoid division by zero for single point
+            if (_currentRenderContentHeight == 0) _currentRenderContentHeight = _currentWpfRenderScale;
 
-            double canvasCenterX = MapCanvas.ActualWidth / 2;
-            double canvasCenterY = MapCanvas.ActualHeight / 2;
+            double canvasCenterX = _canvasActualWidth / 2;
+            double canvasCenterY = _canvasActualHeight / 2;
 
-            double scaledMinX = minX * wpfRenderScale;
-            double totalScaledContentWidth = (maxX - minX) * wpfRenderScale;
-            double totalScaledContentHeight = (maxY - minY) * wpfRenderScale;
+            // This offsetX and offsetY are calculated to center the entire group of scaled scenes.
+            // scene.X * _currentWpfRenderScale gives position relative to (minX * _currentWpfRenderScale, minY * _currentWpfRenderScale)
+            // then this whole block is shifted.
+            // Offset to shift the top-left of the scaled content bounding box so that the content center aligns with canvas center.
+            double groupScaledMinX = _currentRenderMinX * _currentWpfRenderScale;
+            double groupScaledMinY = _currentRenderMinY * _currentWpfRenderScale;
 
-            double offsetX = canvasCenterX - (totalScaledContentWidth / 2) - scaledMinX;
-            double offsetY = canvasCenterY - (totalScaledContentHeight / 2) - (minY * wpfRenderScale);
+            double calculatedOffsetX = canvasCenterX - (_currentRenderContentWidth / 2) - groupScaledMinX;
+            double calculatedOffsetY = canvasCenterY - (_currentRenderContentHeight / 2) - groupScaledMinY;
+            
+            // Store these for reverse calculation
+            // These are the offsets that were ADDED to (scene.X * _currentWpfRenderScale) to get screen coods.
+            // So, screenX = (scene.X * _currentWpfRenderScale) + _currentOffsetX; 
+            // scene.X = (screenX - _currentOffsetX) / _currentWpfRenderScale;
+            // This interpretation makes _currentOffsetX and _currentOffsetY include the minX/minY scaling factor.
+            // Let's redefine how we use and store them for clarity in reverse.
+
+            // Let's calculate offsetX and offsetY for the simplified reverse formula:
+            // screenX_center = (logicalX_scene * scale) + finalOffsetX
+            // logicalX_scene = (screenX_center - finalOffsetX) / scale
+            // where finalOffsetX centers the entire scaled range.
+
+            // Offset to align the (0,0) of the logical coordinate system (after scaling) to its screen position
+            // such that the entire content block is centered.
+            // (logicalX * scale) is the position if (minX, minY) of logical was at (0,0) on screen.
+            // We want to shift this so that the center of ( (minX..maxX)*scale ) block is at canvasCenter.
+            
+            // Storing the translation part that centers the content block
+            _currentOffsetX = canvasCenterX - (_currentRenderContentWidth / 2);
+            _currentOffsetY = canvasCenterY - (_currentRenderContentHeight / 2);
+
 
             foreach (var scene in Scenes)
             {
-                double scaledX = scene.X * wpfRenderScale + offsetX;
-                double scaledY = scene.Y * wpfRenderScale + offsetY;
-                scenesRenderInfo[scene.Id] = new Point(scaledX, scaledY);
+                // Screen position relative to the top-left of the *scaled content block*
+                double relativeScaledX = (scene.X - _currentRenderMinX) * _currentWpfRenderScale;
+                double relativeScaledY = (scene.Y - _currentRenderMinY) * _currentWpfRenderScale;
+
+                // Final screen position (center of marker)
+                double finalScreenX = relativeScaledX + _currentOffsetX;
+                double finalScreenY = relativeScaledY + _currentOffsetY;
+                
+                scenesRenderInfo[scene.Id] = new Point(finalScreenX, finalScreenY);
             }
-            Debug.WriteLine($"InteractiveMapView: PopulateScenesRenderInfo completed. Processed and added {scenesRenderInfo.Count} scenes to scenesRenderInfo. Initial Scenes.Count was {Scenes?.Count ?? 0}.");
+            Debug.WriteLine($"InteractiveMapView: PopulateScenesRenderInfo completed. Processed and added {scenesRenderInfo.Count} scenes to scenesRenderInfo. Initial Scenes.Count was {Scenes?.Count ?? 0}. Stored offsetX: {_currentOffsetX}, offsetY: {_currentOffsetY}, minX: {_currentRenderMinX}, minY: {_currentRenderMinY}, scale: {_currentWpfRenderScale}");
         }
 
 
@@ -220,11 +297,15 @@ namespace CRProjectEditor.Views
                 Debug.WriteLine($"InteractiveMapView: DrawMap - Canvas not ready. Width: {MapCanvas.ActualWidth}, Height: {MapCanvas.ActualHeight}. Clearing children and returning.");
                 MapCanvas.Children.Clear(); 
                 scenesRenderInfo.Clear();   
+                _sceneAssociatedLines.Clear(); // Clear associated lines
                 return;
             }
 
             MapCanvas.Children.Clear();
-            Debug.WriteLine("InteractiveMapView: DrawMap - Canvas cleared.");
+            _sceneMarkers.Clear(); // Clear marker references
+            _connectionLines.Clear(); // Clear line references
+            _sceneAssociatedLines.Clear(); // Clear associated lines
+            Debug.WriteLine("InteractiveMapView: DrawMap - Canvas, markers, lines and associated lines cleared.");
 
             Debug.WriteLine("InteractiveMapView: DrawMap - Checking Scenes collection.");
             if (Scenes == null || !Scenes.Any())
@@ -250,6 +331,8 @@ namespace CRProjectEditor.Views
         private void DrawConnections()
         {
             Debug.WriteLine("InteractiveMapView: DrawConnections called.");
+            // _sceneAssociatedLines.Clear(); // Clear previous associations - This should be done in DrawMap or before repopulating
+
             if (Scenes == null || !scenesRenderInfo.Any())
             {
                 Debug.WriteLine($"InteractiveMapView: DrawConnections - Early exit. Scenes is null: {Scenes == null}, or scenesRenderInfo is empty: {!scenesRenderInfo.Any()}.");
@@ -304,15 +387,23 @@ namespace CRProjectEditor.Views
                         Y1 = sourcePos.Y,
                         X2 = targetPos.X,
                         Y2 = targetPos.Y,
-                        Stroke = Brushes.Red, // Keep red for visibility during debugging
-                        StrokeThickness = 2    // Keep thicker for visibility
+                        Stroke = Brushes.Red, 
+                        StrokeThickness = 2    
                     };
                     MapCanvas.Children.Add(line);
-                    _connectionLines.Add(line); // Track the line
-                    // Debug.WriteLine($"InteractiveMapView: DrawConnections - Added line from {scene.Id} ({sourcePos.X},{sourcePos.Y}) to {connectedSceneId} ({targetPos.X},{targetPos.Y})");
+                    _connectionLines.Add(line); 
+
+                    // Associate line with both scenes it connects
+                    if (!_sceneAssociatedLines.ContainsKey(scene.Id))
+                        _sceneAssociatedLines[scene.Id] = new List<Line>();
+                    _sceneAssociatedLines[scene.Id].Add(line);
+
+                    if (!_sceneAssociatedLines.ContainsKey(connectedSceneId))
+                        _sceneAssociatedLines[connectedSceneId] = new List<Line>();
+                    _sceneAssociatedLines[connectedSceneId].Add(line);
                 }
             }
-            Debug.WriteLine($"InteractiveMapView: DrawConnections finished. Added {_connectionLines.Count} lines to the canvas.");
+            Debug.WriteLine($"InteractiveMapView: DrawConnections finished. Added {_connectionLines.Count} lines to the canvas. {_sceneAssociatedLines.Keys.Count} scenes have associated lines entries.");
         }
 
         private void DrawMarkers()
@@ -349,10 +440,16 @@ namespace CRProjectEditor.Views
                     Width = 150, 
                     Height = 45, 
                     Background = GetSceneTypeBrush(scene.SceneType), 
-                    BorderBrush = Brushes.DarkSlateGray,
+                    BorderBrush = (_selectedScene != null && _selectedScene.Id == scene.Id) ? Brushes.Gold : Brushes.DarkSlateGray, // Apply selection highlight
                     BorderThickness = new Thickness(1.5), 
-                    CornerRadius = new CornerRadius(4)   
+                    CornerRadius = new CornerRadius(4),
+                    Tag = scene // Store the Scene object in the Tag property for easy access
                 };
+
+                // Attach event handlers for dragging
+                marker.MouseLeftButtonDown += Marker_MouseLeftButtonDown;
+                marker.MouseMove += Marker_MouseMove;
+                marker.MouseLeftButtonUp += Marker_MouseLeftButtonUp;
 
                 StackPanel stackPanel = new StackPanel { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
                 stackPanel.Children.Add(new TextBlock { Text = scene.Name, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 140 });
@@ -361,6 +458,7 @@ namespace CRProjectEditor.Views
                 
                 MapCanvas.Children.Add(marker);
                 markersAddedToCanvas++;
+                _sceneMarkers[scene.Id] = marker; // Store marker reference
                                                 
                 Canvas.SetLeft(marker, scaledPos.X - marker.Width / 2);
                 Canvas.SetTop(marker, scaledPos.Y - marker.Height / 2);
@@ -411,8 +509,13 @@ namespace CRProjectEditor.Views
 
         private void MapCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine($"InteractiveMapView: OnMouseDown called. Button: {e.ChangedButton}");
-            if (e.ChangedButton == MouseButton.Left)
+            if (e.OriginalSource == MapCanvas) // Click on empty space
+            {
+                SelectedScene = null;
+                Debug.WriteLine("InteractiveMapView: Clicked on empty canvas space, selection cleared.");
+            }
+            
+            if (e.ChangedButton == MouseButton.Left && !_isDraggingMarker) 
             {
                 _panLastMousePosition = e.GetPosition(this); 
                 _isPanning = true;
@@ -441,8 +544,8 @@ namespace CRProjectEditor.Views
 
         private void MapCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine($"InteractiveMapView: OnMouseUp called. Button: {e.ChangedButton}");
-            if (e.ChangedButton == MouseButton.Left)
+            // Debug.WriteLine($"InteractiveMapView: OnMouseUp called. Button: {e.ChangedButton}. IsPanning: {_isPanning}");
+            if (e.ChangedButton == MouseButton.Left && _isPanning) // Stop panning if it was active (and not a marker drag release)
             {
                 _isPanning = false;
                 this.Cursor = Cursors.Arrow;
@@ -480,6 +583,169 @@ namespace CRProjectEditor.Views
             // If an explicit redraw is needed *after* this reset:
             DrawMap(); 
             Debug.WriteLine("InteractiveMapView: ResetAndCenterView finished.");
+        }
+
+        private void Marker_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_isPanning) return; 
+
+            var marker = sender as FrameworkElement;
+            if (marker != null && marker.Tag is Scene scene)
+            {
+                // If it's a double click, or some other condition for selection vs drag start can be here
+                // For now, any click will select, and also initiate drag possibility.
+                SelectedScene = scene; 
+                Debug.WriteLine($"InteractiveMapView: Scene ID: {scene.Id} selected by click.");
+
+                _draggedMarker = marker;
+                _draggedScene = scene;
+                _markerDragStartOffset = e.GetPosition(marker); 
+                _isDraggingMarker = true;
+                _draggedMarker.CaptureMouse();
+                Panel.SetZIndex(_draggedMarker, 100); 
+                this.Cursor = Cursors.Hand;
+                // Debug.WriteLine($"InteractiveMapView: Marker_MouseLeftButtonDown on Scene ID: {_draggedScene.Id}, Name: {_draggedScene.Name}");
+                e.Handled = true; 
+            }
+        }
+
+        private void Marker_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (_isDraggingMarker && _draggedMarker != null && _draggedScene != null)
+            {
+                Point currentMousePositionOnCanvas = e.GetPosition(MapCanvas);
+                
+                double newLeft = currentMousePositionOnCanvas.X - _markerDragStartOffset.X;
+                double newTop = currentMousePositionOnCanvas.Y - _markerDragStartOffset.Y;
+
+                Canvas.SetLeft(_draggedMarker, newLeft);
+                Canvas.SetTop(_draggedMarker, newTop);
+
+                Point newMarkerCenter = new Point(newLeft + _draggedMarker.ActualWidth / 2, newTop + _draggedMarker.ActualHeight / 2);
+                scenesRenderInfo[_draggedScene.Id] = newMarkerCenter; // Update screen position for line drawing
+
+                if (_sceneAssociatedLines.TryGetValue(_draggedScene.Id, out var linesToUpdate))
+                {
+                    foreach (var line in linesToUpdate)
+                    {
+                        // One end of the line is the newMarkerCenter.
+                        // The other end is the center of the *other* scene this line connects to.
+                        Point otherEndPoint = new Point(); 
+                        bool foundOtherEnd = false;
+
+                        // Determine which scene is the other end of this specific line
+                        // This relies on the fact that _sceneAssociatedLines links this line to _draggedScene
+                        // So, we need to find which of _draggedScene's connections corresponds to this line.
+                        
+                        // Iterate through all scenes to find the other end point of the line.
+                        // This is not super efficient but clear.
+                        foreach(var sceneEntry in scenesRenderInfo)
+                        {
+                            if(sceneEntry.Key == _draggedScene.Id) continue; // Skip self
+
+                            Point potentialOtherEnd = sceneEntry.Value;
+                            // Check if one end of the line matches potentialOtherEnd (within a small tolerance for double comparison)
+                            if ((Math.Abs(line.X1 - potentialOtherEnd.X) < 0.01 && Math.Abs(line.Y1 - potentialOtherEnd.Y) < 0.01))
+                            {
+                                // If X1,Y1 is the other scene, then X2,Y2 must be the dragged scene
+                                otherEndPoint = potentialOtherEnd;
+                                foundOtherEnd = true;
+                                line.X2 = newMarkerCenter.X;
+                                line.Y2 = newMarkerCenter.Y;
+                                break; 
+                            }
+                            if ((Math.Abs(line.X2 - potentialOtherEnd.X) < 0.01 && Math.Abs(line.Y2 - potentialOtherEnd.Y) < 0.01))
+                            {
+                                // If X2,Y2 is the other scene, then X1,Y1 must be the dragged scene
+                                otherEndPoint = potentialOtherEnd;
+                                foundOtherEnd = true;
+                                line.X1 = newMarkerCenter.X;
+                                line.Y1 = newMarkerCenter.Y;
+                                break;
+                            }
+                        }
+                        // If foundOtherEnd is false, it means the line was associated with _draggedScene,
+                        // but its other endpoint doesn't match any *current* center in scenesRenderInfo (other than _draggedScene itself).
+                        // This might happen if the line was to a scene not yet in scenesRenderInfo or an old line.
+                        // However, DrawConnections should only create lines between scenes present in scenesRenderInfo.
+                    }
+                }
+                e.Handled = true;
+            }
+            else if (_isPanning && e.LeftButton == MouseButtonState.Pressed) // Existing canvas panning logic, ensure button is still pressed
+            {
+                Point currentMousePosition = e.GetPosition(this); // Relative to InteractiveMapView UserControl
+                Vector delta = currentMousePosition - _panLastMousePosition;
+
+                var group = MapCanvas.RenderTransform as TransformGroup;
+                var pan = group?.Children.OfType<TranslateTransform>().FirstOrDefault();
+                if (pan != null)
+                {
+                    pan.X += delta.X;
+                    pan.Y += delta.Y;
+                }
+                _panLastMousePosition = currentMousePosition;
+                 e.Handled = true;
+            }
+        }
+
+        private void Marker_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (_isDraggingMarker && _draggedMarker != null && _draggedScene != null)
+            {
+                _draggedMarker.ReleaseMouseCapture();
+                Panel.SetZIndex(_draggedMarker, 1); 
+                this.Cursor = Cursors.Arrow;
+                // Debug.WriteLine($"InteractiveMapView: Marker_MouseLeftButtonUp for Scene ID: {_draggedScene.Id}");
+
+                // Check if it was a drag or just a click for selection purposes
+                Point releasePosition = e.GetPosition(MapCanvas);
+                Point initialCanvasPosition = new Point(
+                    Canvas.GetLeft(_draggedMarker) + _markerDragStartOffset.X,
+                    Canvas.GetTop(_draggedMarker) + _markerDragStartOffset.Y
+                );
+
+                // If mouse hasn't moved significantly, it's a click (selection already handled in MouseDown or should be refined here)
+                // For now, selection happens on MouseDown. Dragging updates position.
+                // The _isDraggingMarker flag correctly distinguishes drag from a click that didn't move.
+
+                double finalMarkerCanvasLeft = Canvas.GetLeft(_draggedMarker);
+                double finalMarkerCanvasTop = Canvas.GetTop(_draggedMarker);
+                Point finalMarkerScreenCenter = new Point(finalMarkerCanvasLeft + _draggedMarker.ActualWidth / 2, finalMarkerCanvasTop + _draggedMarker.ActualHeight / 2);
+                
+                scenesRenderInfo[_draggedScene.Id] = finalMarkerScreenCenter; // Ensure final screen position is stored
+
+                // Convert finalMarkerScreenCenter (screen coordinates) back to logical Scene.X, Scene.Y
+                if (_currentWpfRenderScale == 0) 
+                {
+                     Debug.WriteLine("InteractiveMapView: Error - _currentWpfRenderScale is zero, cannot convert coordinates back.");
+                }
+                else
+                {
+                    // Reverse the transformation from PopulateScenesRenderInfo:
+                    // finalScreenX = ((scene.X - _currentRenderMinX) * _currentWpfRenderScale) + _currentOffsetX;
+                    // finalScreenX - _currentOffsetX = (scene.X - _currentRenderMinX) * _currentWpfRenderScale;
+                    // (finalScreenX - _currentOffsetX) / _currentWpfRenderScale = scene.X - _currentRenderMinX;
+                    // scene.X = ((finalScreenX - _currentOffsetX) / _currentWpfRenderScale) + _currentRenderMinX;
+
+                    double logicalX = ((finalMarkerScreenCenter.X - _currentOffsetX) / _currentWpfRenderScale) + _currentRenderMinX;
+                    double logicalY = ((finalMarkerScreenCenter.Y - _currentOffsetY) / _currentWpfRenderScale) + _currentRenderMinY;
+
+                    _draggedScene.X = (int)Math.Round(logicalX);
+                    _draggedScene.Y = (int)Math.Round(logicalY);
+
+                    Debug.WriteLine($"InteractiveMapView: Dragged Scene ID: {_draggedScene.Id} to Screen Center: ({finalMarkerScreenCenter.X:F2}, {finalMarkerScreenCenter.Y:F2}). Calculated Logical Coords: (X: {_draggedScene.X}, Y: {_draggedScene.Y})");
+                    
+                    // TODO: Notify ViewModel that _draggedScene's X, Y have changed so it can enable save or auto-save.
+                    // For now, the change is in the Scene object within the ObservableCollection.
+                    // The DataGrid should reflect this if it's two-way bound or notified.
+                }
+
+                _isDraggingMarker = false;
+                _draggedMarker = null;
+                _draggedScene = null;
+                e.Handled = true;
+            }
         }
     }
 } 

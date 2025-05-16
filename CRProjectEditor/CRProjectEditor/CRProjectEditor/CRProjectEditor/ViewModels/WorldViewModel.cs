@@ -14,6 +14,7 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using System.Windows; // Для Application.Current
 using System.Windows.Input; // For ICommand
+using System.Diagnostics;
 
 namespace CRProjectEditor.ViewModels
 {
@@ -54,7 +55,8 @@ namespace CRProjectEditor.ViewModels
 
         public ICommand GenerateLocationCommand { get; }
         public ICommand GenerateCoordinatesCommand { get; }
-        public ICommand GenerateLocationForPopulationCommand { get; } // New command
+        public IAsyncRelayCommand GenerateLocationForPopulationCommand { get; }
+        public IAsyncRelayCommand SaveCurrentMapLayoutCommand { get; }
 
         public WorldViewModel()
         {
@@ -66,7 +68,8 @@ namespace CRProjectEditor.ViewModels
 
             GenerateLocationCommand = new AsyncRelayCommand(GenerateLocationAndRefreshAsync);
             GenerateCoordinatesCommand = new AsyncRelayCommand(GenerateCoordinatesAndRefreshAsync);
-            GenerateLocationForPopulationCommand = new AsyncRelayCommand(GenerateLocationForPopulationAndRefreshAsync); // Initialize new command
+            GenerateLocationForPopulationCommand = new AsyncRelayCommand(GenerateLocationForPopulationAndRefreshAsync);
+            SaveCurrentMapLayoutCommand = new AsyncRelayCommand(SaveCurrentMapLayoutAsync);
             _ = LoadScenesAsync(); 
         }
 
@@ -451,6 +454,34 @@ namespace CRProjectEditor.ViewModels
             ShowNotification($"Локация для населения {TargetPopulation} ('{config.LocationName}') успешно сгенерирована! Сцен создано: {generatedScenes.Count}");
             
             await LoadScenesAsync();
+        }
+
+        private async Task SaveCurrentMapLayoutAsync()
+        {
+            if (Scenes == null || !Scenes.Any())
+            {
+                ShowNotification("Нет сцен для сохранения.");
+                return;
+            }
+
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                    Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+                };
+                // Ensure Scenes is your ObservableCollection<Scene>
+                string jsonString = JsonSerializer.Serialize(Scenes.ToList(), options); 
+                await File.WriteAllTextAsync(Constants.ScenesPath, jsonString);
+                ShowNotification($"Расположение {Scenes.Count} сцен успешно сохранено в {Constants.ScenesPath}");
+            }
+            catch (Exception ex)
+            {
+                ShowNotification($"Ошибка при сохранении расположения сцен: {ex.Message}");
+                Debug.WriteLine($"Ошибка сохранения JSON: {ex.Message}");
+            }
         }
 
         private bool CheckIfTypeCanBeAdded(SceneType type, IReadOnlyDictionary<SceneType, int> currentCounts,
