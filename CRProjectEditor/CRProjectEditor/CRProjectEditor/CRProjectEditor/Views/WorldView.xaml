@@ -28,11 +28,11 @@
                             <DataTemplate DataType="{x:Type viewModels:SceneTypeCountSetting}">
                                 <Grid Margin="0,3">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*"/>
-                                        <ColumnDefinition Width="Auto" MinWidth="120"/> <!-- Для слайдера -->
-                                        <ColumnDefinition Width="Auto" MinWidth="30"/> <!-- Для значения слайдера -->
+                                        <ColumnDefinition Width="*" MinWidth="100"/> <!-- TextBlock for SceneTypeName -->
+                                        <ColumnDefinition Width="3*" MinWidth="200"/> <!-- Increased MinWidth for Slider -->
+                                        <ColumnDefinition Width="Auto" MinWidth="35"/> <!-- TextBlock for Count -->
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding SceneTypeName}" VerticalAlignment="Center" Margin="0,0,5,0"/>
+                                    <TextBlock Grid.Column="0" Text="{Binding SceneTypeName}" VerticalAlignment="Center" Margin="0,0,5,0" ToolTip="{Binding SceneTypeName}"/>
                                     <Slider Grid.Column="1" 
                                             Value="{Binding Count, Mode=TwoWay}" 
                                             Minimum="0" 
@@ -88,7 +88,9 @@
                     <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="2*" MinWidth="200" IsReadOnly="True"/>
                 </DataGrid.Columns>
             </DataGrid>
-            <!-- Нижняя половина (Grid.Row="1") пока пустая -->
+            
+            <!-- Нижняя половина (Grid.Row="1") для карты -->
+            <local:InteractiveMapView Grid.Row="1" Scenes="{Binding Scenes}"/>
         </Grid>
     </Grid>
 </UserControl> 
