@@ -40,6 +40,12 @@ namespace CRProjectEditor.Models
         [JsonPropertyName("connections")]
         public List<SceneConnection> Connections { get; set; } = new List<SceneConnection>();
 
+        [JsonPropertyName("population")]
+        public int Population { get; set; }
+
+        [JsonPropertyName("radius")]
+        public int Radius { get; set; } // Changed to int for consistency, can be float if needed
+
         // Properties for the coordinate generation algorithm
         [JsonIgnore]
         public Vector2 Point { get; set; } // Using Vector2 for calculations

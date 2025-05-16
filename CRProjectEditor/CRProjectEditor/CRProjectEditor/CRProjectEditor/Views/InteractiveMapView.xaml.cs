@@ -19,7 +19,7 @@ namespace CRProjectEditor.Views
         private Point? lastMousePosition;
         private ScaleTransform scaleTransform;
         private TranslateTransform translateTransform;
-        private double wpfRenderScale = 30.0; // Changed from 40 to 30 as per user request
+        private double wpfRenderScale = 30.0; // Было 30.0
 
         // Stores pre-calculated, scaled, and offset positions for scene centers
         private Dictionary<int, Point> scenesRenderInfo = new Dictionary<int, Point>();
@@ -45,6 +45,12 @@ namespace CRProjectEditor.Views
 
         // Event for requesting a new connection
         public event Action<Scene, Scene>? ConnectionRequested;
+
+        // Event for requesting a new scene to be created
+        public event Action<SceneType, Point>? SceneDroppedOnCanvas;
+
+        // Event for requesting a scene to be edited
+        public event Action<Scene>? SceneEditRequested; 
 
         // Fields for coordinate transformation
         private double _currentRenderMinX;
@@ -130,6 +136,12 @@ namespace CRProjectEditor.Views
             }
         }
 
+        // Поля для отслеживания двойного клика
+        private DateTime _lastMarkerClickTime = DateTime.MinValue;
+        private Point _lastMarkerClickPosition;
+        private FrameworkElement? _lastClickedMarker = null;
+        private const int DoubleClickTime = 500; // мс, стандартное время для двойного клика Windows
+
         public InteractiveMapView()
         {
             InitializeComponent();
@@ -146,6 +158,11 @@ namespace CRProjectEditor.Views
             MapCanvas.MouseMove += MapCanvas_MouseMove;
             MapCanvas.MouseDown += MapCanvas_MouseDown;
             MapCanvas.MouseUp += MapCanvas_MouseUp;
+
+            // Add drag-drop event handlers
+            MapCanvas.DragEnter += MapCanvas_DragEnter;
+            MapCanvas.DragOver += MapCanvas_DragOver;
+            MapCanvas.Drop += MapCanvas_Drop;
 
             this.Loaded += UserControl_Loaded; 
             MapCanvas.SizeChanged += MapCanvas_SizeChanged; 
@@ -393,9 +410,9 @@ namespace CRProjectEditor.Views
 
                 Border marker = new Border
                 {
-                    Width = 150, 
-                    Height = 45, 
-                    Background = GetSceneTypeBrush(scene.SceneType), 
+                    Width = 100,
+                    Height = 30,
+                    Background = GetSceneTypeBrush(scene.SceneType),
                     BorderBrush = (_selectedScene != null && _selectedScene.Id == scene.Id) ? Brushes.Gold : Brushes.DarkSlateGray, // Apply selection highlight
                     BorderThickness = new Thickness(1.5), 
                     CornerRadius = new CornerRadius(4),
@@ -406,10 +423,11 @@ namespace CRProjectEditor.Views
                 marker.MouseLeftButtonDown += Marker_MouseLeftButtonDown;
                 marker.MouseMove += Marker_MouseMove; // This is for marker dragging
                 marker.MouseLeftButtonUp += Marker_MouseLeftButtonUp; // This is for marker dragging
+                // marker.AddHandler(Control.MouseDoubleClickEvent, new MouseButtonEventHandler(Marker_MouseDoubleClick), true /* handledEventsToo */); // Убираем старый обработчик
 
                 StackPanel stackPanel = new StackPanel { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-                stackPanel.Children.Add(new TextBlock { Text = scene.Name, FontWeight = FontWeights.Bold, HorizontalAlignment = HorizontalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 140 });
-                stackPanel.Children.Add(new TextBlock { Text = scene.SceneType.ToString(), FontSize = 10, HorizontalAlignment = HorizontalAlignment.Center });
+                stackPanel.Children.Add(new TextBlock { Text = scene.Name, FontWeight = FontWeights.Bold, FontSize = 9, HorizontalAlignment = HorizontalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 90 });
+                stackPanel.Children.Add(new TextBlock { Text = scene.SceneType.ToString(), FontSize = 7, HorizontalAlignment = HorizontalAlignment.Center });
                 marker.Child = stackPanel;
                 
                 MapCanvas.Children.Add(marker);
@@ -600,58 +618,81 @@ namespace CRProjectEditor.Views
 
         private void Marker_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            // if (_isPanning) return; // This check is effectively handled by MapCanvas capturing mouse during pan
-
             var marker = sender as FrameworkElement;
-            if (marker != null && marker.Tag is Scene scene)
+            if (marker == null || !(marker.Tag is Scene scene)) return;
+
+            Point currentClickPosition = e.GetPosition(this); // Позиция относительно UserControl
+            DateTime currentClickTime = DateTime.Now;
+
+            // Проверка на двойной клик
+            if (_lastClickedMarker == marker && (currentClickTime - _lastMarkerClickTime).TotalMilliseconds < DoubleClickTime && 
+                Math.Abs(currentClickPosition.X - _lastMarkerClickPosition.X) < 5 && // Небольшой допуск на смещение мыши
+                Math.Abs(currentClickPosition.Y - _lastMarkerClickPosition.Y) < 5)
             {
-                SelectedScene = scene; 
-                Debug.WriteLine($"InteractiveMapView: Scene ID: {scene.Id} selected by click.");
+                // Это двойной клик
+                _lastMarkerClickTime = DateTime.MinValue; // Сбрасываем время, чтобы следующий клик не считался тройным
+                _lastClickedMarker = null;
+                
+                Debug.WriteLine($"InteractiveMapView: Double-click detected on Scene ID: {scene.Id}");
+                SceneEditRequested?.Invoke(scene);
+                e.Handled = true;
+                return; // Важно выйти, чтобы не началась логика перетаскивания/соединения
+            }
+            else
+            {
+                // Это одиночный клик (или первый клик двойного)
+                _lastMarkerClickTime = currentClickTime;
+                _lastMarkerClickPosition = currentClickPosition;
+                _lastClickedMarker = marker;
+            }
 
-                if (Keyboard.Modifiers == ModifierKeys.Control && !_isDraggingMarker) 
-                {
-                    // --- Start Drawing Connection ---
-                    _isDrawingConnectionMode = true;
-                    _connectionSourceScene = scene;
-                    
-                    if (!scenesRenderInfo.TryGetValue(scene.Id, out Point sourceMarkerCenter))
-                    {
-                        Debug.WriteLine($"[ERROR] Marker_MouseLeftButtonDown: Could not get source marker center for scene {scene.Name}");
-                        _isDrawingConnectionMode = false; 
-                        _connectionSourceScene = null;
-                        e.Handled = true; 
-                        return;
-                    }
+            // Если это не двойной клик, продолжаем с существующей логикой одиночного клика
+            SelectedScene = scene; 
+            Debug.WriteLine($"InteractiveMapView: Scene ID: {scene.Id} selected by single click.");
 
-                    _tempConnectionLine = new Line
-                    {
-                        X1 = sourceMarkerCenter.X, Y1 = sourceMarkerCenter.Y,
-                        X2 = sourceMarkerCenter.X, Y2 = sourceMarkerCenter.Y, 
-                        Stroke = Brushes.LawnGreen, 
-                        StrokeThickness = 2,
-                        StrokeDashArray = new DoubleCollection { 2, 2 }
-                    };
-                    MapCanvas.Children.Add(_tempConnectionLine);
-                    Panel.SetZIndex(_tempConnectionLine, 50); 
-                    
-                    MapCanvas.CaptureMouse(); 
-                    this.Cursor = Cursors.Cross;
-                    Debug.WriteLine($"InteractiveMapView: Started drawing connection from {scene.Name}");
-                    e.Handled = true; 
-                    return; // IMPORTANT: Prevent falling through to marker drag logic
-                }
-                else if (!_isDrawingConnectionMode && !_isDraggingMarker) // Only start marker drag if not drawing a connection AND not already dragging
+            if (Keyboard.Modifiers == ModifierKeys.Control && !_isDraggingMarker) 
+            {
+                // --- Start Drawing Connection ---
+                _isDrawingConnectionMode = true;
+                _connectionSourceScene = scene;
+                
+                if (!scenesRenderInfo.TryGetValue(scene.Id, out Point sourceMarkerCenter))
                 {
-                    // --- Start Marker Drag (existing logic) ---
-                    _draggedMarker = marker;
-                    _draggedScene = scene;
-                    _markerDragStartOffset = e.GetPosition(marker); 
-                    _isDraggingMarker = true;
-                    _draggedMarker.CaptureMouse(); 
-                    Panel.SetZIndex(_draggedMarker, 100); 
-                    this.Cursor = Cursors.Hand;
+                    Debug.WriteLine($"[ERROR] Marker_MouseLeftButtonDown: Could not get source marker center for scene {scene.Name}");
+                    _isDrawingConnectionMode = false; 
+                    _connectionSourceScene = null;
                     e.Handled = true; 
+                    return;
                 }
+
+                _tempConnectionLine = new Line
+                {
+                    X1 = sourceMarkerCenter.X, Y1 = sourceMarkerCenter.Y,
+                    X2 = sourceMarkerCenter.X, Y2 = sourceMarkerCenter.Y, 
+                    Stroke = Brushes.DodgerBlue,
+                    StrokeThickness = 2,
+                    StrokeDashArray = new DoubleCollection { 2, 2 }
+                };
+                MapCanvas.Children.Add(_tempConnectionLine);
+                Panel.SetZIndex(_tempConnectionLine, 50); 
+                
+                MapCanvas.CaptureMouse(); 
+                this.Cursor = Cursors.Cross;
+                Debug.WriteLine($"InteractiveMapView: Started drawing connection from {scene.Name}");
+                e.Handled = true; 
+                return; 
+            }
+            else if (!_isDrawingConnectionMode && !_isDraggingMarker) 
+            {
+                // --- Start Marker Drag (existing logic) ---
+                _draggedMarker = marker;
+                _draggedScene = scene;
+                _markerDragStartOffset = e.GetPosition(marker); 
+                _isDraggingMarker = true;
+                _draggedMarker.CaptureMouse(); 
+                Panel.SetZIndex(_draggedMarker, 100); 
+                this.Cursor = Cursors.Hand;
+                e.Handled = true; 
             }
         }
 
@@ -727,6 +768,88 @@ namespace CRProjectEditor.Views
                 _draggedMarker = null;
                 _draggedScene = null;
                 // e.Handled = true; // Not strictly necessary as mouse was captured by marker
+            }
+        }
+
+        // Original PointToLogical - KEEP THIS
+        public Point PointToLogical(Point canvasPoint)
+        {
+            var transformedPointByPanZoom = MapCanvas.RenderTransform.Inverse.Transform(canvasPoint);
+
+            double logicalX = (transformedPointByPanZoom.X - _currentOffsetX) / _currentWpfRenderScale + _currentRenderMinX;
+            double logicalY = (transformedPointByPanZoom.Y - _currentOffsetY) / _currentWpfRenderScale + _currentRenderMinY;
+            
+            return new Point(logicalX, logicalY);
+        }
+        
+        // Original LogicalToPoint - KEEP THIS
+        public Point LogicalToPoint(double logicalX, double logicalY)
+        {
+            double relativeScaledX = (logicalX - _currentRenderMinX) * _currentWpfRenderScale;
+            double relativeScaledY = (logicalY - _currentRenderMinY) * _currentWpfRenderScale;
+
+            double finalScreenX = relativeScaledX + _currentOffsetX;
+            double finalScreenY = relativeScaledY + _currentOffsetY;
+
+            return new Point(finalScreenX, finalScreenY);
+        }
+
+        // Original UpdateAssociatedLines - KEEP THIS
+        private void UpdateAssociatedLines(Scene scene, Point newMarkerCenterPosition)
+        {
+            if (_sceneAssociatedLines.TryGetValue(scene.Id, out var linesToUpdate))
+            {
+                foreach (var line in linesToUpdate)
+                {
+                    if (Equals(line.Tag, scene.Id)) // Line starts at this scene
+                    {
+                        line.X1 = newMarkerCenterPosition.X;
+                        line.Y1 = newMarkerCenterPosition.Y;
+                    }
+                    else // Line ends at this scene
+                    {
+                        line.X2 = newMarkerCenterPosition.X;
+                        line.Y2 = newMarkerCenterPosition.Y;
+                    }
+                }
+            }
+        }
+
+        private void MapCanvas_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(SceneType).FullName))
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+            e.Handled = true;
+        }
+
+        private void MapCanvas_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(SceneType).FullName))
+            {
+                e.Effects = DragDropEffects.Copy;
+            }
+            else
+            {
+                e.Effects = DragDropEffects.None;
+            }
+            // Potentially provide feedback here, like drawing a ghost marker
+            e.Handled = true;
+        }
+
+        private void MapCanvas_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetData(typeof(SceneType).FullName) is SceneType sceneType)
+            {
+                Point dropPositionOnCanvas = e.GetPosition(MapCanvas);
+                Point logicalDropPosition = PointToLogical(dropPositionOnCanvas); // Uses the original PointToLogical
+                SceneDroppedOnCanvas?.Invoke(sceneType, logicalDropPosition);
+                e.Handled = true;
             }
         }
     }

@@ -61,6 +61,7 @@ namespace CRProjectEditor.ViewModels
         [ObservableProperty]
         [NotifyCanExecuteChangedFor(nameof(AddConnectionCommand))]
         [NotifyCanExecuteChangedFor(nameof(DeleteAllConnectionsCommand))]
+        [NotifyCanExecuteChangedFor(nameof(DeleteSelectedSceneCommand))]
         private Scene? _mapSelectedScene;
 
         [ObservableProperty]
@@ -71,9 +72,22 @@ namespace CRProjectEditor.ViewModels
 
         public IAsyncRelayCommand AddConnectionCommand { get; }
         public IAsyncRelayCommand DeleteAllConnectionsCommand { get; }
+        public IAsyncRelayCommand DeleteSelectedSceneCommand { get; }
+
+        public ObservableCollection<SceneType> AvailableSceneTypesForDrag { get; }
 
         public WorldViewModel()
         {
+            AvailableSceneTypesForDrag = new ObservableCollection<SceneType>();
+            foreach (SceneType type in Enum.GetValues(typeof(SceneType)))
+            {
+                // Optionally, filter out types like Town/District if they shouldn't be drag-creatable
+                // if (type != SceneType.Town && type != SceneType.District) 
+                // {
+                AvailableSceneTypesForDrag.Add(type);
+                // }
+            }
+
             SceneTypeConfigs = new ObservableCollection<SceneTypeCountSetting>();
             foreach (SceneType type in Enum.GetValues(typeof(SceneType)))
             {
@@ -87,6 +101,7 @@ namespace CRProjectEditor.ViewModels
             
             AddConnectionCommand = new AsyncRelayCommand(AddConnectionAsync, CanAddConnection);
             DeleteAllConnectionsCommand = new AsyncRelayCommand(DeleteAllConnectionsAsync, CanDeleteConnections);
+            DeleteSelectedSceneCommand = new AsyncRelayCommand(DeleteSelectedSceneAsync, CanDeleteSelectedScene);
             
             _ = LoadScenesAsync(); 
             this.PropertyChanged += (s, e) => {
@@ -158,9 +173,7 @@ namespace CRProjectEditor.ViewModels
             // targetScene.Connections.Add(new SceneConnection { ConnectedSceneId = MapSelectedScene.Id, ConnectionType = "Standard" });
             // }
 
-
-            ShowNotification($"Подключение от '{MapSelectedScene.Name}' к '{SelectedSceneForConnection.Name}' добавлено.");
-            await SaveCurrentMapLayoutAsync(); // Сохраняем изменения
+            await SaveCurrentMapLayoutAsync(); // Сохраняем изменения и оно покажет свое уведомление
             await LoadScenesAsync();      // Перезагружаем для обновления карты (и DataGrid)
                                           // MapSelectedScene может стать null после LoadScenesAsync, если объект пересоздается
                                           // По идее, ObservableCollection должен обновить существующие экземпляры, если Id совпадают.
@@ -213,9 +226,54 @@ namespace CRProjectEditor.ViewModels
                 }
             }
 
-            ShowNotification($"Все ({numRemoved}) подключения для сцены '{MapSelectedScene.Name}' удалены.");
-            await SaveCurrentMapLayoutAsync();
+            await SaveCurrentMapLayoutAsync(); // Сохраняем изменения и оно покажет свое уведомление
             await LoadScenesAsync(); 
+        }
+
+        private bool CanDeleteSelectedScene()
+        {
+            return MapSelectedScene != null;
+        }
+
+        private async Task DeleteSelectedSceneAsync()
+        {
+            if (MapSelectedScene == null)
+            {
+                ShowNotification("Сцена для удаления не выбрана.");
+                return;
+            }
+
+            // Запрос подтверждения от пользователя (опционально, но рекомендуется)
+            // Для простоты пока пропустим, но в реальном приложении стоит добавить MessageBox с вопросом.
+
+            int sceneIdToRemove = MapSelectedScene.Id;
+            string sceneNameRemoved = MapSelectedScene.Name;
+
+            // 1. Удаляем саму сцену из основного списка
+            var sceneToRemove = Scenes.FirstOrDefault(s => s.Id == sceneIdToRemove);
+            if (sceneToRemove != null)
+            {
+                Scenes.Remove(sceneToRemove);
+            }
+            else
+            {
+                ShowNotification($"Не удалось найти сцену {sceneNameRemoved} (ID: {sceneIdToRemove}) для удаления в коллекции.");
+                return; // Если не нашли, дальше нет смысла идти
+            }
+
+            // 2. Проходимся по всем ОСТАВШИМСЯ сценам и удаляем подключения к удаленной сцене
+            foreach (var scene in Scenes)
+            {
+                scene.Connections.RemoveAll(conn => conn.ConnectedSceneId == sceneIdToRemove);
+            }
+            
+            // 3. Сбрасываем выбор, так как выбранная сцена удалена
+            MapSelectedScene = null;
+            // SelectedSceneForConnection и AllOtherScenesForConnection обновятся автоматически через PropertyChanged на MapSelectedScene
+
+            // 4. Сохраняем изменения и перезагружаем
+            await SaveCurrentMapLayoutSilentlyAsync(); 
+            await LoadScenesAsync();
         }
 
         private void ShowNotification(string message)
@@ -629,6 +687,34 @@ namespace CRProjectEditor.ViewModels
             }
         }
 
+        private async Task SaveCurrentMapLayoutSilentlyAsync()
+        {
+            if (Scenes == null || !Scenes.Any())
+            {
+                // Нечего сохранять, тихо выходим
+                return;
+            }
+
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                    Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+                };
+                string jsonString = JsonSerializer.Serialize(Scenes.ToList(), options); 
+                await File.WriteAllTextAsync(Constants.ScenesPath, jsonString);
+                // Уведомление удалено
+                Debug.WriteLine($"Расположение {Scenes.Count} сцен успешно сохранено (без уведомления) в {Constants.ScenesPath}");
+            }
+            catch (Exception ex)
+            {
+                // Можно логировать ошибку, но уведомление пользователю не показываем
+                Debug.WriteLine($"Ошибка при сохранении расположения сцен (без уведомления): {ex.Message}");
+            }
+        }
+
         private bool CheckIfTypeCanBeAdded(SceneType type, IReadOnlyDictionary<SceneType, int> currentCounts,
                                    List<Tuple<SceneType, int, int>> uniqueRules,
                                    List<Tuple<SceneType, double, int, bool>> scaleRules,
@@ -820,42 +906,156 @@ namespace CRProjectEditor.ViewModels
         {
             if (sourceScene == null || targetScene == null)
             {
-                ShowNotification("Исходная или целевая сцена не определены.");
+                // ShowNotification("Исходная или целевая сцена не определены."); // Тихо выходим
                 return;
             }
 
             if (sourceScene.Id == targetScene.Id)
             {
-                ShowNotification("Нельзя подключить сцену к самой себе.");
+                // ShowNotification("Нельзя подключить сцену к самой себе."); // Тихо выходим
                 return;
             }
 
-            // Находим актуальные объекты сцен в основной коллекции, чтобы изменения отразились
             var actualSourceScene = Scenes.FirstOrDefault(s => s.Id == sourceScene.Id);
             var actualTargetScene = Scenes.FirstOrDefault(s => s.Id == targetScene.Id);
 
             if (actualSourceScene == null || actualTargetScene == null)
             {
-                ShowNotification("Одна из сцен не найдена в текущем списке. Попробуйте обновить карту.");
+                // ShowNotification("Одна из сцен не найдена в текущем списке. Попробуйте обновить карту."); // Тихо выходим
                 return;
             }
 
-            // Проверка на существующее подключение к этой же сцене
-            if (actualSourceScene.Connections.Any(c => c.ConnectedSceneId == actualTargetScene.Id))
+            bool connectionMade = false;
+
+            // Добавляем A -> B
+            if (!actualSourceScene.Connections.Any(c => c.ConnectedSceneId == actualTargetScene.Id))
             {
-                ShowNotification($"Сцена '{actualSourceScene.Name}' уже подключена к '{actualTargetScene.Name}'.");
+                actualSourceScene.Connections.Add(new SceneConnection 
+                { 
+                    ConnectedSceneId = actualTargetScene.Id, 
+                    ConnectionType = "ManualCanvas"
+                });
+                connectionMade = true;
+            }
+            else
+            {
+                // ShowNotification($"Сцена '{actualSourceScene.Name}' уже подключена к '{actualTargetScene.Name}'."); // Уже есть, тихо выходим
+            }
+
+            // Добавляем B -> A (симметрично)
+            if (!actualTargetScene.Connections.Any(c => c.ConnectedSceneId == actualSourceScene.Id))
+            {
+                actualTargetScene.Connections.Add(new SceneConnection
+                {
+                    ConnectedSceneId = actualSourceScene.Id,
+                    ConnectionType = "ManualCanvas"
+                });
+                connectionMade = true; // Даже если первая связь уже была, вторая может быть новой
+            }
+            else
+            {
+                // ShowNotification($"Сцена '{actualTargetScene.Name}' уже подключена к '{actualSourceScene.Name}' (симметрично)."); // Уже есть, тихо выходим
+            }
+
+            if (connectionMade)
+            {
+                // ShowNotification($"Подключение от '{actualSourceScene.Name}' к '{actualTargetScene.Name}' добавлено/обновлено."); // Убрали
+                await SaveCurrentMapLayoutSilentlyAsync(); // Используем тихий метод сохранения
+                await LoadScenesAsync();      
+            }
+        }
+
+        public async Task AddNewSceneFromMapAsync(SceneType sceneType, double x, double y)
+        {
+            string defaultName = $"New {sceneType.ToString()}";
+            string defaultDescription = "A newly created scene.";
+
+            var editWindow = new EditSceneDetailsWindow(defaultName, defaultDescription)
+            {
+                Title = "Создать Новую Сцену", // Меняем заголовок окна
+                Owner = Application.Current.MainWindow
+            };
+
+            if (editWindow.ShowDialog() == true)
+            {
+                string sceneName = editWindow.SceneName;
+                string sceneDescription = editWindow.SceneDescription;
+
+                int newId = 0;
+                if (Scenes.Any())
+                {
+                    newId = Scenes.Max(s => s.Id) + 1;
+                }
+
+                var newScene = new Scene
+                {
+                    Id = newId,
+                    Name = sceneName, // Используем имя из диалога
+                    SceneType = sceneType,
+                    Description = sceneDescription, // Используем описание из диалога
+                    X = (int)Math.Round(x),
+                    Y = (int)Math.Round(y),
+                    Connections = new List<SceneConnection>(),
+                    IsIndoor = false, 
+                    ParentSceneId = 0, 
+                    HubSceneIds = new List<int>(), 
+                    Population = 0, 
+                    Radius = 10 
+                };
+
+                Scenes.Add(newScene);
+                await SaveCurrentMapLayoutSilentlyAsync(); 
+                await LoadScenesAsync(); 
+                // ShowNotification($"Сцена '{sceneName}' успешно создана."); // Уведомление убрано
+            }
+            else
+            {
+                // Пользователь нажал "Отмена", ничего не делаем
+                Debug.WriteLine("Создание новой сцены отменено пользователем.");
+            }
+        }
+
+        public async Task HandleSceneEditRequestAsync(Scene sceneToEdit)
+        {
+            if (sceneToEdit == null) return;
+
+            // Найдем актуальный экземпляр сцены в нашей основной коллекции
+            var sceneInCollection = Scenes.FirstOrDefault(s => s.Id == sceneToEdit.Id);
+            if (sceneInCollection == null)
+            {
+                ShowNotification("Выбранная сцена не найдена в текущем списке.");
                 return;
             }
-            
-            actualSourceScene.Connections.Add(new SceneConnection 
-            { 
-                ConnectedSceneId = actualTargetScene.Id, 
-                ConnectionType = "ManualCanvas" // Указываем, что связь создана вручную на канвасе
-            });
 
-            ShowNotification($"Подключение от '{actualSourceScene.Name}' к '{actualTargetScene.Name}' добавлено.");
-            await SaveCurrentMapLayoutAsync(); 
-            await LoadScenesAsync();      
+            var editWindow = new EditSceneDetailsWindow(sceneInCollection.Name, sceneInCollection.Description)
+            {
+                Owner = Application.Current.MainWindow
+            };
+
+            if (editWindow.ShowDialog() == true)
+            {
+                bool changed = false;
+                if (sceneInCollection.Name != editWindow.SceneName)
+                {
+                    sceneInCollection.Name = editWindow.SceneName;
+                    changed = true;
+                }
+                if (sceneInCollection.Description != editWindow.SceneDescription)
+                {
+                    sceneInCollection.Description = editWindow.SceneDescription;
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    // Обновить ObservableCollection для DataGrid (если Name/Description там отображаются и не обновляются автоматически через INPC на Scene)
+                    // Если Scene реализует INotifyPropertyChanged и Name/Description являются ObservableProperty, то это может быть излишним.
+                    // В данном случае, просто перезагрузка всего через Save/Load проще и надежнее.
+                    await SaveCurrentMapLayoutAsync();
+                    await LoadScenesAsync(); // Перезагрузка обновит и карту, и DataGrid
+                    ShowNotification("Детали сцены обновлены.");
+                }
+            }
         }
     }
 } 

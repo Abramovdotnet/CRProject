@@ -1,132 +1,184 @@
 [
   {
-    "id": 6,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_AlchemistShop_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 AlchemistShop \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
-    "sceneType": "AlchemistShop",
+    "id": 10,
+    "name": "New Cave",
+    "description": "A newly created scene.",
+    "sceneType": "Cave",
     "isIndoor": false,
+    "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -6,
-    "y": -1,
+    "x": -1,
+    "y": 7,
     "connections": [
       {
-        "connectedSceneId": 7,
+        "connectedSceneId": 11,
         "travelTime": 1,
-        "connectionType": "Standard"
-      }
-    ]
-  },
-  {
-    "id": 5,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_Blacksmith_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Blacksmith \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
-    "sceneType": "Blacksmith",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -6,
-    "y": -12,
-    "connections": [
-      {
-        "connectedSceneId": 7,
-        "travelTime": 1,
-        "connectionType": "Standard"
-      }
-    ]
-  },
-  {
-    "id": 1,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_House_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -18,
-    "y": -2,
-    "connections": [
-      {
-        "connectedSceneId": 6,
-        "travelTime": 1,
-        "connectionType": "Standard"
-      }
-    ]
-  },
-  {
-    "id": 2,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_House_2",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -25,
-    "y": -11,
-    "connections": [
-      {
-        "connectedSceneId": 7,
-        "travelTime": 1,
-        "connectionType": "Standard"
-      }
-    ]
-  },
-  {
-    "id": 3,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_House_3",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -23,
-    "y": -5,
-    "connections": [
-      {
-        "connectedSceneId": 7,
-        "travelTime": 1,
-        "connectionType": "Standard"
-      }
-    ]
-  },
-  {
-    "id": 4,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_House_4",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -18,
-    "y": -15,
-    "connections": [
-      {
-        "connectedSceneId": 7,
-        "travelTime": 1,
-        "connectionType": "Standard"
+        "connectionType": "ManualCanvas"
       },
       {
-        "connectedSceneId": 5,
-        "travelTime": 1,
-        "connectionType": "Standard"
-      },
-      {
-        "connectedSceneId": 3,
+        "connectedSceneId": 12,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       }
-    ]
+    ],
+    "population": 0,
+    "radius": 10
   },
   {
-    "id": 7,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_Tavern_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Tavern \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
-    "sceneType": "Tavern",
-    "isIndoor": true,
+    "id": 11,
+    "name": "New Cloister",
+    "description": "A newly created scene.",
+    "sceneType": "Cloister",
+    "isIndoor": false,
+    "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -12,
-    "y": -7,
-    "connections": []
+    "x": -5,
+    "y": 4,
+    "connections": [
+      {
+        "connectedSceneId": 10,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 12,
+    "name": "New Docks",
+    "description": "A newly created scene.",
+    "sceneType": "Docks",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -1,
+    "y": 3,
+    "connections": [
+      {
+        "connectedSceneId": 10,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 13,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 15,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 14,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 16,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 13,
+    "name": "New Shop",
+    "description": "A newly created scene.",
+    "sceneType": "Shop",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -3,
+    "y": 1,
+    "connections": [
+      {
+        "connectedSceneId": 12,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 15,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 14,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": 3,
+    "y": 3,
+    "connections": [
+      {
+        "connectedSceneId": 12,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 15,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": 3,
+    "y": 1,
+    "connections": [
+      {
+        "connectedSceneId": 12,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 13,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 16,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": 3,
+    "y": 5,
+    "connections": [
+      {
+        "connectedSceneId": 12,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
   }
 ]

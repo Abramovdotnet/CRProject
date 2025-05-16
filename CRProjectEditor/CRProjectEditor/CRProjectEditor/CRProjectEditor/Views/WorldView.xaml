@@ -14,62 +14,37 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="3*" MinWidth="300"/> <!-- Немного увеличил MinWidth для слайдеров -->
+            <ColumnDefinition Width="3*" MinWidth="300"/> 
             <ColumnDefinition Width="7*"/> 
         </Grid.ColumnDefinitions>
 
         <Border Grid.Column="0" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="0,0,1,0" Padding="10">
             <StackPanel>
-                <TextBlock Text="Генератор Локаций" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                <!-- Новый UI для Drag-and-Drop шаблонов сцен -->
+                <TextBlock Text="Создание Сцен (Drag-and-Drop)" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
+                <TextBlock Text="Перетащите тип сцены на карту:" Margin="0,0,0,5" TextWrapping="Wrap"/>
                 
-                <TextBlock Text="Имя локации:" Margin="0,5,0,2"/>
-                <TextBox Text="{Binding NewLocationName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
-
-                <TextBlock Text="Количество сцен по типам:" Margin="0,5,0,5"/>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="350" Padding="0,0,20,0">
-                    <ItemsControl ItemsSource="{Binding SceneTypeConfigs}">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="250" Margin="0,0,0,10">
+                    <ItemsControl ItemsSource="{Binding AvailableSceneTypesForDrag}"> <!-- Новое свойство в ViewModel -->
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel Orientation="Horizontal"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
-                            <DataTemplate DataType="{x:Type viewModels:SceneTypeCountSetting}">
-                                <Grid Margin="0,3">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="*" MinWidth="100"/> <!-- TextBlock for SceneTypeName -->
-                                        <ColumnDefinition Width="3*" MinWidth="200"/> <!-- Increased MinWidth for Slider -->
-                                        <ColumnDefinition Width="Auto" MinWidth="35"/> <!-- TextBlock for Count -->
-                                    </Grid.ColumnDefinitions>
-                                    <TextBlock Grid.Column="0" Text="{Binding SceneTypeName}" VerticalAlignment="Center" Margin="0,0,5,0" ToolTip="{Binding SceneTypeName}"/>
-                                    <Slider Grid.Column="1" 
-                                            Value="{Binding Count, Mode=TwoWay}" 
-                                            Minimum="0" 
-                                            Maximum="1000" 
-                                            TickFrequency="1" 
-                                            IsSnapToTickEnabled="True"
-                                            VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Column="2" Text="{Binding Count}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="5,0,0,0"/>
-                                </Grid>
+                            <DataTemplate DataType="{x:Type models:SceneType}">
+                                <!-- Используем Label или Button как источник для DragDrop -->
+                                <Border BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="1" CornerRadius="3" Margin="3" Padding="8,5" MinWidth="80" Background="{StaticResource ControlBackgroundBrush}">
+                                    <TextBlock Text="{Binding}" HorizontalAlignment="Center" MouseDown="SceneTemplate_MouseDown"/> <!-- Добавим MouseDown для начала Drag -->
+                                </Border>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
                 </ScrollViewer>
 
-                <Button Content="Сгенерировать локацию" Command="{Binding GenerateLocationCommand}" Margin="0,10,0,5" Padding="10,5"/>
-                <Button Content="Сгенерировать координаты" Command="{Binding GenerateCoordinatesCommand}" Margin="0,5,0,10" Padding="10,5"/>
-                
-                <!-- New section for population-based generation -->
-                <Separator Margin="0,15,0,15"/>
-                
-                <TextBlock Text="Генератор по Населению" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
-                
-                <TextBlock Text="Целевое население:" Margin="0,5,0,2"/>
-                <TextBox Text="{Binding TargetPopulation, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10">
-                    <TextBox.ToolTip>
-                        <ToolTip Content="Введите общее количество персонажей, которое должна вместить локация (каждая сцена вмещает до 30)."/>
-                    </TextBox.ToolTip>
-                </TextBox>
-                
-                <Button Content="Сгенерировать для населения" Command="{Binding GenerateLocationForPopulationCommand}" Margin="0,5,0,5" Padding="10,5"/>
-                <Button Content="Сохранить расположение" Command="{Binding SaveCurrentMapLayoutCommand}" Margin="0,5,0,10" Padding="10,5"/>
-                <!-- End of new section -->
-                
+                <Button Content="Сохранить расположение" Command="{Binding SaveCurrentMapLayoutCommand}" Margin="0,10,0,10" Padding="10,5"/>
+                <Button Content="Сгенерировать координаты" Command="{Binding GenerateCoordinatesCommand}" Margin="0,0,0,10" Padding="10,5"/>
+
                 <!-- Selected Scene Details and Connection Management -->
                 <Separator Margin="0,15,0,15"/>
                 <TextBlock Text="Выбранная Сцена (Карта)" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"
@@ -145,7 +120,8 @@
 
                     <StackPanel Grid.Row="8" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
                         <Button Content="Добавить подключение" Command="{Binding AddConnectionCommand}" Padding="8,4" Margin="0,0,5,0"/>
-                        <Button Content="Удалить все подключения" Command="{Binding DeleteAllConnectionsCommand}" Padding="8,4"/>
+                        <Button Content="Удалить все подключения" Command="{Binding DeleteAllConnectionsCommand}" Padding="8,4" Margin="0,0,5,0"/>
+                        <Button Content="Удалить сцену" Command="{Binding DeleteSelectedSceneCommand}" Padding="8,4"/>
                     </StackPanel>
                 </Grid>
             </StackPanel>
@@ -173,7 +149,6 @@
                 </DataGrid.Columns>
             </DataGrid>
             
-            <!-- Нижняя половина (Grid.Row="1") для карты -->
             <local:InteractiveMapView x:Name="InteractiveMap" Grid.Row="1" Scenes="{Binding Scenes}"/>
         </Grid>
     </Grid>
