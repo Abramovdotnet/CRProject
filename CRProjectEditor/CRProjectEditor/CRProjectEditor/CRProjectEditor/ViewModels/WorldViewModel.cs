@@ -162,7 +162,7 @@ namespace CRProjectEditor.ViewModels
             // Измененные значения для генератора координат
             Vector2 markerSize = new Vector2(5, 5); // Уменьшим и это, чтобы маркеры были "меньше" в единицах JSON
             float coordinateScale = 1.0f; 
-            float baseDistanceUnit = 1.0f; // Значительно уменьшено
+            float baseDistanceUnit = 0.5f; // Уменьшено в 2 раза
 
             try
             {
