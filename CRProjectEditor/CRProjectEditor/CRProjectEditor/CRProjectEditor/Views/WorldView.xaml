@@ -6,8 +6,12 @@
              xmlns:local="clr-namespace:CRProjectEditor.Views"
              xmlns:viewModels="clr-namespace:CRProjectEditor.ViewModels"
              xmlns:models="clr-namespace:CRProjectEditor.Models" 
+             xmlns:converters="clr-namespace:CRProjectEditor.Converters"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000">
+    <UserControl.Resources>
+        <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="3*" MinWidth="300"/> <!-- Немного увеличил MinWidth для слайдеров -->
@@ -65,6 +69,85 @@
                 <Button Content="Сгенерировать для населения" Command="{Binding GenerateLocationForPopulationCommand}" Margin="0,5,0,5" Padding="10,5"/>
                 <Button Content="Сохранить расположение" Command="{Binding SaveCurrentMapLayoutCommand}" Margin="0,5,0,10" Padding="10,5"/>
                 <!-- End of new section -->
+                
+                <!-- Selected Scene Details and Connection Management -->
+                <Separator Margin="0,15,0,15"/>
+                <TextBlock Text="Выбранная Сцена (Карта)" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"
+                           Visibility="{Binding MapSelectedScene, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                <Grid Visibility="{Binding MapSelectedScene, Converter={StaticResource NullToVisibilityConverter}}" Margin="0,0,0,10">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="ID:" FontWeight="SemiBold" Margin="0,2,5,2"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding MapSelectedScene.Id}" Margin="0,2,0,2"/>
+
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Имя:" FontWeight="SemiBold" Margin="0,2,5,2"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding MapSelectedScene.Name}" TextWrapping="Wrap" Margin="0,2,0,2"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Тип:" FontWeight="SemiBold" Margin="0,2,5,2"/>
+                    <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding MapSelectedScene.SceneType}" Margin="0,2,0,2"/>
+                    
+                    <TextBlock Grid.Row="3" Grid.Column="0" Text="X:" FontWeight="SemiBold" Margin="0,2,5,2"/>
+                    <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding MapSelectedScene.X}" Margin="0,2,0,2"/>
+                    
+                    <TextBlock Grid.Row="4" Grid.Column="0" Text="Y:" FontWeight="SemiBold" Margin="0,2,5,2"/>
+                    <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding MapSelectedScene.Y}" Margin="0,2,0,2"/>
+
+                    <TextBlock Grid.Row="5" Grid.Column="0" Text="Описание:" FontWeight="SemiBold" Margin="0,2,5,2" VerticalAlignment="Top"/>
+                    <TextBlock Grid.Row="5" Grid.Column="1" Text="{Binding MapSelectedScene.Description}" TextWrapping="Wrap" MaxHeight="60" VerticalAlignment="Top" Margin="0,2,0,2"/>
+                    
+                    <TextBlock Grid.Row="6" Grid.Column="0" Text="Подключения:" FontWeight="SemiBold" Margin="0,2,5,2" VerticalAlignment="Top"/>
+                    <ScrollViewer Grid.Row="6" Grid.Column="1" MaxHeight="80" VerticalScrollBarVisibility="Auto" Margin="0,2,0,2">
+                        <ItemsControl ItemsSource="{Binding MapSelectedScene.Connections}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate DataType="{x:Type models:SceneConnection}">
+                                    <TextBlock>
+                                        <Run Text="-> ID:"/>
+                                        <Run Text="{Binding ConnectedSceneId}"/>
+                                        <Run Text=", Тип: "/>
+                                        <Run Text="{Binding ConnectionType}"/>
+                                    </TextBlock>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <TextBlock Grid.Row="7" Grid.Column="0" Text="Подключить к:" VerticalAlignment="Center" Margin="0,5,5,5"/>
+                    <ComboBox Grid.Row="7" Grid.Column="1" 
+                              ItemsSource="{Binding AllOtherScenesForConnection}"
+                              SelectedItem="{Binding SelectedSceneForConnection, Mode=TwoWay}"
+                              VerticalAlignment="Center" Margin="0,5,0,5">
+                         <ComboBox.ItemTemplate>
+                            <DataTemplate DataType="{x:Type models:Scene}">
+                                <TextBlock>
+                                    <Run Text="{Binding Name}"/>
+                                    <Run Text=" (ID: "/>
+                                    <Run Text="{Binding Id}"/>
+                                    <Run Text=")"/>
+                                </TextBlock>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                    </ComboBox>
+
+                    <StackPanel Grid.Row="8" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+                        <Button Content="Добавить подключение" Command="{Binding AddConnectionCommand}" Padding="8,4" Margin="0,0,5,0"/>
+                        <Button Content="Удалить все подключения" Command="{Binding DeleteAllConnectionsCommand}" Padding="8,4"/>
+                    </StackPanel>
+                </Grid>
             </StackPanel>
         </Border>
         
@@ -91,7 +174,7 @@
             </DataGrid>
             
             <!-- Нижняя половина (Grid.Row="1") для карты -->
-            <local:InteractiveMapView Grid.Row="1" Scenes="{Binding Scenes}"/>
+            <local:InteractiveMapView x:Name="InteractiveMap" Grid.Row="1" Scenes="{Binding Scenes}"/>
         </Grid>
     </Grid>
 </UserControl> 

@@ -58,6 +58,20 @@ namespace CRProjectEditor.ViewModels
         public IAsyncRelayCommand GenerateLocationForPopulationCommand { get; }
         public IAsyncRelayCommand SaveCurrentMapLayoutCommand { get; }
 
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(AddConnectionCommand))]
+        [NotifyCanExecuteChangedFor(nameof(DeleteAllConnectionsCommand))]
+        private Scene? _mapSelectedScene;
+
+        [ObservableProperty]
+        [NotifyCanExecuteChangedFor(nameof(AddConnectionCommand))]
+        private Scene? _selectedSceneForConnection;
+
+        public ObservableCollection<Scene> AllOtherScenesForConnection { get; } = new ObservableCollection<Scene>();
+
+        public IAsyncRelayCommand AddConnectionCommand { get; }
+        public IAsyncRelayCommand DeleteAllConnectionsCommand { get; }
+
         public WorldViewModel()
         {
             SceneTypeConfigs = new ObservableCollection<SceneTypeCountSetting>();
@@ -70,7 +84,124 @@ namespace CRProjectEditor.ViewModels
             GenerateCoordinatesCommand = new AsyncRelayCommand(GenerateCoordinatesAndRefreshAsync);
             GenerateLocationForPopulationCommand = new AsyncRelayCommand(GenerateLocationForPopulationAndRefreshAsync);
             SaveCurrentMapLayoutCommand = new AsyncRelayCommand(SaveCurrentMapLayoutAsync);
+            
+            AddConnectionCommand = new AsyncRelayCommand(AddConnectionAsync, CanAddConnection);
+            DeleteAllConnectionsCommand = new AsyncRelayCommand(DeleteAllConnectionsAsync, CanDeleteConnections);
+            
             _ = LoadScenesAsync(); 
+            this.PropertyChanged += (s, e) => {
+                if (e.PropertyName == nameof(MapSelectedScene))
+                {
+                    UpdateAllOtherScenesForConnection();
+                    // Manually raise CanExecuteChanged for commands that depend on MapSelectedScene indirectly 
+                    // or if NotifyCanExecuteChangedFor doesn't cover all scenarios (e.g. parameterless RelayCommand)
+                    // For AsyncRelayCommand with CanExecute methods, SetProperty on _mapSelectedScene should trigger it.
+                }
+            };
+        }
+
+        partial void OnMapSelectedSceneChanged(Scene? oldValue, Scene? newValue)
+        {
+            UpdateAllOtherScenesForConnection();
+            // Commands' CanExecute will be re-evaluated due to [NotifyCanExecuteChangedFor]
+        }
+
+        private void UpdateAllOtherScenesForConnection()
+        {
+            AllOtherScenesForConnection.Clear();
+            if (MapSelectedScene != null && Scenes != null)
+            {
+                foreach (var scene in Scenes)
+                {
+                    if (scene.Id != MapSelectedScene.Id)
+                    {
+                        AllOtherScenesForConnection.Add(scene);
+                    }
+                }
+            }
+            SelectedSceneForConnection = null; // Reset selection when the list changes
+        }
+
+        private bool CanAddConnection()
+        {
+            return MapSelectedScene != null && SelectedSceneForConnection != null;
+        }
+
+        private async Task AddConnectionAsync()
+        {
+            if (MapSelectedScene == null || SelectedSceneForConnection == null)
+            {
+                ShowNotification("Основная сцена или сцена для подключения не выбраны.");
+                return;
+            }
+
+            // Проверка на существующее подключение к этой же сцене
+            if (MapSelectedScene.Connections.Any(c => c.ConnectedSceneId == SelectedSceneForConnection.Id))
+            {
+                ShowNotification($"Сцена '{MapSelectedScene.Name}' уже подключена к '{SelectedSceneForConnection.Name}'.");
+                return;
+            }
+            
+            // Проверка на подключение к самому себе
+            if (MapSelectedScene.Id == SelectedSceneForConnection.Id)
+            {
+                 ShowNotification("Нельзя подключить сцену к самой себе.");
+                 return;
+            }
+
+            MapSelectedScene.Connections.Add(new SceneConnection { ConnectedSceneId = SelectedSceneForConnection.Id, ConnectionType = "Standard" });
+            
+            // Опционально: добавить симметричное подключение, если это предполагается логикой
+            // var targetScene = Scenes.FirstOrDefault(s => s.Id == SelectedSceneForConnection.Id);
+            // if (targetScene != null && !targetScene.Connections.Any(c => c.ConnectedSceneId == MapSelectedScene.Id))
+            // {
+            // targetScene.Connections.Add(new SceneConnection { ConnectedSceneId = MapSelectedScene.Id, ConnectionType = "Standard" });
+            // }
+
+
+            ShowNotification($"Подключение от '{MapSelectedScene.Name}' к '{SelectedSceneForConnection.Name}' добавлено.");
+            await SaveCurrentMapLayoutAsync(); // Сохраняем изменения
+            await LoadScenesAsync();      // Перезагружаем для обновления карты (и DataGrid)
+                                          // MapSelectedScene может стать null после LoadScenesAsync, если объект пересоздается
+                                          // По идее, ObservableCollection должен обновить существующие экземпляры, если Id совпадают.
+                                          // Но если LoadScenesAsync полностью заменяет Scenes новыми объектами, нужно будет восстановить MapSelectedScene.
+        }
+
+        private bool CanDeleteConnections()
+        {
+            return MapSelectedScene != null && MapSelectedScene.Connections.Any();
+        }
+
+        private async Task DeleteAllConnectionsAsync()
+        {
+            if (MapSelectedScene == null)
+            {
+                ShowNotification("Сцена не выбрана.");
+                return;
+            }
+
+            if (!MapSelectedScene.Connections.Any())
+            {
+                ShowNotification($"У сцены '{MapSelectedScene.Name}' нет подключений для удаления.");
+                return;
+            }
+            
+            // Опционально: удалить симметричные подключения
+            // foreach(var connectionToRemove in MapSelectedScene.Connections.ToList()) // ToList для безопасного изменения коллекции
+            // {
+            // var otherScene = Scenes.FirstOrDefault(s => s.Id == connectionToRemove.ConnectedSceneId);
+            // if (otherScene != null)
+            // {
+            // otherScene.Connections.RemoveAll(c => c.ConnectedSceneId == MapSelectedScene.Id);
+            // }
+            // }
+
+            int numRemoved = MapSelectedScene.Connections.Count;
+            MapSelectedScene.Connections.Clear();
+            
+            ShowNotification($"Все ({numRemoved}) подключения для сцены '{MapSelectedScene.Name}' удалены.");
+            await SaveCurrentMapLayoutAsync();
+            await LoadScenesAsync(); 
         }
 
         private void ShowNotification(string message)

@@ -1,622 +1,127 @@
 [
   {
-    "id": 19,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_AlchemistShop_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 AlchemistShop \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
+    "id": 6,
+    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_AlchemistShop_1",
+    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 AlchemistShop \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
     "sceneType": "AlchemistShop",
     "isIndoor": false,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -8,
-    "y": 0,
+    "x": -10,
+    "y": -2,
     "connections": [
       {
-        "connectedSceneId": 26,
-        "travelTime": 1.28
-      }
-    ]
-  },
-  {
-    "id": 18,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_Blacksmith_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Blacksmith \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "Blacksmith",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 24,
-    "y": 11,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.46
-      }
-    ]
-  },
-  {
-    "id": 21,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_Brothel_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Brothel \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "Brothel",
-    "isIndoor": false,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -14,
-    "y": 6,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.88
-      },
-      {
-        "connectedSceneId": 14,
-        "travelTime": 1.33
-      }
-    ]
-  },
-  {
-    "id": 28,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_Castle_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Castle \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "Castle",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -4,
-    "y": -7,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.49
-      }
-    ]
-  },
-  {
-    "id": 22,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_Cathedral_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Cathedral \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "Cathedral",
-    "isIndoor": false,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -5,
-    "y": 11,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.8399999999999999
-      },
-      {
-        "connectedSceneId": 23,
-        "travelTime": 1.74
-      }
-    ]
-  },
-  {
-    "id": 1,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 9,
-    "y": -3,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.06
-      },
-      {
-        "connectedSceneId": 9,
-        "travelTime": 1.63
-      },
-      {
-        "connectedSceneId": 17,
-        "travelTime": 1.96
-      }
-    ]
-  },
-  {
-    "id": 10,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_10",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 28,
-    "y": -5,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.19
-      }
-    ]
-  },
-  {
-    "id": 11,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_11",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -18,
-    "y": 4,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.44
-      }
-    ]
-  },
-  {
-    "id": 12,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_12",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -20,
-    "y": -4,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.9100000000000001
-      },
-      {
-        "connectedSceneId": 13,
-        "travelTime": 1.45
-      }
-    ]
-  },
-  {
-    "id": 13,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_13",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 21,
-    "y": 4,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.04
-      },
-      {
-        "connectedSceneId": 12,
-        "travelTime": 1.45
-      },
-      {
-        "connectedSceneId": 5,
-        "travelTime": 1.78
-      }
-    ]
-  },
-  {
-    "id": 14,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_14",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 13,
-    "y": 9,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.23
-      },
-      {
-        "connectedSceneId": 21,
-        "travelTime": 1.33
-      }
-    ]
-  },
-  {
-    "id": 15,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_15",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -2,
-    "y": 4,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.3599999999999999
-      },
-      {
-        "connectedSceneId": 17,
-        "travelTime": 1.42
-      },
-      {
-        "connectedSceneId": 6,
-        "travelTime": 1.18
-      }
-    ]
-  },
-  {
-    "id": 16,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_16",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 21,
-    "y": 7,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.6099999999999999
-      }
-    ]
-  },
-  {
-    "id": 17,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_17",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 10,
-    "y": 5,
-    "connections": [
-      {
-        "connectedSceneId": 15,
-        "travelTime": 1.42
-      },
-      {
-        "connectedSceneId": 1,
-        "travelTime": 1.96
-      }
-    ]
-  },
-  {
-    "id": 2,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_2",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 5,
-    "y": 5,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.62
-      },
-      {
-        "connectedSceneId": 3,
-        "travelTime": 1.75
-      }
-    ]
-  },
-  {
-    "id": 3,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_3",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 5,
-    "y": 10,
-    "connections": [
-      {
-        "connectedSceneId": 2,
-        "travelTime": 1.75
-      }
-    ]
-  },
-  {
-    "id": 4,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_4",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 25,
-    "y": 0,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.45
+        "connectedSceneId": 4,
+        "travelTime": 1.6099999999999999,
+        "connectionType": "Standard"
       }
     ]
   },
   {
     "id": 5,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_5",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
+    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_Blacksmith_1",
+    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Blacksmith \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
+    "sceneType": "Blacksmith",
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -16,
-    "y": -8,
+    "x": 1,
+    "y": -7,
     "connections": [
       {
-        "connectedSceneId": 26,
-        "travelTime": 1.56
-      },
-      {
-        "connectedSceneId": 13,
-        "travelTime": 1.78
+        "connectedSceneId": 7,
+        "travelTime": 1.49,
+        "connectionType": "Standard"
       }
     ]
   },
   {
-    "id": 6,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_6",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
+    "id": 1,
+    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_House_1",
+    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
     "sceneType": "House",
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -7,
-    "y": 7,
+    "x": -1,
+    "y": -5,
     "connections": [
       {
-        "connectedSceneId": 26,
-        "travelTime": 1.3599999999999999
-      },
-      {
-        "connectedSceneId": 15,
-        "travelTime": 1.18
+        "connectedSceneId": 7,
+        "travelTime": 1.01,
+        "connectionType": "Standard"
       }
     ]
   },
   {
-    "id": 7,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_7",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
+    "id": 2,
+    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_House_2",
+    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
+    "sceneType": "House",
+    "isIndoor": true,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -1,
+    "y": -2,
+    "connections": [
+      {
+        "connectedSceneId": 7,
+        "travelTime": 1.47,
+        "connectionType": "Standard"
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_House_3",
+    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
+    "sceneType": "House",
+    "isIndoor": true,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -3,
+    "y": -9,
+    "connections": [
+      {
+        "connectedSceneId": 7,
+        "travelTime": 1.29,
+        "connectionType": "Standard"
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_House_4",
+    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
     "sceneType": "House",
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
     "x": -10,
-    "y": 3,
+    "y": -9,
     "connections": [
       {
-        "connectedSceneId": 26,
-        "travelTime": 1.38
-      }
-    ]
-  },
-  {
-    "id": 8,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_8",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -16,
-    "y": 0,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.72
-      }
-    ]
-  },
-  {
-    "id": 9,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_House_9",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 House \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "House",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 21,
-    "y": -3,
-    "connections": [
-      {
-        "connectedSceneId": 1,
-        "travelTime": 1.63
-      }
-    ]
-  },
-  {
-    "id": 23,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_Shop_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Shop \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "Shop",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 14,
-    "y": -8,
-    "connections": [
-      {
-        "connectedSceneId": 22,
-        "travelTime": 1.74
-      }
-    ]
-  },
-  {
-    "id": 24,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_Shop_2",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Shop \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "Shop",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -18,
-    "y": 10,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.47
-      },
-      {
-        "connectedSceneId": 27,
-        "travelTime": 1.9300000000000002
-      }
-    ]
-  },
-  {
-    "id": 25,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_Shop_3",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Shop \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "Shop",
-    "isIndoor": true,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 6,
-    "y": -7,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.97
-      }
-    ]
-  },
-  {
-    "id": 26,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_Square_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Square \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "Square",
-    "isIndoor": false,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 0,
-    "y": 0,
-    "connections": [
-      {
-        "connectedSceneId": 1,
-        "travelTime": 1.06
-      },
-      {
-        "connectedSceneId": 2,
-        "travelTime": 1.62
-      },
-      {
-        "connectedSceneId": 4,
-        "travelTime": 1.45
-      },
-      {
-        "connectedSceneId": 5,
-        "travelTime": 1.56
+        "connectedSceneId": 7,
+        "travelTime": 1.51,
+        "connectionType": "Standard"
       },
       {
         "connectedSceneId": 6,
-        "travelTime": 1.3599999999999999
-      },
-      {
-        "connectedSceneId": 7,
-        "travelTime": 1.38
-      },
-      {
-        "connectedSceneId": 8,
-        "travelTime": 1.72
-      },
-      {
-        "connectedSceneId": 10,
-        "travelTime": 1.19
-      },
-      {
-        "connectedSceneId": 11,
-        "travelTime": 1.44
-      },
-      {
-        "connectedSceneId": 12,
-        "travelTime": 1.9100000000000001
-      },
-      {
-        "connectedSceneId": 13,
-        "travelTime": 1.04
-      },
-      {
-        "connectedSceneId": 14,
-        "travelTime": 1.23
-      },
-      {
-        "connectedSceneId": 15,
-        "travelTime": 1.3599999999999999
-      },
-      {
-        "connectedSceneId": 16,
-        "travelTime": 1.6099999999999999
-      },
-      {
-        "connectedSceneId": 18,
-        "travelTime": 1.46
-      },
-      {
-        "connectedSceneId": 19,
-        "travelTime": 1.28
-      },
-      {
-        "connectedSceneId": 20,
-        "travelTime": 1.26
-      },
-      {
-        "connectedSceneId": 21,
-        "travelTime": 1.88
-      },
-      {
-        "connectedSceneId": 22,
-        "travelTime": 1.8399999999999999
-      },
-      {
-        "connectedSceneId": 24,
-        "travelTime": 1.47
-      },
-      {
-        "connectedSceneId": 25,
-        "travelTime": 1.97
-      },
-      {
-        "connectedSceneId": 28,
-        "travelTime": 1.49
+        "travelTime": 1.6099999999999999,
+        "connectionType": "Standard"
       }
     ]
   },
   {
-    "id": 27,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_Square_2",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Square \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
-    "sceneType": "Square",
-    "isIndoor": false,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -8,
-    "y": -8,
-    "connections": [
-      {
-        "connectedSceneId": 24,
-        "travelTime": 1.9300000000000002
-      }
-    ]
-  },
-  {
-    "id": 20,
-    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50_Tavern_1",
-    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Tavern \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop50.",
+    "id": 7,
+    "name": "\u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10_Tavern_1",
+    "description": "\u0410\u0432\u0442\u043E\u043C\u0430\u0442\u0438\u0447\u0435\u0441\u043A\u0438 \u0441\u0433\u0435\u043D\u0435\u0440\u0438\u0440\u043E\u0432\u0430\u043D\u043D\u0430\u044F \u0441\u0446\u0435\u043D\u0430 \u0442\u0438\u043F\u0430 Tavern \u0434\u043B\u044F \u043B\u043E\u043A\u0430\u0446\u0438\u0438 \u041D\u043E\u0432\u0430\u044F\u041B\u043E\u043A\u0430\u0446\u0438\u044F_Pop10.",
     "sceneType": "Tavern",
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": 0,
-    "y": -4,
-    "connections": [
-      {
-        "connectedSceneId": 26,
-        "travelTime": 1.26
-      }
-    ]
+    "x": -6,
+    "y": -7,
+    "connections": []
   }
 ]

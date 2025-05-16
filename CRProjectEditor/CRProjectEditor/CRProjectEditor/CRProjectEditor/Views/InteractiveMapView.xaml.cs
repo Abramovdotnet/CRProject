@@ -197,7 +197,7 @@ namespace CRProjectEditor.Views
             view.DrawMap();
         }
 
-        private void Scenes_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        private void Scenes_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             Debug.WriteLine("InteractiveMapView: Scenes_CollectionChanged called.");
             DrawMap();
@@ -621,6 +621,9 @@ namespace CRProjectEditor.Views
                 Canvas.SetLeft(_draggedMarker, newLeft);
                 Canvas.SetTop(_draggedMarker, newTop);
 
+                // Ensure _draggedMarker is not null before accessing ActualWidth/Height, though already checked by _isDraggingMarker
+                if (_draggedMarker == null) return; 
+
                 Point newMarkerCenter = new Point(newLeft + _draggedMarker.ActualWidth / 2, newTop + _draggedMarker.ActualHeight / 2);
                 scenesRenderInfo[_draggedScene.Id] = newMarkerCenter; // Update screen position for line drawing
 
@@ -630,8 +633,8 @@ namespace CRProjectEditor.Views
                     {
                         // One end of the line is the newMarkerCenter.
                         // The other end is the center of the *other* scene this line connects to.
-                        Point otherEndPoint = new Point(); 
-                        bool foundOtherEnd = false;
+                        // Point otherEndPoint = new Point(); // foundOtherEnd was related to this, removing
+                        // bool foundOtherEnd = false; // Variable not used
 
                         // Determine which scene is the other end of this specific line
                         // This relies on the fact that _sceneAssociatedLines links this line to _draggedScene
@@ -648,8 +651,8 @@ namespace CRProjectEditor.Views
                             if ((Math.Abs(line.X1 - potentialOtherEnd.X) < 0.01 && Math.Abs(line.Y1 - potentialOtherEnd.Y) < 0.01))
                             {
                                 // If X1,Y1 is the other scene, then X2,Y2 must be the dragged scene
-                                otherEndPoint = potentialOtherEnd;
-                                foundOtherEnd = true;
+                                // otherEndPoint = potentialOtherEnd;
+                                // foundOtherEnd = true;
                                 line.X2 = newMarkerCenter.X;
                                 line.Y2 = newMarkerCenter.Y;
                                 break; 
@@ -657,14 +660,14 @@ namespace CRProjectEditor.Views
                             if ((Math.Abs(line.X2 - potentialOtherEnd.X) < 0.01 && Math.Abs(line.Y2 - potentialOtherEnd.Y) < 0.01))
                             {
                                 // If X2,Y2 is the other scene, then X1,Y1 must be the dragged scene
-                                otherEndPoint = potentialOtherEnd;
-                                foundOtherEnd = true;
+                                // otherEndPoint = potentialOtherEnd;
+                                // foundOtherEnd = true;
                                 line.X1 = newMarkerCenter.X;
                                 line.Y1 = newMarkerCenter.Y;
                                 break;
                             }
                         }
-                        // If foundOtherEnd is false, it means the line was associated with _draggedScene,
+                        // If foundOtherEnd was false, it means the line was associated with _draggedScene,
                         // but its other endpoint doesn't match any *current* center in scenesRenderInfo (other than _draggedScene itself).
                         // This might happen if the line was to a scene not yet in scenesRenderInfo or an old line.
                         // However, DrawConnections should only create lines between scenes present in scenesRenderInfo.

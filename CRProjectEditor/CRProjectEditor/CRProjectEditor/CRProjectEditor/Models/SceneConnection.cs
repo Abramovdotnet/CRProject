@@ -9,5 +9,8 @@ namespace CRProjectEditor.Models
 
         [JsonPropertyName("travelTime")]
         public double TravelTime { get; set; } = 1.0;
+
+        [JsonPropertyName("connectionType")]
+        public string ConnectionType { get; set; } = "Standard";
     }
 } 
