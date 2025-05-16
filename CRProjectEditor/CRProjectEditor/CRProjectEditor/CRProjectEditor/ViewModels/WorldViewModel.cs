@@ -2,14 +2,17 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CRProjectEditor.Models;
 using CRProjectEditor.Tools;
+using CRProjectEditor.Views; // Для NotificationWindow
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using System.Numerics; // Для Vector2
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using System.Windows; // Для Application.Current
 using System.Windows.Input; // For ICommand
 
 namespace CRProjectEditor.ViewModels
@@ -47,6 +50,7 @@ namespace CRProjectEditor.ViewModels
         public ObservableCollection<SceneTypeCountSetting> SceneTypeConfigs { get; }
 
         public ICommand GenerateLocationCommand { get; }
+        public ICommand GenerateCoordinatesCommand { get; }
 
         public WorldViewModel()
         {
@@ -57,7 +61,20 @@ namespace CRProjectEditor.ViewModels
             }
 
             GenerateLocationCommand = new AsyncRelayCommand(GenerateLocationAndRefreshAsync);
+            GenerateCoordinatesCommand = new AsyncRelayCommand(GenerateCoordinatesAndRefreshAsync);
             _ = LoadScenesAsync(); 
+        }
+
+        private void ShowNotification(string message)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                var notificationWindow = new NotificationWindow(message)
+                {
+                    Owner = Application.Current.MainWindow
+                };
+                notificationWindow.ShowDialog();
+            });
         }
 
         private async Task LoadScenesAsync()
@@ -94,6 +111,7 @@ namespace CRProjectEditor.ViewModels
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка загрузки сцен: {ex.Message}");
+                ShowNotification($"Ошибка загрузки сцен: {ex.Message}");
                 App.Current.Dispatcher.Invoke(() => Scenes.Clear());
             }
         }
@@ -116,17 +134,45 @@ namespace CRProjectEditor.ViewModels
 
             if (!config.SceneCounts.Any())
             {
-                System.Diagnostics.Debug.WriteLine("Не выбрано ни одной сцены для генерации.");
-                // Тут можно показать сообщение пользователю
+                ShowNotification("Не выбрано ни одной сцены для генерации. Укажите количество для хотя бы одного типа сцен.");
                 return;
             }
 
             var generator = new LocationGenerator();
             List<Scene> generatedScenes = generator.GenerateLocation(config);
             generator.SaveScenesToFile(generatedScenes, Constants.ScenesPath);
-
-            // Обновляем DataGrid
+            ShowNotification($"Локация '{NewLocationName}' успешно сгенерирована и сохранена!\nСцен создано: {generatedScenes.Count}");
+            
             await LoadScenesAsync();
+        }
+
+        private async Task GenerateCoordinatesAndRefreshAsync()
+        {
+            if (!Scenes.Any())
+            {
+                ShowNotification("Нет сцен для генерации координат. Сначала загрузите или сгенерируйте локацию.");
+                return;
+            }
+
+            // Значения по умолчанию для генератора координат
+            Vector2 markerSize = new Vector2(50, 50); // Размер маркера на экране (пиксели)
+            float coordinateScale = 1.0f; // Масштаб: 1 единица JSON = 1 пиксель
+            float baseDistanceUnit = 50.0f; // Базовое расстояние за единицу времени пути (в JSON единицах)
+
+            try
+            {
+                // MapJsonGenerator.ProcessMapFile ожидает путь к файлу.
+                // Он сам прочитает, обновит координаты и сохранит.
+                MapJsonGenerator.ProcessMapFile(Constants.ScenesPath, markerSize, coordinateScale, baseDistanceUnit);
+                ShowNotification("Координаты для текущих сцен успешно сгенерированы и сохранены.");
+            }
+            catch (Exception ex)
+            {
+                ShowNotification($"Ошибка при генерации координат: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Ошибка генерации координат: {ex.Message}");
+            }
+            
+            await LoadScenesAsync(); // Перезагружаем сцены, чтобы увидеть обновленные X, Y
         }
     }
 } 
