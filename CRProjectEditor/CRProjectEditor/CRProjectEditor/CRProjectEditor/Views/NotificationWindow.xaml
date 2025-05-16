@@ -7,10 +7,13 @@
         Title="Уведомление" 
         SizeToContent="WidthAndHeight" MinWidth="300" MaxWidth="500"
         WindowStartupLocation="CenterOwner"
-        WindowStyle="ToolWindow">
-    <Border Padding="15">
+        WindowStyle="ToolWindow" 
+        ShowInTaskbar="False"
+        Background="{StaticResource BackgroundBrush}"
+        Foreground="{StaticResource ForegroundBrush}">
+    <Border Padding="15" Background="{StaticResource BackgroundBrush}">
         <StackPanel>
-            <TextBlock x:Name="MessageTextBlock" TextWrapping="Wrap" Margin="0,0,0,15" MinHeight="40" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <TextBlock x:Name="MessageTextBlock" TextWrapping="Wrap" Margin="0,0,0,15" MinHeight="40" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{StaticResource ForegroundBrush}"/>
             <Button Content="ОК" Click="OkButton_Click" HorizontalAlignment="Center" MinWidth="80" Padding="10,5"/>
         </StackPanel>
     </Border>
