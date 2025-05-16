@@ -7,12 +7,12 @@
     "isIndoor": false,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -10,
-    "y": -2,
+    "x": -6,
+    "y": -1,
     "connections": [
       {
-        "connectedSceneId": 4,
-        "travelTime": 1.6099999999999999,
+        "connectedSceneId": 7,
+        "travelTime": 1,
         "connectionType": "Standard"
       }
     ]
@@ -25,12 +25,12 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": 1,
-    "y": -7,
+    "x": -6,
+    "y": -12,
     "connections": [
       {
         "connectedSceneId": 7,
-        "travelTime": 1.49,
+        "travelTime": 1,
         "connectionType": "Standard"
       }
     ]
@@ -43,12 +43,12 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -1,
-    "y": -5,
+    "x": -12,
+    "y": -4,
     "connections": [
       {
-        "connectedSceneId": 7,
-        "travelTime": 1.01,
+        "connectedSceneId": 6,
+        "travelTime": 1,
         "connectionType": "Standard"
       }
     ]
@@ -61,12 +61,12 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -1,
-    "y": -2,
+    "x": -12,
+    "y": -6,
     "connections": [
       {
         "connectedSceneId": 7,
-        "travelTime": 1.47,
+        "travelTime": 1,
         "connectionType": "Standard"
       }
     ]
@@ -79,12 +79,12 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -3,
-    "y": -9,
+    "x": -12,
+    "y": -8,
     "connections": [
       {
         "connectedSceneId": 7,
-        "travelTime": 1.29,
+        "travelTime": 1,
         "connectionType": "Standard"
       }
     ]
@@ -97,17 +97,17 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -10,
-    "y": -9,
+    "x": -12,
+    "y": -10,
     "connections": [
       {
         "connectedSceneId": 7,
-        "travelTime": 1.51,
+        "travelTime": 1,
         "connectionType": "Standard"
       },
       {
-        "connectedSceneId": 6,
-        "travelTime": 1.6099999999999999,
+        "connectedSceneId": 5,
+        "travelTime": 1,
         "connectionType": "Standard"
       }
     ]
