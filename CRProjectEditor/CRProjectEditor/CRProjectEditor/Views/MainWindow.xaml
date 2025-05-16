@@ -1,0 +1,48 @@
+﻿<Window x:Class="CRProjectEditor.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CRProjectEditor.Views"
+        xmlns:viewModels="clr-namespace:CRProjectEditor.ViewModels"
+        mc:Ignorable="d"
+        Title="CRProjectEditor" Height="450" Width="800"
+        WindowState="Maximized">
+    <Window.DataContext>
+        <viewModels:MainViewModel/>
+    </Window.DataContext>
+
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type viewModels:WorldViewModel}">
+            <local:WorldView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:NPCsViewModel}">
+            <local:NPCsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:DialoguesViewModel}">
+            <local:DialoguesView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:QuestsViewModel}">
+            <local:QuestsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:ItemsViewModel}">
+            <local:ItemsView/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <TabControl ItemsSource="{Binding TabViewModels}"
+                    SelectedItem="{Binding SelectedViewModel}">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock Text="{Binding ViewModelDisplayName}"/> <!-- We'll need to add ViewModelDisplayName to each tab ViewModel -->
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <ContentPresenter Content="{Binding}"/>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </Grid>
+</Window>

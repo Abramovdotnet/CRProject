@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET7_0;NETCOREAPP
 C:\Repos\CRProject\CRProjectEditor\CRProjectEditor\CRProjectEditor\App.xaml
-11407045341
+6-384802836
 
-5-960064811
-1981827736222
-MainWindow.xaml;
+17-341609060
+199-891761132
+Views\DialoguesView.xaml;Views\ItemsView.xaml;Views\MainWindow.xaml;Views\NPCsView.xaml;Views\QuestsView.xaml;Views\WorldView.xaml;
 
 False
 

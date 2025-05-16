@@ -1,8 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "QqmnuP+8HRsL1tR1q5hT7tPxulJrJTV4XUxJ4rm39QxT3QOhngzlakX3ZNdSVnPl7Z8onk85imwa304xVIdtEQ==",
+  "dgSpecHash": "G8nRc95HHJ9FmW+ldWrWsX1zKtgSjP8B6v7pHh7ffxoS6zLoIy5jVzSJTMOBUDNBJ3Hv2Xn/VicGd4/0kJR4Bg==",
   "success": true,
   "projectFilePath": "C:\\Repos\\CRProject\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor.csproj",
-  "expectedPackageFiles": [],
+  "expectedPackageFiles": [
+    "C:\\Users\\Anatoly\\.nuget\\packages\\communitytoolkit.mvvm\\8.4.0\\communitytoolkit.mvvm.8.4.0.nupkg.sha512",
+    "C:\\Users\\Anatoly\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512",
+    "C:\\Users\\Anatoly\\.nuget\\packages\\system.runtime.compilerservices.unsafe\\6.1.0\\system.runtime.compilerservices.unsafe.6.1.0.nupkg.sha512"
+  ],
   "logs": []
 }
