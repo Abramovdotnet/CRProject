@@ -43,8 +43,8 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -12,
-    "y": -4,
+    "x": -18,
+    "y": -2,
     "connections": [
       {
         "connectedSceneId": 6,
@@ -61,8 +61,8 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -12,
-    "y": -6,
+    "x": -25,
+    "y": -11,
     "connections": [
       {
         "connectedSceneId": 7,
@@ -79,8 +79,8 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -12,
-    "y": -8,
+    "x": -23,
+    "y": -5,
     "connections": [
       {
         "connectedSceneId": 7,
@@ -97,8 +97,8 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -12,
-    "y": -10,
+    "x": -18,
+    "y": -15,
     "connections": [
       {
         "connectedSceneId": 7,
@@ -109,6 +109,11 @@
         "connectedSceneId": 5,
         "travelTime": 1,
         "connectionType": "Standard"
+      },
+      {
+        "connectedSceneId": 3,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
       }
     ]
   },
@@ -120,7 +125,7 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -6,
+    "x": -12,
     "y": -7,
     "connections": []
   }

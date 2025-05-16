@@ -199,6 +199,20 @@ namespace CRProjectEditor.ViewModels
             int numRemoved = MapSelectedScene.Connections.Count;
             MapSelectedScene.Connections.Clear();
             
+            // DEBUG: Check if the scene in the main Scenes collection was affected
+            if (MapSelectedScene != null) // Ensure MapSelectedScene is not null before accessing Id
+            {
+                var sceneInCollection = Scenes.FirstOrDefault(s => s.Id == MapSelectedScene.Id);
+                if (sceneInCollection != null)
+                {
+                    Debug.WriteLine($"[DEBUG] Scene {sceneInCollection.Name} (ID: {sceneInCollection.Id}) in Scenes collection has {sceneInCollection.Connections.Count} connections after Clear() and before Save. Expected: 0.");
+                }
+                else
+                {
+                    Debug.WriteLine($"[DEBUG] Scene {MapSelectedScene.Name} (ID: {MapSelectedScene.Id}) NOT FOUND in Scenes collection after Clear(). This is unexpected.");
+                }
+            }
+
             ShowNotification($"Все ({numRemoved}) подключения для сцены '{MapSelectedScene.Name}' удалены.");
             await SaveCurrentMapLayoutAsync();
             await LoadScenesAsync(); 
@@ -800,6 +814,48 @@ namespace CRProjectEditor.ViewModels
                 }
             }
             return weights;
+        }
+
+        public async Task AddConnectionFromMapAsync(Scene sourceScene, Scene targetScene)
+        {
+            if (sourceScene == null || targetScene == null)
+            {
+                ShowNotification("Исходная или целевая сцена не определены.");
+                return;
+            }
+
+            if (sourceScene.Id == targetScene.Id)
+            {
+                ShowNotification("Нельзя подключить сцену к самой себе.");
+                return;
+            }
+
+            // Находим актуальные объекты сцен в основной коллекции, чтобы изменения отразились
+            var actualSourceScene = Scenes.FirstOrDefault(s => s.Id == sourceScene.Id);
+            var actualTargetScene = Scenes.FirstOrDefault(s => s.Id == targetScene.Id);
+
+            if (actualSourceScene == null || actualTargetScene == null)
+            {
+                ShowNotification("Одна из сцен не найдена в текущем списке. Попробуйте обновить карту.");
+                return;
+            }
+
+            // Проверка на существующее подключение к этой же сцене
+            if (actualSourceScene.Connections.Any(c => c.ConnectedSceneId == actualTargetScene.Id))
+            {
+                ShowNotification($"Сцена '{actualSourceScene.Name}' уже подключена к '{actualTargetScene.Name}'.");
+                return;
+            }
+            
+            actualSourceScene.Connections.Add(new SceneConnection 
+            { 
+                ConnectedSceneId = actualTargetScene.Id, 
+                ConnectionType = "ManualCanvas" // Указываем, что связь создана вручную на канвасе
+            });
+
+            ShowNotification($"Подключение от '{actualSourceScene.Name}' к '{actualTargetScene.Name}' добавлено.");
+            await SaveCurrentMapLayoutAsync(); 
+            await LoadScenesAsync();      
         }
     }
 } 

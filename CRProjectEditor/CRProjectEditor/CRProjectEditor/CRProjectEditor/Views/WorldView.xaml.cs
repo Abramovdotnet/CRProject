@@ -23,6 +23,17 @@ namespace CRProjectEditor.Views
                     viewModel.MapSelectedScene = selectedScene;
                 };
                 Debug.WriteLine("WorldView: Subscribed to InteractiveMap.SceneSelected event.");
+
+                // Subscribe to the new ConnectionRequested event
+                InteractiveMap.ConnectionRequested += async (sourceScene, targetScene) =>
+                {
+                    Debug.WriteLine($"WorldView: InteractiveMap.ConnectionRequested event fired. Source: {sourceScene?.Name ?? "null"}, Target: {targetScene?.Name ?? "null"}");
+                    if (sourceScene != null && targetScene != null) // Basic null check before calling VM
+                    {
+                        await viewModel.AddConnectionFromMapAsync(sourceScene, targetScene);
+                    }
+                };
+                Debug.WriteLine("WorldView: Subscribed to InteractiveMap.ConnectionRequested event.");
             }
             else
             {
