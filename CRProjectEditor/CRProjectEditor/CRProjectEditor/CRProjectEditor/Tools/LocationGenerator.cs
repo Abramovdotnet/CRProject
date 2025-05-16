@@ -88,7 +88,8 @@ namespace CRProjectEditor.Tools
         {
             if (scenes.Count < 2) return; // Недостаточно сцен для связывания
 
-            var hubTypes = new[] { SceneType.Square, SceneType.Town, SceneType.City, SceneType.Village, SceneType.Tavern };
+            // SceneType.Town и SceneType.District исключены из списка хабов.
+            var hubTypes = new[] { SceneType.Square, SceneType.Tavern }; 
             List<Scene> potentialHubs = scenes.Where(s => hubTypes.Contains(s.SceneType)).ToList();
             
             Scene? mainHub = null;

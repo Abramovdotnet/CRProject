@@ -188,118 +188,254 @@ namespace CRProjectEditor.ViewModels
                 return;
             }
 
-            int scenesNeeded = (int)Math.Ceiling(TargetPopulation / 30.0);
-            if (scenesNeeded == 0) scenesNeeded = 1; // Ensure at least one scene
+            const double AverageResidentsPerHouse = 3.0; 
+            const double InfrastructureToHousingRatio = 0.6; 
+
+            int requiredHousingScenes = (int)Math.Ceiling(TargetPopulation / AverageResidentsPerHouse);
+            if (requiredHousingScenes == 0 && TargetPopulation > 0) requiredHousingScenes = 1;
+            
+            int infrastructureScenes = (int)Math.Ceiling(requiredHousingScenes * InfrastructureToHousingRatio);
+            int initialScenesNeeded = requiredHousingScenes + infrastructureScenes;
+            if (initialScenesNeeded == 0 && TargetPopulation > 0) initialScenesNeeded = 1;
+            
+            int scenesNeeded = initialScenesNeeded;
 
             var config = new LocationGenerationConfig
             {
-                LocationName = $"{NewLocationName}_Pop{TargetPopulation}", // Auto-generate name
+                LocationName = $"{NewLocationName}_Pop{TargetPopulation}",
                 SceneCounts = new Dictionary<SceneType, int>()
             };
             
-            List<SceneType> availableTypes = Enum.GetValues(typeof(SceneType)).Cast<SceneType>()
-                                                .Where(st => st != SceneType.Generic) 
-                                                .ToList();
+            List<SceneType> allSceneTypes = Enum.GetValues(typeof(SceneType)).Cast<SceneType>().ToList();
             Random random = new Random();
 
-            // 1. Обеспечить центральный хаб (Town/Village)
-            if (scenesNeeded > 0 && availableTypes.Contains(SceneType.Town))
+            var excludedUrbanTypes = new List<SceneType> { SceneType.Town, SceneType.District, SceneType.Road };
+            var nonCityTypes = new List<SceneType> { SceneType.Mine, SceneType.Forest, SceneType.Cave, SceneType.Ruins };
+
+
+            // 1. Гарантированное количество жилых сцен (House)
+            if (allSceneTypes.Contains(SceneType.House) && scenesNeeded > 0 && requiredHousingScenes > 0)
             {
-                config.SceneCounts[SceneType.Town] = config.SceneCounts.GetValueOrDefault(SceneType.Town, 0) + 1;
-                scenesNeeded--;
+                int housesToAdd = Math.Min(requiredHousingScenes, scenesNeeded);
+                config.SceneCounts[SceneType.House] = housesToAdd;
+                scenesNeeded -= housesToAdd;
             }
-            else if (scenesNeeded > 0 && availableTypes.Contains(SceneType.Village)) 
+            else if (requiredHousingScenes > 0)
             {
-                 config.SceneCounts[SceneType.Village] = config.SceneCounts.GetValueOrDefault(SceneType.Village, 0) + 1;
-                 scenesNeeded--;
+                ShowNotification("Тип сцены 'House' не найден, невозможно сгенерировать жилье!");
             }
 
-            // 2. Добавить общие объекты (Tavern, Shop, Square)
-            SceneType[] commonUtilities = { SceneType.Tavern, SceneType.Shop, SceneType.Square };
-            foreach(var utilityType in commonUtilities)
+            // 2. Инфраструктура по вехам населения (Milestone Infrastructure)
+            var milestoneInfrastructure = new List<Tuple<SceneType, int, int>> // Тип, Порог населения для *каждой* единицы, Макс. кол-во (0 если нет явного максимума сверх расчета)
             {
-                if (scenesNeeded > 0 && availableTypes.Contains(utilityType))
+                Tuple.Create(SceneType.Blacksmith, 100, 0),
+                Tuple.Create(SceneType.AlchemistShop, 100, 0),
+                Tuple.Create(SceneType.Tavern, 100, 0),
+                Tuple.Create(SceneType.Brothel, 200, TargetPopulation > 1000 ? 3 : (TargetPopulation > 500 ? 2 : 1) ), // Максимум борделей
+                Tuple.Create(SceneType.Cathedral, 500, 1) // Максимум 1 собор
+            };
+
+            foreach (var rule in milestoneInfrastructure)
+            {
+                if (!allSceneTypes.Contains(rule.Item1) || scenesNeeded == 0 || excludedUrbanTypes.Contains(rule.Item1) || nonCityTypes.Contains(rule.Item1)) continue;
+
+                int desiredCount = (int)Math.Ceiling((double)TargetPopulation / rule.Item2);
+                if (rule.Item3 > 0) // Если есть максимум
                 {
-                    config.SceneCounts[utilityType] = config.SceneCounts.GetValueOrDefault(utilityType, 0) + 1;
-                    scenesNeeded--;
+                    desiredCount = Math.Min(desiredCount, rule.Item3);
+                }
+                
+                int currentCount = config.SceneCounts.GetValueOrDefault(rule.Item1, 0);
+                int countToAdd = Math.Max(0, desiredCount - currentCount); // Добавляем только то, чего не хватает
+                countToAdd = Math.Min(countToAdd, scenesNeeded);
+
+                if (countToAdd > 0)
+                {
+                    config.SceneCounts[rule.Item1] = currentCount + countToAdd;
+                    scenesNeeded -= countToAdd;
                 }
             }
             
-            // 3. Распределить оставшиеся сцены на основе весов из NPCActivityType.swift
+            // 3. Масштабируемые ключевые службы (бывший typesToScale, District и Tavern удалены)
+            var typesToScale = new List<Tuple<SceneType, double, int, bool>> 
+            { 
+                Tuple.Create(SceneType.Shop,     0.25, 20, true),
+                Tuple.Create(SceneType.Square,   0.15, 5, true) // Уменьшил макс. кол-во площадей
+            };
+
+            foreach (var scaleRule in typesToScale)
+            {
+                if (!allSceneTypes.Contains(scaleRule.Item1) || scenesNeeded == 0 || excludedUrbanTypes.Contains(scaleRule.Item1) || nonCityTypes.Contains(scaleRule.Item1)) continue;
+
+                int baseCountForCalc = infrastructureScenes; 
+                int desiredCount = (int)Math.Ceiling(baseCountForCalc * scaleRule.Item2);
+                if (scaleRule.Item4) desiredCount = Math.Max(1, desiredCount); 
+                
+                desiredCount = Math.Min(desiredCount, scaleRule.Item3); 
+
+                int currentCount = config.SceneCounts.GetValueOrDefault(scaleRule.Item1, 0);
+                int countToAdd = Math.Max(0, desiredCount - currentCount);
+                countToAdd = Math.Min(countToAdd, scenesNeeded);   
+
+                if (countToAdd > 0)
+                {
+                    config.SceneCounts[scaleRule.Item1] = currentCount + countToAdd;
+                    scenesNeeded -= countToAdd;
+                }
+            }
+            
+            // 4. Ключевые "уникальные" строения (Cathedral удален, Town/District исключены)
+            var uniqueTypeRules = new List<Tuple<SceneType, int, int>>
+            {
+                Tuple.Create(SceneType.Castle, 600, TargetPopulation > 1200 ? 2 : 1),
+                Tuple.Create(SceneType.Temple, 400, TargetPopulation > 800 ? 2 : (initialScenesNeeded > 10 ? 1 : 0)),
+                Tuple.Create(SceneType.Manor,  300, TargetPopulation > 700 ? 3 : (initialScenesNeeded > 5 ? 1 : 0)),
+                Tuple.Create(SceneType.Military, 500, TargetPopulation > 1000 ? 2 : (initialScenesNeeded > 8 ? 1 : 0)),
+                Tuple.Create(SceneType.Cloister, 500, 1)  
+            };
+
+            foreach(var rule in uniqueTypeRules)
+            {
+                if (!allSceneTypes.Contains(rule.Item1) || scenesNeeded == 0 || excludedUrbanTypes.Contains(rule.Item1) || nonCityTypes.Contains(rule.Item1)) continue;
+
+                int numToAdd = 0;
+                int currentTypeCount = config.SceneCounts.GetValueOrDefault(rule.Item1, 0);
+                
+                if (TargetPopulation >= rule.Item2 && currentTypeCount < rule.Item3)
+                {
+                    numToAdd = Math.Min(rule.Item3 - currentTypeCount, scenesNeeded);
+                }
+                else if (currentTypeCount == 0 && initialScenesNeeded > (rule.Item1 == SceneType.Castle ? 15 : 10) && currentTypeCount < rule.Item3 )
+                {
+                     numToAdd = Math.Min(1, scenesNeeded); // Добавить 1, если еще нет, но город большой
+                }
+                
+                // Эта строка может быть избыточной или неверной, если numToAdd уже рассчитан до rule.Item3
+                // numToAdd = Math.Min(numToAdd, rule.Item3 - currentTypeCount); 
+                numToAdd = Math.Max(0, numToAdd); // Убедимся, что не отрицательное
+                numToAdd = Math.Min(numToAdd, scenesNeeded);
+
+
+                if (numToAdd > 0)
+                {
+                    config.SceneCounts[rule.Item1] = currentTypeCount + numToAdd;
+                    scenesNeeded -= numToAdd;
+                }
+            }
+
+            // 5. Обеспечение разнообразия для крупных городов (например, население >= 500)
+            if (TargetPopulation >= 300 && scenesNeeded > 0) // Порог можно настроить
+            {
+                var desirableUrbanSceneTypes = new List<SceneType>
+                {
+                    // Основные городские службы, которые должны быть почти всегда
+                    SceneType.Shop, SceneType.Square, SceneType.Tavern, SceneType.Blacksmith, SceneType.AlchemistShop,
+                    // Важные, но менее частые
+                    SceneType.Temple, SceneType.Manor, SceneType.Military, 
+                    // Редкие или специфичные
+                    SceneType.Castle, SceneType.Cathedral, SceneType.Cloister, SceneType.Brothel, 
+                    // Вспомогательные
+                    SceneType.Cemetery, SceneType.Warehouse, SceneType.Bookstore, SceneType.Bathhouse, SceneType.Docks, SceneType.Crypt
+                }.Distinct().ToList(); // Убираем дубликаты, если они случайно появятся
+
+                foreach (var desirableType in desirableUrbanSceneTypes)
+                {
+                    if (scenesNeeded == 0) break;
+                    if (excludedUrbanTypes.Contains(desirableType) || nonCityTypes.Contains(desirableType) || desirableType == SceneType.House) continue;
+
+                    if (!config.SceneCounts.ContainsKey(desirableType) || config.SceneCounts[desirableType] == 0)
+                    {
+                        if (CheckIfTypeCanBeAdded(desirableType, config.SceneCounts, uniqueTypeRules, typesToScale, milestoneInfrastructure))
+                        {
+                            config.SceneCounts[desirableType] = config.SceneCounts.GetValueOrDefault(desirableType, 0) + 1;
+                            scenesNeeded--;
+                        }
+                    }
+                }
+            }
+
+            // 6. Взвешенное распределение оставшихся сцен
             if (scenesNeeded > 0)
             {
                 var locationTypeWeights = CalculateLocationTypeWeightsFromSwiftData();
-                
-                List<SceneType> weightedVarietyTypes = availableTypes
-                    .Except(commonUtilities)
-                    .Except(new[] { SceneType.Town, SceneType.Village, SceneType.City })
-                    .Where(st => locationTypeWeights.ContainsKey(st) && locationTypeWeights[st] > 0)
+                List<SceneType> varietyPool = allSceneTypes
+                    .Where(st => !excludedUrbanTypes.Contains(st) && !nonCityTypes.Contains(st) && st != SceneType.House)
                     .ToList();
 
-                if (weightedVarietyTypes.Any())
+                // Убираем типы, которые уже достигли своих максимумов
+                varietyPool.RemoveAll(st => !CheckIfTypeCanBeAdded(st, config.SceneCounts, uniqueTypeRules, typesToScale, milestoneInfrastructure));
+                
+                var weightedList = varietyPool
+                    .Select(st => new { SceneType = st, Weight = locationTypeWeights.GetValueOrDefault(st, 0) })
+                    .Where(x => x.Weight > 0) 
+                    .OrderByDescending(x => x.Weight) 
+                    .ToList();
+                
+                int totalWeight = weightedList.Sum(x => x.Weight);
+
+                while (scenesNeeded > 0 && totalWeight > 0 && weightedList.Any())
                 {
-                    var weightedList = weightedVarietyTypes
-                        .Select(st => new { SceneType = st, Weight = locationTypeWeights[st] })
-                        .ToList();
-                    int totalWeight = weightedList.Sum(x => x.Weight);
-
-                    while (scenesNeeded > 0 && totalWeight > 0 && weightedList.Any()) // Добавил weightedList.Any()
+                    int randomNumber = random.Next(totalWeight);
+                    SceneType chosenType = SceneType.Shop; // Default, будет перезаписан
+                    int cumulativeWeight = 0;
+                    bool found = false;
+                    foreach (var item in weightedList)
                     {
-                        int randomNumber = random.Next(totalWeight);
-                        SceneType chosenType = SceneType.Generic; // Fallback, should be replaced
-                        
-                        int cumulativeWeight = 0;
-                        bool chosen = false;
-                        foreach (var item in weightedList)
+                        cumulativeWeight += item.Weight;
+                        if (randomNumber < cumulativeWeight)
                         {
-                            cumulativeWeight += item.Weight;
-                            if (randomNumber < cumulativeWeight)
-                            {
-                                chosenType = item.SceneType;
-                                chosen = true;
-                                break;
-                            }
+                            chosenType = item.SceneType;
+                            found = true;
+                            break;
                         }
-                        // Если totalWeight > 0, но все веса элементов = 0 (маловероятно тут, но для защиты)
-                        // или если random.Next(totalWeight) вернул значение, приводящее к выходу за пределы
-                        if (!chosen && weightedList.Any()) chosenType = weightedList.First().SceneType;
+                    }
+                    if (!found && weightedList.Any()) chosenType = weightedList.First().SceneType;
+                    else if (!found) { break; } 
 
-
-                        if (chosenType != SceneType.Generic) // Убедимся что выбрали что-то конкретное
+                    if (CheckIfTypeCanBeAdded(chosenType, config.SceneCounts, uniqueTypeRules, typesToScale, milestoneInfrastructure))
+                    {
+                        config.SceneCounts[chosenType] = config.SceneCounts.GetValueOrDefault(chosenType, 0) + 1;
+                        scenesNeeded--;
+                        // Если тип после добавления достиг лимита, его нужно убрать из weightedList для след. итераций
+                        if (!CheckIfTypeCanBeAdded(chosenType, config.SceneCounts, uniqueTypeRules, typesToScale, milestoneInfrastructure))
                         {
-                             config.SceneCounts[chosenType] = config.SceneCounts.GetValueOrDefault(chosenType, 0) + 1;
-                             scenesNeeded--;
+                             weightedList.RemoveAll(item => item.SceneType == chosenType);
+                             totalWeight = weightedList.Sum(x => x.Weight); // Пересчитать
                         }
-                        else // Если не удалось выбрать по весам (например, все веса 0), прерываем цикл взвешенного выбора
-                        {
-                            break; 
-                        }
-
-                        // Для простоты, позволяем многократный выбор одного типа по весу.
-                        // Если нужно уникальные, можно убирать/уменьшать вес.
+                    }
+                    else
+                    {
+                        // Если тип достиг максимума, убираем его из дальнейшего рассмотрения
+                        weightedList.RemoveAll(item => item.SceneType == chosenType);
+                        totalWeight = weightedList.Sum(x => x.Weight); 
+                        if (!weightedList.Any() || totalWeight == 0) break; 
                     }
                 }
             }
             
-            // 4. Если все еще нужны сцены (например, типы с весами закончились или их не было)
-            //    используем логику отката: добавляем в Town/Village или первый доступный тип.
+            // 7. Заполнение (Fallback)
             if (scenesNeeded > 0)
             {
-                if (config.SceneCounts.ContainsKey(SceneType.Town))
-                    config.SceneCounts[SceneType.Town] += scenesNeeded;
-                else if (config.SceneCounts.ContainsKey(SceneType.Village))
-                    config.SceneCounts[SceneType.Village] += scenesNeeded;
-                else if (availableTypes.Any()) 
+                var fallbackCandidates = allSceneTypes
+                    .Where(st => !excludedUrbanTypes.Contains(st) && !nonCityTypes.Contains(st) && st != SceneType.House)
+                    .OrderBy(st => config.SceneCounts.GetValueOrDefault(st, 0)) // Предпочитаем те, которых меньше
+                    .ToList();
+
+                while (scenesNeeded > 0 && fallbackCandidates.Any())
                 {
-                    var fallbackType = availableTypes.FirstOrDefault(st => st != SceneType.City && !commonUtilities.Contains(st) && st != SceneType.Town && st != SceneType.Village);
-                    if (fallbackType == default(SceneType) && availableTypes.Any()) fallbackType = availableTypes.First(); // самый общий откат
-                     
-                    if(fallbackType != default(SceneType)) // Убедимся что нашли тип для отката
-                         config.SceneCounts[fallbackType] = config.SceneCounts.GetValueOrDefault(fallbackType, 0) + scenesNeeded;
-                    else // Крайний случай: если вообще нет доступных типов (не должно произойти)
-                         ShowNotification($"Не удалось распределить {scenesNeeded} сцен. Нет доступных типов.");
+                    bool addedInLoop = false;
+                    foreach (var fallbackType in fallbackCandidates)
+                    {
+                        if (scenesNeeded == 0) break;
+                        if (CheckIfTypeCanBeAdded(fallbackType, config.SceneCounts, uniqueTypeRules, typesToScale, milestoneInfrastructure))
+                        {
+                            config.SceneCounts[fallbackType] = config.SceneCounts.GetValueOrDefault(fallbackType, 0) + 1;
+                            scenesNeeded--;
+                            addedInLoop = true;
+                        }
+                    }
+                    if (!addedInLoop) break; // Если за целый проход по кандидатам ничего не добавили (все уперлись в лимиты)
                 }
-                scenesNeeded = 0;
             }
 
             if (!config.SceneCounts.Any())
@@ -310,41 +446,89 @@ namespace CRProjectEditor.ViewModels
             
             var generator = new LocationGenerator();
             List<Scene> generatedScenes = generator.GenerateLocation(config);
+            generatedScenes = generatedScenes.OrderBy(s => s.SceneType.ToString()).ThenBy(s => s.Name).ToList();
             generator.SaveScenesToFile(generatedScenes, Constants.ScenesPath);
-            ShowNotification($"Локация для населения {TargetPopulation} ('{config.LocationName}') успешно сгенерирована!\\nСцен создано: {generatedScenes.Count}");
+            ShowNotification($"Локация для населения {TargetPopulation} ('{config.LocationName}') успешно сгенерирована! Сцен создано: {generatedScenes.Count}");
             
             await LoadScenesAsync();
+        }
+
+        private bool CheckIfTypeCanBeAdded(SceneType type, IReadOnlyDictionary<SceneType, int> currentCounts,
+                                   List<Tuple<SceneType, int, int>> uniqueRules,
+                                   List<Tuple<SceneType, double, int, bool>> scaleRules,
+                                   List<Tuple<SceneType, int, int>> milestoneRules)
+        {
+            int currentCount = currentCounts.GetValueOrDefault(type, 0);
+
+            var uniqueRule = uniqueRules.FirstOrDefault(r => r.Item1 == type);
+            if (uniqueRule != null && currentCount >= uniqueRule.Item3) return false;
+
+            var scaleRule = scaleRules.FirstOrDefault(r => r.Item1 == type);
+            if (scaleRule != null && currentCount >= scaleRule.Item3) return false;
+    
+            var milestoneRule = milestoneRules.FirstOrDefault(r => r.Item1 == type);
+            // Для milestoneRule.Item3 == 0 означает "нет явного максимума сверх расчета по количеству на порог населения"
+            // Поэтому проверяем >= milestoneRule.Item3 только если milestoneRule.Item3 > 0
+            if (milestoneRule != null && milestoneRule.Item3 > 0 && currentCount >= milestoneRule.Item3) return false; 
+
+            return true;
+        }
+
+        private int GetTypeLimit(SceneType type,
+                                 List<Tuple<SceneType, int, int>> uniqueRules,
+                                 List<Tuple<SceneType, double, int, bool>> scaleRules,
+                                 List<Tuple<SceneType, int, int>> milestoneRules)
+        {
+            int limit = int.MaxValue; 
+
+            var uniqueRule = uniqueRules.FirstOrDefault(r => r.Item1 == type);
+            if (uniqueRule != null) limit = Math.Min(limit, uniqueRule.Item3);
+
+            var scaleRule = scaleRules.FirstOrDefault(r => r.Item1 == type);
+            if (scaleRule != null) limit = Math.Min(limit, scaleRule.Item3);
+
+            var milestoneRule = milestoneRules.FirstOrDefault(r => r.Item1 == type);
+            if (milestoneRule != null && milestoneRule.Item3 > 0) limit = Math.Min(limit, milestoneRule.Item3);
+
+            return limit == int.MaxValue ? 0 : limit; // 0 означает "нет специфического лимита из этих правил"
         }
 
         private Dictionary<string, SceneType[]> GetSwiftToCSharpSceneTypeMapping()
         {
             return new Dictionary<string, SceneType[]>
             {
-                { "tavern", new[] { SceneType.Tavern } },
-                { "house", new[] { SceneType.Village } },
-                { "cottage", new[] { SceneType.Village } },
-                { "manor", new[] { SceneType.Castle, SceneType.Town } },
-                { "keep", new[] { SceneType.Castle } },
-                { "barracks", new[] { SceneType.Castle, SceneType.Town } },
-                { "brothel", new[] { SceneType.Shop, SceneType.Tavern } },
-                { "shop", new[] { SceneType.Shop } },
+                // Town исключен из всех сопоставлений
+                { "castle", new[] { SceneType.Castle } },
+                { "cathedral", new[] { SceneType.Cathedral } },
+                { "cloister", new[] { SceneType.Cloister } }, 
+                { "cemetery", new[] { SceneType.Cemetery } },
                 { "temple", new[] { SceneType.Temple } },
-                { "cathedral", new[] { SceneType.Temple } },
-                { "monastery", new[] { SceneType.Temple } },
+                { "crypt", new[] { SceneType.Crypt } },
+                { "manor", new[] { SceneType.Manor, SceneType.Castle } }, // Town убран
+                { "military", new[] { SceneType.Military, SceneType.Castle } }, // Town убран
+                { "blacksmith", new[] { SceneType.Blacksmith } },
+                { "alchemistShop", new[] { SceneType.AlchemistShop } },
+                { "warehouse", new[] { SceneType.Warehouse, SceneType.Shop } }, // Town убран, Shop как альтернатива для склада в "городе"
+                { "bookstore", new[] { SceneType.Bookstore } },
+                { "shop", new[] { SceneType.Shop } }, 
+                { "mine", new[] { SceneType.Mine } },
+                { "tavern", new[] { SceneType.Tavern } },
+                { "brothel", new[] { SceneType.Brothel } },
+                { "bathhouse", new[] { SceneType.Bathhouse } },
                 { "square", new[] { SceneType.Square } },
-                { "market", new[] { SceneType.Square, SceneType.Town } },
-                { "blacksmith", new[] { SceneType.Shop } },
-                { "alchemistShop", new[] { SceneType.Shop } },
-                { "bookstore", new[] { SceneType.Shop } },
-                { "military", new[] { SceneType.Castle, SceneType.Town } }, // As a location/building
-                { "watchtower", new[] { SceneType.Castle, SceneType.Ruins } },
+                { "docks", new[] { SceneType.Docks } }, // Town убран
+                { "road", new[] { SceneType.Road } }, 
+                { "forest", new[] { SceneType.Forest } },
+                { "cave", new[] { SceneType.Cave } },
+                { "ruins", new[] { SceneType.Ruins } },
+                { "house", new[] { SceneType.House } }, 
                 { "dungeon", new[] { SceneType.Dungeon } },
-                { "cemetery", new[] { SceneType.Crypt } },
-                { "crypt", new[] { SceneType.Crypt } }, // Explicitly from .pray
-                { "bathhouse", new[] { SceneType.Shop } },
-                { "warehouse", new[] { SceneType.Town, SceneType.Shop } },
-                { "docks", new[] { SceneType.Town } }
-                // SceneType.Forest, Cave, Ruins, Mine не имеют прямых соответствий в validLocationTypes активностей NPC
+                { "cottage", new[] { SceneType.House } }, 
+                { "barracks", new[] { SceneType.Military, SceneType.Castle } }, // Town убран
+                { "keep", new[] { SceneType.Castle, SceneType.Manor } }, // Town убран
+                { "market", new[] { SceneType.Square, SceneType.Shop } }, // Town убран
+                { "watchtower", new[] { SceneType.Military, SceneType.Castle, SceneType.Ruins } } 
+                // Запись "town" -> SceneType.Town удалена
             };
         }
 
@@ -427,13 +611,14 @@ namespace CRProjectEditor.ViewModels
         private Dictionary<SceneType, int> CalculateLocationTypeWeightsFromSwiftData()
         {
             var weights = new Dictionary<SceneType, int>();
+            // Инициализируем веса для всех актуальных C# SceneType
             foreach (SceneType type in Enum.GetValues(typeof(SceneType)))
             {
-                weights[type] = 0; // Initialize all weights to 0
+                weights[type] = 0; 
             }
 
             var mapping = GetSwiftToCSharpSceneTypeMapping();
-            var allMentions = GetAllSwiftValidLocationTypeMentions();
+            var allMentions = GetAllSwiftValidLocationTypeMentions(); // Этот метод не менялся
 
             foreach (string mention in allMentions)
             {
@@ -443,7 +628,11 @@ namespace CRProjectEditor.ViewModels
                     {
                         foreach (SceneType csharpType in csharpTypes)
                         {
-                            weights[csharpType]++;
+                            // Убедимся, что такой тип есть в нашем enum (должен быть после инициализации)
+                            if (weights.ContainsKey(csharpType))
+                            { 
+                                weights[csharpType]++;
+                            }
                         }
                     }
                 }
