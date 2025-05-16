@@ -67,20 +67,28 @@
             </StackPanel>
         </Border>
         
-        <DataGrid Grid.Column="1" ItemsSource="{Binding Scenes}"                        
-                  AlternationCount="2">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="SizeToHeader" MinWidth="40" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" MinWidth="150" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Type" Binding="{Binding SceneType}" Width="SizeToCells" MinWidth="80" IsReadOnly="True"/>
-                <DataGridCheckBoxColumn Header="Indoor" Binding="{Binding IsIndoor}" Width="SizeToHeader" MinWidth="60" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Parent ID" Binding="{Binding ParentSceneId}" Width="SizeToHeader" MinWidth="70" IsReadOnly="True"/>
-                <DataGridTextColumn Header="X" Binding="{Binding X}" Width="SizeToHeader" MinWidth="50" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Y" Binding="{Binding Y}" Width="SizeToHeader" MinWidth="50" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Child IDs" Binding="{Binding ChildSceneIds, Converter={StaticResource IntListToStringConverter}}" Width="SizeToCells" MinWidth="100" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Hub IDs" Binding="{Binding HubSceneIds, Converter={StaticResource IntListToStringConverter}}" Width="SizeToCells" MinWidth="100" IsReadOnly="True"/>
-                <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="2*" MinWidth="200" IsReadOnly="True"/>
-            </DataGrid.Columns>
-        </DataGrid>
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            
+            <DataGrid Grid.Row="0" ItemsSource="{Binding Scenes}"                        
+                      AlternationCount="2">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="SizeToHeader" MinWidth="40" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" MinWidth="150" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Type" Binding="{Binding SceneType}" Width="SizeToCells" MinWidth="80" IsReadOnly="True"/>
+                    <DataGridCheckBoxColumn Header="Indoor" Binding="{Binding IsIndoor}" Width="SizeToHeader" MinWidth="60" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Parent ID" Binding="{Binding ParentSceneId}" Width="SizeToHeader" MinWidth="70" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="X" Binding="{Binding X}" Width="SizeToHeader" MinWidth="50" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Y" Binding="{Binding Y}" Width="SizeToHeader" MinWidth="50" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Child IDs" Binding="{Binding ChildSceneIds, Converter={StaticResource IntListToStringConverter}}" Width="SizeToCells" MinWidth="100" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Hub IDs" Binding="{Binding HubSceneIds, Converter={StaticResource IntListToStringConverter}}" Width="SizeToCells" MinWidth="100" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="2*" MinWidth="200" IsReadOnly="True"/>
+                </DataGrid.Columns>
+            </DataGrid>
+            <!-- Нижняя половина (Grid.Row="1") пока пустая -->
+        </Grid>
     </Grid>
 </UserControl> 
