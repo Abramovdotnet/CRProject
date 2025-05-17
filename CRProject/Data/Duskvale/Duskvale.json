@@ -9,7 +9,7 @@
     "childSceneIds": [],
     "hubSceneIds": [],
     "x": 0,
-    "y": 0,
+    "y": 1,
     "connections": [
       {
         "connectedSceneId": 15,
@@ -63,14 +63,14 @@
   },
   {
     "id": 3,
-    "name": "The Velvet Thorn",
+    "name": "The Black Lily",
     "description": "A newly created scene.",
     "sceneType": "Brothel",
     "isIndoor": false,
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -6,
+    "x": -2,
     "y": 2,
     "connections": [
       {
@@ -91,8 +91,8 @@
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": 4,
-    "y": 0,
+    "x": 2,
+    "y": 1,
     "connections": [
       {
         "connectedSceneId": 10,
@@ -122,8 +122,8 @@
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": 8,
-    "y": -2,
+    "x": 3,
+    "y": 0,
     "connections": [
       {
         "connectedSceneId": 13,
@@ -143,8 +143,8 @@
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": 4,
-    "y": 4,
+    "x": 2,
+    "y": 3,
     "connections": [
       {
         "connectedSceneId": 13,
@@ -170,7 +170,7 @@
     "childSceneIds": [],
     "hubSceneIds": [],
     "x": 0,
-    "y": 7,
+    "y": 4,
     "connections": [
       {
         "connectedSceneId": 15,
