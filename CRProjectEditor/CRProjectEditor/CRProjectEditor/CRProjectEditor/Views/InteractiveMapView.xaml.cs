@@ -22,7 +22,7 @@ namespace CRProjectEditor.Views
         private Point? lastMousePosition;
         private ScaleTransform scaleTransform;
         private TranslateTransform translateTransform;
-        private double wpfRenderScale = 90.0; // Было 30.0
+        private double wpfRenderScale = 70.0; // Было 30.0
 
         // Stores pre-calculated, scaled, and offset positions for scene centers
         private Dictionary<int, Point> scenesRenderInfo = new Dictionary<int, Point>();
