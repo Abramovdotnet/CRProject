@@ -5,6 +5,7 @@ using System.Windows.Data;
 
 namespace CRProjectEditor.Converters
 {
+    [ValueConversion(typeof(object), typeof(Visibility))]
     public class NullToVisibilityConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -14,9 +15,8 @@ namespace CRProjectEditor.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            // ConvertBack is not used for this converter, so throw an exception or return DoNothing.
-            // For visibility, it typically doesn't make sense to convert back.
-            return Binding.DoNothing; // Or throw new NotSupportedException();
+            // ConvertBack is not used in this scenario, so a simple implementation is sufficient.
+            return value is Visibility visibility && visibility == Visibility.Visible;
         }
     }
 } 

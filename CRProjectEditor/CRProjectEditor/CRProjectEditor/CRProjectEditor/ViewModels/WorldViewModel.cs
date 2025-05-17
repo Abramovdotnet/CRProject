@@ -17,6 +17,7 @@ using System.Windows; // Для Application.Current
 using System.Windows.Input; // For ICommand
 using System.Diagnostics;
 using System.Text.RegularExpressions; // For Regex in asset loading
+using Microsoft.Win32; // For OpenFileDialog
 
 namespace CRProjectEditor.ViewModels
 {
@@ -95,10 +96,23 @@ namespace CRProjectEditor.ViewModels
         [NotifyPropertyChangedFor(nameof(SelectedAssetPreviewPath))]
         private AssetDisplayInfo? _selectedAsset;
 
+        // Добавленный частичный метод для реакции на изменение SelectedAsset
+        partial void OnSelectedAssetChanged(AssetDisplayInfo? oldValue, AssetDisplayInfo? newValue)
+        {
+            // Явно уведомляем команду об изменении возможности ее выполнения
+            DeleteAssetCommand.NotifyCanExecuteChanged();
+            // Также можно обновить другие команды, если они зависят от SelectedAsset
+            // Например, если бы у нас была команда "EditSelectedAssetCommand"
+            // EditSelectedAssetCommand?.NotifyCanExecuteChanged(); 
+        }
+
         public string? SelectedAssetPreviewPath
         {
             get => SelectedAsset?.ImagePath;
         }
+
+        public IAsyncRelayCommand CreateAssetCommand { get; }
+        public IAsyncRelayCommand DeleteAssetCommand { get; }
 
         public WorldViewModel(INotificationService notificationService)
         {
@@ -128,6 +142,9 @@ namespace CRProjectEditor.ViewModels
             DeleteAllConnectionsCommand = new AsyncRelayCommand(DeleteAllConnectionsAsync, CanDeleteConnections);
             DeleteSelectedSceneCommand = new AsyncRelayCommand(DeleteSelectedSceneAsync, CanDeleteSelectedScene);
             
+            CreateAssetCommand = new AsyncRelayCommand(CreateAssetAsync);
+            DeleteAssetCommand = new AsyncRelayCommand(DeleteAssetAsync, CanDeleteAsset);
+
             _ = LoadScenesAsync(); 
             _ = LoadAssetImagesAsync(); // Load assets
             this.PropertyChanged += (s, e) => {
@@ -1354,6 +1371,165 @@ namespace CRProjectEditor.ViewModels
                     _notificationService.ShowToast("Изменение ID сцены отменено.", ToastType.Info);
                 }
             );
+        }
+
+        // Added method and CanExecute for DeleteAssetCommand
+        private bool CanDeleteAsset()
+        {
+            return SelectedAsset != null;
+        }
+
+        private async Task DeleteAssetAsync()
+        {
+            if (SelectedAsset == null) return;
+
+            string assetNameToDelete = $"Asset ID {SelectedAsset.AssetId}"; // Используем ID для идентификации
+
+            // Запрос подтверждения
+            bool confirmed = await _notificationService.ShowConfirmationDialogAsync(
+                "Подтверждение удаления",
+                $"Вы уверены, что хотите удалить ассет {assetNameToDelete}?\nПуть: {SelectedAsset.ImagePath}\nЭто действие необратимо."
+            );
+
+            if (confirmed)
+            {
+                _notificationService.UpdateStatus($"Удаление ассета {assetNameToDelete}...");
+                try
+                {
+                    string assetFolderName = $"location{SelectedAsset.AssetId}.imageset";
+                    string assetFolderPath = Path.Combine(Constants.SceneAssetsFolderPath, assetFolderName);
+
+                    if (Directory.Exists(assetFolderPath))
+                    {
+                        Directory.Delete(assetFolderPath, true); // true для рекурсивного удаления
+                        Debug.WriteLine($"[DeleteAssetAsync] Удалена папка: {assetFolderPath}");
+
+                        // Очистить выбор, если удален выбранный элемент
+                        AssetDisplayInfo? deletedAsset = SelectedAsset; // Сохраняем ссылку
+                        SelectedAsset = null; // Сбрасываем выбор
+
+                        await LoadAssetImagesAsync(); // Обновить список
+
+                        _notificationService.ShowToast($"Ассет {assetNameToDelete} успешно удален.", ToastType.Success);
+                        _notificationService.UpdateStatus("Ассет удален.");
+                    }
+                    else
+                    {                       
+                        _notificationService.ShowToast($"Ошибка: Папка ассета {assetFolderName} не найдена для удаления.", ToastType.Warning);
+                        Debug.WriteLine($"[DeleteAssetAsync] Папка не найдена для удаления: {assetFolderPath}");
+                        // Все равно перезагрузить список, на случай если он рассинхронизирован
+                        await LoadAssetImagesAsync();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _notificationService.ShowToast($"Ошибка при удалении ассета {assetNameToDelete}: {ex.Message}", ToastType.Error);
+                    _notificationService.UpdateStatus("Ошибка удаления ассета.");
+                    Debug.WriteLine($"[DeleteAssetAsync] Исключение: {ex}");
+                }
+            }
+            else
+            {
+                _notificationService.UpdateStatus("Удаление ассета отменено.");
+            }
+        }
+
+        // Added method for CreateAssetCommand
+        private async Task CreateAssetAsync()
+        {
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "PNG Files (*.png)|*.png",
+                Title = "Выберите PNG файл для нового ассета"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string selectedFilePath = openFileDialog.FileName;
+                _notificationService.UpdateStatus("Создание нового ассета...");
+
+                try
+                {
+                    // 1. Определить новый ID для ассета, учитывая ID сцен и других ассетов
+                    int maxSceneId = 0;
+                    if (Scenes.Any())
+                    {
+                        maxSceneId = Scenes.Max(s => s.Id);
+                    }
+
+                    int maxAssetId = 0;
+                    if (AvailableAssetImages.Any())
+                    {
+                        maxAssetId = AvailableAssetImages.Max(a => a.AssetId);
+                    }
+
+                    int newAssetId = Math.Max(maxSceneId, maxAssetId) + 1;
+                    
+                    // Дополнительная проверка, чтобы убедиться, что ID не занят (на случай если есть "дыры" в нумерации)
+                    // и не конфликтует с существующими сценами или ассетами.
+                    while (Scenes.Any(s => s.Id == newAssetId) || AvailableAssetImages.Any(a => a.AssetId == newAssetId))
+                    {
+                        newAssetId++;
+                    }
+                     Debug.WriteLine($"[CreateAssetAsync] Определен новый Asset ID: {newAssetId} (с учетом сцен и ассетов)");
+
+                    // 2. Создать папку location{ID}.imageset
+                    string assetFolderName = $"location{newAssetId}.imageset";
+                    string assetFolderPath = Path.Combine(Constants.SceneAssetsFolderPath, assetFolderName);
+
+                    if (Directory.Exists(assetFolderPath))
+                    {
+                        _notificationService.ShowToast($"Ошибка: Папка для ассета {assetFolderName} уже существует.", ToastType.Error);
+                        Debug.WriteLine($"[CreateAssetAsync] Папка {assetFolderPath} уже существует.");
+                        return;
+                    }
+                    Directory.CreateDirectory(assetFolderPath);
+                    Debug.WriteLine($"[CreateAssetAsync] Создана папка: {assetFolderPath}");
+
+                    // 3. Скопировать выбранный файл и переименовать
+                    string targetImageName = $"location{newAssetId}.png";
+                    string targetImagePath = Path.Combine(assetFolderPath, targetImageName);
+                    File.Copy(selectedFilePath, targetImagePath);
+                    Debug.WriteLine($"[CreateAssetAsync] Файл скопирован в: {targetImagePath}");
+
+                    // 4. Создать Contents.json из шаблона
+                    // Путь к шаблону определен ранее как: C:\\Repos\\CRProject\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\Content\\AssetImageContent.json
+                    // Используем относительный путь для надежности, если он находится в структуре проекта.
+                    // Если он действительно вне проекта, то абсолютный путь, но это менее гибко.
+                    // Предположим, что файл Content\AssetImageContent.json находится относительно исполняемого файла или проекта.
+                    // Для большей надежности, его можно сделать ресурсом или копировать при сборке.
+                    // Пока использую жестко заданный путь, как он был указан вами, но с осторожностью.
+                    string templatePath = "C:\\\\Repos\\\\CRProject\\\\CRProjectEditor\\\\CRProjectEditor\\\\CRProjectEditor\\\\CRProjectEditor\\\\Content\\\\AssetImageContent.json";
+                    string contentsJsonPath = Path.Combine(assetFolderPath, "Contents.json");
+
+                    if (!File.Exists(templatePath))
+                    {
+                         _notificationService.ShowToast($"Критическая ошибка: Файл шаблона AssetImageContent.json не найден по пути {templatePath}", ToastType.Error);
+                         Debug.WriteLine($"[CreateAssetAsync] Шаблон не найден: {templatePath}");
+                         // Попытка очистки, если папка уже создана, а шаблон нет
+                         if(Directory.Exists(assetFolderPath)) Directory.Delete(assetFolderPath, true);
+                         return;
+                    }
+                    
+                    string templateContent = await File.ReadAllTextAsync(templatePath);
+                    // Заменяем "{id}" в "filename": "location{id}.png"
+                    string newContentJson = templateContent.Replace("location{id}.png", targetImageName); 
+                    
+                    await File.WriteAllTextAsync(contentsJsonPath, newContentJson);
+                    Debug.WriteLine($"[CreateAssetAsync] Создан Contents.json: {contentsJsonPath}");
+
+                    // 5. Обновить коллекцию ассетов
+                    await LoadAssetImagesAsync();
+                    _notificationService.ShowToast($"Ассет ID {newAssetId} успешно создан.", ToastType.Success);
+                    _notificationService.UpdateStatus("Новый ассет создан.");
+                }
+                catch (Exception ex)
+                {
+                    _notificationService.ShowToast($"Ошибка при создании ассета: {ex.Message}", ToastType.Error);
+                    _notificationService.UpdateStatus("Ошибка создания ассета.");
+                    Debug.WriteLine($"[CreateAssetAsync] Исключение: {ex}");
+                }
+            }
         }
     }
 } 

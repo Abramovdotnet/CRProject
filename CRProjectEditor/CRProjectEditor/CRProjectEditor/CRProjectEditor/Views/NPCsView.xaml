@@ -4,9 +4,99 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:CRProjectEditor.Views"
+             xmlns:viewModels="clr-namespace:CRProjectEditor.ViewModels"
+             xmlns:models="clr-namespace:CRProjectEditor.Models"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
+             d:DataContext="{d:DesignInstance Type=viewModels:NPCsViewModel, IsDesignTimeCreatable=True}"
+             d:DesignHeight="600" d:DesignWidth="1000">
     <Grid>
-        <TextBlock Text="NPCs View" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="450" MaxWidth="600"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="0,0,1,0" Padding="10">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel>
+                    <TextBlock Text="Фильтры NPC" FontWeight="Bold" Margin="0,0,0,10" Foreground="{StaticResource ForegroundBrush}"/>
+
+                    <TextBlock Text="Имя:" Foreground="{StaticResource ForegroundBrush}"/>
+                    <TextBox Text="{Binding FilterName, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Пол:" Foreground="{StaticResource ForegroundBrush}"/>
+                    <ComboBox ItemsSource="{Binding AvailableSexes}" 
+                              SelectedItem="{Binding FilterSex}" Margin="0,0,0,10">
+                    </ComboBox>
+
+                    <TextBlock Text="Профессия:" Foreground="{StaticResource ForegroundBrush}"/>
+                    <ComboBox ItemsSource="{Binding AvailableProfessions}" 
+                              SelectedItem="{Binding FilterProfession}" Margin="0,0,0,10">
+                    </ComboBox>
+
+                    <TextBlock Text="Мораль:" Foreground="{StaticResource ForegroundBrush}"/>
+                    <ComboBox ItemsSource="{Binding AvailableMoralities}" 
+                              SelectedItem="{Binding FilterMorality}" Margin="0,0,0,10">
+                    </ComboBox>
+                    
+                    <TextBlock Text="Мотивация:" Foreground="{StaticResource ForegroundBrush}"/>
+                    <ComboBox ItemsSource="{Binding AvailableMotivations}" 
+                              SelectedItem="{Binding FilterMotivation}" Margin="0,0,0,10">
+                    </ComboBox>
+
+                    <CheckBox IsChecked="{Binding FilterIsVampireNullable, Mode=TwoWay}" Content="Вампир?" IsThreeState="True" Margin="0,5,0,10" Foreground="{StaticResource ForegroundBrush}"/>
+                    
+                    <Button Content="Очистить фильтры" Command="{Binding ClearFiltersCommand}" Margin="0,10,0,10"/>
+
+                    <GroupBox Header="Выбранный NPC" 
+                              Margin="0,10,0,0" 
+                              Padding="5"
+                              BorderBrush="{StaticResource ControlBorderBrush}"
+                              Foreground="{StaticResource ForegroundBrush}"
+                              Visibility="{Binding SelectedNpc, Converter={StaticResource NullToVisibilityConverter}}">
+                        <StackPanel>
+                            <Image Source="{Binding SelectedNpcImagePath, Converter={StaticResource ImagePathToImageSourceConverter}}"
+                                   Height="400"
+                                   Stretch="Uniform"
+                                   Margin="0,0,0,10"
+                                   HorizontalAlignment="Center"
+                                   Visibility="{Binding SelectedNpcImagePath, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                            <TextBlock Margin="0,0,0,3">
+                                <Run Text="ID: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedNpc.Id}"/>
+                            </TextBlock>
+                            <TextBlock Margin="0,0,0,3">
+                                <Run Text="Имя: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedNpc.Name}"/>
+                            </TextBlock>
+                            <TextBlock Margin="0,0,0,3">
+                                <Run Text="Возраст: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedNpc.Age}"/>
+                            </TextBlock>
+                            <TextBlock Margin="0,0,0,3">
+                                <Run Text="Профессия: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedNpc.Profession}"/>
+                            </TextBlock>
+                            <TextBlock>
+                                <Run Text="Вампир: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedNpc.IsVampire, Converter={StaticResource BooleanToYesNoConverter}}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </GroupBox>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Border>
+
+        <DataGrid Grid.Column="1" ItemsSource="{Binding FilteredNpcs}" 
+                  SelectedItem="{Binding SelectedNpc, Mode=TwoWay}"
+                  AutoGenerateColumns="True"
+                  CanUserAddRows="False"
+                  CanUserDeleteRows="False"
+                  IsReadOnly="True" 
+                  SelectionMode="Single"
+                  BorderBrush="{StaticResource ControlBorderBrush}"
+                  BorderThickness="1,0,0,0">
+        </DataGrid>
     </Grid>
 </UserControl> 

@@ -1055,7 +1055,7 @@
     "radius": 10
   },
   {
-    "id": 167,
+    "id": 191,
     "name": "The Duskwater",
     "description": "A newly created scene.",
     "sceneType": "Bathhouse",
@@ -1098,7 +1098,7 @@
         "connectionType": "ManualCanvas"
       },
       {
-        "connectedSceneId": 167,
+        "connectedSceneId": 191,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       },
@@ -1653,7 +1653,7 @@
         "connectionType": "ManualCanvas"
       },
       {
-        "connectedSceneId": 167,
+        "connectedSceneId": 191,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       }

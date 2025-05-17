@@ -11,6 +11,7 @@
              d:DesignHeight="600" d:DesignWidth="1000">
     <UserControl.Resources>
         <converters:NullToVisibilityConverter x:Key="NullToVisibilityConverter"/>
+        <converters:NullToBooleanConverter x:Key="NullToBooleanConverter"/>
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
@@ -147,18 +148,25 @@
                 </TabItem>
                 <TabItem Header="Assets">
                     <DockPanel>
-                        <Border DockPanel.Dock="Top" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="0,0,0,1" Margin="5"
-                                Visibility="{Binding SelectedAssetPreviewPath, Converter={StaticResource NullToVisibilityConverter}}">
-                            <Image Source="{Binding SelectedAssetPreviewPath}" 
-                                   Height="280" 
-                                   Stretch="Uniform" 
-                                   HorizontalAlignment="Center"/>
-                        </Border>
+                        <StackPanel DockPanel.Dock="Top" Orientation="Vertical" Margin="5">
+                            <Border BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="0,0,0,1" Margin="0,0,0,5" Padding="0,0,0,5"
+                                    Visibility="{Binding SelectedAssetPreviewPath, Converter={StaticResource NullToVisibilityConverter}}">
+                                <Image Source="{Binding SelectedAssetPreviewPath}" 
+                                       Height="280" 
+                                       Stretch="Uniform" 
+                                       HorizontalAlignment="Center"/>
+                            </Border>
+                            <Button Content="Создать новый ассет..." Command="{Binding CreateAssetCommand}" HorizontalAlignment="Left" Padding="10,5" Margin="0,0,0,5"/>
+                            <Button Content="Удалить выбранный ассет" Command="{Binding DeleteAssetCommand}" HorizontalAlignment="Left" Padding="10,5" Margin="0,0,0,5"/>
+                            <TextBlock Text="{Binding SelectedAsset.AssetId, StringFormat='Выбран ID: {0}', FallbackValue='Ассет не выбран'}" Foreground="White" Margin="0,5,0,0"/>
+                        </StackPanel>
                         
-                        <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="5" Background="{StaticResource BackgroundBrush}">
+                        <ScrollViewer x:Name="AssetScrollViewer" VerticalScrollBarVisibility="Auto" Padding="5" Background="{StaticResource BackgroundBrush}" PreviewMouseWheel="AssetScrollViewer_PreviewMouseWheel">
                             <ListBox ItemsSource="{Binding AvailableAssetImages}" 
                                      SelectedItem="{Binding SelectedAsset, Mode=TwoWay}"
-                                     HorizontalContentAlignment="Stretch" Background="{StaticResource BackgroundBrush}">
+                                     HorizontalContentAlignment="Stretch" Background="{StaticResource BackgroundBrush}"
+                                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                     ScrollViewer.VerticalScrollBarVisibility="Disabled">
                                 <ListBox.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <VirtualizingStackPanel Orientation="Vertical"/> 

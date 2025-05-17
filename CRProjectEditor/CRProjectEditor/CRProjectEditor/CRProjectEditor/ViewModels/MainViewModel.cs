@@ -28,7 +28,7 @@ namespace CRProjectEditor.ViewModels
             TabViewModels = new ObservableCollection<ObservableObject>
             {
                 new WorldViewModel(notificationService),
-                new NPCsViewModel(),
+                new NPCsViewModel(notificationService),
                 new DialoguesViewModel(),
                 new QuestsViewModel(),
                 new ItemsViewModel(),

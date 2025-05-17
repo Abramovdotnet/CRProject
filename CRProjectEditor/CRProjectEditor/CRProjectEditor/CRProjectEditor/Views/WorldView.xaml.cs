@@ -86,5 +86,14 @@ namespace CRProjectEditor.Views
                 DragDrop.DoDragDrop(element, assetInfo, DragDropEffects.Copy); // Or Move, depending on desired behavior
             }
         }
+
+        private void AssetScrollViewer_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
+        {
+            if (sender is ScrollViewer scrollViewer && !e.Handled)
+            {
+                scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
+                e.Handled = true;
+            }
+        }
     }
 } 

@@ -3,6 +3,7 @@ using CRProjectEditor.ViewModels;
 using CRProjectEditor.Views;
 using System;
 using System.Windows;
+using System.Threading.Tasks;
 
 namespace CRProjectEditor.Services
 {
@@ -43,6 +44,24 @@ namespace CRProjectEditor.Services
                 {
                     onCancel?.Invoke();
                 }
+            });
+        }
+
+        public Task<bool> ShowConfirmationDialogAsync(string title, string message)
+        {
+            // Поскольку MessageBox.Show является синхронным, мы можем обернуть его в Task.FromResult
+            // для соответствия асинхронной сигнатуре метода.
+            // Этот вызов должен выполняться в UI-потоке.
+            return Application.Current.Dispatcher.Invoke(() =>
+            {
+                MessageBoxResult result = MessageBox.Show(
+                    Application.Current.MainWindow, // Owner window
+                    message,
+                    title,
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning // Или MessageBoxImage.Question
+                );
+                return Task.FromResult(result == MessageBoxResult.Yes);
             });
         }
     }
