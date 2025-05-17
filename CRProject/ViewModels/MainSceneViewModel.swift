@@ -185,7 +185,7 @@ class MainSceneViewModel: ObservableObject {
         
         // Create initial scene using LocationReader
         do {
-            let initialScene = try LocationReader.getRuntimeLocation(by: 1)
+            let initialScene = try LocationReader.getRuntimeLocation(by: 10)
             try gameStateService.changeLocation(to: initialScene.id)
             
             // Set default awareness to 0

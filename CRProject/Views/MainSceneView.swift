@@ -389,8 +389,19 @@ struct MainSceneView: View {
                     .navigationDestination(for: NavigationDestination.self) { destination in
                         switch destination {
                         case .navigation:
-                            WorldMapViewRepresentable()
+                            WorldMapViewRepresentable(mainViewModel: viewModel)
                                 .edgesIgnoringSafeArea(.all)
+                                .navigationBarHidden(true)
+                                .toolbar {
+                                    ToolbarItem(placement: .navigationBarTrailing) {
+                                        Button(action: {
+                                            safePopNavigation()
+                                        }) {
+                                            Image(systemName: "chevron.backward")
+                                                .foregroundColor(Theme.textColor)
+                                        }
+                                    }
+                                }
                         case .dialogue:
                             ZStack {
                                 Color.black.edgesIgnoringSafeArea(.all)
