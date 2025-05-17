@@ -11,6 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using System.ComponentModel; // Required for DesignerProperties
+using CRProjectEditor.Tools;
+using System.IO; // Added for File.Exists
+using System.Windows.Media.Imaging; // Added for BitmapImage
 
 namespace CRProjectEditor.Views
 {
@@ -389,7 +392,7 @@ namespace CRProjectEditor.Views
             }
 
             int scenesIterated = 0;
-            int markersAddedToCanvas = 0;
+            int markersAddedToCanvas = 0; // This will now count markerBorders added
             int scenesFoundInRenderInfo = 0;
             int scenesNotFoundInRenderInfo = 0;
 
@@ -408,37 +411,107 @@ namespace CRProjectEditor.Views
 
                 Point scaledPos = scenesRenderInfo[scene.Id];
 
-                Border marker = new Border
+                // 1. Create the visual element (Image or colored Border)
+                FrameworkElement visualContent;
+                string imagePath = GetSceneImagePath(scene); 
+
+                bool imageExists = !string.IsNullOrEmpty(imagePath) && File.Exists(imagePath);
+
+                if (imageExists)
                 {
-                    Width = 100,
-                    Height = 30,
-                    Background = GetSceneTypeBrush(scene.SceneType),
-                    BorderBrush = (_selectedScene != null && _selectedScene.Id == scene.Id) ? Brushes.Gold : Brushes.DarkSlateGray, // Apply selection highlight
-                    BorderThickness = new Thickness(1.5), 
-                    CornerRadius = new CornerRadius(4),
-                    Tag = scene // Store the Scene object in the Tag property for easy access
+                    var image = new Image
+                    {
+                        Source = new BitmapImage(new Uri(imagePath, UriKind.Absolute)),
+                        Width = 100, 
+                        Height = 30, 
+                        Stretch = Stretch.Fill 
+                    };
+                    visualContent = image;
+                }
+                else
+                {
+                    var colorBlock = new Border
+                    {
+                        Background = GetSceneTypeBrush(scene.SceneType),
+                        Width = 100,
+                        Height = 30,
+                        CornerRadius = new CornerRadius(3) 
+                    };
+                    visualContent = colorBlock;
+                }
+
+                // 2. Create TextBlocks
+                var nameTextBlock = new TextBlock
+                {
+                    Text = scene.Name,
+                    FontWeight = FontWeights.Bold,
+                    FontSize = 9,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    MaxWidth = 95, 
+                    Foreground = Brushes.White // Ensure this is visible on transparent markerBorder background
                 };
 
-                // Attach event handlers for dragging
-                marker.MouseLeftButtonDown += Marker_MouseLeftButtonDown;
-                marker.MouseMove += Marker_MouseMove; // This is for marker dragging
-                marker.MouseLeftButtonUp += Marker_MouseLeftButtonUp; // This is for marker dragging
-                // marker.AddHandler(Control.MouseDoubleClickEvent, new MouseButtonEventHandler(Marker_MouseDoubleClick), true /* handledEventsToo */); // Убираем старый обработчик
+                var typeTextBlock = new TextBlock
+                {
+                    Text = scene.SceneType.ToString(),
+                    FontSize = 7,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Foreground = GetSceneTypeBrush(scene.SceneType) // Color the text itself
+                };
 
-                StackPanel stackPanel = new StackPanel { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
-                stackPanel.Children.Add(new TextBlock { Text = scene.Name, FontWeight = FontWeights.Bold, FontSize = 9, HorizontalAlignment = HorizontalAlignment.Center, TextTrimming = TextTrimming.CharacterEllipsis, MaxWidth = 90 });
-                stackPanel.Children.Add(new TextBlock { Text = scene.SceneType.ToString(), FontSize = 7, HorizontalAlignment = HorizontalAlignment.Center });
-                marker.Child = stackPanel;
+                // 3. Create a panel for the text blocks
+                var textInfoPanel = new StackPanel
+                {
+                    Orientation = Orientation.Vertical,
+                    HorizontalAlignment = HorizontalAlignment.Stretch, 
+                    Margin = new Thickness(0, 2, 0, 0) 
+                };
+                textInfoPanel.Children.Add(nameTextBlock);
+                textInfoPanel.Children.Add(typeTextBlock);
+
+                // 4. Create the main container Border for the marker
+                var markerBorder = new Border
+                {
+                    BorderBrush = (_selectedScene != null && _selectedScene.Id == scene.Id) ? Brushes.Gold : Brushes.DarkSlateGray,
+                    BorderThickness = new Thickness(1.5),
+                    CornerRadius = new CornerRadius(4), 
+                    Tag = scene,
+                    Padding = new Thickness(2), 
+                    Background = Brushes.Transparent // Main border is transparent, content provides visuals
+                };
+
+                // 5. Arrange visualContent and textInfoPanel within markerBorder
+                var markerLayoutStack = new StackPanel
+                {
+                    Orientation = Orientation.Vertical
+                };
+                markerLayoutStack.Children.Add(visualContent);
+                markerLayoutStack.Children.Add(textInfoPanel);
+
+                markerBorder.Child = markerLayoutStack;
+
+                // Attach event handlers
+                markerBorder.MouseLeftButtonDown += Marker_MouseLeftButtonDown;
+                markerBorder.MouseMove += Marker_MouseMove; 
+                markerBorder.MouseLeftButtonUp += Marker_MouseLeftButtonUp;
                 
-                MapCanvas.Children.Add(marker);
+                _sceneMarkers[scene.Id] = markerBorder; 
+                MapCanvas.Children.Add(markerBorder);
                 markersAddedToCanvas++;
-                _sceneMarkers[scene.Id] = marker; // Store marker reference
-                                                
-                Canvas.SetLeft(marker, scaledPos.X - marker.Width / 2);
-                Canvas.SetTop(marker, scaledPos.Y - marker.Height / 2);
-                Panel.SetZIndex(marker, 1); 
+                
+                // Position using Loaded event for accuracy with auto-sized content
+                markerBorder.Loaded += (s, e_loaded) => {
+                    var loadedMarker = s as FrameworkElement; 
+                    if (loadedMarker != null && loadedMarker.Tag is Scene loadedSceneTag && scenesRenderInfo.ContainsKey(loadedSceneTag.Id)) {
+                        Point centerPos = scenesRenderInfo[loadedSceneTag.Id];
+                        Canvas.SetLeft(loadedMarker, centerPos.X - loadedMarker.ActualWidth / 2);
+                        Canvas.SetTop(loadedMarker, centerPos.Y - loadedMarker.ActualHeight / 2);
+                    }
+                };
+                Panel.SetZIndex(markerBorder, 1); 
             }
-            Debug.WriteLine($"InteractiveMapView: DrawMarkers finished. Iterated {scenesIterated} scenes from Scenes coll. Found {scenesFoundInRenderInfo} in scenesRenderInfo. Did NOT find {scenesNotFoundInRenderInfo} in scenesRenderInfo. Added {markersAddedToCanvas} markers to canvas.");
+            Debug.WriteLine($"InteractiveMapView: DrawMarkers finished. Iterated {scenesIterated} scenes from Scenes coll. Found {scenesFoundInRenderInfo} in scenesRenderInfo. Did NOT find {scenesNotFoundInRenderInfo} in scenesRenderInfo. Added {markersAddedToCanvas} markerBorders to canvas.");
         }
 
         private void MapCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -851,6 +924,11 @@ namespace CRProjectEditor.Views
                 SceneDroppedOnCanvas?.Invoke(sceneType, logicalDropPosition);
                 e.Handled = true;
             }
+        }
+
+        private static string GetSceneImagePath(Scene scene)
+        {
+            return $"{Constants.SceneAssetsFolderPath}\\location{scene.Id}.imageset\\location{scene.Id}.png";
         }
     }
 } 

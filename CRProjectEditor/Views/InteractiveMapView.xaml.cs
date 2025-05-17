@@ -248,7 +248,47 @@ namespace CRProjectEditor.Views
             }
             // ... (e.Handled logic)
         }
-// ... existing code ...
 
+        private void DrawMarkers()
+        {
+            // ... existing code ...
+            foreach (var scene in Scenes)
+            {
+                // ... existing code ...
+                var marker = new Border
+                {
+                    Width = 50, // Было 100
+                    Height = 15, // Было 30
+                    // ... existing code ...
+                };
+
+                var textStack = new StackPanel { Orientation = Orientation.Vertical, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                
+                var nameTextBlock = new TextBlock
+                {
+                    Text = scene.Name,
+                    Foreground = Brushes.White,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontSize = 4.5, // Было 9
+                    FontWeight = FontWeights.Bold,
+                    MaxWidth = 45, // Было 90
+                    TextTrimming = TextTrimming.CharacterEllipsis,
+                    ToolTip = scene.Name
+                };
+
+                var typeTextBlock = new TextBlock
+                {
+                    Text = scene.SceneType.ToString(),
+                    Foreground = Brushes.LightGray,
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    VerticalAlignment = VerticalAlignment.Center,
+                    FontSize = 3.5, // Было 7
+                    FontStyle = FontStyles.Italic
+                };
+                // ... existing code ...
+            }
+            // ... existing code ...
+        }
     }
 }
