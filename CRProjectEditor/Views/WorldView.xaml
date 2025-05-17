@@ -92,6 +92,7 @@
                               RowStyle="{StaticResource CustomDataGridRowStyle}"
                               CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
                               SelectionMode="Single" SelectionUnit="FullRow"
+                              SelectedItem="{Binding MapSelectedScene, Mode=TwoWay}"
                               SelectionChanged="DataGrid_SelectionChanged"
                               CanUserSortColumns="True">
                         <DataGrid.Columns>
