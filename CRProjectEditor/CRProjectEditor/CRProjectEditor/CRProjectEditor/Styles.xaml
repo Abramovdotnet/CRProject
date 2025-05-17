@@ -246,4 +246,10 @@
         </Style.Triggers>
     </Style>
 
+    <!-- Стиль для кнопок диалоговых окон -->
+    <Style x:Key="DialogButtonStyle" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+        <Setter Property="MinWidth" Value="80"/>
+        <Setter Property="Margin" Value="5,0"/>
+    </Style>
+
 </ResourceDictionary> 

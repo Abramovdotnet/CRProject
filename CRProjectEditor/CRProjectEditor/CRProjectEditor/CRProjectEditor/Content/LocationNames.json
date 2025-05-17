@@ -1,0 +1,4590 @@
+[
+  {
+    "Name": "Blackford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Silverbrook",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Ravenshire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Duskendale",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Ironhold",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Frostford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Wraithspire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Eldermere",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Stormwatch",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Grimsby",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Hollowvale",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Whitestone",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Darkmoor",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Stonebridge",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Highcliff",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Wyvern’s Rest",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Goldcrest",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Shadowfen",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Briarwood",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Cinderford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Moonshadow",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Northreach",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Southport",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Eastwick",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Kingsbury",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Fairweather",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Ironoak",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Stormguard",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Winter’s End",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Blackstone Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Dreadfort",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Frostpeak Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Ravenspire Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Ironfang Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Shadowveil Hold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Stormwatch Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Wyvern’s Roost",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Eldermire Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Grimhollow Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Silverveil Stronghold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Moonstone Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Bloodthorn Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Darkwater Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Highcliff Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Cinderwatch Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Whitestone Hold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Kingsfort",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Duskfang Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Frosthold Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Stormcrest Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Ironwall Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Nightshade Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Sunspire Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Wolfsbane Hold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Thornwatch Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Emberveil Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Stonefang Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Wraithspire Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Hollowveil Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "The Black Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Silk District",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Dockside Slums",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Noble’s Row",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Artisan’s Ward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Temple District",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Scholar’s Enclave",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Merchant’s Circle",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Garrison Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Old Town",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Shadow Ward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The High Market",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Lower Borough",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Forge District",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Garden Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Thieves’ Den",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Riverfront",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Crown’s End",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Ironworks",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Gallows’ Square",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Cathedral of the Dawn",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Sanctum of St. Aldric",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Grand Basilica of Light",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Spire of the Holy Flame",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cathedral of Eternal Sorrow",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Hallowed Vault",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Divine Sepulcher",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Shrine of the Martyr",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Basilica of the Silver Veil",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cathedral of the Fallen Star",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Chapel of the Forgotten Saints",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Grand Temple of the Sun",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cathedral of the Crimson Rose",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Sanctified Halls",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cathedral of the Moon’s Grace",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Silent Cloister",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Order of the White Rose",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Monastery of the Azure Veil",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Cloister of the Broken Chain",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Abbey of the Weeping Willow",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Hermitage of the Lone Sage",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Convent of the Sacred Heart",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Cloister of the Forgotten Hymn",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Monastery of the Whispering Wind",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Abbey of the Crimson Thorn",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Black Graveyard",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Resting Hollow",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Silent Fields",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Bone Orchard",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Mourning Vale",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Cryptwood",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Hallowed Sepulchers",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Weeping Acres",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Deadman’s Plot",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Wraith’s Rest",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Temple of the Eternal Flame",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Shrine of the Forgotten Gods",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Pantheon of the Old Ways",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Temple of the Silver Moon",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Altar of the Stormfather",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Shrine of the Whispering Dead",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Temple of the Black Sun",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Sanctuary of the Drowned God",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Altar of the Firstborn",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Temple of the Shattered Blade",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Black Crypt",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Vault of Forgotten Kings",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Bone Catacombs",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Silent Sepulcher",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Crypt of the Fallen",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Hollow Vault",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Resting Chambers",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Crypt of the Bloodied Crown",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Shadowed Catacombs",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Eternal Tomb",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "Blackwood Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Duskendale Estate",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Ravenspire Hall",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Frostgarde Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "The Silverveil Estate",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "The Hollow Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "The Wraith’s Respite",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "The Ironwood Estate",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "The Highcliffe Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "The Moonstone Villa",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "The Iron Barracks",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Blackthorn Garrison",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Stormwatch Armory",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Sentinel’s Hold",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Bloodhound Outpost",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Wyvern’s Roost Barracks",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Frostfang Watch",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Duskwarden Fort",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Lion’s Den",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Steelguard Compound",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Iron Anvil",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Steel & Flame",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Forge of the Old Bear",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Hammer & Tongs",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Gilded Blade",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Blackiron Smithy",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Molten Steel",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Rusty Nail",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Eternal Forge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Smith’s Respite",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Silver Cauldron",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Arcane Elixir",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Witch’s Brew",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Philosopher’s Flask",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Crimson Vial",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Moonlit Alembic",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Black Powder Apothecary",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Verdant Elixirs",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Shattered Vial",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Alchemist’s Den",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Iron Vault",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Salt & Grain Storehouse",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Blackwater Warehouse",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The King’s Stockpile",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Duskwind Storage",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Merchant’s Cache",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Highport Warehouse",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Shadowcellar",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Granary of the North",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Stone Depository",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Quill & Tome",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Scholar’s Nook",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Forgotten Library",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Arcane Scriptorium",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Dusty Folio",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Blackletter Books",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Moonlit Scroll",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Sage’s Repository",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Velvet Codex",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Ancient Texts",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Golden Trinket",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Silver Needle",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Black Market",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Dusk Trader",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Wandering Merchant",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Frostbloom Boutique",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Shadow’s Bargain",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Gilded Wares",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Rusty Coin",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Noble’s Curiosities",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Blackiron Mine",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Silvervein Quarry",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Duskstone Pit",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Frostfang Excavation",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Bloodgem Mines",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Obsidian Delve",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Ember Hollow",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Deepshadow Mine",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Gilded Chasm",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Stonefang Tunnels",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Rusty Tankard",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Drunken Kraken",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Black Boar Inn",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Silver Stag",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Wandering Bard",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Laughing Ghost",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Broken Arrow",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Thirsty Hag",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Weary Traveler",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Blind Monk",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Howling Wolf",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Golden Grail",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Shadowed Mug",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Frosted Flagon",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Hanged Man",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Velvet Rose",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Silk Veil",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Black Lily",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Gilded Siren",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Moonlit Dove",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Crimson Kiss",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Whispering Serpent",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Dusk Maiden",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Pearl & Shadow",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Forbidden Bloom",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Steam & Serenity",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Moonwater Baths",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Azure Lotus",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Gilded Spring",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Duskpool",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The King’s Square",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Gallows’ Plaza",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Fountain Court",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Market Cross",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Stone Circle",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The High Promenade",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Dusk Square",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Warrior’s Rest",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Old Forum",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Executioner’s Block",
+    "SceneType": "square"
+  },
+  {
+    "Name": "Blackwater Docks",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Saltwharf",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The King’s Harbor",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Moonlit Pier",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Ironclad Quay",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Fisherman’s Rest",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Stormbreak Docks",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Shadowport",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Silver Tide",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Rusted Anchor",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The King’s Road",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Old North Trail",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Duskpath",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Blackthorn Way",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Pilgrim’s Passage",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Wraith’s Walk",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Ironroad",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Silver Highway",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Cobbled Wretch",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Hollow Lane",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Blackthorn Woods",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Whispering Forest",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Eldermere Wilds",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Wraithwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Frostfang Pines",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Duskvale Thicket",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Moonlit Glade",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Shadowfen",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Ironroot Forest",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Bloodoak Grove",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Blackfang Cavern",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Whispering Hollow",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Duskdeep Grotto",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Frostbite Chasm",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Wraith’s Maw",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Obsidian Lair",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Moonlit Den",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Bloodroot Cave",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Howling Abyss",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Shadowvein Tunnels",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Shattered Keep",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Fallen Spire",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Duskborn Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Blackened Cathedral",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Forgotten Citadel",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "Ashenford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Briarcrest",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Crow's Perch",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Duskmire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Elderglen",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Frostvale",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Grimshollow",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Hearthmoor",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Ironwick",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Jadeport",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Kingsfell",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Lion's Rest",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Misthaven",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Nettlebrook",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Oakenhold",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Pinecrest",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Quillford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Raven's End",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Snowspire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Thornmarsh",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Umberwatch",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Viper's Den",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Wolf's Run",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Yewdale",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Zephyr's Reach",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Argent Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Blackthorn Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Crimson Spire",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Dawnfang Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Emberveil Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Frostgarde Hold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Gloomwatch Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Hollowspire Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Ironmaw Stronghold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Jadecliff Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Kingsveil Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Lionfang Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Moonshadow Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Nightshade Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Onyxveil Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Phoenix Roost",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Quicksilver Hold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Ravencliff Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Stormveil Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Thornspire Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Umberfang Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Viper's Nest",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Wolfshollow Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "The Brass Ward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Cinder Lane",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Fog District",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Gilded Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Hound's Run",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Ivy Enclave",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Jeweled Row",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Labyrinth",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Mire District",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Narrows",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Opal Circle",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Parchment Ward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Quill Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Rust District",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Sable Ward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Tangle",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Veil District",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Wicker Lane",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Basilica of the Veiled Saint",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cathedral of the Celestial Dawn",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Grand Temple of the Stormborn",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Shrine of the Eternal Watcher",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Spire of the Fallen",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Sanctum of the Silver Hand",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cathedral of the Hollow Choir",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Basilica of the Crimson Veil",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Shrine of the Duskborn",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Grand Temple of the Iron Will",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cloister of the Bleeding Rose",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Abbey of the Silent Dawn",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Monastery of the Wandering Star",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Hermitage of the Broken Sword",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Convent of the Frozen Tear",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Cloister of the Lost Hymn",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Abbey of the Shattered Bell",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Monastery of the Eclipse",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Hermitage of the Lone Wolf",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Convent of the Weeping Maiden",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Ashen Graveyard",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Bonefield",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Duskrest Cemetery",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Forgotten Plot",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Hollow Sepulchers",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Marble Orchard",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Obsidian Rest",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Sorrow Acres",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Weeping Hollow",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Wraithfield",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Temple of the Abyssal Light",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Shrine of the Forgotten Martyrs",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Altar of the Celestial Flame",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Pantheon of the Stormborn",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Sanctuary of the Veiled Moon",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Temple of the Iron Judge",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Shrine of the Drowned Saints",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Altar of the First Flame",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Temple of the Shattered Shield",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Sanctuary of the Whispering Wind",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Obsidian Crypt",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Vault of the Fallen",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Silent Catacombs",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Black Sepulcher",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Hollow Vaults",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Resting Halls",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Crypt of the Forgotten",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Shadowed Rest",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Bone Chamber",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Eternal Crypt",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "Ashenwood Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Blackthorn Hall",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Crimsonveil Estate",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Duskfall Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Embercrest Villa",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Frostholm Hall",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Gloomshade Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Hollowspire Estate",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Ironmaw Villa",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Jadecliff Hall",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "The Onyx Garrison",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Steel Watch",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Iron Fist Barracks",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Blackarrow Outpost",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Stormfang Armory",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Lion's Roar Garrison",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Frostveil Watch",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Duskwarden Barracks",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Wolf's Den Compound",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Sentinel's Stand",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Emberforge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Ironclad Anvil",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Steelheart Smithy",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Molten Hammer",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Gilded Forge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Blackiron Works",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Rusted Blade",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Eternal Flame Smithy",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Shadowforge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Ironoak Forge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Verdant Flask",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Arcane Crucible",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Witch's Cauldron",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Alabaster Vial",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Crimson Elixir",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Moonlit Flask",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Obsidian Alembic",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Silverthorn Apothecary",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Shattered Crucible",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Phantom's Brew",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Granite Vault",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Saltmarsh Storehouse",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Blackwood Depository",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The King's Granary",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Duskwind Warehouse",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Merchant's Hoard",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Highmoon Storage",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Shadowkeep Cellar",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Frosthold Stockpile",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Ironfang Depository",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Arcane Tome",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Scholar's Attic",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Lost Library",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Enchanted Folio",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Dusty Scroll",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Blackquill Books",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Moonlit Manuscript",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Sage's Archive",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Velvet Parchment",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Ancient Codex",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Golden Locket",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Silver Thorn",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Midnight Market",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Dusk Trader's Post",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Wandering Peddler",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Frostpetal Emporium",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Shadow's Deal",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Gilded Trinkets",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Rusty Lockbox",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Noble's Treasures",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Embermine",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Silverdeep Quarry",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Duskvein Pit",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Frostbite Excavation",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Bloodstone Mines",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Onyx Delve",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Cinder Hollow",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Deepvein Mine",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Gilded Vein",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Stonefang Dig",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Rusty Hook",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Drunken Gull",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Black Ram Inn",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Silver Fox",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Wandering Minstrel",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Laughing Skull",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Broken Shield",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Thirsty Crow",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Weary Knight",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Blind Owl",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Howling Bear",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Golden Horn",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Shadowed Stein",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Frosted Mug",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Gallows' Rest",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Velvet Thorn",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Silk Shadow",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Black Dahlia",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Gilded Serpent",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Moonlit Siren",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Crimson Embrace",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Whispering Rose",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Dusk Lily",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Pearl & Thorn",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Forbidden Petal",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Steam & Mist",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Starlight Baths",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Jade Lotus",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Gilded Oasis",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Duskwater",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Regent's Square",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Executioner's Plaza",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Fountain of Echoes",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Market's Heart",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Stone Ring",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Highwalk",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Twilight Square",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Warrior's Plaza",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Old Bazaar",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Headsman's Block",
+    "SceneType": "square"
+  },
+  {
+    "Name": "Blacktide Docks",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Saltmoor Wharf",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Crown's Harbor",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Starlit Pier",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Ironhook Quay",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Fisher's Haven",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Stormcrest Docks",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Nightport",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Silverwave",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Rusted Mooring",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Queen's Road",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Old South Trail",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Twilight Path",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Thorned Way",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Pilgrim's Trial",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Specter's Walk",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Steelroad",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Gold Highway",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Cobbled Maw",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Wretched Lane",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Eldertree Woods",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Murmuring Forest",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Frostwood Wilds",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Ghostwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Ironpine Grove",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Duskwood Thicket",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Starlit Glade",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Mistfen",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Steelroot Forest",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Wychwood Grove",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Shadowfang Cavern",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Echoing Hollow",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Abyssal Grotto",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Frostmaw Chasm",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Specter's Maw",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Onyx Lair",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Starlit Den",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Emberroot Cave",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Howling Depths",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Darkvein Tunnels",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Crumbling Keep",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Fallen Tower",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Ashen Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Blighted Cathedral",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Lost Citadel",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "Amberford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Bramblewatch",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Copperhollow",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Duskgrove",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Embermire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Frostgale",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Gildspire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Hawksmoor",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Ironspire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Jasperfell",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Kestrel's Roost",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Lynxhaven",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Mossward",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Nettleford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Oakenmire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Pinewatch",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Quicksilver Ford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Rook's Rest",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Stagford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Tanglewood",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Umbral Hollow",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Viper's Run",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Wolfsgrove",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Yewspire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Zircon's End",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Adamant Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Briarspire Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Copperveil Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Dawnthorn Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Emberfang Hold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Frostveil Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Gildedspire Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Hawkmaw Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Ironroot Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Jadeveil Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Kestrel's Perch",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Lynxcliff Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Moonspire Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Nightfang Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Onyxveil Hold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Phoenixcrest Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Quickspire Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Ravenmaw Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Stormthorn Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Thornveil Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Umbercliff Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Viperfang Hold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Wolfspire Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "The Copper Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Fogward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Gildward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Hawk's Run",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Ivy Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Jewelward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Labyrinth District",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Mireward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Narrows District",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Opalward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Parchment Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Quillward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Rustward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Sable Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Tangleward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Veilward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Wicker Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Basilica of the Gilded Saint",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cathedral of the Eternal Dawn",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Grand Temple of the Stormlord",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Shrine of the Celestial Watcher",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Spire of the Departed",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Sanctum of the Golden Hand",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cathedral of the Silent Choir",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Basilica of the Onyx Veil",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Shrine of the Dawnborn",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Grand Temple of the Steel Will",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cloister of the Weeping Rose",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Abbey of the Silent Dusk",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Monastery of the Wandering Moon",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Hermitage of the Shattered Sword",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Convent of the Frozen Heart",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Cloister of the Lost Psalm",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Abbey of the Broken Bell",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Monastery of the Eclipse",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Hermitage of the Lone Fox",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Convent of the Weeping Virgin",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Ember Graveyard",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Marblefield",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Dawnrest Cemetery",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Forsaken Plot",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Silent Sepulchers",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Obsidian Orchard",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Eternal Rest",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Sorrowfield",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Weeping Vale",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Ghostfield",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Temple of the Abyssal Dark",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Shrine of the Forgotten Saints",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Altar of the Infernal Flame",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Pantheon of the Stormlord",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Sanctuary of the Hidden Moon",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Temple of the Steel Judge",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Shrine of the Drowned Martyrs",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Altar of the Last Flame",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Temple of the Shattered Helm",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Sanctuary of the Howling Wind",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Onyx Crypt",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Vault of the Departed",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Whispering Catacombs",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Obsidian Sepulcher",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Silent Vaults",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Resting Hall",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Crypt of the Lost",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Shadowed Chamber",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Bone Vault",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Endless Crypt",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "Amberwood Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Bramblethorn Hall",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Copperveil Estate",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Dawnfall Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Embercrest Villa",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Frostholm Hall",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Gildshade Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Hawkspire Estate",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Ironmaw Villa",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Jadecliff Hall",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "The Onyx Watch",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Steel Fist Barracks",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Ironclad Outpost",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Stormfang Armory",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Lion's Claw Garrison",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Frostveil Watch",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Duskwarden Barracks",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Wolf's Stand Compound",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Sentinel's Post",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Ember Anvil",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Steelclad Forge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Ironheart Smithy",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Molten Steelworks",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Gilded Hammer",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Blackiron Forge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Rusted Edge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Eternal Flame Forge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Shadow Anvil",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Ironroot Forge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Verdant Vial",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Arcane Flask",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Witch's Vial",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Alabaster Elixir",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Crimson Flask",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Moonlit Vial",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Obsidian Flask",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Silverthorn Elixir",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Shattered Flask",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Phantom's Vial",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Granite Storehouse",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Saltmarsh Warehouse",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Blackwood Vault",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The King's Repository",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Duskwind Depository",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Merchant's Cache",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Highmoon Cellar",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Shadowkeep Stockpile",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Frosthold Vault",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Ironfang Repository",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Arcane Archive",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Scholar's Loft",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Forgotten Tome",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Enchanted Codex",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Dusty Parchment",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Blackquill Archive",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Moonlit Folio",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Sage's Library",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Velvet Manuscript",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Ancient Archive",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Golden Charm",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Silver Dagger",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Twilight Market",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Dusk Peddler",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Wandering Vendor",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Frostbloom Shop",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Shadow's Trade",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Gilded Relics",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Rusted Chest",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Noble's Hoard",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Ember Delve",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Silverdeep Mine",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Duskvein Excavation",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Frostmaw Pit",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Bloodstone Quarry",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Onyx Dig",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Cinder Mine",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Deepvein Excavation",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Gilded Mine",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Stonefang Mine",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Rusty Anchor",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Drunken Owl",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Black Stag Inn",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Silver Hound",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Wandering Piper",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Laughing Jackal",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Broken Lance",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Thirsty Raven",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Weary Squire",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Blind Hawk",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Howling Lynx",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Golden Falcon",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Shadowed Jack",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Frosted Horn",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Gallows' End",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Velvet Dagger",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Silk Thorn",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Black Orchid",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Gilded Lily",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Moonlit Siren",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Crimson Rose",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Whispering Lily",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Dusk Blossom",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Pearl & Dagger",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Forbidden Lily",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Steam & Dew",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Starlight Springs",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Jade Oasis",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Gilded Pool",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Duskwater Baths",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Regent's Plaza",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Executioner's Court",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Fountain of Whispers",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Market's Core",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Stone Circle Plaza",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Highwalk Plaza",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Twilight Court",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Warrior's Square",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Old Market Square",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Headsman's Court",
+    "SceneType": "square"
+  },
+  {
+    "Name": "Blacktide Wharf",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Saltmoor Pier",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Crown's Dock",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Starlit Harbor",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Ironhook Dock",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Fisher's Rest",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Stormcrest Wharf",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Nightwharf",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Silverwave Dock",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Rusted Pier",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Queen's Path",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Old South Road",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Twilight Trail",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Thorned Path",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Pilgrim's Road",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Specter's Path",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Steelpath",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Gold Road",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Cobbled Path",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Wretched Road",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Eldertree Grove",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Whispering Woods",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Frostwood Grove",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Phantomwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Ironpine Thicket",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Duskwood Grove",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Starlit Thicket",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Mistwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Steelroot Grove",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Wychwood Thicket",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Shadowfang Hollow",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Echoing Cavern",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Abyssal Hollow",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Frostmaw Cave",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Specter's Lair",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Onyx Hollow",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Starlit Cave",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Emberroot Hollow",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Howling Cave",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Darkvein Hollow",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Crumbling Spire",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Fallen Citadel",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Ashen Keep",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Blighted Spire",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Lost Tower",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "Alderford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Briarwhisper",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Cindermere",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Duskshade",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Emberweald",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Frostvale",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Glimmerspire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Hollowcrest",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Ironglen",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Jadewick",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Kestrelmoor",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Larchford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Mossgrove",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Nettlebrook",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Oakenwharf",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Pinewhisper",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Quillmere",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Ravenspire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Slateford",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Thornmire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Umberwick",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Viperglen",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Willowshade",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Yewhollow",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Zirconspire",
+    "SceneType": "town"
+  },
+  {
+    "Name": "Alderkeep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Briarspire Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Cinderveil Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Duskthorn Hold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Emberfang Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Frostveil Stronghold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Glimmershade Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Hollowspire Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Ironroot Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Jadecliff Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Kestrelwatch Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Larchveil Castle",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Mossfang Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Nettlespire Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Oakenveil Hold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Pinewatch Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Quillcliff Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Ravenfang Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Slatespire Fortress",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Thornveil Stronghold",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Umbercliff Keep",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Vipershade Bastion",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "Willowspire Citadel",
+    "SceneType": "castle"
+  },
+  {
+    "Name": "The Alder Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Briarwalk",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Cinderlane",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Duskmarket",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Ember Row",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Frost Ward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Glimmer Alley",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Hollow Bazaar",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Iron Market",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Jade Promenade",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Kestrel Run",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Larch Lane",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Moss Quarter",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Nettle Walk",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Oaken Bazaar",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Pine Alley",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Quillmarket",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Raven Row",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Slate Ward",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Thorn Walk",
+    "SceneType": "district"
+  },
+  {
+    "Name": "The Basilica of the Alder Saint",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cathedral of the Glimmering Dawn",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Grand Temple of the Frostborn",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Shrine of the Eternal Watcher",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Spire of the Fallen Stars",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Sanctum of the Jade Hand",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cathedral of the Hollow Chorus",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Basilica of the Slate Veil",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Shrine of the Dawn Watcher",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Grand Temple of the Iron Will",
+    "SceneType": "cathedral"
+  },
+  {
+    "Name": "The Cloister of the Weeping Thorn",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Abbey of the Silent Frost",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Monastery of the Wandering Moon",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Hermitage of the Broken Shield",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Convent of the Frozen Rose",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Cloister of the Lost Verse",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Abbey of the Shattered Chalice",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Monastery of the Blood Moon",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Hermitage of the Lone Hunter",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Convent of the Weeping Saint",
+    "SceneType": "cloister"
+  },
+  {
+    "Name": "The Alder Graveyard",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Briarfield",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Cinder Rest",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Duskborn Plot",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Ember Sepulchers",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Frost Orchard",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Glimmer Rest",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Hollow Field",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Iron Rest",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Jade Orchard",
+    "SceneType": "cemetery"
+  },
+  {
+    "Name": "The Temple of the Abyssal Dawn",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Shrine of the Forgotten Dawn",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Altar of the Frostborn Flame",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Pantheon of the Iron Will",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Sanctuary of the Hidden Sun",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Temple of the Jade Judge",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Shrine of the Drowned Dawn",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Altar of the Last Star",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Temple of the Shattered Crown",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Sanctuary of the Howling Storm",
+    "SceneType": "temple"
+  },
+  {
+    "Name": "The Alder Crypt",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Briar Vault",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Cinder Catacombs",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Dusk Sepulcher",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Ember Vaults",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Frost Halls",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Glimmer Crypt",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Hollow Chamber",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Iron Tomb",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "The Jade Rest",
+    "SceneType": "crypt"
+  },
+  {
+    "Name": "Aldercrest Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Briarwood Hall",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Cinderveil Estate",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Duskholm Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Embercrest Villa",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Frostholm Hall",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Glimmershade Manor",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Hollowspire Estate",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Ironroot Villa",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "Jadecliff Hall",
+    "SceneType": "manor"
+  },
+  {
+    "Name": "The Alder Barracks",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Briarwatch",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Cinder Armory",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Duskwarden Outpost",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Emberfang Garrison",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Frostveil Watch",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Glimmerguard Barracks",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Hollow Sentinels",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Ironclad Compound",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Jade Watch",
+    "SceneType": "military"
+  },
+  {
+    "Name": "The Alderforge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Briar Anvil",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Cinder Steelworks",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Duskhammer",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Ember Tongs",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Frostblade Smithy",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Glimmering Forge",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Hollow Anvil",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Ironflame Smithy",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Jade Hammer",
+    "SceneType": "blacksmith"
+  },
+  {
+    "Name": "The Alder Vial",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Briar Flask",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Cinder Elixir",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Dusk Alembic",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Ember Cauldron",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Frost Phial",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Glimmering Vial",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Hollow Flask",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Iron Elixir",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Jade Potion",
+    "SceneType": "alchemistShop"
+  },
+  {
+    "Name": "The Alder Storehouse",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Briar Depository",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Cinder Vault",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Dusk Granary",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Ember Stockpile",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Frost Cellar",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Glimmer Repository",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Hollow Warehouse",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Iron Vaults",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Jade Storehouse",
+    "SceneType": "warehouse"
+  },
+  {
+    "Name": "The Alder Tome",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Briar Codex",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Cinder Folio",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Dusk Manuscript",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Ember Scroll",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Frost Archive",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Glimmering Library",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Hollow Bookshop",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Iron Parchment",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Jade Codex",
+    "SceneType": "bookstore"
+  },
+  {
+    "Name": "The Alder Trinket",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Briar Curio",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Cinder Wares",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Dusk Market",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Ember Goods",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Frost Emporium",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Glimmering Shop",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Hollow Store",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Iron Goods",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Jade Market",
+    "SceneType": "shop"
+  },
+  {
+    "Name": "The Alder Mine",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Briar Quarry",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Cinder Pit",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Dusk Delve",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Ember Excavation",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Frost Vein",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Glimmer Dig",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Hollow Mine",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Iron Shaft",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Jade Pit",
+    "SceneType": "mine"
+  },
+  {
+    "Name": "The Alder Tankard",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Briar Mug",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Cinder Alehouse",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Dusk Pint",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Ember Inn",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Frost Flagon",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Glimmering Stein",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Hollow Barrel",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Iron Keg",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Jade Jug",
+    "SceneType": "tavern"
+  },
+  {
+    "Name": "The Alder Rose",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Briar Lily",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Cinder Blossom",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Dusk Petal",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Ember Bloom",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Frost Thorn",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Glimmering Siren",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Hollow Flower",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Iron Rose",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Jade Lily",
+    "SceneType": "brothel"
+  },
+  {
+    "Name": "The Alder Baths",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Briar Springs",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Cinder Steamhouse",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Dusk Pool",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Ember Bathhouse",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Frost Soak",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Glimmering Waters",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Hollow Baths",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Iron Steamhouse",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Jade Springs",
+    "SceneType": "bathhouse"
+  },
+  {
+    "Name": "The Alder Square",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Briar Plaza",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Cinder Court",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Dusk Promenade",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Ember Circle",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Frost Square",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Glimmering Plaza",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Hollow Forum",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Iron Court",
+    "SceneType": "square"
+  },
+  {
+    "Name": "The Jade Promenade",
+    "SceneType": "square"
+  },
+  {
+    "Name": "Alder Docks",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "Briar Wharf",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "Cinder Pier",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "Dusk Harbor",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "Ember Quay",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "Frostport",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "Glimmering Wharf",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "Hollow Pier",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "Iron Docks",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "Jade Harbor",
+    "SceneType": "docks"
+  },
+  {
+    "Name": "The Alder Path",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Briar Trail",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Cinder Way",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Dusk Road",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Ember Trail",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Frost Path",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Glimmering Way",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Hollow Road",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Iron Trail",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Jade Path",
+    "SceneType": "road"
+  },
+  {
+    "Name": "The Alderwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Briarthorn",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Cinderwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Duskwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Emberwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Frostwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Glimmerwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Hollowwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Ironwood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Jadewood",
+    "SceneType": "forest"
+  },
+  {
+    "Name": "The Alder Cave",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Briar Hollow",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Cinder Grotto",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Dusk Cavern",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Ember Hollow",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Frost Cave",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Glimmering Grotto",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Hollow Cave",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Iron Hollow",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Jade Grotto",
+    "SceneType": "cave"
+  },
+  {
+    "Name": "The Alder Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Briar Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Cinder Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Dusk Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Ember Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Frost Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Glimmering Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Hollow Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Iron Ruins",
+    "SceneType": "ruins"
+  },
+  {
+    "Name": "The Jade Ruins",
+    "SceneType": "ruins"
+  }
+]

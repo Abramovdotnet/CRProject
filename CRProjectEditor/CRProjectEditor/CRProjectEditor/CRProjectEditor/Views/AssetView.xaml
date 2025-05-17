@@ -1,0 +1,38 @@
+<UserControl x:Class="CRProjectEditor.Views.AssetView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:CRProjectEditor.Views"
+             xmlns:viewmodels="clr-namespace:CRProjectEditor.ViewModels"
+             xmlns:models="clr-namespace:CRProjectEditor.Models"
+             mc:Ignorable="d"
+             d:DataContext="{d:DesignInstance Type=viewmodels:AssetViewModel, IsDesignTimeCreatable=True}"
+             d:DesignHeight="450" d:DesignWidth="800">
+    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <ItemsControl ItemsSource="{Binding Assets}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate DataType="{x:Type models:AssetDisplayInfo}">
+                        <Border BorderBrush="LightGray" BorderThickness="1" Margin="5" Padding="10" MinWidth="150" Background="#FF444444">
+                            <Border.InputBindings>
+                                <MouseBinding Gesture="LeftClick" CommandParameter="{Binding}" Command="{Binding DataContext.StartDragCommand, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"/>
+                            </Border.InputBindings>
+                            <StackPanel MouseDown="Asset_MouseDown">
+                                <TextBlock Text="{Binding AssetId}" FontWeight="Bold" Foreground="WhiteSmoke"/>
+                                <TextBlock Text="{Binding ImagePath}" FontStyle="Italic" Foreground="LightGray"/>
+                                <!-- If ImagePath were a valid image, we could use an Image control -->
+                                <!-- <Image Source="{Binding ImagePath}" Height="50" Width="50" Stretch="Uniform" Margin="0,5,0,0" /> -->
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </Grid>
+</UserControl> 

@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using CRProjectEditor.Services;
+using CRProjectEditor.ViewModels;
 
 namespace CRProjectEditor.Views
 {
@@ -23,6 +25,8 @@ namespace CRProjectEditor.Views
         public MainWindow()
         {
             InitializeComponent();
+            INotificationService notificationService = new NotificationService();
+            DataContext = new MainViewModel(notificationService);
         }
     }
 }

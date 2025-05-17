@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CRProjectEditor.Models;
+using CRProjectEditor.Services; // Added for INotificationService
 using CRProjectEditor.Tools;
 using CRProjectEditor.Views; // Для NotificationWindow
 using System;
@@ -15,9 +16,17 @@ using System.Threading.Tasks;
 using System.Windows; // Для Application.Current
 using System.Windows.Input; // For ICommand
 using System.Diagnostics;
+using System.Text.RegularExpressions; // For Regex in asset loading
 
 namespace CRProjectEditor.ViewModels
 {
+    // Вспомогательный класс для парсинга LocationNames.json
+    public class LocationNameEntry
+    {
+        public string Name { get; set; }
+        public string SceneType { get; set; }
+    }
+
     // Вспомогательный класс для настройки количества сцен каждого типа
     public partial class SceneTypeCountSetting : ObservableObject
     {
@@ -36,6 +45,7 @@ namespace CRProjectEditor.ViewModels
 
     public partial class WorldViewModel : ObservableObject
     {
+        private readonly INotificationService _notificationService;
         public string ViewModelDisplayName => "World";
 
         private ObservableCollection<Scene> _scenes = new ObservableCollection<Scene>();
@@ -76,8 +86,23 @@ namespace CRProjectEditor.ViewModels
 
         public ObservableCollection<SceneType> AvailableSceneTypesForDrag { get; }
 
-        public WorldViewModel()
+        [ObservableProperty]
+        private string? _selectedSceneImagePath;
+
+        public ObservableCollection<AssetDisplayInfo> AvailableAssetImages { get; } = new ObservableCollection<AssetDisplayInfo>();
+
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(SelectedAssetPreviewPath))]
+        private AssetDisplayInfo? _selectedAsset;
+
+        public string? SelectedAssetPreviewPath
         {
+            get => SelectedAsset?.ImagePath;
+        }
+
+        public WorldViewModel(INotificationService notificationService)
+        {
+            _notificationService = notificationService;
             AvailableSceneTypesForDrag = new ObservableCollection<SceneType>();
             foreach (SceneType type in Enum.GetValues(typeof(SceneType)))
             {
@@ -104,10 +129,12 @@ namespace CRProjectEditor.ViewModels
             DeleteSelectedSceneCommand = new AsyncRelayCommand(DeleteSelectedSceneAsync, CanDeleteSelectedScene);
             
             _ = LoadScenesAsync(); 
+            _ = LoadAssetImagesAsync(); // Load assets
             this.PropertyChanged += (s, e) => {
                 if (e.PropertyName == nameof(MapSelectedScene))
                 {
                     UpdateAllOtherScenesForConnection();
+                    UpdateSelectedSceneImagePath();
                     // Manually raise CanExecuteChanged for commands that depend on MapSelectedScene indirectly 
                     // or if NotifyCanExecuteChangedFor doesn't cover all scenarios (e.g. parameterless RelayCommand)
                     // For AsyncRelayCommand with CanExecute methods, SetProperty on _mapSelectedScene should trigger it.
@@ -118,7 +145,30 @@ namespace CRProjectEditor.ViewModels
         partial void OnMapSelectedSceneChanged(Scene? oldValue, Scene? newValue)
         {
             UpdateAllOtherScenesForConnection();
+            UpdateSelectedSceneImagePath(); 
             // Commands' CanExecute will be re-evaluated due to [NotifyCanExecuteChangedFor]
+        }
+
+        private void UpdateSelectedSceneImagePath()
+        {
+            if (MapSelectedScene == null)
+            {
+                SelectedSceneImagePath = null;
+                return;
+            }
+
+            // Ensure Constants.SceneAssetsFolderPath is correctly referenced
+            // and that System.IO.File.Exists is available.
+            string path = $"{Constants.SceneAssetsFolderPath}\\\\location{MapSelectedScene.Id}.imageset\\\\location{MapSelectedScene.Id}.png";
+            if (File.Exists(path))
+            {
+                SelectedSceneImagePath = path;
+            }
+            else
+            {
+                SelectedSceneImagePath = null;
+                Debug.WriteLine($"[WorldViewModel] Image not found for scene {MapSelectedScene.Id} at path: {path}");
+            }
         }
 
         private void UpdateAllOtherScenesForConnection()
@@ -146,21 +196,21 @@ namespace CRProjectEditor.ViewModels
         {
             if (MapSelectedScene == null || SelectedSceneForConnection == null)
             {
-                ShowNotification("Основная сцена или сцена для подключения не выбраны.");
+                _notificationService.ShowToast("Основная сцена или сцена для подключения не выбраны.", ToastType.Warning);
                 return;
             }
 
             // Проверка на существующее подключение к этой же сцене
             if (MapSelectedScene.Connections.Any(c => c.ConnectedSceneId == SelectedSceneForConnection.Id))
             {
-                ShowNotification($"Сцена '{MapSelectedScene.Name}' уже подключена к '{SelectedSceneForConnection.Name}'.");
+                _notificationService.ShowToast($"Сцена '{MapSelectedScene.Name}' уже подключена к '{SelectedSceneForConnection.Name}'.", ToastType.Info);
                 return;
             }
             
             // Проверка на подключение к самому себе
             if (MapSelectedScene.Id == SelectedSceneForConnection.Id)
             {
-                 ShowNotification("Нельзя подключить сцену к самой себе.");
+                 _notificationService.ShowToast("Нельзя подключить сцену к самой себе.", ToastType.Warning);
                  return;
             }
 
@@ -173,7 +223,7 @@ namespace CRProjectEditor.ViewModels
             // targetScene.Connections.Add(new SceneConnection { ConnectedSceneId = MapSelectedScene.Id, ConnectionType = "Standard" });
             // }
 
-            await SaveCurrentMapLayoutAsync(); // Сохраняем изменения и оно покажет свое уведомление
+            await SaveCurrentMapLayoutSilentlyAsync(); // Сохраняем изменения и оно покажет свое уведомление
             await LoadScenesAsync();      // Перезагружаем для обновления карты (и DataGrid)
                                           // MapSelectedScene может стать null после LoadScenesAsync, если объект пересоздается
                                           // По идее, ObservableCollection должен обновить существующие экземпляры, если Id совпадают.
@@ -189,13 +239,13 @@ namespace CRProjectEditor.ViewModels
         {
             if (MapSelectedScene == null)
             {
-                ShowNotification("Сцена не выбрана.");
+                _notificationService.ShowToast("Сцена не выбрана.", ToastType.Info);
                 return;
             }
 
             if (!MapSelectedScene.Connections.Any())
             {
-                ShowNotification($"У сцены '{MapSelectedScene.Name}' нет подключений для удаления.");
+                _notificationService.ShowToast($"У сцены '{MapSelectedScene.Name}' нет подключений для удаления.", ToastType.Info);
                 return;
             }
             
@@ -226,7 +276,7 @@ namespace CRProjectEditor.ViewModels
                 }
             }
 
-            await SaveCurrentMapLayoutAsync(); // Сохраняем изменения и оно покажет свое уведомление
+            await SaveCurrentMapLayoutSilentlyAsync(); // Сохраняем изменения и оно покажет свое уведомление
             await LoadScenesAsync(); 
         }
 
@@ -239,7 +289,7 @@ namespace CRProjectEditor.ViewModels
         {
             if (MapSelectedScene == null)
             {
-                ShowNotification("Сцена для удаления не выбрана.");
+                _notificationService.ShowToast("Сцена для удаления не выбрана.", ToastType.Warning);
                 return;
             }
 
@@ -257,7 +307,7 @@ namespace CRProjectEditor.ViewModels
             }
             else
             {
-                ShowNotification($"Не удалось найти сцену {sceneNameRemoved} (ID: {sceneIdToRemove}) для удаления в коллекции.");
+                _notificationService.ShowToast($"Не удалось найти сцену {sceneNameRemoved} (ID: {sceneIdToRemove}) для удаления в коллекции.", ToastType.Error);
                 return; // Если не нашли, дальше нет смысла идти
             }
 
@@ -276,26 +326,17 @@ namespace CRProjectEditor.ViewModels
             await LoadScenesAsync();
         }
 
-        private void ShowNotification(string message)
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                var notificationWindow = new NotificationWindow(message)
-                {
-                    Owner = Application.Current.MainWindow
-                };
-                notificationWindow.ShowDialog();
-            });
-        }
-
         private async Task LoadScenesAsync()
         {
+            _notificationService.UpdateStatus("Загрузка сцен...");
             try
             {
                 if (!File.Exists(Constants.ScenesPath))
                 {
                     System.Diagnostics.Debug.WriteLine($"Файл сцен не найден: {Constants.ScenesPath}");
                     App.Current.Dispatcher.Invoke(() => Scenes.Clear());
+                    _notificationService.ShowToast("Файл сцен не найден. Создайте новую локацию.", ToastType.Warning);
+                    _notificationService.UpdateStatus("Файл сцен не найден.");
                     return;
                 }
 
@@ -304,6 +345,8 @@ namespace CRProjectEditor.ViewModels
                 {
                     System.Diagnostics.Debug.WriteLine("Файл сцен пуст.");
                     App.Current.Dispatcher.Invoke(() => Scenes.Clear());
+                    _notificationService.ShowToast("Файл сцен пуст.", ToastType.Warning);
+                    _notificationService.UpdateStatus("Файл сцен пуст.");
                     return;
                 }
 
@@ -318,17 +361,21 @@ namespace CRProjectEditor.ViewModels
                 {
                     Scenes = loadedScenes ?? new ObservableCollection<Scene>();
                 });
+                _notificationService.UpdateStatus($"Загружено {Scenes.Count} сцен.");
+                _notificationService.ShowToast($"Загружено {Scenes.Count} сцен.", ToastType.Success);
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Debug.WriteLine($"Ошибка загрузки сцен: {ex.Message}");
-                ShowNotification($"Ошибка загрузки сцен: {ex.Message}");
+                _notificationService.ShowToast($"Ошибка загрузки сцен: {ex.Message}", ToastType.Error);
+                _notificationService.UpdateStatus("Ошибка загрузки сцен.");
                 App.Current.Dispatcher.Invoke(() => Scenes.Clear());
             }
         }
 
         private async Task GenerateLocationAndRefreshAsync()
         {
+            _notificationService.UpdateStatus("Генерация локации...");
             var config = new LocationGenerationConfig
             {
                 LocationName = NewLocationName,
@@ -345,52 +392,45 @@ namespace CRProjectEditor.ViewModels
 
             if (!config.SceneCounts.Any())
             {
-                ShowNotification("Не выбрано ни одной сцены для генерации. Укажите количество для хотя бы одного типа сцен.");
+                _notificationService.ShowToast("Не выбрано ни одной сцены для генерации. Укажите количество для хотя бы одного типа сцен.", ToastType.Warning);
                 return;
             }
 
             var generator = new LocationGenerator();
             List<Scene> generatedScenes = generator.GenerateLocation(config);
             generator.SaveScenesToFile(generatedScenes, Constants.ScenesPath);
-            ShowNotification($"Локация '{NewLocationName}' успешно сгенерирована и сохранена!\nСцен создано: {generatedScenes.Count}");
+            _notificationService.ShowToast($"Локация '{NewLocationName}' успешно сгенерирована и сохранена!\nСцен создано: {generatedScenes.Count}", ToastType.Success);
             
             await LoadScenesAsync();
         }
 
         private async Task GenerateCoordinatesAndRefreshAsync()
         {
-            if (!Scenes.Any())
-            {
-                ShowNotification("Нет сцен для генерации координат. Сначала загрузите или сгенерируйте локацию.");
-                return;
-            }
-
-            // Измененные значения для генератора координат
-            Vector2 markerSize = new Vector2(5, 5); // Уменьшим и это, чтобы маркеры были "меньше" в единицах JSON
-            float coordinateScale = 1.0f; 
-            float baseDistanceUnit = 0.5f; // Уменьшено в 2 раза
-
+            _notificationService.UpdateStatus("Генерация координат...");
             try
             {
-                // MapJsonGenerator.ProcessMapFile ожидает путь к файлу.
-                // Он сам прочитает, обновит координаты и сохранит.
+                float baseDistanceUnit = 0.5f; // JSON units per travel time unit. Corrected based on history.
+                System.Numerics.Vector2 markerSize = new System.Numerics.Vector2(5, 5); // Screen pixels for marker, used for spacing logic if ProcessMapFile needs it
+                float coordinateScale = 1.0f; // If 1.0, then screen pixels = JSON units for marker dimensions
+
                 MapJsonGenerator.ProcessMapFile(Constants.ScenesPath, markerSize, coordinateScale, baseDistanceUnit);
-                ShowNotification("Координаты для текущих сцен успешно сгенерированы и сохранены.");
+                _notificationService.ShowToast("Координаты для текущих сцен сгенерированы.", ToastType.Success);
+                _notificationService.UpdateStatus("Координаты сгенерированы.");
             }
             catch (Exception ex)
             {
-                ShowNotification($"Ошибка при генерации координат: {ex.Message}");
-                System.Diagnostics.Debug.WriteLine($"Ошибка генерации координат: {ex.Message}");
+                _notificationService.ShowToast($"Ошибка генерации координат: {ex.Message}", ToastType.Error);
+                _notificationService.UpdateStatus("Ошибка генерации координат.");
             }
-            
-            await LoadScenesAsync(); // Перезагружаем сцены, чтобы увидеть обновленные X, Y
+            await LoadScenesAsync();
         }
 
         private async Task GenerateLocationForPopulationAndRefreshAsync()
         {
+            _notificationService.UpdateStatus("Генерация локации по населению...");
             if (TargetPopulation <= 0)
             {
-                ShowNotification("Целевое население должно быть больше нуля.");
+                _notificationService.ShowToast("Целевое население должно быть больше нуля.", ToastType.Warning);
                 return;
             }
 
@@ -428,7 +468,7 @@ namespace CRProjectEditor.ViewModels
             }
             else if (requiredHousingScenes > 0)
             {
-                ShowNotification("Тип сцены 'House' не найден, невозможно сгенерировать жилье!");
+                _notificationService.ShowToast("Тип сцены 'House' не найден, невозможно сгенерировать жилье!", ToastType.Warning);
             }
 
             // 2. Инфраструктура по вехам населения (Milestone Infrastructure)
@@ -646,7 +686,7 @@ namespace CRProjectEditor.ViewModels
 
             if (!config.SceneCounts.Any())
             {
-                ShowNotification("Не удалось определить типы сцен для генерации по населению.");
+                _notificationService.ShowToast("Не удалось определить типы сцен для генерации по населению.", ToastType.Error);
                 return;
             }
             
@@ -654,16 +694,17 @@ namespace CRProjectEditor.ViewModels
             List<Scene> generatedScenes = generator.GenerateLocation(config);
             generatedScenes = generatedScenes.OrderBy(s => s.SceneType.ToString()).ThenBy(s => s.Name).ToList();
             generator.SaveScenesToFile(generatedScenes, Constants.ScenesPath);
-            ShowNotification($"Локация для населения {TargetPopulation} ('{config.LocationName}') успешно сгенерирована! Сцен создано: {generatedScenes.Count}");
+            _notificationService.ShowToast($"Локация для населения {TargetPopulation} ('{config.LocationName}') успешно сгенерирована! Сцен создано: {generatedScenes.Count}", ToastType.Success);
             
             await LoadScenesAsync();
         }
 
         private async Task SaveCurrentMapLayoutAsync()
         {
+            _notificationService.UpdateStatus("Сохранение разметки карты...");
             if (Scenes == null || !Scenes.Any())
             {
-                ShowNotification("Нет сцен для сохранения.");
+                _notificationService.ShowToast("Нет сцен для сохранения.", ToastType.Warning);
                 return;
             }
 
@@ -678,11 +719,11 @@ namespace CRProjectEditor.ViewModels
                 // Ensure Scenes is your ObservableCollection<Scene>
                 string jsonString = JsonSerializer.Serialize(Scenes.ToList(), options); 
                 await File.WriteAllTextAsync(Constants.ScenesPath, jsonString);
-                ShowNotification($"Расположение {Scenes.Count} сцен успешно сохранено в {Constants.ScenesPath}");
+                _notificationService.ShowToast("Расположение сцен успешно сохранено.", ToastType.Success);
             }
             catch (Exception ex)
             {
-                ShowNotification($"Ошибка при сохранении расположения сцен: {ex.Message}");
+                _notificationService.ShowToast($"Ошибка при сохранении расположения сцен: {ex.Message}", ToastType.Error);
                 Debug.WriteLine($"Ошибка сохранения JSON: {ex.Message}");
             }
         }
@@ -965,14 +1006,90 @@ namespace CRProjectEditor.ViewModels
             }
         }
 
+        // Method to generate a unique location name (UPDATED for new JSON structure)
+        public string GenerateUniqueLocationName(SceneType sceneType, string currentNameIfNoneFound)
+        {
+            try
+            {
+                if (!File.Exists(Constants.LocationNamesPath))
+                {
+                    _notificationService.ShowToast($"Файл имен локаций не найден: {Constants.LocationNamesPath}", ToastType.Warning);
+                    return currentNameIfNoneFound;
+                }
+
+                string jsonString = File.ReadAllText(Constants.LocationNamesPath);
+                if (string.IsNullOrWhiteSpace(jsonString))
+                {
+                    _notificationService.ShowToast("Файл имен локаций пуст.", ToastType.Warning);
+                    return currentNameIfNoneFound;
+                }
+
+                var locationNameEntries = JsonSerializer.Deserialize<List<LocationNameEntry>>(jsonString, 
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (locationNameEntries == null || !locationNameEntries.Any())
+                {
+                    _notificationService.ShowToast("В файле имен локаций не найдено записей.", ToastType.Info);
+                    return currentNameIfNoneFound;
+                }
+
+                // Фильтруем имена для нужного типа сцены, сравнивая без учета регистра
+                // так как в JSON у вас "cave", а enum.ToString() даст "Cave"
+                string sceneTypeString = sceneType.ToString();
+                var namesForType = locationNameEntries
+                    .Where(entry => string.Equals(entry.SceneType, sceneTypeString, StringComparison.OrdinalIgnoreCase))
+                    .Select(entry => entry.Name)
+                    .ToList();
+
+                if (!namesForType.Any())
+                {
+                    _notificationService.ShowToast($"Для типа '{sceneTypeString}' не найдено имен в файле.", ToastType.Info);
+                    return currentNameIfNoneFound;
+                }
+
+                var existingNames = new HashSet<string>(Scenes.Select(s => s.Name), StringComparer.OrdinalIgnoreCase);
+                
+                var random = new Random();
+                var shuffledNames = namesForType.OrderBy(x => random.Next()).ToList();
+
+                foreach (var name in shuffledNames)
+                {
+                    if (!existingNames.Contains(name))
+                    {
+                        return name;
+                    }
+                }
+                
+                _notificationService.ShowToast($"Не удалось найти уникальное имя для типа '{sceneTypeString}'. Все варианты заняты.", ToastType.Warning);
+                return currentNameIfNoneFound;
+            }
+            catch (JsonException jsonEx)
+            {
+                _notificationService.ShowToast($"Ошибка чтения JSON файла имен: {jsonEx.Message}", ToastType.Error);
+                Debug.WriteLine($"[GenerateUniqueLocationName] JSON Error: {jsonEx} (Path: {jsonEx.Path}, Line: {jsonEx.LineNumber}, Pos: {jsonEx.BytePositionInLine})");
+                return currentNameIfNoneFound;
+            }
+            catch (Exception ex)
+            {
+                _notificationService.ShowToast($"Ошибка при генерации имени: {ex.Message}", ToastType.Error);
+                Debug.WriteLine($"[GenerateUniqueLocationName] General Error: {ex}");
+                return currentNameIfNoneFound;
+            }
+        }
+
         public async Task AddNewSceneFromMapAsync(SceneType sceneType, double x, double y)
         {
             string defaultName = $"New {sceneType.ToString()}";
             string defaultDescription = "A newly created scene.";
+            int placeholderIdForNewScene = 0; 
 
-            var editWindow = new EditSceneDetailsWindow(defaultName, defaultDescription)
+            // Call the name generator for an initial suggestion, or use default if it fails
+            defaultName = GenerateUniqueLocationName(sceneType, defaultName);
+
+            var editWindow = new EditSceneDetailsWindow(placeholderIdForNewScene, defaultName, defaultDescription, 
+                                                    sceneType, GenerateUniqueLocationName) // Pass the method
             {
-                Title = "Создать Новую Сцену", // Меняем заголовок окна
+                Title = "Создать Новую Сцену", 
                 Owner = Application.Current.MainWindow
             };
 
@@ -990,9 +1107,9 @@ namespace CRProjectEditor.ViewModels
                 var newScene = new Scene
                 {
                     Id = newId,
-                    Name = sceneName, // Используем имя из диалога
+                    Name = sceneName, 
                     SceneType = sceneType,
-                    Description = sceneDescription, // Используем описание из диалога
+                    Description = sceneDescription, 
                     X = (int)Math.Round(x),
                     Y = (int)Math.Round(y),
                     Connections = new List<SceneConnection>(),
@@ -1006,11 +1123,9 @@ namespace CRProjectEditor.ViewModels
                 Scenes.Add(newScene);
                 await SaveCurrentMapLayoutSilentlyAsync(); 
                 await LoadScenesAsync(); 
-                // ShowNotification($"Сцена '{sceneName}' успешно создана."); // Уведомление убрано
             }
             else
             {
-                // Пользователь нажал "Отмена", ничего не делаем
                 Debug.WriteLine("Создание новой сцены отменено пользователем.");
             }
         }
@@ -1019,43 +1134,226 @@ namespace CRProjectEditor.ViewModels
         {
             if (sceneToEdit == null) return;
 
-            // Найдем актуальный экземпляр сцены в нашей основной коллекции
             var sceneInCollection = Scenes.FirstOrDefault(s => s.Id == sceneToEdit.Id);
             if (sceneInCollection == null)
             {
-                ShowNotification("Выбранная сцена не найдена в текущем списке.");
+                _notificationService.ShowToast("Выбранная сцена не найдена в текущем списке.", ToastType.Error);
                 return;
             }
 
-            var editWindow = new EditSceneDetailsWindow(sceneInCollection.Name, sceneInCollection.Description)
+            var editWindow = new EditSceneDetailsWindow(sceneInCollection.Id, sceneInCollection.Name, sceneInCollection.Description, 
+                                                    sceneInCollection.SceneType, GenerateUniqueLocationName) // Pass SceneType and method
             {
                 Owner = Application.Current.MainWindow
             };
 
             if (editWindow.ShowDialog() == true)
             {
+                string newIdString = editWindow.SceneIdString;
+                string newName = editWindow.SceneName;
+                string newDescription = editWindow.SceneDescription;
                 bool changed = false;
-                if (sceneInCollection.Name != editWindow.SceneName)
+                int originalId = sceneInCollection.Id;
+                int newNumericId = originalId;
+
+                if (newIdString != originalId.ToString())
                 {
-                    sceneInCollection.Name = editWindow.SceneName;
+                    if (!int.TryParse(newIdString, out newNumericId))
+                    {
+                        _notificationService.ShowToast("Ошибка: ID должен быть числом.", ToastType.Warning);
+                        return; 
+                    }
+
+                    if (newNumericId != originalId && Scenes.Any(s => s.Id == newNumericId && s.Id != originalId))
+                    {
+                        _notificationService.ShowToast($"Ошибка: ID '{newNumericId}' уже используется другой сценой.", ToastType.Warning);
+                        return; 
+                    }
+                    else if (newNumericId != originalId) // Only if truly different and unique
+                    {
+                        sceneInCollection.Id = newNumericId;
+                        changed = true;
+                        Debug.WriteLine($"Scene ID changed from {originalId} to {newNumericId}");
+                        foreach (var s in Scenes)
+                        {
+                            if (s.Connections != null)
+                            {
+                                foreach (var conn in s.Connections)
+                                {
+                                    if (conn.ConnectedSceneId == originalId)
+                                    {
+                                        conn.ConnectedSceneId = newNumericId;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (sceneInCollection.Name != newName)
+                {
+                    sceneInCollection.Name = newName;
                     changed = true;
                 }
-                if (sceneInCollection.Description != editWindow.SceneDescription)
+                if (sceneInCollection.Description != newDescription)
                 {
-                    sceneInCollection.Description = editWindow.SceneDescription;
+                    sceneInCollection.Description = newDescription;
                     changed = true;
                 }
 
                 if (changed)
                 {
-                    // Обновить ObservableCollection для DataGrid (если Name/Description там отображаются и не обновляются автоматически через INPC на Scene)
-                    // Если Scene реализует INotifyPropertyChanged и Name/Description являются ObservableProperty, то это может быть излишним.
-                    // В данном случае, просто перезагрузка всего через Save/Load проще и надежнее.
-                    await SaveCurrentMapLayoutAsync();
-                    await LoadScenesAsync(); // Перезагрузка обновит и карту, и DataGrid
-                    ShowNotification("Детали сцены обновлены.");
+                    await SaveCurrentMapLayoutAsync(); 
+                    await LoadScenesAsync(); 
+                    _notificationService.ShowToast("Детали сцены обновлены.", ToastType.Success);
                 }
             }
+        }
+
+        private async Task LoadAssetImagesAsync()
+        {
+            _notificationService.UpdateStatus("Загрузка изображений ассетов...");
+            await Task.Run(() => // Perform disk operations on a background thread
+            {
+                var tempAssetList = new List<AssetDisplayInfo>();
+                try
+                {
+                    if (Directory.Exists(Constants.SceneAssetsFolderPath))
+                    {
+                        var imageSetDirectories = Directory.GetDirectories(Constants.SceneAssetsFolderPath, "location*.imageset");
+                        Regex idRegex = new Regex(@"location(\d+)\.imageset");
+
+                        foreach (var dir in imageSetDirectories)
+                        {
+                            Match match = idRegex.Match(System.IO.Path.GetFileName(dir)); // Use System.IO.Path.GetFileName
+                            if (match.Success && int.TryParse(match.Groups[1].Value, out int assetId))
+                            {
+                                string pngFileName = $"location{assetId}.png";
+                                string imagePath = System.IO.Path.Combine(dir, pngFileName);
+
+                                if (File.Exists(imagePath))
+                                {
+                                    tempAssetList.Add(new AssetDisplayInfo(assetId, imagePath));
+                                }
+                                else
+                                {
+                                    Debug.WriteLine($"[LoadAssetImagesAsync] PNG file not found: {imagePath}");
+                                }
+                            }
+                            else
+                            {
+                                Debug.WriteLine($"[LoadAssetImagesAsync] Could not parse asset ID from directory: {dir}");
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"[LoadAssetImagesAsync] SceneAssetsFolderPath does not exist: {Constants.SceneAssetsFolderPath}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[LoadAssetImagesAsync] Error loading asset images: {ex.Message}");
+                    // Optionally show a notification to the user if appropriate
+                }
+                
+                // Update the ObservableCollection on the UI thread
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    AvailableAssetImages.Clear();
+                    foreach (var asset in tempAssetList.OrderBy(a => a.AssetId))
+                    {
+                        AvailableAssetImages.Add(asset);
+                    }
+                    Debug.WriteLine($"[LoadAssetImagesAsync] Loaded {AvailableAssetImages.Count} asset images.");
+                });
+            });
+        }
+
+        // Method to handle asset assignment/ID change via drag-drop
+        public async Task ChangeSceneIdFromAssetAsync(Scene targetScene, AssetDisplayInfo assetInfo)
+        {
+            if (targetScene == null || assetInfo == null)
+            {
+                _notificationService.ShowToast("Ошибка: Целевая сцена или информация об ассете не определены.", ToastType.Error);
+                return;
+            }
+
+            int newSceneId = assetInfo.AssetId;
+            var sceneInCollectionToChange = Scenes.FirstOrDefault(s => s.Id == targetScene.Id);
+
+            if (sceneInCollectionToChange == null)
+            {
+                _notificationService.ShowToast($"Ошибка: Сцена с ID {targetScene.Id} не найдена в текущей коллекции.", ToastType.Error);
+                return;
+            }
+
+            // Проверка, не занят ли новый ID другой сценой (исключая текущую изменяемую сцену)
+            var existingSceneWithNewId = Scenes.FirstOrDefault(s => s.Id == newSceneId && s.Id != sceneInCollectionToChange.Id);
+            if (existingSceneWithNewId != null)
+            {
+                _notificationService.ShowDialog(
+                    "Конфликт ID",
+                    $"ID ассета ({newSceneId}) уже используется сценой '{existingSceneWithNewId.Name}' (ID: {existingSceneWithNewId.Id}).\n\nИзменение ID отменено. \nЕсли вы хотите использовать этот ID, сначала измените ID существующей сцены ('{existingSceneWithNewId.Name}') вручную.",
+                    DialogType.Error
+                );
+                return;
+            }
+
+            int oldSceneId = sceneInCollectionToChange.Id;
+            string oldSceneName = sceneInCollectionToChange.Name; // Store for notification
+
+            if (oldSceneId == newSceneId)
+            {
+                _notificationService.ShowToast($"Сцена '{oldSceneName}' уже имеет ID {newSceneId}. Изменений не требуется.", ToastType.Info);
+                // Optionally, still update BackgroundImagePath if that's a separate concern
+                // sceneInCollectionToChange.BackgroundImagePath = assetInfo.ImagePath;
+                // await SaveCurrentMapLayoutSilentlyAsync();
+                return;
+            }
+            
+            // Подтверждение от пользователя (если это не просто смена картинки, а именно ID)
+            _notificationService.ShowDialog(
+                "Подтверждение смены ID",
+                $"Вы уверены, что хотите изменить ID сцены '{oldSceneName}' (было {oldSceneId}) на ID ассета {newSceneId}?\nЭто действие обновит все связанные подключения.",
+                DialogType.Confirmation,
+                onOk: async () => 
+                {
+                    _notificationService.UpdateStatus($"Изменение ID сцены '{oldSceneName}' на {newSceneId}...");
+                    sceneInCollectionToChange.Id = newSceneId;
+
+                    // Обновить ID во всех связях
+                    foreach (var scene in Scenes)
+                    {
+                        foreach (var connection in scene.Connections)
+                        {
+                            if (connection.ConnectedSceneId == oldSceneId)
+                            {
+                                connection.ConnectedSceneId = newSceneId;
+                            }
+                        }
+                        // Обновление устаревших HubSceneIds и ConnectedSceneIds УДАЛЕНО
+                        // так как эти поля либо отсутствуют, либо их обновление здесь нецелесообразно
+                    }
+
+                    // Обновить SelectedSceneImagePath, если измененная сцена была выбрана
+                    if (MapSelectedScene?.Id == oldSceneId) // Сначала проверяем по старому ID
+                    {
+                         // MapSelectedScene теперь указывает на измененный объект, его ID уже новый.
+                         // Так что, если он был выбран, его ID уже newSceneId
+                         UpdateSelectedSceneImagePath(); // Обновит картинку в UI, если MapSelectedScene был измененной сценой
+                    }
+                    
+                    await SaveCurrentMapLayoutSilentlyAsync();
+                    _notificationService.ShowToast($"ID сцены '{oldSceneName}' изменен на {newSceneId}. Связи обновлены.", ToastType.Success);
+                    _notificationService.UpdateStatus("ID сцены изменен, карта обновляется...");
+                    await LoadScenesAsync(); // Перезагрузить, чтобы все UI компоненты (карта, грид) обновились
+                },
+                onCancel: () =>
+                {
+                    _notificationService.ShowToast("Изменение ID сцены отменено.", ToastType.Info);
+                }
+            );
         }
     }
 } 

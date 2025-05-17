@@ -1,132 +1,23 @@
 [
   {
     "id": 10,
-    "name": "New Cave",
+    "name": "Dawnthorn Fortress",
     "description": "A newly created scene.",
-    "sceneType": "Cave",
+    "sceneType": "Castle",
     "isIndoor": false,
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -1,
-    "y": 7,
+    "x": 0,
+    "y": 0,
     "connections": [
       {
-        "connectedSceneId": 11,
-        "travelTime": 1,
-        "connectionType": "ManualCanvas"
-      },
-      {
-        "connectedSceneId": 12,
-        "travelTime": 1,
-        "connectionType": "ManualCanvas"
-      }
-    ],
-    "population": 0,
-    "radius": 10
-  },
-  {
-    "id": 11,
-    "name": "New Cloister",
-    "description": "A newly created scene.",
-    "sceneType": "Cloister",
-    "isIndoor": false,
-    "parentSceneId": 0,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -5,
-    "y": 4,
-    "connections": [
-      {
-        "connectedSceneId": 10,
-        "travelTime": 1,
-        "connectionType": "ManualCanvas"
-      }
-    ],
-    "population": 0,
-    "radius": 10
-  },
-  {
-    "id": 12,
-    "name": "New Docks",
-    "description": "A newly created scene.",
-    "sceneType": "Docks",
-    "isIndoor": false,
-    "parentSceneId": 0,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -1,
-    "y": 3,
-    "connections": [
-      {
-        "connectedSceneId": 10,
+        "connectedSceneId": 15,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       },
       {
         "connectedSceneId": 13,
-        "travelTime": 1,
-        "connectionType": "ManualCanvas"
-      },
-      {
-        "connectedSceneId": 15,
-        "travelTime": 1,
-        "connectionType": "ManualCanvas"
-      },
-      {
-        "connectedSceneId": 14,
-        "travelTime": 1,
-        "connectionType": "ManualCanvas"
-      },
-      {
-        "connectedSceneId": 16,
-        "travelTime": 1,
-        "connectionType": "ManualCanvas"
-      }
-    ],
-    "population": 0,
-    "radius": 10
-  },
-  {
-    "id": 13,
-    "name": "New Shop",
-    "description": "A newly created scene.",
-    "sceneType": "Shop",
-    "isIndoor": false,
-    "parentSceneId": 0,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": -3,
-    "y": 1,
-    "connections": [
-      {
-        "connectedSceneId": 12,
-        "travelTime": 1,
-        "connectionType": "ManualCanvas"
-      },
-      {
-        "connectedSceneId": 15,
-        "travelTime": 1,
-        "connectionType": "ManualCanvas"
-      }
-    ],
-    "population": 0,
-    "radius": 10
-  },
-  {
-    "id": 14,
-    "name": "New House",
-    "description": "A newly created scene.",
-    "sceneType": "House",
-    "isIndoor": false,
-    "parentSceneId": 0,
-    "childSceneIds": [],
-    "hubSceneIds": [],
-    "x": 3,
-    "y": 3,
-    "connections": [
-      {
-        "connectedSceneId": 12,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       }
@@ -136,21 +27,104 @@
   },
   {
     "id": 15,
-    "name": "New House",
+    "name": "The Stone Ring",
     "description": "A newly created scene.",
-    "sceneType": "House",
+    "sceneType": "Square",
     "isIndoor": false,
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": 3,
-    "y": 1,
+    "x": 0,
+    "y": 2,
     "connections": [
       {
-        "connectedSceneId": 12,
+        "connectedSceneId": 10,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       },
+      {
+        "connectedSceneId": 3,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 143,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 4,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 3,
+    "name": "The Velvet Thorn",
+    "description": "A newly created scene.",
+    "sceneType": "Brothel",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -6,
+    "y": 2,
+    "connections": [
+      {
+        "connectedSceneId": 15,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 13,
+    "name": "The Duskwarden Barracks",
+    "description": "A newly created scene.",
+    "sceneType": "Military",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": 4,
+    "y": 0,
+    "connections": [
+      {
+        "connectedSceneId": 10,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 16,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 143,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 16,
+    "name": "The Merchant\u0027s Hoard",
+    "description": "A newly created scene.",
+    "sceneType": "Warehouse",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": 8,
+    "y": -2,
+    "connections": [
       {
         "connectedSceneId": 13,
         "travelTime": 1,
@@ -161,19 +135,45 @@
     "radius": 10
   },
   {
-    "id": 16,
-    "name": "New House",
+    "id": 143,
+    "name": "Old Prison",
     "description": "A newly created scene.",
-    "sceneType": "House",
+    "sceneType": "Dungeon",
     "isIndoor": false,
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": 3,
-    "y": 5,
+    "x": 4,
+    "y": 4,
     "connections": [
       {
-        "connectedSceneId": 12,
+        "connectedSceneId": 13,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 15,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 4,
+    "name": "The Cathedral of the Silent Choir",
+    "description": "A newly created scene.",
+    "sceneType": "Cathedral",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": 0,
+    "y": 7,
+    "connections": [
+      {
+        "connectedSceneId": 15,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       }

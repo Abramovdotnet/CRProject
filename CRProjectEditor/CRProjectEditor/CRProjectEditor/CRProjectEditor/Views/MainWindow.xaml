@@ -5,13 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CRProjectEditor.Views"
         xmlns:viewModels="clr-namespace:CRProjectEditor.ViewModels"
+        xmlns:controls="clr-namespace:CRProjectEditor.Views"
         mc:Ignorable="d"
         Title="CRProjectEditor" Height="450" Width="800"
         WindowState="Maximized">
-    <Window.DataContext>
-        <viewModels:MainViewModel/>
-    </Window.DataContext>
-
     <Window.Resources>
         <DataTemplate DataType="{x:Type viewModels:WorldViewModel}">
             <local:WorldView/>
@@ -28,14 +25,22 @@
         <DataTemplate DataType="{x:Type viewModels:ItemsViewModel}">
             <local:ItemsView/>
         </DataTemplate>
+        <DataTemplate DataType="{x:Type viewModels:AssetViewModel}">
+            <local:AssetView/>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid Background="{DynamicResource BackgroundBrush}">
-        <TabControl ItemsSource="{Binding TabViewModels}"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TabControl Grid.Row="0" ItemsSource="{Binding TabViewModels}"
                     SelectedItem="{Binding SelectedViewModel}">
             <TabControl.ItemTemplate>
                 <DataTemplate>
-                    <TextBlock Text="{Binding ViewModelDisplayName}"/> <!-- We'll need to add ViewModelDisplayName to each tab ViewModel -->
+                    <TextBlock Text="{Binding ViewModelDisplayName}"/>
                 </DataTemplate>
             </TabControl.ItemTemplate>
             <TabControl.ContentTemplate>
@@ -44,5 +49,26 @@
                 </DataTemplate>
             </TabControl.ContentTemplate>
         </TabControl>
+
+        <StatusBar Grid.Row="1" Background="#252525" Foreground="#E0E0E0">
+            <StatusBarItem>
+                <TextBlock Text="{Binding StatusMessage}" Margin="5,0"/>
+            </StatusBarItem>
+        </StatusBar>
+
+        <ItemsControl Grid.Row="0" ItemsSource="{Binding ActiveToasts}"
+                      HorizontalAlignment="Right" VerticalAlignment="Bottom"
+                      Margin="10" Panel.ZIndex="100">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="{x:Type viewModels:ToastNotificationViewModel}">
+                    <controls:ToastNotificationControl/>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
     </Grid>
 </Window>

@@ -8,5 +8,6 @@
         internal const string ItemsPath = "C:\\Repos\\CRProject\\CRProject\\Data\\Misc\\Items.json";
         internal const string RecipesFolderPath = "C:\\Repos\\CRProject\\CRProject\\Data\\Misc\\Recipes";
         internal const string SceneAssetsFolderPath = "C:\\Repos\\CRProject\\CRProject\\Assets.xcassets\\Locations";
+        internal const string LocationNamesPath = "C:\\Repos\\CRProject\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\Content\\LocationNames.json";
     }
 }

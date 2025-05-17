@@ -4,17 +4,39 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Уведомление" 
-        SizeToContent="WidthAndHeight" MinWidth="300" MaxWidth="500"
+        Title="{Binding DialogTitle}" 
+        SizeToContent="WidthAndHeight" MinWidth="350" MaxWidth="600"
         WindowStartupLocation="CenterOwner"
         WindowStyle="ToolWindow" 
         ShowInTaskbar="False"
         Background="{StaticResource BackgroundBrush}"
         Foreground="{StaticResource ForegroundBrush}">
-    <Border Padding="15" Background="{StaticResource BackgroundBrush}">
+    <Border Padding="20" Background="{StaticResource BackgroundBrush}">
         <StackPanel>
-            <TextBlock x:Name="MessageTextBlock" TextWrapping="Wrap" Margin="0,0,0,15" MinHeight="40" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="{StaticResource ForegroundBrush}"/>
-            <Button Content="ОК" Click="OkButton_Click" HorizontalAlignment="Center" MinWidth="80" Padding="10,5"/>
+            <TextBlock Text="{Binding Message}" TextWrapping="Wrap" Margin="0,0,0,20" MinHeight="50" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Left" Foreground="{StaticResource ForegroundBrush}"/>
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Content="OK" 
+                        Click="OkButton_Click" 
+                        Visibility="{Binding OkButtonVisibility}"
+                        IsDefault="True" 
+                        Style="{StaticResource DialogButtonStyle}"/>
+                <Button Content="Yes" 
+                        Click="YesButton_Click" 
+                        Visibility="{Binding YesButtonVisibility}"
+                        IsDefault="True"
+                        Style="{StaticResource DialogButtonStyle}"/>
+                <Button Content="No" 
+                        Click="NoButton_Click" 
+                        Visibility="{Binding NoButtonVisibility}"
+                        IsCancel="True" 
+                        Style="{StaticResource DialogButtonStyle}"/>
+                <Button Content="Cancel" 
+                        Click="CancelButton_Click" 
+                        Visibility="{Binding CancelButtonVisibility}"
+                        IsCancel="True"
+                        Style="{StaticResource DialogButtonStyle}"/>
+            </StackPanel>
         </StackPanel>
     </Border>
 </Window> 

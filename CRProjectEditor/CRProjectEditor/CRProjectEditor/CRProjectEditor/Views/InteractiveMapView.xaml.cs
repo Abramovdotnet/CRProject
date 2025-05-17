@@ -55,6 +55,9 @@ namespace CRProjectEditor.Views
         // Event for requesting a scene to be edited
         public event Action<Scene>? SceneEditRequested; 
 
+        // Event for asset dropped on scene
+        public event Action<Scene, AssetDisplayInfo>? AssetDroppedOnScene;
+
         // Fields for coordinate transformation
         private double _currentRenderMinX;
         private double _currentRenderMinY;
@@ -392,7 +395,7 @@ namespace CRProjectEditor.Views
             }
 
             int scenesIterated = 0;
-            int markersAddedToCanvas = 0; // This will now count markerBorders added
+            int markersAddedToCanvas = 0; 
             int scenesFoundInRenderInfo = 0;
             int scenesNotFoundInRenderInfo = 0;
 
@@ -412,9 +415,8 @@ namespace CRProjectEditor.Views
                 Point scaledPos = scenesRenderInfo[scene.Id];
 
                 // 1. Create the visual element (Image or colored Border)
-                FrameworkElement visualContent;
-                string imagePath = GetSceneImagePath(scene); 
-
+                FrameworkElement visualElement;
+                string imagePath = GetSceneImagePath(scene);
                 bool imageExists = !string.IsNullOrEmpty(imagePath) && File.Exists(imagePath);
 
                 if (imageExists)
@@ -422,11 +424,11 @@ namespace CRProjectEditor.Views
                     var image = new Image
                     {
                         Source = new BitmapImage(new Uri(imagePath, UriKind.Absolute)),
-                        Width = 100, 
-                        Height = 30, 
-                        Stretch = Stretch.Fill 
+                        Width = 100,
+                        Height = 40,
+                        Stretch = Stretch.Fill
                     };
-                    visualContent = image;
+                    visualElement = image;
                 }
                 else
                 {
@@ -434,82 +436,111 @@ namespace CRProjectEditor.Views
                     {
                         Background = GetSceneTypeBrush(scene.SceneType),
                         Width = 100,
-                        Height = 30,
-                        CornerRadius = new CornerRadius(3) 
+                        Height = 40,
+                        CornerRadius = new CornerRadius(3) // Optional rounding for the color block itself
                     };
-                    visualContent = colorBlock;
+                    visualElement = colorBlock;
                 }
 
                 // 2. Create TextBlocks
+                var idTextBlock = new TextBlock
+                {
+                    Text = scene.Id.ToString(),
+                    FontSize = 8,
+                    FontWeight = FontWeights.Normal,
+                    Foreground = Brushes.WhiteSmoke,
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+
                 var nameTextBlock = new TextBlock
                 {
                     Text = scene.Name,
                     FontWeight = FontWeights.Bold,
                     FontSize = 9,
-                    HorizontalAlignment = HorizontalAlignment.Center,
+                    Foreground = Brushes.WhiteSmoke,
                     TextTrimming = TextTrimming.CharacterEllipsis,
-                    MaxWidth = 95, 
-                    Foreground = Brushes.White // Ensure this is visible on transparent markerBorder background
+                    // MaxWidth will be implicitly handled by parent panel or can be set if needed
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Margin = new Thickness(4, 0, 0, 0) // Space between ID and Name
                 };
 
                 var typeTextBlock = new TextBlock
                 {
                     Text = scene.SceneType.ToString(),
                     FontSize = 7,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    Foreground = GetSceneTypeBrush(scene.SceneType) // Color the text itself
+                    HorizontalAlignment = HorizontalAlignment.Center, // Centered within its own line
+                    Foreground = GetSceneTypeBrush(scene.SceneType)
                 };
 
-                // 3. Create a panel for the text blocks
-                var textInfoPanel = new StackPanel
+                // 3. Panel for ID and Name (Horizontal)
+                var idAndNamePanel = new StackPanel
+                {
+                    Orientation = Orientation.Horizontal,
+                    HorizontalAlignment = HorizontalAlignment.Center // Center this panel
+                };
+                idAndNamePanel.Children.Add(idTextBlock);
+                idAndNamePanel.Children.Add(nameTextBlock);
+                
+                // 4. Panel for all text content (Vertical: ID+Name line, then Type line)
+                var textContentStack = new StackPanel
                 {
                     Orientation = Orientation.Vertical,
-                    HorizontalAlignment = HorizontalAlignment.Stretch, 
-                    Margin = new Thickness(0, 2, 0, 0) 
+                    HorizontalAlignment = HorizontalAlignment.Center // Center the block of text
                 };
-                textInfoPanel.Children.Add(nameTextBlock);
-                textInfoPanel.Children.Add(typeTextBlock);
+                textContentStack.Children.Add(idAndNamePanel);
+                textContentStack.Children.Add(typeTextBlock);
 
-                // 4. Create the main container Border for the marker
+                // 5. Background Border for text (semi-transparent, contains the text)
+                var textOverlayBorder = new Border
+                {
+                    Background = new SolidColorBrush(Color.FromArgb(200, 20, 20, 20)), // Darker semi-transparent
+                    Padding = new Thickness(4, 2, 4, 2), // Padding inside the text background
+                    HorizontalAlignment = HorizontalAlignment.Stretch, // Stretch across visualElement's width
+                    VerticalAlignment = VerticalAlignment.Bottom,    // Align to the bottom of visualElement
+                    Child = textContentStack
+                    // Optional: CornerRadius for bottom of overlay: new CornerRadius(0,0,2,2)
+                };
+
+                // 6. Grid to host visualElement and overlay textOverlayBorder on it
+                var contentGrid = new Grid
+                {
+                    Width = visualElement.Width,  // Should match visualElement's dimensions (e.g., 100)
+                    Height = visualElement.Height // e.g., 30
+                };
+                contentGrid.Children.Add(visualElement);     // Image/Color block (layer 0)
+                contentGrid.Children.Add(textOverlayBorder); // Text on semi-transparent background (layer 1)
+
+                // 7. Main markerBorder (for selection, interaction, overall rounded corners)
                 var markerBorder = new Border
                 {
                     BorderBrush = (_selectedScene != null && _selectedScene.Id == scene.Id) ? Brushes.Gold : Brushes.DarkSlateGray,
                     BorderThickness = new Thickness(1.5),
-                    CornerRadius = new CornerRadius(4), 
+                    CornerRadius = new CornerRadius(5), // Overall rounding
                     Tag = scene,
-                    Padding = new Thickness(2), 
-                    Background = Brushes.Transparent // Main border is transparent, content provides visuals
+                    Padding = new Thickness(1), // Small padding around the contentGrid
+                    Background = Brushes.Transparent, // Main border is transparent
+                    Child = contentGrid
                 };
-
-                // 5. Arrange visualContent and textInfoPanel within markerBorder
-                var markerLayoutStack = new StackPanel
-                {
-                    Orientation = Orientation.Vertical
-                };
-                markerLayoutStack.Children.Add(visualContent);
-                markerLayoutStack.Children.Add(textInfoPanel);
-
-                markerBorder.Child = markerLayoutStack;
 
                 // Attach event handlers
                 markerBorder.MouseLeftButtonDown += Marker_MouseLeftButtonDown;
-                markerBorder.MouseMove += Marker_MouseMove; 
+                markerBorder.MouseMove += Marker_MouseMove;
                 markerBorder.MouseLeftButtonUp += Marker_MouseLeftButtonUp;
-                
-                _sceneMarkers[scene.Id] = markerBorder; 
+
+                _sceneMarkers[scene.Id] = markerBorder;
                 MapCanvas.Children.Add(markerBorder);
                 markersAddedToCanvas++;
-                
-                // Position using Loaded event for accuracy with auto-sized content
+
+                // Position using Loaded event for accuracy
                 markerBorder.Loaded += (s, e_loaded) => {
-                    var loadedMarker = s as FrameworkElement; 
+                    var loadedMarker = s as FrameworkElement;
                     if (loadedMarker != null && loadedMarker.Tag is Scene loadedSceneTag && scenesRenderInfo.ContainsKey(loadedSceneTag.Id)) {
                         Point centerPos = scenesRenderInfo[loadedSceneTag.Id];
                         Canvas.SetLeft(loadedMarker, centerPos.X - loadedMarker.ActualWidth / 2);
                         Canvas.SetTop(loadedMarker, centerPos.Y - loadedMarker.ActualHeight / 2);
                     }
                 };
-                Panel.SetZIndex(markerBorder, 1); 
+                Panel.SetZIndex(markerBorder, 1);
             }
             Debug.WriteLine($"InteractiveMapView: DrawMarkers finished. Iterated {scenesIterated} scenes from Scenes coll. Found {scenesFoundInRenderInfo} in scenesRenderInfo. Did NOT find {scenesNotFoundInRenderInfo} in scenesRenderInfo. Added {markersAddedToCanvas} markerBorders to canvas.");
         }
@@ -890,7 +921,8 @@ namespace CRProjectEditor.Views
 
         private void MapCanvas_DragEnter(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(SceneType).FullName))
+            if (e.Data.GetDataPresent(typeof(SceneType).FullName) || 
+                e.Data.GetDataPresent(typeof(AssetDisplayInfo).FullName))
             {
                 e.Effects = DragDropEffects.Copy;
             }
@@ -903,7 +935,8 @@ namespace CRProjectEditor.Views
 
         private void MapCanvas_DragOver(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(SceneType).FullName))
+            if (e.Data.GetDataPresent(typeof(SceneType).FullName) || 
+                e.Data.GetDataPresent(typeof(AssetDisplayInfo).FullName))
             {
                 e.Effects = DragDropEffects.Copy;
             }
@@ -911,19 +944,60 @@ namespace CRProjectEditor.Views
             {
                 e.Effects = DragDropEffects.None;
             }
-            // Potentially provide feedback here, like drawing a ghost marker
             e.Handled = true;
         }
 
         private void MapCanvas_Drop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetData(typeof(SceneType).FullName) is SceneType sceneType)
+            Point dropPositionOnCanvas = e.GetPosition(MapCanvas);
+
+            if (e.Data.GetData(typeof(AssetDisplayInfo).FullName) is AssetDisplayInfo assetInfo)
             {
-                Point dropPositionOnCanvas = e.GetPosition(MapCanvas);
-                Point logicalDropPosition = PointToLogical(dropPositionOnCanvas); // Uses the original PointToLogical
+                Scene? targetScene = FindSceneAtCanvasPoint(dropPositionOnCanvas);
+                if (targetScene != null)
+                {
+                    AssetDroppedOnScene?.Invoke(targetScene, assetInfo);
+                    Debug.WriteLine($"InteractiveMapView: Asset ID {assetInfo.AssetId} dropped on Scene ID {targetScene.Id}");
+                }
+                else
+                {
+                    Debug.WriteLine($"InteractiveMapView: Asset ID {assetInfo.AssetId} dropped on canvas, but no target scene found.");
+                }
+                e.Handled = true;
+            }
+            else if (e.Data.GetData(typeof(SceneType).FullName) is SceneType sceneType)
+            {
+                Point logicalDropPosition = PointToLogical(dropPositionOnCanvas); 
                 SceneDroppedOnCanvas?.Invoke(sceneType, logicalDropPosition);
                 e.Handled = true;
             }
+        }
+
+        private Scene? FindSceneAtCanvasPoint(Point canvasPoint)
+        {
+            foreach (var markerEntry in _sceneMarkers.Reverse())
+            {
+                FrameworkElement marker = markerEntry.Value;
+                if (marker.IsVisible)
+                {
+                    try
+                    {
+                        GeneralTransform transform = marker.TransformToAncestor(MapCanvas);
+                        Rect markerBounds = transform.TransformBounds(new Rect(new Point(0, 0), marker.RenderSize));
+
+                        if (markerBounds.Contains(canvasPoint))
+                        {
+                            int sceneId = markerEntry.Key;
+                            return Scenes?.FirstOrDefault(s => s.Id == sceneId);
+                        }
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        Debug.WriteLine($"[FindSceneAtCanvasPoint] Error transforming marker bounds for scene ID {markerEntry.Key}: {ex.Message}");
+                    }
+                }
+            }
+            return null;
         }
 
         private static string GetSceneImagePath(Scene scene)

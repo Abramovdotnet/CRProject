@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Редактировать Сцену" Height="300" Width="400"
+        Title="Редактировать Сцену" Height="350" Width="400"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BackgroundBrush}" 
         Foreground="{StaticResource ForegroundBrush}"
@@ -13,18 +13,30 @@
     <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Text="Имя Сцены:" Margin="0,0,0,5"/>
-        <TextBox x:Name="SceneNameTextBox" Grid.Row="0" Margin="0,20,0,10" />
+        <TextBlock Text="ID Сцены:" Grid.Row="0" Margin="0,0,0,5" VerticalAlignment="Center"/>
+        <TextBox x:Name="SceneIdTextBox" Grid.Row="1" Margin="0,0,0,10" />
 
-        <TextBlock Text="Описание Сцены:" Grid.Row="1" Margin="0,0,0,5"/>
-        <TextBox x:Name="SceneDescriptionTextBox" Grid.Row="1" Margin="0,20,0,10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" MinHeight="80"/>
+        <TextBlock Text="Имя Сцены:" Grid.Row="2" Margin="0,5,0,5" VerticalAlignment="Center"/>
+        <Grid Grid.Row="3" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox x:Name="SceneNameTextBox" Grid.Column="0" />
+            <Button x:Name="GenerateNameButton" Content="Сгенерировать" Grid.Column="1" Margin="5,0,0,0" Click="GenerateNameButton_Click" Padding="5,2"/>
+        </Grid>
 
-        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+        <TextBlock Text="Описание Сцены:" Grid.Row="4" Margin="0,5,0,5"/>
+        <TextBox x:Name="SceneDescriptionTextBox" Grid.Row="4" Margin="0,25,0,10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" MinHeight="80"/>
+
+        <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
             <Button x:Name="SaveButton" Content="Сохранить" Width="100" Margin="0,0,10,0" Click="SaveButton_Click" />
             <Button x:Name="CancelButton" Content="Отмена" Width="100" IsCancel="True" Click="CancelButton_Click" />
         </StackPanel>
