@@ -337,6 +337,10 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
 
     private var backButton: UIButton! // <<< New back button
 
+    // Флаг для предотвращения повторной инициализации zoom/позиции
+    private var isInitialMapSetupDone: Bool = false
+    private var didCenterOnInitialScene = false
+
     // Initializer to accept MainSceneViewModel
     init(mainViewModel: MainSceneViewModel) {
         self.mainViewModel = mainViewModel
@@ -464,22 +468,25 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
                 // КОНЕЦ БЛОКА ВОССТАНОВЛЕНИЯ
 
                 // Установка zoomScale (эта логика была в конце viewDidLoad)
-                if self.scrollView.contentSize.width > 0 && self.scrollView.contentSize.height > 0 {
-                    let sBounds = self.scrollView.bounds
-                    let cSize = self.scrollView.contentSize
-                    let scaleWidth = sBounds.width / cSize.width
-                    let scaleHeight = sBounds.height / cSize.height
-                    var minScaleToFitContent = min(scaleWidth, scaleHeight)
-                    minScaleToFitContent = max(minScaleToFitContent, 0.2) 
+                if !self.isInitialMapSetupDone {
+                    if self.scrollView.contentSize.width > 0 && self.scrollView.contentSize.height > 0 {
+                        let sBounds = self.scrollView.bounds
+                        let cSize = self.scrollView.contentSize
+                        let scaleWidth = sBounds.width / cSize.width
+                        let scaleHeight = sBounds.height / cSize.height
+                        var minScaleToFitContent = min(scaleWidth, scaleHeight)
+                        minScaleToFitContent = max(minScaleToFitContent, 0.2)
 
-                    self.scrollView.minimumZoomScale = minScaleToFitContent * 0.5 
-                    let baseInitialZoom = max(minScaleToFitContent, self.scrollView.minimumZoomScale)
-                    var desiredInitialZoom = baseInitialZoom * 2 // Используем значение пользователя
-                    desiredInitialZoom = min(desiredInitialZoom, self.scrollView.maximumZoomScale)
-                    desiredInitialZoom = max(desiredInitialZoom, self.scrollView.minimumZoomScale)
-                    self.scrollView.zoomScale = desiredInitialZoom 
-                } else {
-                    print("[WorldMapView] viewDidLoad (async completion): scrollView.contentSize is zero, cannot set zoom scale.") 
+                        self.scrollView.minimumZoomScale = minScaleToFitContent * 0.5
+                        let baseInitialZoom = max(minScaleToFitContent, self.scrollView.minimumZoomScale)
+                        var desiredInitialZoom = baseInitialZoom * 2 // Используем значение пользователя
+                        desiredInitialZoom = min(desiredInitialZoom, self.scrollView.maximumZoomScale)
+                        desiredInitialZoom = max(desiredInitialZoom, self.scrollView.minimumZoomScale)
+                        self.scrollView.zoomScale = desiredInitialZoom
+                    } else {
+                        print("[WorldMapView] viewDidLoad (async completion): scrollView.contentSize is zero, cannot set zoom scale.")
+                    }
+                    self.isInitialMapSetupDone = true
                 }
                 
                 // Анимация плавного появления контента
@@ -488,6 +495,13 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
                     self.markerRenderingView.alpha = 1.0
                 }, completion: nil)
                 // --- Конец операций в главном потоке ---
+
+                // Центрируем карту на текущей сцене при первом открытии
+                if let initialSceneId = GameStateService.shared.currentScene?.id {
+                    DispatchQueue.main.async {
+                        self.centerCameraOnScene(withId: initialSceneId, animated: false)
+                    }
+                }
             }
         }
     }
@@ -517,6 +531,14 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
         // 2. dustEffectView (над backgroundImageView)
         // 3. scrollView (над dustEffectView - добавляется позже в viewDidLoad)
         // 4. topWidget (над scrollView - добавляется еще позже в viewDidLoad)
+
+        if !didCenterOnInitialScene,
+           markerRenderingView != nil,
+           zoomableViewContainer != nil,
+           let initialSceneId = GameStateService.shared.currentScene?.id {
+            centerCameraOnScene(withId: initialSceneId, animated: false)
+            didCenterOnInitialScene = true
+        }
     }
 
     private func setupBackgroundImage() {
@@ -909,6 +931,10 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
                             self.markerRenderingView.setNeedsDisplay(frameToRedraw)
                         }
 
+                        // Центрируем камеру на новой сцене асинхронно, чтобы дождаться layout
+                        DispatchQueue.main.async {
+                            self.centerCameraOnScene(withId: sceneIdToMoveTo, animated: true)
+                        }
                     } else {
                         // Если данные о новой сцене не найдены (маловероятно, если смена локации прошла успешно)
                         self.currentLocationNameLabel.text = "N/A"
@@ -945,6 +971,30 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
         // mrView.addSubview(linesView)
         // mrView.sendSubviewToBack(linesView)
         // mrView.linesView = linesView 
+    }
+
+    // MARK: - Центрирование камеры на сцене
+    private func centerCameraOnScene(withId sceneId: Int, animated: Bool = true) {
+        guard let markerRenderingView = markerRenderingView,
+              let zoomableViewContainer = zoomableViewContainer,
+              let markerData = markerDrawDataList.first(where: { $0.scene.id == sceneId }) else { return }
+        let markerRectInContainer = markerRenderingView.convert(markerData.frame, to: zoomableViewContainer)
+        let markerCenter = CGPoint(x: markerRectInContainer.midX, y: markerRectInContainer.midY)
+        let zoom = scrollView.zoomScale
+        let visibleSize = scrollView.bounds.size
+        let contentSize = scrollView.contentSize
+
+        var targetOffset = CGPoint(
+            x: markerCenter.x * zoom - visibleSize.width / 2,
+            y: markerCenter.y * zoom - visibleSize.height / 2
+        )
+        let maxOffsetX = contentSize.width - visibleSize.width
+        let maxOffsetY = contentSize.height - visibleSize.height
+        targetOffset.x = max(0, min(targetOffset.x, maxOffsetX))
+        targetOffset.y = max(0, min(targetOffset.y, maxOffsetY))
+
+        print("[DEBUG] Centering on scene \(sceneId): markerCenter=\(markerCenter), zoom=\(zoom), visibleSize=\(visibleSize), targetOffset=\(targetOffset), contentSize=\(contentSize)")
+        scrollView.setContentOffset(targetOffset, animated: animated)
     }
 }
 
