@@ -26,8 +26,6 @@ class GameStateService : ObservableObject, GameService{
     //private var npcPopulationService: NPCPopulationService!
     private var npcManager = NPCInteractionManager.shared
     
-    private var locationSwitches: Int = 0
-    
     init(gameTime: GameTimeService,
          vampireNatureRevealService: VampireNatureRevealService,
          gameEventsBus: GameEventsBusService = DependencyManager.shared.resolve(),
@@ -151,13 +149,7 @@ class GameStateService : ObservableObject, GameService{
             
             npcManager.selectedNPC = nil
             
-            // Advance time when changing location
-            if locationSwitches / 2 == 1 {
-                gameTime.advanceTime()
-                locationSwitches = 0
-            } else {
-                locationSwitches += 1
-            }
+            gameTime.advanceTime()
         } else {
             DebugLogService.shared.log("Cannot travel to locked location", category: "Location")
             gameEventsBus.addDangerMessage(message: "*I cannot move to this location*")

@@ -14,8 +14,6 @@ struct WorldMapViewRepresentable: UIViewControllerRepresentable {
     }
 
     func updateUIViewController(_ uiViewController: WorldMapViewController, context: Context) {
-        // Вызываем перецентрирование при обновлении currentScene
-        print("[WorldMapViewRepresentable] updateUIViewController called. Current scene ID: \(gameStateService.currentScene?.id ?? -1)")
-        uiViewController.centerMapOn(sceneId: gameStateService.currentScene?.id, animated: true)
+        
     }
 } 
