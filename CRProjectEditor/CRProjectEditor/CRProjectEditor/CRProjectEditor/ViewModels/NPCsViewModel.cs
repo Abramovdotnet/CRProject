@@ -12,13 +12,23 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows.Data; // Required for CollectionViewSource if we were to use it
+using CRProjectEditor.Views; // Для NpcEditView
+using Microsoft.Win32; // Для OpenFileDialog
 
 namespace CRProjectEditor.ViewModels
 {
+    public enum AssetFilterOption
+    {
+        Any,
+        HasAssets,
+        NoAssets
+    }
+
     public partial class NPCsViewModel : ObservableObject
     {
         private readonly INotificationService _notificationService;
         private List<NpcModel> _allNpcs = new List<NpcModel>();
+        private static string? _assetImageContentTemplateCache; // Кэш для шаблона JSON
 
         public string ViewModelDisplayName => "NPCs";
 
@@ -51,10 +61,17 @@ namespace CRProjectEditor.ViewModels
         partial void OnFilterMotivationChanged(string? value) => ApplyFilters();
 
         [ObservableProperty]
+        private AssetFilterOption _filterHasAssets = AssetFilterOption.Any;
+        partial void OnFilterHasAssetsChanged(AssetFilterOption value) => ApplyFilters();
+
+        [ObservableProperty]
         private NpcModel? _selectedNpc;
         partial void OnSelectedNpcChanged(NpcModel? value)
         {
             OnPropertyChanged(nameof(SelectedNpcImagePath));
+            EditNpcCommand.NotifyCanExecuteChanged();
+            AddOrReplaceAssetCommand.NotifyCanExecuteChanged();
+            DeleteAssetCommand.NotifyCanExecuteChanged();
         }
 
         public string? SelectedNpcImagePath => SelectedNpc?.ImagePath;
@@ -73,13 +90,20 @@ namespace CRProjectEditor.ViewModels
 
         public IAsyncRelayCommand LoadNpcsCommand { get; }
         public IRelayCommand ClearFiltersCommand { get; }
+        public IAsyncRelayCommand EditNpcCommand { get; }
+        public IAsyncRelayCommand AddOrReplaceAssetCommand { get; }
+        public IAsyncRelayCommand DeleteAssetCommand { get; }
 
         public NPCsViewModel(INotificationService notificationService)
         {
             _notificationService = notificationService;
             LoadNpcsCommand = new AsyncRelayCommand(LoadNpcsAsync);
             ClearFiltersCommand = new RelayCommand(ClearFilters);
-            _ = LoadNpcsAsync(); 
+            EditNpcCommand = new AsyncRelayCommand(OpenEditNpcWindowAsync, CanEditNpc);
+            AddOrReplaceAssetCommand = new AsyncRelayCommand(AddOrReplaceAssetAsync, CanManageAsset);
+            DeleteAssetCommand = new AsyncRelayCommand(DeleteAssetAsync, CanDeleteAsset);
+            _ = LoadNpcsAsync();
+            _ = LoadAssetTemplateAsync(); // Загружаем шаблон при инициализации
         }
 
         private void InitializeFilterCollections()
@@ -111,10 +135,10 @@ namespace CRProjectEditor.ViewModels
             FilterName = string.Empty;
             FilterSex = AnySex;
             FilterProfession = AnyProfession;
-            FilterIsVampireNullable = null; // null for three-state CheckBox means "indeterminate" or "any"
+            FilterIsVampireNullable = null;
             FilterMorality = AnyMorality;
             FilterMotivation = AnyMotivation;
-            // ApplyFilters(); // This will be called by the property setters
+            FilterHasAssets = AssetFilterOption.Any;
         }
 
         private async Task LoadNpcsAsync()
@@ -213,6 +237,15 @@ namespace CRProjectEditor.ViewModels
                  view = view.Where(npc => string.Equals(npc.Motivation, FilterMotivation, StringComparison.OrdinalIgnoreCase));
             }
 
+            if (FilterHasAssets == AssetFilterOption.HasAssets)
+            {
+                view = view.Where(npc => npc.HasAssets);
+            }
+            else if (FilterHasAssets == AssetFilterOption.NoAssets)
+            {
+                view = view.Where(npc => !npc.HasAssets);
+            }
+
             foreach (var npc in view.OrderBy(n => n.Name))
             {
                 FilteredNpcs.Add(npc);
@@ -220,6 +253,252 @@ namespace CRProjectEditor.ViewModels
             
             // Update status if needed, but can be verbose
             // _notificationService.UpdateStatus($"Отображается {FilteredNpcs.Count} из {_allNpcs.Count} NPC.");
+        }
+
+        private bool CanEditNpc()
+        {
+            return SelectedNpc != null;
+        }
+
+        private async Task OpenEditNpcWindowAsync()
+        {
+            if (SelectedNpc == null) return;
+
+            var npcToEditCopy = SelectedNpc; // NpcEditViewModel создаст свою копию
+
+            var editViewModel = new NpcEditViewModel(
+                npcToEditCopy, 
+                this.AvailableSexes, 
+                this.AvailableProfessions, 
+                this.AvailableMoralities, 
+                this.AvailableMotivations
+            );
+            
+            var editView = new NpcEditView
+            {
+                DataContext = editViewModel,
+                Owner = System.Windows.Application.Current.MainWindow // Устанавливаем владельца для модального окна
+            };
+
+            // Настройка CloseAction для ViewModel
+            editViewModel.CloseAction = (dialogResult) =>
+            {
+                editView.DialogResult = dialogResult;
+                editView.Close();
+            };
+
+            bool? result = editView.ShowDialog();
+
+            if (result == true)
+            {
+                // Пользователь сохранил изменения. Обновляем оригинальный NPC.
+                var originalNpc = _allNpcs.FirstOrDefault(n => n.Id == editViewModel.EditingNpc.Id);
+                if (originalNpc != null)
+                {
+                    originalNpc.Name = editViewModel.EditingNpc.Name;
+                    originalNpc.Sex = editViewModel.EditingNpc.Sex;
+                    originalNpc.Age = editViewModel.EditingNpc.Age;
+                    originalNpc.Profession = editViewModel.EditingNpc.Profession;
+                    originalNpc.HomeLocationId = editViewModel.EditingNpc.HomeLocationId;
+                    originalNpc.IsVampire = editViewModel.EditingNpc.IsVampire;
+                    originalNpc.Morality = editViewModel.EditingNpc.Morality;
+                    originalNpc.Motivation = editViewModel.EditingNpc.Motivation;
+                    originalNpc.Background = editViewModel.EditingNpc.Background;
+                    // Важно: ImagePath и HasAssets пересчитаются автоматически в NpcModel
+                    // Также нужно обновить свойства, если NpcModel не уведомляет об изменениях сам (но он ObservableObject)
+                    // Для обновления DataGrid, если он не среагировал, можно попробовать обновить элемент в FilteredNpcs
+                    // или просто вызвать ApplyFilters()
+                }
+
+                await SaveAllNpcsToJsonAsync();
+                ApplyFilters(); // Переприменяем фильтры, чтобы обновить отображаемый список
+                _notificationService.ShowToast("NPC успешно обновлен.", ToastType.Success);
+            }
+        }
+
+        private async Task SaveAllNpcsToJsonAsync()
+        {
+            _notificationService.UpdateStatus("Сохранение NPC...");
+            try
+            {
+                var options = new JsonSerializerOptions
+                {
+                    WriteIndented = true,
+                    PropertyNameCaseInsensitive = true,
+                    AllowTrailingCommas = true, // Хотя это больше для чтения, но пусть будет
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping // Для корректного сохранения кириллицы
+                };
+                string jsonString = JsonSerializer.Serialize(_allNpcs, options);
+                await File.WriteAllTextAsync(Constants.NPCSPath, jsonString);
+                _notificationService.UpdateStatus("Список NPC сохранен.");
+                 _notificationService.ShowToast("Данные NPC сохранены в файл.", ToastType.Success);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[NPCsViewModel] Ошибка при сохранении NPC в JSON: {ex.Message}");
+                _notificationService.ShowToast($"Ошибка при сохранении NPC: {ex.Message}", ToastType.Error);
+                _notificationService.UpdateStatus("Ошибка сохранения NPC.");
+            }
+        }
+
+        private bool CanManageAsset()
+        {
+            return SelectedNpc != null;
+        }
+
+        private bool CanDeleteAsset()
+        {
+            return SelectedNpc != null && SelectedNpc.HasAssets;
+        }
+
+        private static async Task LoadAssetTemplateAsync()
+        {
+            if (_assetImageContentTemplateCache == null)
+            {
+                try
+                {
+                    // Путь к файлу шаблона (убедитесь, что он правильный и файл включен в проект/выходную директорию)
+                    string templateFilePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Content", "AssetImageContent.json");
+                    if (File.Exists(templateFilePath))
+                    {
+                        _assetImageContentTemplateCache = await File.ReadAllTextAsync(templateFilePath);
+                    }
+                    else
+                    {
+                        Debug.WriteLine($"[NPCsViewModel] Файл шаблона ассета не найден: {templateFilePath}");
+                        // Можно показать уведомление пользователю или использовать строку по умолчанию
+                        _assetImageContentTemplateCache = "{\"images\":[{\"filename\":\"{filename}\",\"idiom\":\"universal\",\"scale\":\"1x\"},{\"idiom\":\"universal\",\"scale\":\"2x\"},{\"idiom\":\"universal\",\"scale\":\"3x\"}],\"info\":{\"author\":\"xcode\",\"version\":1}}";
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[NPCsViewModel] Ошибка загрузки шаблона ассета: {ex.Message}");
+                    // Запасной вариант, если чтение файла не удалось
+                     _assetImageContentTemplateCache = "{\"images\":[{\"filename\":\"{filename}\",\"idiom\":\"universal\",\"scale\":\"1x\"},{\"idiom\":\"universal\",\"scale\":\"2x\"},{\"idiom\":\"universal\",\"scale\":\"3x\"}],\"info\":{\"author\":\"xcode\",\"version\":1}}";
+                }
+            }
+        }
+
+        private async Task AddOrReplaceAssetAsync()
+        {
+            if (SelectedNpc == null) return;
+
+            var openFileDialog = new OpenFileDialog
+            {
+                Filter = "PNG Images (*.png)|*.png",
+                Title = "Выберите PNG для ассета NPC"
+            };
+
+            if (openFileDialog.ShowDialog() == true)
+            {
+                string selectedFilePath = openFileDialog.FileName;
+                _notificationService.UpdateStatus("Обработка ассета...");
+                try
+                {
+                    string npcId = SelectedNpc.Id.ToString();
+                    string imageSetFolderName = $"npc{npcId}.imageset";
+                    string expectedImageFileName = $"npc{npcId}.png";
+
+                    string npcAssetSetPath = Path.Combine(Constants.NPCSAssetsFolderPath, imageSetFolderName);
+                    Directory.CreateDirectory(npcAssetSetPath); // Создаст, если не существует
+
+                    string destinationImagePath = Path.Combine(npcAssetSetPath, expectedImageFileName);
+                    File.Copy(selectedFilePath, destinationImagePath, true); // true для перезаписи
+
+                    // Создание/обновление Contents.json
+                    if (_assetImageContentTemplateCache == null)
+                    {
+                        await LoadAssetTemplateAsync(); // Убедимся, что шаблон загружен
+                        if (_assetImageContentTemplateCache == null) { 
+                             _notificationService.ShowToast("Ошибка: Шаблон для Contents.json не загружен.", ToastType.Error);
+                             return;
+                        }
+                    }
+                    
+                    string rawContentsJsonString = _assetImageContentTemplateCache.Replace("{filename}", expectedImageFileName);
+                    
+                    // Парсинг и повторная сериализация для форматирования
+                    string formattedContentsJson;
+                    try
+                    {
+                        using (JsonDocument jsonDoc = JsonDocument.Parse(rawContentsJsonString))
+                        {
+                            var options = new JsonSerializerOptions
+                            {
+                                WriteIndented = true,
+                                // Encoder можно добавить, если в шаблоне есть не-ASCII символы, которые нужно сохранить как есть
+                                // Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping 
+                            };
+                            formattedContentsJson = JsonSerializer.Serialize(jsonDoc.RootElement, options);
+                        }
+                    }
+                    catch (JsonException ex)
+                    {
+                        Debug.WriteLine($"[NPCsViewModel] Ошибка парсинга JSON для форматирования Contents.json: {ex.Message}. Используется исходная строка.");
+                        formattedContentsJson = rawContentsJsonString; // В случае ошибки парсинга, записываем как есть
+                    }
+
+                    string contentsJsonPath = Path.Combine(npcAssetSetPath, "Contents.json");
+                    await File.WriteAllTextAsync(contentsJsonPath, formattedContentsJson);
+                    
+                    SelectedNpc.RefreshAssetProperties();
+                    OnPropertyChanged(nameof(SelectedNpcImagePath)); // Обновляем путь к картинке в UI
+                    DeleteAssetCommand.NotifyCanExecuteChanged(); // Может повлиять на доступность кнопки удаления
+                    AddOrReplaceAssetCommand.NotifyCanExecuteChanged(); // Может повлиять на текст кнопки (если будем менять)
+
+                    _notificationService.ShowToast("Ассет NPC успешно добавлен/заменен.", ToastType.Success);
+                    _notificationService.UpdateStatus("Ассет NPC обновлен.");
+                }
+                catch (Exception ex)
+                {
+                    Debug.WriteLine($"[NPCsViewModel] Ошибка при добавлении/замене ассета: {ex.Message}");
+                    _notificationService.ShowToast($"Ошибка при обработке ассета: {ex.Message}", ToastType.Error);
+                    _notificationService.UpdateStatus("Ошибка обработки ассета.");
+                }
+            }
+        }
+
+        private async Task DeleteAssetAsync()
+        {
+            if (SelectedNpc == null || !SelectedNpc.HasAssets) return;
+            
+            // Попросим подтверждение у пользователя
+            // Для этого лучше использовать специализированный сервис диалогов, но пока используем простой MessageBox
+            var messageBoxResult = System.Windows.MessageBox.Show($"Вы уверены, что хотите удалить ассет для NPC {SelectedNpc.Name} (ID: {SelectedNpc.Id})? Это действие необратимо.",
+                                                              "Подтверждение удаления ассета", 
+                                                              System.Windows.MessageBoxButton.YesNo, 
+                                                              System.Windows.MessageBoxImage.Warning);
+            if (messageBoxResult == System.Windows.MessageBoxResult.No)
+            {
+                return;
+            }
+
+            _notificationService.UpdateStatus("Удаление ассета...");
+            try
+            {
+                string npcId = SelectedNpc.Id.ToString();
+                string imageSetFolderName = $"npc{npcId}.imageset";
+                string npcAssetSetPath = Path.Combine(Constants.NPCSAssetsFolderPath, imageSetFolderName);
+
+                if (Directory.Exists(npcAssetSetPath))
+                {
+                    Directory.Delete(npcAssetSetPath, true); // true для рекурсивного удаления
+                }
+                
+                SelectedNpc.RefreshAssetProperties();
+                OnPropertyChanged(nameof(SelectedNpcImagePath)); // Обновляем UI
+                DeleteAssetCommand.NotifyCanExecuteChanged();
+                AddOrReplaceAssetCommand.NotifyCanExecuteChanged();
+
+                _notificationService.ShowToast("Ассет NPC успешно удален.", ToastType.Success);
+                _notificationService.UpdateStatus("Ассет NPC удален.");
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[NPCsViewModel] Ошибка при удалении ассета: {ex.Message}");
+                _notificationService.ShowToast($"Ошибка при удалении ассета: {ex.Message}", ToastType.Error);
+                _notificationService.UpdateStatus("Ошибка удаления ассета.");
+            }
         }
     }
 } 

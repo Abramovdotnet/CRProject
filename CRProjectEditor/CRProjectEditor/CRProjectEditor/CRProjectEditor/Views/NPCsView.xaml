@@ -6,9 +6,30 @@
              xmlns:local="clr-namespace:CRProjectEditor.Views"
              xmlns:viewModels="clr-namespace:CRProjectEditor.ViewModels"
              xmlns:models="clr-namespace:CRProjectEditor.Models"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+             xmlns:converters="clr-namespace:CRProjectEditor.Converters" 
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors" 
              mc:Ignorable="d" 
-             d:DataContext="{d:DesignInstance Type=viewModels:NPCsViewModel, IsDesignTimeCreatable=True}"
+             d:DataContext="{d:DesignInstance Type=viewModels:NPCsViewModel, IsDesignTimeCreatable=False}"
              d:DesignHeight="600" d:DesignWidth="1000">
+    <UserControl.Resources>
+        <ObjectDataProvider x:Key="AssetFilterOptionsProvider"
+                            ObjectType="{x:Type sys:Enum}"
+                            MethodName="GetValues">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="viewModels:AssetFilterOption"/>
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+        <converters:NullToBooleanConverter x:Key="NullToBooleanConverter"/>
+        <Style TargetType="DataGridRow">
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#337AB7"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="Auto" MinWidth="450" MaxWidth="600"/>
@@ -43,6 +64,11 @@
                               SelectedItem="{Binding FilterMotivation}" Margin="0,0,0,10">
                     </ComboBox>
 
+                    <TextBlock Text="Ассеты:" Foreground="{StaticResource ForegroundBrush}"/>
+                    <ComboBox ItemsSource="{Binding Source={StaticResource AssetFilterOptionsProvider}}"
+                              SelectedItem="{Binding FilterHasAssets}" Margin="0,0,0,10">
+                    </ComboBox>
+
                     <CheckBox IsChecked="{Binding FilterIsVampireNullable, Mode=TwoWay}" Content="Вампир?" IsThreeState="True" Margin="0,5,0,10" Foreground="{StaticResource ForegroundBrush}"/>
                     
                     <Button Content="Очистить фильтры" Command="{Binding ClearFiltersCommand}" Margin="0,10,0,10"/>
@@ -55,11 +81,21 @@
                               Visibility="{Binding SelectedNpc, Converter={StaticResource NullToVisibilityConverter}}">
                         <StackPanel>
                             <Image Source="{Binding SelectedNpcImagePath, Converter={StaticResource ImagePathToImageSourceConverter}}"
-                                   Height="400"
+                                   Height="200"
                                    Stretch="Uniform"
                                    Margin="0,0,0,10"
                                    HorizontalAlignment="Center"
                                    Visibility="{Binding SelectedNpcImagePath, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,0,0,10">
+                                <Button Content="Добавить/Заменить ассет" 
+                                        Command="{Binding AddOrReplaceAssetCommand}" 
+                                        IsEnabled="{Binding SelectedNpc, Converter={StaticResource NullToBooleanConverter}}" 
+                                        Margin="0,0,5,0" Padding="10,5"/>
+                                <Button Content="Удалить ассет" 
+                                        Command="{Binding DeleteAssetCommand}" 
+                                        IsEnabled="{Binding SelectedNpc.HasAssets}" Padding="10,5"/>
+                            </StackPanel>
 
                             <TextBlock Margin="0,0,0,3">
                                 <Run Text="ID: " FontWeight="SemiBold"/>
@@ -88,7 +124,7 @@
             </ScrollViewer>
         </Border>
 
-        <DataGrid Grid.Column="1" ItemsSource="{Binding FilteredNpcs}" 
+        <DataGrid x:Name="NpcsDataGrid" Grid.Column="1" ItemsSource="{Binding FilteredNpcs}" 
                   SelectedItem="{Binding SelectedNpc, Mode=TwoWay}"
                   AutoGenerateColumns="True"
                   CanUserAddRows="False"
@@ -96,7 +132,8 @@
                   IsReadOnly="True" 
                   SelectionMode="Single"
                   BorderBrush="{StaticResource ControlBorderBrush}"
-                  BorderThickness="1,0,0,0">
+                  BorderThickness="1,0,0,0"
+                  MouseDoubleClick="NpcsDataGrid_MouseDoubleClick">
         </DataGrid>
     </Grid>
 </UserControl> 

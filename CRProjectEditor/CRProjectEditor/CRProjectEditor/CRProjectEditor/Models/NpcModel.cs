@@ -58,5 +58,14 @@ namespace CRProjectEditor.Models
                 }
             }
         }
+
+        [JsonIgnore]
+        public bool HasAssets => !string.IsNullOrEmpty(ImagePath);
+
+        public void RefreshAssetProperties()
+        {
+            OnPropertyChanged(nameof(ImagePath));
+            OnPropertyChanged(nameof(HasAssets));
+        }
     }
 } 
