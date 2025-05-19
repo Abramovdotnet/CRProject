@@ -56,7 +56,12 @@ namespace CRProjectEditor.Views
                     };
                     InteractiveMap.SceneEditRequested += async (sceneToEdit) =>
                     {
-                        if (_viewModel != null) await _viewModel.HandleSceneEditRequestAsync(sceneToEdit);
+                        if (_viewModel != null)
+                        {
+                            await _viewModel.HandleSceneEditRequestAsync(sceneToEdit);
+                            InteractiveMap.Scenes = null;
+                            InteractiveMap.Scenes = _viewModel.Scenes;
+                        }
                     };
                     InteractiveMap.AssetDroppedOnScene += async (targetScene, assetInfo) =>
                     {

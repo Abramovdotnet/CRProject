@@ -13,7 +13,7 @@
 
         <Canvas x:Name="MapCanvas"
                 AllowDrop="True"
-                Background="Green"
+                Background="Transparent"
                 HorizontalAlignment="Stretch"
                 VerticalAlignment="Stretch"
                 Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"

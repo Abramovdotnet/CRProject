@@ -101,7 +101,7 @@ namespace CRProjectEditor.Views
         public void SelectScene(Scene scene)
         {
             SelectedScene = scene;
-            SmoothlyCenterOnScene(scene); // Added call for smooth centering
+            //SmoothlyCenterOnScene(scene); // Added call for smooth centering
         }
 
         // Helper to get color for scene type
@@ -477,7 +477,7 @@ namespace CRProjectEditor.Views
                 // 2. Create TextBlocks
                 var idTextBlock = new TextBlock
                 {
-                    Text = $"ID: {scene.Id.ToString()}",
+                    Text = $"ID: {scene.Id}",
                     FontSize = 6,
                     FontWeight = FontWeights.Normal,
                     Foreground = Brushes.WhiteSmoke,
@@ -835,17 +835,17 @@ namespace CRProjectEditor.Views
                 e.Handled = true; 
                 return; 
             }
-            else if (!_isDrawingConnectionMode && !_isDraggingMarker) 
+            else if (!_isDrawingConnectionMode && !_isDraggingMarker)
             {
                 // --- Start Marker Drag (existing logic) ---
                 _draggedMarker = marker;
                 _draggedScene = scene;
-                _markerDragStartOffset = e.GetPosition(marker); 
+                _markerDragStartOffset = e.GetPosition(marker);
                 _isDraggingMarker = true;
-                _draggedMarker.CaptureMouse(); 
-                Panel.SetZIndex(_draggedMarker, 100); 
+                _draggedMarker.CaptureMouse();
+                Panel.SetZIndex(_draggedMarker, 100);
                 this.Cursor = Cursors.Hand;
-                e.Handled = true; 
+                e.Handled = true;
             }
         }
 

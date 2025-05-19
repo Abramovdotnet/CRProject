@@ -138,7 +138,7 @@ namespace CRProjectEditor.ViewModels
         public IAsyncRelayCommand DeleteAllConnectionsCommand { get; }
         public IAsyncRelayCommand DeleteSelectedSceneCommand { get; }
 
-        public ICommand EditSceneFromGridCommand { get; }
+        public IAsyncRelayCommand<Scene> EditSceneFromGridCommand { get; }
 
         public ObservableCollection<SceneType> AvailableSceneTypesForDrag { get; }
 
@@ -212,7 +212,7 @@ namespace CRProjectEditor.ViewModels
             CreateAssetCommand = new AsyncRelayCommand(CreateAssetAsync);
             DeleteAssetCommand = new AsyncRelayCommand(DeleteAssetAsync, CanDeleteAsset);
 
-            EditSceneFromGridCommand = new RelayCommand<Scene>(ExecuteEditSceneFromGrid);
+            EditSceneFromGridCommand = new AsyncRelayCommand<Scene>(ExecuteEditSceneFromGrid);
 
             _ = LoadScenesAsync(); 
             _ = LoadAssetImagesAsync(); // Load assets
@@ -1252,23 +1252,24 @@ namespace CRProjectEditor.ViewModels
         {
             string defaultName = $"New {sceneType.ToString()}";
             string defaultDescription = "A newly created scene.";
-            int placeholderIdForNewScene = 0; 
-
-            // Call the name generator for an initial suggestion, or use default if it fails
             defaultName = GenerateUniqueLocationName(sceneType, defaultName);
 
-            var editWindow = new EditSceneDetailsWindow(placeholderIdForNewScene, defaultName, defaultDescription, 
-                                                    sceneType, GenerateUniqueLocationName) // Pass the method
+            var tempSceneForDialog = EditSceneDetailsWindow.CreateDefaultScene(-1, defaultName, defaultDescription, sceneType);
+            tempSceneForDialog.X = (int)Math.Round(x);
+            tempSceneForDialog.Y = (int)Math.Round(y);
+
+            // Pass _allNpcs to the EditSceneDetailsWindow constructor, which will pass it to the ViewModel
+            var editWindow = new EditSceneDetailsWindow(tempSceneForDialog, _allNpcs, GenerateUniqueLocationName, true, _notificationService) 
             {
-                Title = "Создать Новую Сцену", 
+                Title = "Создать Новую Сцену",
                 Owner = Application.Current.MainWindow
             };
 
             if (editWindow.ShowDialog() == true)
             {
-                string sceneName = editWindow.SceneName;
-                string sceneDescription = editWindow.SceneDescription;
-
+                // If saved, tempSceneForDialog now holds the data entered by the user (via its ViewModel)
+                // Its ID might still be the placeholder, or the user might have edited it if IsIdEditable was true.
+                // We should assign a new unique ID here, ignoring whatever ID might be in tempSceneForDialog.Id for safety for new scenes.
                 int newId = 0;
                 if (Scenes.Any())
                 {
@@ -1277,23 +1278,24 @@ namespace CRProjectEditor.ViewModels
 
                 var newScene = new Scene
                 {
-                    Id = newId,
-                    Name = sceneName, 
-                    SceneType = sceneType,
-                    Description = sceneDescription, 
-                    X = (int)Math.Round(x),
-                    Y = (int)Math.Round(y),
-                    Connections = new List<SceneConnection>(),
-                    IsIndoor = false, 
-                    ParentSceneId = 0, 
-                    HubSceneIds = new List<int>(), 
-                    Population = 0, 
-                    Radius = 10 
+                    Id = newId, // Assign a new, unique ID
+                    Name = tempSceneForDialog.Name, 
+                    SceneType = tempSceneForDialog.SceneType,
+                    Description = tempSceneForDialog.Description, 
+                    X = tempSceneForDialog.X, // Use X, Y set before dialog
+                    Y = tempSceneForDialog.Y,
+                    IsIndoor = tempSceneForDialog.IsIndoor,
+                    ParentSceneId = tempSceneForDialog.ParentSceneId, // User might have set this
+                    Population = tempSceneForDialog.Population,
+                    Radius = tempSceneForDialog.Radius,
+                    Connections = new List<SceneConnection>(), // New scenes start with no connections
+                    HubSceneIds = new List<int>() // New scenes start with no hub IDs
                 };
 
                 Scenes.Add(newScene);
                 await SaveCurrentMapLayoutSilentlyAsync(); 
-                await LoadScenesAsync(); 
+                await LoadScenesAsync(); // Refresh to ensure consistency
+                _notificationService.ShowToast("Новая сцена создана успешно.", ToastType.Success);
             }
             else
             {
@@ -1312,73 +1314,213 @@ namespace CRProjectEditor.ViewModels
                 return;
             }
 
-            var editWindow = new EditSceneDetailsWindow(sceneInCollection.Id, sceneInCollection.Name, sceneInCollection.Description, 
-                                                    sceneInCollection.SceneType, GenerateUniqueLocationName) // Pass SceneType and method
+            // Pass _allNpcs to the EditSceneDetailsWindow constructor
+            var editWindow = new EditSceneDetailsWindow(sceneInCollection, _allNpcs, GenerateUniqueLocationName, true, _notificationService)
             {
-                Owner = Application.Current.MainWindow
+                Owner = Application.Current.MainWindow,
             };
 
             if (editWindow.ShowDialog() == true)
             {
-                string newIdString = editWindow.SceneIdString;
-                string newName = editWindow.SceneName;
-                string newDescription = editWindow.SceneDescription;
-                bool changed = false;
-                int originalId = sceneInCollection.Id;
-                int newNumericId = originalId;
+                // sceneInCollection is already updated by EditSceneDetailsViewModel's SaveCommand
+                // because it holds a reference to the same object.
 
-                if (newIdString != originalId.ToString())
+                // The ID change logic is complex because it affects connections.
+                // The ViewModel updates sceneInCollection.Id. We need to check if it actually changed
+                // and if the new ID is valid and unique (excluding the current scene before potential change).
+                // The EditSceneDetailsViewModel doesn't have the context of all other scenes for uniqueness validation during ID edit.
+                // So, WorldViewModel must still validate the ID if it was changed.
+
+                bool idPotentiallyChangedInDialog = sceneInCollection.Id != sceneToEdit.Id; // sceneToEdit here holds the original ID before dialog
+                int newNumericIdFromDialog = sceneInCollection.Id; // This is the ID set by the dialog
+
+                // If ID was editable and potentially changed in dialog, we need to re-validate and handle consequences
+                // The ViewModel's IsIdEditable was true. The SceneId property in VM was bound to TextBox.
+                // The Save command in VM updates _originalScene.Id directly.
+                // We trust the VM updated sceneInCollection.Id correctly if ShowDialog is true.
+
+                // The main complexity is if the ID *actually* changed and needs to be propagated.
+                // Let's assume the ViewModel has updated sceneInCollection.Id correctly.
+                // We still need to check if this new ID is valid in the context of WorldViewModel (e.g., unique).
+
+                // The old logic for ID change:
+                // string newIdString = editWindow.SceneIdString; <-- This was from old window properties
+                // int originalId = sceneToEdit.Id; // Capture original ID before dialog, or from sceneToEdit if it's a snapshot
+
+                // Let's refine ID change handling.
+                // The SceneId in EditSceneDetailsViewModel is just an int, not validated for uniqueness there.
+                // The original sceneToEdit object's ID (passed to this method) is the ID *before* editing.
+                
+                int idBeforeDialog = sceneToEdit.Id; // The ID of the scene when this method was called.
+                                                  // sceneInCollection is the same object, its ID might have been changed by the dialog.
+
+                if (sceneInCollection.Id != idBeforeDialog) // ID was changed in the dialog
                 {
-                    if (!int.TryParse(newIdString, out newNumericId))
+                    if (Scenes.Any(s => s.Id == sceneInCollection.Id && s != sceneInCollection)) // Check if new ID collides with *another* scene
                     {
-                        _notificationService.ShowToast("Ошибка: ID должен быть числом.", ToastType.Warning);
-                        return; 
+                        _notificationService.ShowToast($"Ошибка: ID '{sceneInCollection.Id}' уже используется другой сценой. Изменения ID не применены.", ToastType.Warning);
+                        sceneInCollection.Id = idBeforeDialog; // Revert to original ID
                     }
-
-                    if (newNumericId != originalId && Scenes.Any(s => s.Id == newNumericId && s.Id != originalId))
+                    else
                     {
-                        _notificationService.ShowToast($"Ошибка: ID '{newNumericId}' уже используется другой сценой.", ToastType.Warning);
-                        return; 
-                    }
-                    else if (newNumericId != originalId) // Only if truly different and unique
-                    {
-                        sceneInCollection.Id = newNumericId;
-                        changed = true;
-                        Debug.WriteLine($"Scene ID changed from {originalId} to {newNumericId}");
+                        // ID changed and is unique (or became unique by changing from a duplicate)
+                        // Update connections that point to the old ID
                         foreach (var s in Scenes)
                         {
                             if (s.Connections != null)
                             {
                                 foreach (var conn in s.Connections)
                                 {
-                                    if (conn.ConnectedSceneId == originalId)
+                                    if (conn.ConnectedSceneId == idBeforeDialog)
                                     {
-                                        conn.ConnectedSceneId = newNumericId;
+                                        conn.ConnectedSceneId = sceneInCollection.Id;
                                     }
                                 }
                             }
+                            // Also update ParentSceneId if any child scene was pointing to the old Id
+                            if (s.ParentSceneId == idBeforeDialog)
+                            {
+                                s.ParentSceneId = sceneInCollection.Id;
+                            }
+                            // Also update HomeLocationId for NPCs
+                            foreach(var npc in _allNpcs.Where(n => n.HomeLocationId == idBeforeDialog))
+                            {
+                                npc.HomeLocationId = sceneInCollection.Id;
+                            }
                         }
+                        Debug.WriteLine($"Scene ID changed from {idBeforeDialog} to {sceneInCollection.Id} and connections updated.");
                     }
                 }
 
-                if (sceneInCollection.Name != newName)
+                // NPCs might have been added/removed. Their HomeLocationId is updated by EditSceneDetailsViewModel.
+                // We need to ensure the main _allNpcs list in WorldViewModel reflects these changes 
+                // if EditSceneDetailsViewModel worked on a copy or its own loaded list.
+                // Current EditSceneDetailsViewModel loads its own _allNpcsMasterList.
+                // So, we need to reflect those changes back to WorldViewModel._allNpcs and then save.
+
+                // THIS IS A CRITICAL POINT: The EditSceneDetailsViewModel modifies its OWN _allNpcsMasterList.
+                // These changes to NPC HomeLocationId need to be persisted globally.
+                // We should EITHER: 
+                // 1. Pass WorldViewModel._allNpcs to EditSceneDetailsViewModel to modify it directly (needs careful synchronization).
+                // 2. Return the modified NPC list from EditSceneDetailsViewModel and merge/replace in WorldViewModel.
+                // 3. Have EditSceneDetailsViewModel save the NPCs itself (requires it to know how to save all NPCs).
+
+                // For now, assuming EditSceneDetailsViewModel has updated HomeLocationIds in its list.
+                // The Save in EditSceneDetailsViewModel does NOT save npcs.json.
+                // WorldViewModel needs to save both scene layout and NPC data if NPCs were changed.
+
+                // Let's ensure NPC changes are handled if we adopt a strategy where WorldViewModel is responsible for saving NPCs.
+                // This might involve re-querying NPCs for the scene or ensuring the master NPC list is updated.
+
+                await SaveAllNpcsDataAsync(); // Ensure NPC data is saved if changed
+                await SaveCurrentMapLayoutAsync();
+                await LoadScenesAsync(); // Reload scenes to refresh everything from persisted state
+
+                UpdateAllSceneResidentCounts(); // This will re-count based on HomeLocationId
+                UpdateSelectedSceneResidents(); // Update residents for the currently selected map scene if it's this one
+                    
+
+                _notificationService.ShowToast("Детали сцены и/или NPC обновлены.", ToastType.Success);
+            }
+        }
+
+        private async Task ExecuteEditSceneFromGrid(Scene? sceneToEdit)
+        {
+            if (sceneToEdit == null) return;
+
+            var sceneInCollection = Scenes.FirstOrDefault(s => s.Id == sceneToEdit.Id);
+            if (sceneInCollection == null)
+            {
+                _notificationService.ShowToast("Сцена не найдена.", ToastType.Error);
+                return;
+            }
+
+            var originalSceneSnapshot = new Scene
+            {
+                Id = sceneInCollection.Id,
+                Name = sceneInCollection.Name,
+                Description = sceneInCollection.Description,
+                SceneType = sceneInCollection.SceneType,
+                IsIndoor = sceneInCollection.IsIndoor,
+                ParentSceneId = sceneInCollection.ParentSceneId,
+                Population = sceneInCollection.Population,
+                Radius = sceneInCollection.Radius
+            };
+
+            // Pass _allNpcs to the EditSceneDetailsWindow constructor
+            var editWindow = new EditSceneDetailsWindow(sceneInCollection, _allNpcs, GenerateUniqueLocationName, true, _notificationService)
+            {
+                Owner = Application.Current.MainWindow
+            };
+
+            if (editWindow.ShowDialog() == true)
+            {
+                bool changesMade = false;
+                // Check if ID changed and handle propagation
+                if (sceneInCollection.Id != originalSceneSnapshot.Id)
                 {
-                    sceneInCollection.Name = newName;
-                    changed = true;
-                }
-                if (sceneInCollection.Description != newDescription)
-                {
-                    sceneInCollection.Description = newDescription;
-                    changed = true;
+                    if (Scenes.Any(s => s.Id == sceneInCollection.Id && s != sceneInCollection)) 
+                    {
+                        _notificationService.ShowToast($"Ошибка: ID '{sceneInCollection.Id}' уже используется другой сценой. Изменения ID не применены.", ToastType.Warning);
+                        sceneInCollection.Id = originalSceneSnapshot.Id; // Revert
+                    }
+                    else
+                    {
+                        // Update connections, parent IDs, and NPC home locations
+                        foreach (var s in Scenes)
+                        {
+                            s.Connections?.ForEach(conn => { if (conn.ConnectedSceneId == originalSceneSnapshot.Id) conn.ConnectedSceneId = sceneInCollection.Id; });
+                            if (s.ParentSceneId == originalSceneSnapshot.Id) s.ParentSceneId = sceneInCollection.Id;
+                        }
+                        _allNpcs.Where(npc => npc.HomeLocationId == originalSceneSnapshot.Id).ToList().ForEach(npc => npc.HomeLocationId = sceneInCollection.Id);
+                        changesMade = true;
+                        Debug.WriteLine($"Scene ID changed from {originalSceneSnapshot.Id} to {sceneInCollection.Id} and dependencies updated.");
+                    }
                 }
 
-                if (changed)
+                // Check other properties for changes
+                if (sceneInCollection.Name != originalSceneSnapshot.Name || 
+                    sceneInCollection.Description != originalSceneSnapshot.Description ||
+                    sceneInCollection.SceneType != originalSceneSnapshot.SceneType ||
+                    sceneInCollection.IsIndoor != originalSceneSnapshot.IsIndoor ||
+                    sceneInCollection.ParentSceneId != originalSceneSnapshot.ParentSceneId || // ParentSceneId could also be changed by the dialog
+                    sceneInCollection.Population != originalSceneSnapshot.Population ||
+                    sceneInCollection.Radius != originalSceneSnapshot.Radius)
                 {
-                    await SaveCurrentMapLayoutAsync(); 
-                    await LoadScenesAsync(); 
-                    _notificationService.ShowToast("Детали сцены обновлены.", ToastType.Success);
+                    changesMade = true;
+                }
+
+                // If changes were made to scene properties OR NPCs (which we assume the dialog handles internally and its VM updates HomeLocationId)
+                if (changesMade || NpcAssignmentsChangedDuringEdit(sceneInCollection.Id, originalSceneSnapshot.Id) )
+                {
+                    // The NpcAssignmentsChangedDuringEdit would require comparing NPC lists before/after or checking a flag from VM.
+                    // For simplicity, we will assume that if ShowDialog is true, we might need to save NPCs.
+                    UpdateAllSceneResidentCounts();
+                    UpdateSelectedSceneResidents();
+                    
+                    await SaveAllNpcsDataAsync(); // Save NPC changes
+                    await SaveCurrentMapLayoutAsync(); // Save scene changes
+                    await LoadScenesAsync(); // Refresh from persisted state
+                    _notificationService.ShowToast("Детали сцены и/или назначения NPC обновлены.", ToastType.Success);
                 }
             }
+            else
+            {
+                 // If dialog was cancelled, ensure sceneInCollection is reverted if EditSceneDetailsViewModel made any optimistic changes before cancellation.
+                 // Current EditSceneDetailsViewModel only applies changes on Save.
+            }
+        }
+
+        // Helper method (needs to be implemented or logic integrated)
+        private bool NpcAssignmentsChangedDuringEdit(int currentSceneId, int originalSceneIdIfChanged)
+        {
+            // This is complex. EditSceneDetailsViewModel loads its own NPC list.
+            // We need a way to know if NPC assignments were changed by that dialog.
+            // Option 1: EditSceneDetailsViewModel sets a flag.
+            // Option 2: Compare NPC lists (more involved).
+            // For now, let's assume if Save is clicked, NPC data might have changed.
+            // The SaveAllNpcsDataAsync() call after ShowDialog() == true handles this more broadly.
+            return true; // Placeholder: always assume NPC assignments might have changed if dialog was saved.
         }
 
         private async Task LoadAssetImagesAsync()
@@ -1691,7 +1833,6 @@ namespace CRProjectEditor.ViewModels
             if (!File.Exists(Constants.NPCSPath))
             {
                 Debug.WriteLine($"[WorldViewModel] Файл NPC не найден: {Constants.NPCSPath}");
-                // _notificationService?.ShowToast("Файл данных NPC не найден.", ToastType.Error); // Раскомментировать, если нужно уведомление
                 return;
             }
             try
@@ -1706,9 +1847,13 @@ namespace CRProjectEditor.ViewModels
                 var loadedNpcs = JsonSerializer.Deserialize<List<NpcModel>>(jsonString, options);
                 if (loadedNpcs != null)
                 {
-                    _allNpcs = loadedNpcs;
-                    Debug.WriteLine($"[WorldViewModel] Загружено {_allNpcs.Count} NPC.");
-                    // После загрузки NPC, можно обновить ResidentCount для всех сцен
+                    // Ensure NPCs are unique by ID
+                    _allNpcs = loadedNpcs
+                        .GroupBy(npc => npc.Id) 
+                        .Select(group => group.First()) // Takes the first NPC instance for each ID
+                        .ToList();
+                    
+                    Debug.WriteLine($"[WorldViewModel] Загружено {_allNpcs.Count} уникальных NPC (по ID).");
                     UpdateAllSceneResidentCounts();
                 }
             }
@@ -1745,73 +1890,21 @@ namespace CRProjectEditor.ViewModels
             Debug.WriteLine($"[WorldViewModel] Резиденты для сцены {MapSelectedScene?.Id}: {SelectedSceneResidents.Count}");
         }
 
-        private void ExecuteEditSceneFromGrid(Scene? sceneToEdit)
+        private async Task SaveAllNpcsDataAsync()
         {
-            if (sceneToEdit == null) return;
+            if (!_allNpcs.Any()) return;
 
-            // Находим актуальный объект сцены в основной коллекции, чтобы изменения отразились
-            var actualSceneInCollection = Scenes.FirstOrDefault(s => s.Id == sceneToEdit.Id);
-            if (actualSceneInCollection == null)
+            try
             {
-                _notificationService.ShowToast("Сцена для редактирования не найдена в основной коллекции.", ToastType.Error);
-                return;
+                var options = new JsonSerializerOptions { WriteIndented = true };
+                string jsonString = JsonSerializer.Serialize(_allNpcs, options);
+                await File.WriteAllTextAsync(Constants.NPCSPath, jsonString);
+                Debug.WriteLine($"[WorldViewModel] NPCs data saved to {Constants.NPCSPath}");
             }
-
-            var editWindow = new EditSceneDetailsWindow(actualSceneInCollection, GenerateUniqueLocationName, false); // isIdEditable = false
-            editWindow.Owner = Application.Current.MainWindow;
-
-            if (editWindow.ShowDialog() == true)
+            catch (Exception ex)
             {
-                bool changed = false;
-                // ID не меняем, так как isIdEditable было false
-
-                if (actualSceneInCollection.Name != editWindow.SceneName)
-                {
-                    actualSceneInCollection.Name = editWindow.SceneName;
-                    changed = true;
-                }
-                if (actualSceneInCollection.Description != editWindow.SceneDescription)
-                {
-                    actualSceneInCollection.Description = editWindow.SceneDescription;
-                    changed = true;
-                }
-                if (actualSceneInCollection.SceneType != editWindow.SelectedSceneType)
-                {
-                    actualSceneInCollection.SceneType = editWindow.SelectedSceneType;
-                    changed = true;
-                }
-                if (actualSceneInCollection.IsIndoor != editWindow.IsIndoor)
-                {
-                    actualSceneInCollection.IsIndoor = editWindow.IsIndoor;
-                    changed = true;
-                }
-                if (actualSceneInCollection.ParentSceneId != editWindow.ParentSceneId)
-                {
-                    actualSceneInCollection.ParentSceneId = editWindow.ParentSceneId;
-                    changed = true;
-                }
-                if (actualSceneInCollection.Population != editWindow.Population)
-                { 
-                    actualSceneInCollection.Population = editWindow.Population;
-                    changed = true;
-                }
-                if (actualSceneInCollection.Radius != editWindow.Radius)
-                {
-                    actualSceneInCollection.Radius = editWindow.Radius;
-                    changed = true;
-                }
-
-                if (changed)
-                {
-                    // Принудительное обновление объекта в коллекции, если это необходимо для UI (хотя ObservableCollection должна справляться)
-                    // int index = Scenes.IndexOf(actualSceneInCollection);
-                    // if (index != -1) Scenes[index] = actualSceneInCollection; 
-                    
-                    // Сохраняем изменения и обновляем фильтры
-                    _ = SaveCurrentMapLayoutAsync(); // Не ждем завершения, но запускаем
-                    ApplyFilters(); // Обновить DataGrid, если что-то поменялось, что влияет на фильтр
-                    _notificationService.ShowToast("Детали сцены обновлены.", ToastType.Success);
-                }
+                Debug.WriteLine($"[WorldViewModel] Error saving NPCs data: {ex.Message}");
+                _notificationService.ShowToast($"Ошибка сохранения данных NPC: {ex.Message}", ToastType.Error);
             }
         }
     }

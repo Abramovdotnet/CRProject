@@ -8,7 +8,7 @@
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -2,
+    "x": -1,
     "y": -2,
     "connections": [
       {
@@ -479,6 +479,11 @@
         "connectedSceneId": 142,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 192,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
       }
     ],
     "population": 0,
@@ -542,6 +547,11 @@
         "connectedSceneId": 151,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 193,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
       }
     ],
     "population": 0,
@@ -577,7 +587,7 @@
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -16,
+    "x": -17,
     "y": -1,
     "connections": [
       {
@@ -603,6 +613,11 @@
     "connections": [
       {
         "connectedSceneId": 151,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 193,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       }
@@ -939,7 +954,7 @@
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -15,
+    "x": -16,
     "y": 8,
     "connections": [
       {
@@ -1700,6 +1715,261 @@
       },
       {
         "connectedSceneId": 173,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 192,
+    "name": "The Frostpetal Emporium",
+    "description": "A newly created scene.",
+    "sceneType": "Shop",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -13,
+    "y": -4,
+    "connections": [
+      {
+        "connectedSceneId": 151,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 193,
+    "name": "The Blackthorn Way",
+    "description": "A newly created scene.",
+    "sceneType": "Road",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -21,
+    "y": 3,
+    "connections": [
+      {
+        "connectedSceneId": 154,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 157,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 194,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 195,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 197,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 198,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 196,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 200,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 201,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 199,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 194,
+    "name": "Ravenspire Castle",
+    "description": "A newly created scene.",
+    "sceneType": "Castle",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -25,
+    "y": 3,
+    "connections": [
+      {
+        "connectedSceneId": 193,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 195,
+    "name": "The Blackletter Books",
+    "description": "A newly created scene.",
+    "sceneType": "Bookstore",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -23,
+    "y": 6,
+    "connections": [
+      {
+        "connectedSceneId": 193,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 196,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -24,
+    "y": -2,
+    "connections": [
+      {
+        "connectedSceneId": 193,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 197,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -19,
+    "y": 1,
+    "connections": [
+      {
+        "connectedSceneId": 193,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 198,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -19,
+    "y": -1,
+    "connections": [
+      {
+        "connectedSceneId": 193,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 199,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -20,
+    "y": -4,
+    "connections": [
+      {
+        "connectedSceneId": 193,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 200,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -25,
+    "y": 0,
+    "connections": [
+      {
+        "connectedSceneId": 193,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 201,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "parentSceneId": 0,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -22,
+    "y": -1,
+    "connections": [
+      {
+        "connectedSceneId": 193,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       }

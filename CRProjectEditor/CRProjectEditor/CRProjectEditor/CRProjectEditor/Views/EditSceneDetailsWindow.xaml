@@ -5,68 +5,252 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:models="clr-namespace:CRProjectEditor.Models"
         xmlns:System="clr-namespace:System;assembly=mscorlib"
+        xmlns:viewmodels="clr-namespace:CRProjectEditor.ViewModels"
+        xmlns:converters="clr-namespace:CRProjectEditor.Converters" 
         mc:Ignorable="d"
-        Title="Редактировать Сцену" Height="Auto" Width="450" SizeToContent="Height"
+        d:DataContext="{d:DesignInstance Type=viewmodels:EditSceneDetailsViewModel, IsDesignTimeCreatable=False}" 
+        Title="Редактировать Сцену" Height="800" Width="1600"
         WindowStartupLocation="CenterOwner"
         Background="{StaticResource BackgroundBrush}" 
         Foreground="{StaticResource ForegroundBrush}"
         FontFamily="{StaticResource DefaultFontFamily}"
-        ResizeMode="NoResize">
+        ResizeMode="CanResizeWithGrip" SizeToContent="Manual">
+    <Window.Resources>
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
+        <System:Boolean x:Key="True">True</System:Boolean>
+        <System:Boolean x:Key="False">False</System:Boolean>
+    </Window.Resources>
     <Grid Margin="15">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*" MinHeight="80"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="350"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="300"/>
+        </Grid.ColumnDefinitions>
 
-        <TextBlock Text="ID Сцены:" Grid.Row="0" Margin="0,0,0,5" VerticalAlignment="Center"/>
-        <TextBox x:Name="SceneIdTextBox" Grid.Row="1" Margin="0,0,0,10" IsReadOnly="True" ToolTip="ID не может быть изменен из этого окна при вызове из таблицы."/>
+        <!-- Left Column for existing scene details -->
+        <ScrollViewer Grid.Column="0" VerticalScrollBarVisibility="Auto" Padding="0,0,10,0">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*" MinHeight="80"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-        <TextBlock Text="Имя Сцены:" Grid.Row="2" Margin="0,5,0,5" VerticalAlignment="Center"/>
-        <Grid Grid.Row="3" Margin="0,0,0,10">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="Auto"/>
-            </Grid.ColumnDefinitions>
-            <TextBox x:Name="SceneNameTextBox" Grid.Column="0" />
-            <Button x:Name="GenerateNameButton" Content="Сгенерировать" Grid.Column="1" Margin="5,0,0,0" Click="GenerateNameButton_Click" Padding="5,2"/>
-        </Grid>
+                <TextBlock Text="ID Сцены:" Grid.Row="0" Margin="0,0,0,5" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="1" Text="{Binding SceneId}" Margin="0,0,0,10" IsReadOnly="{Binding IsIdEditable, Converter={StaticResource InverseBooleanConverter}}" ToolTip="ID не может быть изменен из этого окна при вызове из таблицы."/>
 
-        <TextBlock Text="Тип Сцены:" Grid.Row="4" Margin="0,5,0,5" VerticalAlignment="Center"/>
-        <ComboBox x:Name="SceneTypeComboBox" Grid.Row="5" Margin="0,0,0,10" />
+                <TextBlock Text="Имя Сцены:" Grid.Row="2" Margin="0,5,0,5" VerticalAlignment="Center"/>
+                <Grid Grid.Row="3" Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox Grid.Column="0" Text="{Binding SceneName, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button Content="Сгенерировать" Grid.Column="1" Margin="5,0,0,0" Command="{Binding GenerateSceneNameCommand}" Padding="5,2"/>
+                </Grid>
 
-        <CheckBox x:Name="IsIndoorCheckBox" Grid.Row="6" Content="В помещении (IsIndoor)" Margin="0,5,0,10" VerticalAlignment="Center"/>
+                <TextBlock Text="Тип Сцены:" Grid.Row="4" Margin="0,5,0,5" VerticalAlignment="Center"/>
+                <ComboBox Grid.Row="5" ItemsSource="{Binding SceneTypes}" SelectedItem="{Binding SelectedSceneType}" Margin="0,0,0,10" />
 
-        <TextBlock Text="ParentScene ID:" Grid.Row="7" Margin="0,5,0,5" VerticalAlignment="Center"/>
-        <TextBox x:Name="ParentSceneIdTextBox" Grid.Row="8" Margin="0,0,0,10" PreviewTextInput="NumericTextBox_PreviewTextInput"/>
+                <CheckBox Grid.Row="6" IsChecked="{Binding IsIndoor}" Content="В помещении (IsIndoor)" Margin="0,5,0,10" VerticalAlignment="Center"/>
+
+                <TextBlock Text="ParentScene ID:" Grid.Row="7" Margin="0,5,0,5" VerticalAlignment="Center"/>
+                <TextBox Grid.Row="8" Text="{Binding ParentSceneIdText, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" PreviewTextInput="NullableNumeric_PreviewTextInput"/>
+
+                <TextBlock Text="Описание Сцены:" Grid.Row="13" Margin="0,5,0,5"/>
+                <TextBox Grid.Row="14" Text="{Binding SceneDescription, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" MinHeight="80"/>
+
+                <StackPanel Grid.Row="16" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
+                    <Button Content="Сохранить" Width="100" Margin="0,0,10,0" Command="{Binding SaveCommand}" />
+                    <Button Content="Отмена" Width="100" Command="{Binding CancelCommand}" IsCancel="True" />
+                </StackPanel>
+            </Grid>
+        </ScrollViewer>
         
-        <TextBlock Text="Население (Population):" Grid.Row="9" Margin="0,5,0,5" VerticalAlignment="Center"/>
-        <TextBox x:Name="PopulationTextBox" Grid.Row="10" Margin="0,0,0,10" PreviewTextInput="NumericTextBox_PreviewTextInput"/>
+        <Border Grid.Column="1" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="1,0,0,0" Padding="10,0,0,0">
+            <Grid Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/> 
+                    <RowDefinition Height="Auto"/> 
+                    <RowDefinition Height="*"/>    
+                    <RowDefinition Height="Auto"/> 
+                    <RowDefinition Height="*"/>    
+                </Grid.RowDefinitions>
 
-        <TextBlock Text="Радиус (Radius):" Grid.Row="11" Margin="0,5,0,5" VerticalAlignment="Center"/>
-        <TextBox x:Name="RadiusTextBox" Grid.Row="12" Margin="0,0,0,10" PreviewTextInput="NumericTextBox_PreviewTextInput"/>
+                <TextBlock Grid.Row="0" Text="Управление NPC" FontSize="16" FontWeight="Bold" Margin="0,0,0,10"/>
 
-        <TextBlock Text="Описание Сцены:" Grid.Row="13" Margin="0,5,0,5"/>
-        <TextBox x:Name="SceneDescriptionTextBox" Grid.Row="14" Margin="0,0,0,10" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" />
+                <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,0,10">
+                    <TextBlock Text="Фильтр доступных NPC (по имени):" Margin="0,0,0,5" Foreground="{StaticResource ForegroundBrush}"/>
+                    <TextBox Text="{Binding NpcFilterText, UpdateSourceTrigger=PropertyChanged}" ToolTip="Фильтр по имени NPC" Margin="0,0,0,5"/>
 
-        <StackPanel Grid.Row="15" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,15,0,0">
-            <Button x:Name="SaveButton" Content="Сохранить" Width="100" Margin="0,0,10,0" Click="SaveButton_Click" />
-            <Button x:Name="CancelButton" Content="Отмена" Width="100" IsCancel="True" Click="CancelButton_Click" />
+                    <TextBlock Text="Пол:" Margin="0,5,0,5" Foreground="{StaticResource ForegroundBrush}"/>
+                    <ComboBox ItemsSource="{Binding AvailableSexes}" 
+                              SelectedItem="{Binding FilterSex, Mode=TwoWay}" 
+                              Margin="0,0,0,10"/>
+
+                    <TextBlock Text="Профессия:" Margin="0,5,0,5" Foreground="{StaticResource ForegroundBrush}"/>
+                    <ComboBox ItemsSource="{Binding AvailableProfessions}" 
+                              SelectedItem="{Binding FilterProfession, Mode=TwoWay}" 
+                              Margin="0,0,0,10"/>
+
+                    <CheckBox IsChecked="{Binding FilterIsVampireNullable, Mode=TwoWay}" 
+                              Content="Вампир? (Не важно / Да / Нет)" 
+                              IsThreeState="True" 
+                              Margin="0,5,0,10" 
+                              Foreground="{StaticResource ForegroundBrush}"/>
+                </StackPanel>
+
+                <GroupBox Grid.Row="2" Header="Доступные NPC" Margin="0,0,0,5" Foreground="{StaticResource ForegroundBrush}">
+                    <ListView ItemsSource="{Binding AvailableNpcsView}" 
+                              SelectedItem="{Binding SelectedAvailableNpc}" 
+                              SelectionMode="Extended" 
+                              x:Name="AvailableNpcsListView_WorkaroundForMultiSelect"
+                              Background="{StaticResource ControlBackgroundBrush}" 
+                              BorderBrush="{StaticResource ControlBorderBrush}"
+                              BorderThickness="1">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Padding" Value="3"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource ControlPressedBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource ControlMouseOverBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding ImagePath}" Width="24" Height="24" Margin="0,0,5,0" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </GroupBox>
+
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5,0,5">
+                    <Button Content="Добавить в сцену" Command="{Binding AddNpcToSceneCommand}" Margin="5" Padding="10,5"/>
+                    <Button Content="Убрать из сцены" Command="{Binding RemoveNpcFromSceneCommand}" Margin="5" Padding="10,5"/>
+                </StackPanel>
+
+                <GroupBox Grid.Row="4" Header="NPC в этой сцене" Margin="0,5,0,0" Foreground="{StaticResource ForegroundBrush}">
+                    <ListView ItemsSource="{Binding SceneNpcsView}" 
+                              SelectedItem="{Binding SelectedSceneNpc}" 
+                              SelectionMode="Extended" 
+                              x:Name="SceneNpcsListView_WorkaroundForMultiSelect"
+                              Background="{StaticResource ControlBackgroundBrush}" 
+                              BorderBrush="{StaticResource ControlBorderBrush}"
+                              BorderThickness="1">
+                        <ListView.ItemContainerStyle>
+                            <Style TargetType="ListViewItem">
+                                <Setter Property="Foreground" Value="{StaticResource ForegroundBrush}"/>
+                                <Setter Property="Background" Value="Transparent"/>
+                                <Setter Property="Padding" Value="3"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsSelected" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource ControlPressedBrush}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{StaticResource ControlMouseOverBrush}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </ListView.ItemContainerStyle>
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal">
+                                    <Image Source="{Binding ImagePath}" Width="24" Height="24" Margin="0,0,5,0" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </GroupBox>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Column="2">
+            <StackPanel Margin="20" Visibility="{Binding SelectedAvailableNpc, Converter={StaticResource NullToVisibilityConverter}}">
+                <Image Source="{Binding SelectedAvailableNpc.ImagePath, Converter={StaticResource ImagePathToImageSourceConverter}}"
+                                   Height="200"
+                                   Stretch="Uniform"
+                                   Margin="0,0,0,10"
+                                   HorizontalAlignment="Center"
+                                   Visibility="{Binding SelectedNpcImagePath, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+
+                <TextBlock Margin="0,0,0,3">
+                                <Run Text="ID: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedAvailableNpc.Id}"/>
+                </TextBlock>
+                <TextBlock Margin="0,0,0,3">
+                                <Run Text="Имя: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedAvailableNpc.Name}"/>
+                </TextBlock>
+                <TextBlock Margin="0,0,0,3">
+                                <Run Text="Возраст: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedAvailableNpc.Age}"/>
+                </TextBlock>
+                <TextBlock Margin="0,0,0,3">
+                                <Run Text="Профессия: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedAvailableNpc.Profession}"/>
+                </TextBlock>
+                <TextBlock>
+                                <Run Text="Вампир: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedAvailableNpc.IsVampire, Converter={StaticResource BooleanToYesNoConverter}}"/>
+                </TextBlock>
+            </StackPanel>
+
+            <Separator/>
+            <StackPanel Margin="20" Visibility="{Binding SelectedSceneNpc, Converter={StaticResource NullToVisibilityConverter}}">
+                <Image Source="{Binding SelectedSceneNpc.ImagePath, Converter={StaticResource ImagePathToImageSourceConverter}}"
+                                   Height="200"
+                                   Stretch="Uniform"
+                                   Margin="0,0,0,10"
+                                   HorizontalAlignment="Center"
+                                   Visibility="{Binding SelectedSceneNpc, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+
+                <TextBlock Margin="0,0,0,3">
+                                <Run Text="ID: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedSceneNpc.Id}"/>
+                </TextBlock>
+                <TextBlock Margin="0,0,0,3">
+                                <Run Text="Имя: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedSceneNpc.Name}"/>
+                </TextBlock>
+                <TextBlock Margin="0,0,0,3">
+                                <Run Text="Возраст: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedSelectedSceneNpcAvailableNpc.Age}"/>
+                </TextBlock>
+                <TextBlock Margin="0,0,0,3">
+                                <Run Text="Профессия: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedSceneNpc.Profession}"/>
+                </TextBlock>
+                <TextBlock>
+                                <Run Text="Вампир: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedSceneNpc.IsVampire, Converter={StaticResource BooleanToYesNoConverter}}"/>
+                </TextBlock>
+            </StackPanel>
         </StackPanel>
     </Grid>
-    <Window.Resources>
-        <!-- ObjectDataProvider x:Key="SceneTypeValues" удален -->
-    </Window.Resources>
 </Window> 

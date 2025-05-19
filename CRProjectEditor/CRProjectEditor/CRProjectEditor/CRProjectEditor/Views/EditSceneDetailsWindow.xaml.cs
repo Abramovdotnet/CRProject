@@ -1,4 +1,6 @@
 using CRProjectEditor.Models; // Required for SceneType
+using CRProjectEditor.ViewModels; // Added for ViewModel
+using CRProjectEditor.Services;   // Added for INotificationService
 using System;
 using System.Windows;
 using System.Windows.Input; // For KeyEventArgs and TextCompositionEventArgs
@@ -9,170 +11,78 @@ namespace CRProjectEditor.Views
 {
     public partial class EditSceneDetailsWindow : Window
     {
-        public string SceneIdString { get; private set; }
-        public string SceneName { get; private set; }
-        public string SceneDescription { get; private set; }
-        public SceneType SelectedSceneType { get; private set; }
-        public bool IsIndoor { get; private set; }
-        public int? ParentSceneId { get; private set; }
-        public int Population { get; private set; }
-        public int Radius { get; private set; }
+        private readonly EditSceneDetailsViewModel _viewModel;
 
-        private readonly SceneType _initialSceneType; // To keep the original type for name generation if needed
-        private readonly Func<SceneType, string, string> _nameGenerator;
-        private bool _isIdActuallyEditable; // Internal flag based on how the window was opened
-
-        // Constructor for creating a new scene (ID might be placeholder or determined later)
-        public EditSceneDetailsWindow(int currentId, string currentName, string currentDescription, 
-                                    SceneType sceneType, Func<SceneType, string, string> nameGenerator, bool isIdEditable = true)
-            : this(CreateDefaultScene(currentId, currentName, currentDescription, sceneType), nameGenerator, isIdEditable)
-        {
-        }
-
-        private static Scene CreateDefaultScene(int currentId, string currentName, string currentDescription, SceneType sceneType)
-        {
-            Scene scene = new()
-            {
-                Id = currentId,
-                Name = currentName,
-                Description = currentDescription,
-                SceneType = sceneType,
-                IsIndoor = false,
-                ParentSceneId = null,
-                Population = 0,
-                Radius = 10
-            };
-
-            var indoorSceneTypes = new List<SceneType>
-                {
-                    SceneType.Castle, SceneType.Cathedral, SceneType.Cloister, SceneType.Temple,
-                    SceneType.Crypt, SceneType.Manor, SceneType.Military, SceneType.Blacksmith,
-                    SceneType.AlchemistShop, SceneType.Warehouse, SceneType.Bookstore, SceneType.Shop,
-                    SceneType.Mine, SceneType.Tavern, SceneType.Brothel, SceneType.Bathhouse,
-                    SceneType.Cave, SceneType.House, SceneType.Dungeon
-                };
-
-            if (indoorSceneTypes.Contains(sceneType))
-            {
-                scene.IsIndoor = true;
-            }
-
-            return scene;
-        }
-
-        // Constructor for editing an existing scene (receives full scene object)
-        public EditSceneDetailsWindow(Scene sceneToEdit, Func<SceneType, string, string> nameGenerator, bool isIdEditable = true)
+        // Constructor for creating/editing a scene using a Scene object
+        public EditSceneDetailsWindow(Scene scene, List<NpcModel> allNpcs, Func<SceneType, string, string> nameGenerator, 
+                                    bool isIdEditable = true, INotificationService? notificationService = null)
         {
             InitializeComponent();
-            Owner = Application.Current.MainWindow;
-            DataContext = this; // For potential future bindings directly to properties
-
-            // --- Заполнение SceneTypeComboBox ---
-            SceneTypeComboBox.ItemsSource = Enum.GetValues(typeof(SceneType));
-            // --- Конец заполнения ---
-
-            _isIdActuallyEditable = isIdEditable;
-            SceneIdTextBox.IsReadOnly = !isIdEditable;
-            if (!isIdEditable)
+            _viewModel = new EditSceneDetailsViewModel(scene, allNpcs, nameGenerator, isIdEditable, notificationService);
+            DataContext = _viewModel;
+            _viewModel.RequestClose += (result) => 
             {
-                SceneIdTextBox.ToolTip = "ID нельзя изменить в этом режиме.";
-            }
-
-            // Populate fields from sceneToEdit
-            SceneIdString = sceneToEdit.Id.ToString();
-            SceneIdTextBox.Text = SceneIdString;
-            SceneName = sceneToEdit.Name;
-            SceneNameTextBox.Text = SceneName;
-            SceneDescription = sceneToEdit.Description;
-            SceneDescriptionTextBox.Text = SceneDescription;
-            
-            SelectedSceneType = sceneToEdit.SceneType;
-            SceneTypeComboBox.SelectedItem = SelectedSceneType;
-            _initialSceneType = sceneToEdit.SceneType; // Store for name generator
-
-            IsIndoor = sceneToEdit.IsIndoor;
-            IsIndoorCheckBox.IsChecked = IsIndoor;
-
-            ParentSceneId = sceneToEdit.ParentSceneId;
-            ParentSceneIdTextBox.Text = ParentSceneId?.ToString() ?? string.Empty;
-
-            Population = sceneToEdit.Population;
-            PopulationTextBox.Text = Population.ToString();
-
-            Radius = sceneToEdit.Radius;
-            RadiusTextBox.Text = Radius.ToString();
-            
-            _nameGenerator = nameGenerator;
+                try { DialogResult = result; } catch { /* Can throw if already closed */ }
+                // No need to call Close() explicitly if DialogResult is set before window is shown, 
+                // or if it's set while window is active.
+            };
         }
 
-        private void GenerateNameButton_Click(object sender, RoutedEventArgs e)
+        // Constructor for creating a new scene with individual parameters
+        // This constructor might be less used now that WorldViewModel prepares a tempSceneForDialog
+        // but kept for compatibility or direct instantiation if needed.
+        public EditSceneDetailsWindow(int currentId, string currentName, string currentDescription, 
+                                    SceneType sceneType, List<NpcModel> allNpcs, Func<SceneType, string, string> nameGenerator, 
+                                    bool isIdEditable = true, INotificationService? notificationService = null)
+            : this(CreateDefaultScene(currentId, currentName, currentDescription, sceneType), allNpcs, nameGenerator, isIdEditable, notificationService)
         {
-            if (_nameGenerator != null)
-            {
-                // Use the currently selected SceneType in the ComboBox for name generation
-                SceneType typeForNameGen = (SceneType)(SceneTypeComboBox.SelectedItem ?? _initialSceneType);
-                string newName = _nameGenerator(typeForNameGen, SceneNameTextBox.Text); 
-                SceneNameTextBox.Text = newName; 
-            }
+            // The base constructor is called, which initializes _viewModel and DataContext.
+            // Any specific logic for this overload can go here.
         }
 
-        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        // Helper to create a default Scene object, can be static or moved to ViewModel if preferred
+        public static Scene CreateDefaultScene(int id, string name, string description, SceneType type)
         {
-            // Validate and retrieve values
-            SceneIdString = SceneIdTextBox.Text; // ID is retrieved but might not have been editable
-            SceneName = SceneNameTextBox.Text;
-            SceneDescription = SceneDescriptionTextBox.Text;
-            SelectedSceneType = (SceneType)(SceneTypeComboBox.SelectedItem ?? _initialSceneType);
-            IsIndoor = IsIndoorCheckBox.IsChecked ?? false;
-            
-            if (int.TryParse(ParentSceneIdTextBox.Text, out int parentId))
+            return new Scene
             {
-                ParentSceneId = parentId;
-            }
-            else if (string.IsNullOrWhiteSpace(ParentSceneIdTextBox.Text))
+                Id = id,
+                Name = name,
+                Description = description,
+                SceneType = type,
+                IsIndoor = false, // Default value
+                ParentSceneId = null, // Default value
+                Population = 0, // Default value
+                Radius = 10, // Default value
+                X = 0, Y = 0, // Default coordinates
+                Connections = new List<SceneConnection>(),
+                HubSceneIds = new List<int>()
+                // ResidentCount is calculated, not stored directly usually.
+                // ImagePath is usually derived or set elsewhere.
+            };
+        }
+
+        private void SceneName_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Allow letters, numbers, spaces, and some punctuation. Disallow file path specific chars.
+            Regex regex = new Regex(@"[^a-zA-Z0-9_.,;:()'""\s-]");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void Numeric_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            Regex regex = new Regex("[^0-9]"); // Allow only numbers
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        private void NullableNumeric_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // For ParentSceneId which can be empty or numeric
+            if (string.IsNullOrEmpty(e.Text)) // Allow empty input (e.g., from pasting an empty string or deleting)
             {
-                ParentSceneId = null; 
-            }
-            else
-            {
-                MessageBox.Show("ParentScene ID должен быть числом или пустым.", "Ошибка Валидации", MessageBoxButton.OK, MessageBoxImage.Error);
+                e.Handled = false;
                 return;
             }
-
-            if (int.TryParse(PopulationTextBox.Text, out int populationValue))
-            {
-                Population = populationValue;
-            }
-            else
-            {
-                MessageBox.Show("Население должно быть числом.", "Ошибка Валидации", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            if (int.TryParse(RadiusTextBox.Text, out int radiusValue))
-            {
-                Radius = radiusValue;
-            }
-            else
-            {
-                MessageBox.Show("Радиус должен быть числом.", "Ошибка Валидации", MessageBoxButton.OK, MessageBoxImage.Error);
-                return;
-            }
-
-            DialogResult = true;
-            Close();
-        }
-
-        private void CancelButton_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
-        }
-
-        // Helper to allow only numeric input for TextBoxes
-        private void NumericTextBox_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            Regex regex = new Regex("[^0-9-]+"); // Allows numbers and a leading minus (though ParentId, Pop, Radius are likely non-negative)
+            Regex regex = new Regex("[^0-9]"); // Allow only numbers if not empty
             e.Handled = regex.IsMatch(e.Text);
         }
     }
