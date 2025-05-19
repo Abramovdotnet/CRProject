@@ -154,6 +154,7 @@ namespace CRProjectEditor.ViewModels
             }
 
             await SaveAllNpcsToJsonAsync();
+            await LoadNpcsAsync();
 
             _notificationService.UpdateStatus($"Исправлено {invalidHomeLocationNpcs.Count()} NPC.");
             _notificationService.ShowToast($"Исправлено {invalidHomeLocationNpcs.Count()} NPC.", ToastType.Success);
