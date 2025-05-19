@@ -59,16 +59,28 @@ class NPCReader : GameService {
     }
     
     private static func createNPC(from data: [String: Any]) -> NPC? {
-        guard let id = data["id"] as? Int,
-              let name = data["name"] as? String,
-              let morality = data["morality"] as? String,
-              let motivation = data["motivation"] as? String,
-              let background = data["background"] as? String,
-              let age = data["age"] as? Int,
-              let homeLocationId = data["homeLocationId"] as? Int,
-              let sexString = data["sex"] as? String,
-              let professionString = data["profession"] as? String,
-              let isVampire = data["isVampire"] as? Bool else {
+        // Универсальный геттер для значений с поддержкой PascalCase и преобразованием типов
+        func value<T>(from data: [String: Any], key: String) -> T? {
+            if let value = data[key] as? T {
+                return value
+            }
+            // Для Bool: если Int, то преобразовать
+            if T.self == Bool.self, let intValue = data[key] as? Int {
+                return (intValue != 0) as? T
+            }
+            return nil
+        }
+
+        guard let id = value(from: data, key: "Id") as Int?,
+              let name = value(from: data, key: "Name") as String?,
+              let morality = value(from: data, key: "Morality") as String?,
+              let motivation = value(from: data, key: "Motivation") as String?,
+              let background = value(from: data, key: "Background") as String?,
+              let age = value(from: data, key: "Age") as Int?,
+              let homeLocationId = value(from: data, key: "HomeLocationId") as Int?,
+              let sexString = value(from: data, key: "Sex") as String?,
+              let professionString = value(from: data, key: "Profession") as String?,
+              let isVampire = value(from: data, key: "IsVampire") as Bool? else {
             DebugLogService.shared.log("Failed to parse NPC data: \(data)", category: "Error")
             return nil
         }

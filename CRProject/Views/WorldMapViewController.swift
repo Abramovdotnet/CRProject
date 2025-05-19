@@ -341,6 +341,8 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
     private var isInitialMapSetupDone: Bool = false
     private var didCenterOnInitialScene = false
 
+    private var glowView: UIView? // Для свечения текущего маркера
+
     // Initializer to accept MainSceneViewModel
     init(mainViewModel: MainSceneViewModel) {
         self.mainViewModel = mainViewModel
@@ -401,7 +403,7 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
             // Готовим данные для отрисовки в одном методе
             // self.prepareMarkerDrawData() // УДАЛЕНО
             // self.prepareLinePoints()     // УДАЛЕНО
-            self.prepareMapElementData() // <<< ОБЪЕДИНЕННЫЙ МЕТОД
+            self.initializeMarkerDrawDataIfNeeded()
             // --- Конец фоновых операций ---
 
             DispatchQueue.main.async {
@@ -500,6 +502,7 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
                 if let initialSceneId = GameStateService.shared.currentScene?.id {
                     DispatchQueue.main.async {
                         self.centerCameraOnScene(withId: initialSceneId, animated: false)
+                        self.updateGlowView(for: initialSceneId)
                     }
                 }
             }
@@ -741,34 +744,21 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
         markerRenderingView.addGestureRecognizer(tapGesture)
     }
 
-    // Новый метод для подготовки данных для отрисовки в одном методе
-    private func prepareMapElementData() {
-        guard !allScenes.isEmpty else {
-            self.markerDrawDataList = []
-            self.pendingScenePointCache = [:]
-            return
-        }
-
+    // Новый метод для инициализации координат маркеров и scenePointCache только один раз
+    private func initializeMarkerDrawDataIfNeeded() {
+        guard markerDrawDataList.isEmpty else { return }
+        guard !allScenes.isEmpty else { return }
         var newMarkerDataList: [MarkerDrawingData] = []
         newMarkerDataList.reserveCapacity(allScenes.count)
-
         var newCalculatedPoints: [Int: CGPoint] = [:]
         newCalculatedPoints.reserveCapacity(allScenes.count)
-
-        // minMapX и minMapY предполагаются уже вычисленными и установленными как свойства класса
-
         for scene in allScenes {
-            // --- Расчет данных для MarkerDrawingData --- 
             let sceneX = CGFloat(scene.x) * coordinateScale
             let sceneY = CGFloat(scene.y) * coordinateScale
-            
             let elementOriginX = (sceneX - minMapX) + padding
             let elementOriginY = (sceneY - minMapY) + padding
             let sceneElementFrame = CGRect(origin: CGPoint(x: elementOriginX, y: elementOriginY), size: sceneElementSize)
-
-            // Расчет CGRect для каждого элемента внутри маркера (взято из старого prepareMarkerDrawData)
-            let coloredRectFrame = CGRect(origin: .zero, size: coloredRectangleSize) 
-
+            let coloredRectFrame = CGRect(origin: .zero, size: coloredRectangleSize)
             let infoOriginY = coloredRectangleSize.height + spacingBelowRectangle
             let infoContentPadding: CGFloat = 5
             let iconSize = CGSize(width: 20, height: 20)
@@ -776,22 +766,9 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
             let labelWidth = sceneElementSize.width - textStartX - infoContentPadding
             let nameLabelHeight: CGFloat = 22
             let typeLabelHeight: CGFloat = 20
-
-            let iconFrame = CGRect(x: infoContentPadding, 
-                                   y: infoOriginY + infoContentPadding, 
-                                   width: iconSize.width, 
-                                   height: iconSize.height)
-
-            let nameLabelFrame = CGRect(x: textStartX, 
-                                       y: infoOriginY + infoContentPadding, 
-                                       width: labelWidth, 
-                                       height: nameLabelHeight)
-            
-            let typeLabelFrame = CGRect(x: textStartX, 
-                                       y: nameLabelFrame.maxY - 4, // Небольшая корректировка для плотности
-                                       width: labelWidth, 
-                                       height: typeLabelHeight)
-            
+            let iconFrame = CGRect(x: infoContentPadding, y: infoOriginY + infoContentPadding, width: iconSize.width, height: iconSize.height)
+            let nameLabelFrame = CGRect(x: textStartX, y: infoOriginY + infoContentPadding, width: labelWidth, height: nameLabelHeight)
+            let typeLabelFrame = CGRect(x: textStartX, y: nameLabelFrame.maxY - 4, width: labelWidth, height: typeLabelHeight)
             var baseColorForType: UIColor = UIColor.white.withAlphaComponent(0.7)
             switch scene.sceneType {
                 case .tavern: baseColorForType = UIColor.brown.withAlphaComponent(0.7)
@@ -810,9 +787,7 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
                 case .ruins: baseColorForType = UIColor.systemGray2.withAlphaComponent(0.7)
                 default: break
             }
-            
             let imageNameSuffixForScene = "location\(scene.id)"
-
             let markerData = MarkerDrawingData(
                 scene: scene,
                 frame: sceneElementFrame,
@@ -822,27 +797,24 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
                 typeLabelFrame: typeLabelFrame,
                 nameText: scene.name,
                 typeText: scene.sceneType.displayName,
-                iconImageName: scene.sceneType.iconName, 
-                baseBackgroundColor: baseColorForType, 
+                iconImageName: scene.sceneType.iconName,
+                baseBackgroundColor: baseColorForType,
                 nameLabelColor: .white,
                 typeLabelColor: .systemGreen,
                 iconTintColor: .black,
-                sceneImageNameSuffix: imageNameSuffixForScene, 
-                isLocked: scene.isLocked, // Убедимся, что isLocked берется из актуальной scene
+                sceneImageNameSuffix: imageNameSuffixForScene,
+                isLocked: scene.isLocked,
                 isCurrent: false
             )
             newMarkerDataList.append(markerData)
-
-            // --- Расчет данных для LinePoints --- 
             let pointX = markerData.frame.origin.x + markerData.coloredRectangleFrame.midX
             let pointY = markerData.frame.origin.y + markerData.coloredRectangleFrame.midY
             newCalculatedPoints[scene.id] = CGPoint(x: pointX, y: pointY)
         }
-
-        self.markerDrawDataList = newMarkerDataList
-        self.pendingScenePointCache = newCalculatedPoints
+        markerDrawDataList = newMarkerDataList
+        pendingScenePointCache = newCalculatedPoints
     }
-    
+
     // Замена setupMarkersAndLines - теперь это в основном про linesView
     private func setupLinesView() {
         guard !allScenes.isEmpty else { return }
@@ -867,90 +839,80 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
     // MARK: - Gesture Recognizer Handler
     @objc private func markerTapped(_ sender: UITapGestureRecognizer) {
         let tapLocation = sender.location(in: markerRenderingView)
-
-        // Проходим по всем данным маркеров для определения, на какой из них нажали
         for data in markerDrawDataList {
-            // ПОЛУЧАЕМ АКТУАЛЬНЫЙ СТАТУС БЛОКИРОВКИ ИЗ self.allScenes
             let liveSceneFromAllScenes = self.allScenes.first(where: { $0.id == data.scene.id })
-            let isActuallyLocked = liveSceneFromAllScenes?.isLocked ?? true // По умолчанию считаем заблокированной, если не найдена (маловероятно)
-
-            if !isActuallyLocked && data.frame.contains(tapLocation) { // ИСПОЛЬЗУЕМ АКТУАЛЬНЫЙ СТАТУС
+            let isActuallyLocked = liveSceneFromAllScenes?.isLocked ?? true
+            if !isActuallyLocked && data.frame.contains(tapLocation) {
                 guard let tappedSceneObjectForLogic = liveSceneFromAllScenes else {
                     print("[WorldMapView] Error: Tapped scene (ID: \(data.scene.id)) not found in self.allScenes despite being tappable. Skipping.")
-                    continue // Пропускаем этот маркер, если что-то совсем пошло не так
+                    continue
                 }
-
-                // Если текущая локация уже эта, не делаем ничего
                 if GameStateService.shared.currentScene?.id == tappedSceneObjectForLogic.id {
-                    // print("Tapped on the current scene, no change needed.")
                     return
                 }
-
-                // Проверяем, связана ли tappedScene с текущей локацией
                 guard let currentScene = GameStateService.shared.currentScene else {
                     print("[WorldMapView] Error: Current scene is not set in GameStateService. Cannot determine valid moves.")
-                    return // Не можем определить текущую сцену, прерываем
+                    return
                 }
-
                 let isConnected = currentScene.connections.contains { connection in
                     connection.connectedSceneId == tappedSceneObjectForLogic.id
                 }
-
                 if isConnected {
-                    // print("Moving to connected scene: \(tappedSceneObjectForLogic.name)")
-                    let sceneIdToMoveTo = tappedSceneObjectForLogic.id // Используем ID из актуального объекта
+                    let sceneIdToMoveTo = tappedSceneObjectForLogic.id
+                    // --- LOG: время до смены локации ---
+                    let perfStart = Date()
                     try? GameStateService.shared.changeLocation(to: sceneIdToMoveTo)
-
-                    // ВОССТАНАВЛИВАЕМ ОБНОВЛЕНИЕ UI ПОСЛЕ СМЕНЫ ЛОКАЦИИ
-                    self.markerRenderingView.setCurrentSceneId(sceneIdToMoveTo)
-                    self.linesView.currentSceneId = sceneIdToMoveTo
-                    self.linesView.setNeedsDisplay()
-
-                    if let newCurrentSceneData = self.allScenes.first(where: { $0.id == sceneIdToMoveTo }) {
-                        self.currentLocationNameLabel.text = newCurrentSceneData.name
-                        self.currentLocationTypeLabel.text = newCurrentSceneData.sceneType.displayName
-                        self.currentLocationTypeIconImageView.image = UIImage(systemName: newCurrentSceneData.sceneType.iconName)
-
-                        // Обновляем статус isLocked для всех маркеров, так как он мог измениться
-                        // Это важно для корректного отображения замков в MarkerView
-                        let liveScenesById = Dictionary(uniqueKeysWithValues: self.allScenes.map { ($0.id, $0) })
-                        var redrawFramesForLockStatus: [CGRect] = []
-
-                        for i in 0..<self.markerRenderingView.markerDrawDataList.count {
-                            let originalDrawData = self.markerRenderingView.markerDrawDataList[i]
-                            if let liveScene = liveScenesById[originalDrawData.scene.id] {
-                                if originalDrawData.isLocked != liveScene.isLocked {
-                                    var updatedDrawData = originalDrawData
-                                    updatedDrawData.isLocked = liveScene.isLocked // Обновляем isLocked в markerDrawDataList
-                                    self.markerRenderingView.markerDrawDataList[i] = updatedDrawData
-                                    redrawFramesForLockStatus.append(updatedDrawData.frame.insetBy(dx: -10, dy: -10))
-                                }
+                    let perfAfterChange = Date()
+                    print("[PERF] changeLocation duration: \((perfAfterChange.timeIntervalSince(perfStart) * 1000).rounded()) ms")
+                    // --- обновляем только статусы и собираем изменённые фреймы ---
+                    var changedRects: [CGRect] = []
+                    for i in 0..<markerDrawDataList.count {
+                        let sceneId = markerDrawDataList[i].scene.id
+                        if let updatedScene = allScenes.first(where: { $0.id == sceneId }) {
+                            let oldIsLocked = markerDrawDataList[i].isLocked
+                            let oldIsCurrent = markerDrawDataList[i].isCurrent
+                            let newIsLocked = updatedScene.isLocked
+                            let newIsCurrent = (sceneId == sceneIdToMoveTo)
+                            if oldIsLocked != newIsLocked || oldIsCurrent != newIsCurrent {
+                                changedRects.append(markerDrawDataList[i].frame.insetBy(dx: -10, dy: -10))
                             }
+                            markerDrawDataList[i].isLocked = newIsLocked
+                            markerDrawDataList[i].isCurrent = newIsCurrent
                         }
-                        for frameToRedraw in redrawFramesForLockStatus {
-                            self.markerRenderingView.setNeedsDisplay(frameToRedraw)
-                        }
-
-                        // Центрируем камеру на новой сцене асинхронно, чтобы дождаться layout
-                        DispatchQueue.main.async {
-                            self.centerCameraOnScene(withId: sceneIdToMoveTo, animated: true)
-                        }
-                    } else {
-                        // Если данные о новой сцене не найдены (маловероятно, если смена локации прошла успешно)
-                        self.currentLocationNameLabel.text = "N/A"
-                        self.currentLocationTypeLabel.text = ""
-                        self.currentLocationTypeIconImageView.image = nil
                     }
-                    // КОНЕЦ БЛОКА ВОССТАНОВЛЕНИЯ ОБНОВЛЕНИЯ UI
-                    return // Выходим после обработки первого же найденного и обработанного маркера
+                    let perfBeforeUI = Date()
+                    // setNeedsDisplay только для изменённых маркеров, которые видимы на экране (lazy rendering)
+                    let visibleRect = scrollView.convert(scrollView.bounds, to: markerRenderingView)
+                    for rect in changedRects {
+                        if rect.intersects(visibleRect) {
+                            markerRenderingView.setNeedsDisplay(rect)
+                        }
+                    }
+                    markerRenderingView.setCurrentSceneId(sceneIdToMoveTo)
+                    linesView.currentSceneId = sceneIdToMoveTo
+                    linesView.setNeedsDisplay()
+                    if let newCurrentSceneData = allScenes.first(where: { $0.id == sceneIdToMoveTo }) {
+                        currentLocationNameLabel.text = newCurrentSceneData.name
+                        currentLocationTypeLabel.text = newCurrentSceneData.sceneType.displayName
+                        currentLocationTypeIconImageView.image = UIImage(systemName: newCurrentSceneData.sceneType.iconName)
+                    } else {
+                        currentLocationNameLabel.text = "N/A"
+                        currentLocationTypeLabel.text = ""
+                        currentLocationTypeIconImageView.image = nil
+                    }
+                    DispatchQueue.main.async {
+                        self.centerCameraOnScene(withId: sceneIdToMoveTo, animated: true)
+                    }
+                    let perfAfterUI = Date()
+                    print("[PERF] UI update duration: \((perfAfterUI.timeIntervalSince(perfBeforeUI) * 1000).rounded()) ms")
+                    self.updateGlowView(for: sceneIdToMoveTo)
+                    return
                 } else {
-                    // Локация не связана напрямую, перемещение не выполняем
                     print("[WorldMapView] Cannot move to scene '\(tappedSceneObjectForLogic.name)' (ID: \(tappedSceneObjectForLogic.id)). It is not directly connected to the current scene '\(currentScene.name)' (ID: \(currentScene.id)).")
-                    return // Важно выйти, чтобы не обрабатывать другие маркеры под точкой нажатия
+                    return
                 }
             }
         }
-        // print("Tap did not hit any unlocked and connected marker, or scene data was inconsistent.")
     }
 
     // Замена setupContentView -> configureMarkerView
@@ -995,6 +957,36 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
 
         print("[DEBUG] Centering on scene \(sceneId): markerCenter=\(markerCenter), zoom=\(zoom), visibleSize=\(visibleSize), targetOffset=\(targetOffset), contentSize=\(contentSize)")
         scrollView.setContentOffset(targetOffset, animated: animated)
+    }
+
+    private func updateGlowView(for sceneId: Int) {
+        guard let markerData = markerDrawDataList.first(where: { $0.scene.id == sceneId }) else {
+            glowView?.removeFromSuperview()
+            glowView = nil
+            return
+        }
+        let markerFrame = markerRenderingView.convert(markerData.frame, to: markerRenderingView)
+        let coloredRect = markerData.coloredRectangleFrame
+        let coloredRectInView = CGRect(x: markerFrame.origin.x + coloredRect.origin.x, y: markerFrame.origin.y + coloredRect.origin.y, width: coloredRect.width, height: coloredRect.height)
+        let glow: UIView
+        if let existing = glowView {
+            glow = existing
+        } else {
+            glow = UIView()
+            glow.isUserInteractionEnabled = false
+            markerRenderingView.addSubview(glow)
+            glowView = glow
+        }
+        glow.frame = coloredRectInView.insetBy(dx: -4, dy: -4)
+        glow.backgroundColor = .clear
+        glow.layer.shadowColor = UIColor.yellow.cgColor
+        glow.layer.shadowOpacity = 0.8
+        glow.layer.shadowRadius = 8.0
+        glow.layer.shadowOffset = .zero
+        glow.layer.cornerRadius = 10
+        glow.layer.masksToBounds = false
+        glow.layer.borderColor = UIColor.clear.cgColor
+        // Можно добавить анимацию появления/исчезновения при желании
     }
 }
 
