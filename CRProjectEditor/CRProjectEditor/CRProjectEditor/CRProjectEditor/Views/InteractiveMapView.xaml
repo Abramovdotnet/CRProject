@@ -6,17 +6,56 @@
              xmlns:local="clr-namespace:CRProjectEditor.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
-             Background="LightGray">
+             Background="LightGray"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch">
     <Grid ClipToBounds="True">
-        <Image Source="C:\Repos\CRProject\CRProject\Assets.xcassets\Textures\MainSceneBackground.imageset\Unknown-6.jpg" Stretch="UniformToFill" />
-        <Canvas x:Name="MapCanvas" AllowDrop="True" Background="Transparent">
-            <Canvas.RenderTransform>
-                <TransformGroup>
-                    <ScaleTransform x:Name="ZoomTransform" ScaleX="1" ScaleY="1" />
-                    <TranslateTransform x:Name="PanTransform" X="0" Y="0" />
-                </TransformGroup>
-            </Canvas.RenderTransform>
-            <!-- Сцены и связи будут добавляться сюда из кода -->
+
+        <Canvas x:Name="MapCanvas"
+                AllowDrop="True"
+                Background="Green"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Grid}}"
+                Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Grid}}">
+            <Canvas x:Name="ContentCanvas"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Canvas}}"
+                    Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Canvas}}">
+                <Canvas.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform x:Name="ZoomTransform" ScaleX="1" ScaleY="1" />
+                        <TranslateTransform x:Name="PanTransform" X="0" Y="0" />
+                    </TransformGroup>
+                </Canvas.RenderTransform>
+                <!-- Сцены и связи теперь должны добавляться в ContentCanvas из кода -->
+            </Canvas>
         </Canvas>
+
+        <!-- Zoom Control Elements -->
+        <StackPanel Orientation="Vertical" 
+                    HorizontalAlignment="Right" 
+                    VerticalAlignment="Top" 
+                    Margin="10"
+                    Background="#55000000" 
+                    >
+            <TextBlock Text="Zoom:"
+                       Foreground="White"
+                       HorizontalAlignment="Center"/>
+            <Slider x:Name="ZoomSlider"
+                    Minimum="0.2" 
+                    Maximum="5.0" 
+                    Value="{Binding ElementName=ZoomTransform, Path=ScaleX, Mode=TwoWay}"
+                    Orientation="Horizontal"
+                    Width="150"
+                    Margin="5"
+                    ValueChanged="ZoomSlider_ValueChanged"/>
+            <TextBlock x:Name="ZoomPercentageTextBlock"
+                       Text="100%"
+                       Foreground="White"
+                       HorizontalAlignment="Center"/>
+        </StackPanel>
+
     </Grid>
 </UserControl> 

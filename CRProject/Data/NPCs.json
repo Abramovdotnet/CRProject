@@ -1311,10 +1311,10 @@
     "id": 5965,
     "name": "Agnes Olsen",
     "sex": "female",
-    "age": 34,
+    "age": 90,
     "profession": "Ship captain",
     "homeLocationId": 92,
-    "isVampire": false,
+    "isVampire": true,
     "morality": "Lawful neutral",
     "motivation": "Excellence",
     "background": "Agnes Olsen's rise to ship captain has been marked by exceptional skill and determination. Beginning her maritime career as a navigator's apprentice, she quickly demonstrated a natural talent for seamanship and leadership. Her expertise in navigation and weather prediction has earned her a reputation for completing voyages safely and ahead of schedule. She maintains strict discipline aboard her vessel while fostering a strong sense of camaraderie among her crew. Her innovative approach to cargo management and route planning has helped establish new trade relationships for Duskvale. Despite facing initial skepticism due to her gender and relatively young age for a captain, her consistent success has earned her the respect of even the most traditional maritime veterans. She takes particular pride in proving that competence and leadership ability are not limited by gender or age."

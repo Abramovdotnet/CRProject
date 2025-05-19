@@ -20,6 +20,15 @@ namespace CRProjectEditor.ViewModels
         public TimeSpan Duration { get; }
         public event Action<ToastNotificationViewModel>? Dismissed;
 
+        // Parameterless constructor for XAML instantiation
+        public ToastNotificationViewModel()
+        {
+            _message = "Default Message";
+            _type = ToastType.Info;
+            Duration = TimeSpan.FromSeconds(3);
+            _isVisible = true; // Or false, depending on desired design-time visibility
+        }
+
         public ToastNotificationViewModel(string message, ToastType type, TimeSpan duration)
         {
             _message = message;

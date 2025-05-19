@@ -102,7 +102,7 @@ namespace CRProjectEditor.ViewModels
             EditNpcCommand = new AsyncRelayCommand(OpenEditNpcWindowAsync, CanEditNpc);
             AddOrReplaceAssetCommand = new AsyncRelayCommand(AddOrReplaceAssetAsync, CanManageAsset);
             DeleteAssetCommand = new AsyncRelayCommand(DeleteAssetAsync, CanDeleteAsset);
-            _ = LoadNpcsAsync();
+            _ = LoadNpcsAsync(); 
             _ = LoadAssetTemplateAsync(); // Загружаем шаблон при инициализации
         }
 

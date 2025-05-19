@@ -5,9 +5,17 @@ using System.Diagnostics; // For Debug.WriteLine
 using System.Windows; // Required for DragDrop andDataObject
 using System.Windows.Input; // Required for MouseButtonEventArgs
 using System.Windows.Data; // For CollectionViewSource (if used for sorting/filtering DataGrid)
+using System.Windows.Documents;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
 
 namespace CRProjectEditor.Views
 {
+    /// <summary>
+    /// Interaction logic for WorldView.xaml
+    /// </summary>
     public partial class WorldView : UserControl
     {
         private WorldViewModel _viewModel;
@@ -54,6 +62,16 @@ namespace CRProjectEditor.Views
                     {
                         if (_viewModel != null) await _viewModel.ChangeSceneIdFromAssetAsync(targetScene, assetInfo);
                     };
+                    ScenesMapDataGrid.SelectionChanged += (s, e) =>
+                    {
+                        if (s is DataGrid dataGrid)
+                        {
+                            if (dataGrid.SelectedItem != null && dataGrid.SelectedItem is Scene scene)
+                            {
+                                InteractiveMap.SelectScene(scene);
+                            }
+                        }
+                    };
                 }
             };
         }
@@ -93,6 +111,23 @@ namespace CRProjectEditor.Views
             {
                 scrollViewer.ScrollToVerticalOffset(scrollViewer.VerticalOffset - e.Delta);
                 e.Handled = true;
+            }
+        }
+
+        private void DataGridRow_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            if (e.Handled) return; // If already handled by a child, do nothing
+
+            if (sender is DataGridRow row && row.DataContext is Scene scene)
+            {
+                if (this.DataContext is WorldViewModel viewModel)
+                {
+                    if (viewModel.EditSceneFromGridCommand.CanExecute(scene))
+                    {
+                        viewModel.EditSceneFromGridCommand.Execute(scene);
+                        e.Handled = true; // Mark event as handled to prevent further processing
+                    }
+                }
             }
         }
     }

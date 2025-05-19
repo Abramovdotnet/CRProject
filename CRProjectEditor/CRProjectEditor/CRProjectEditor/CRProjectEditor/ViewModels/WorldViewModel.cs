@@ -21,6 +21,27 @@ using Microsoft.Win32; // For OpenFileDialog
 
 namespace CRProjectEditor.ViewModels
 {
+    // Вспомогательный класс для опций фильтра с "Все"
+    public class AllFilterPlaceholder
+    {
+        public string DisplayName { get; set; }
+        public AllFilterPlaceholder(string displayName) { DisplayName = displayName; }
+        public override string ToString() => DisplayName;
+    }
+
+    // Вспомогательный класс для элементов ComboBox фильтров Да/Нет/Все
+    public class FilterOption<TValue>
+    {
+        public string DisplayName { get; set; }
+        public TValue Value { get; set; }
+        public FilterOption(string displayName, TValue value)
+        {
+            DisplayName = displayName;
+            Value = value;
+        }
+        public override string ToString() => DisplayName;
+    }
+
     // Вспомогательный класс для парсинга LocationNames.json
     public class LocationNameEntry
     {
@@ -47,14 +68,46 @@ namespace CRProjectEditor.ViewModels
     public partial class WorldViewModel : ObservableObject
     {
         private readonly INotificationService _notificationService;
+        private List<NpcModel> _allNpcs = new List<NpcModel>(); // Список всех NPC
         public string ViewModelDisplayName => "World";
 
         private ObservableCollection<Scene> _scenes = new ObservableCollection<Scene>();
         public ObservableCollection<Scene> Scenes
         {
             get => _scenes;
-            set => SetProperty(ref _scenes, value);
+            set 
+            {
+                if (SetProperty(ref _scenes, value))
+                {
+                    // Если коллекция сцен заменяется, нужно обновить фильтрованные сцены
+                    // и переподписаться на CollectionChanged, если это необходимо для динамического обновления фильтров
+                    // На данный момент ApplyFilters будет вызван после операций, изменяющих Scenes
+                    ApplyFilters(); 
         }
+            }
+        }
+
+        // --- Начало свойств для фильтрации ---
+        [ObservableProperty]
+        private string? _searchNameText;
+
+        public ObservableCollection<object> SceneTypesForFilter { get; } = new ObservableCollection<object>();
+
+        [ObservableProperty]
+        private object? _selectedSceneTypeForFilter;
+        
+        public ObservableCollection<FilterOption<bool?>> IndoorOptionsForFilter { get; } = new ObservableCollection<FilterOption<bool?>>();
+
+        [ObservableProperty]
+        private FilterOption<bool?>? _selectedIndoorOptionForFilter;
+
+        public ObservableCollection<FilterOption<bool?>> ResidentsOptionsForFilter { get; } = new ObservableCollection<FilterOption<bool?>>();
+        
+        [ObservableProperty]
+        private FilterOption<bool?>? _selectedResidentsOptionForFilter;
+
+        public ObservableCollection<Scene> FilteredScenes { get; } = new ObservableCollection<Scene>();
+        // --- Конец свойств для фильтрации ---
 
         [ObservableProperty]
         private string _newLocationName = "НоваяЛокация";
@@ -85,6 +138,8 @@ namespace CRProjectEditor.ViewModels
         public IAsyncRelayCommand DeleteAllConnectionsCommand { get; }
         public IAsyncRelayCommand DeleteSelectedSceneCommand { get; }
 
+        public ICommand EditSceneFromGridCommand { get; }
+
         public ObservableCollection<SceneType> AvailableSceneTypesForDrag { get; }
 
         [ObservableProperty]
@@ -95,6 +150,9 @@ namespace CRProjectEditor.ViewModels
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(SelectedAssetPreviewPath))]
         private AssetDisplayInfo? _selectedAsset;
+
+        [ObservableProperty]
+        private ObservableCollection<NpcModel> _selectedSceneResidents = new ObservableCollection<NpcModel>();
 
         // Добавленный частичный метод для реакции на изменение SelectedAsset
         partial void OnSelectedAssetChanged(AssetDisplayInfo? oldValue, AssetDisplayInfo? newValue)
@@ -117,6 +175,15 @@ namespace CRProjectEditor.ViewModels
         public WorldViewModel(INotificationService notificationService)
         {
             _notificationService = notificationService;
+
+            // --- Инициализация фильтров ---
+            InitializeFilterOptions();
+            // Устанавливаем значения по умолчанию для фильтров (например, "Все")
+            _selectedSceneTypeForFilter = SceneTypesForFilter.FirstOrDefault();
+            _selectedIndoorOptionForFilter = IndoorOptionsForFilter.FirstOrDefault();
+            _selectedResidentsOptionForFilter = ResidentsOptionsForFilter.FirstOrDefault();
+            // --- Конец инициализации фильтров ---
+
             AvailableSceneTypesForDrag = new ObservableCollection<SceneType>();
             foreach (SceneType type in Enum.GetValues(typeof(SceneType)))
             {
@@ -145,25 +212,110 @@ namespace CRProjectEditor.ViewModels
             CreateAssetCommand = new AsyncRelayCommand(CreateAssetAsync);
             DeleteAssetCommand = new AsyncRelayCommand(DeleteAssetAsync, CanDeleteAsset);
 
+            EditSceneFromGridCommand = new RelayCommand<Scene>(ExecuteEditSceneFromGrid);
+
             _ = LoadScenesAsync(); 
             _ = LoadAssetImagesAsync(); // Load assets
+            _ = LoadNpcsDataAsync(); // Загружаем данные NPC
+
             this.PropertyChanged += (s, e) => {
                 if (e.PropertyName == nameof(MapSelectedScene))
                 {
                     UpdateAllOtherScenesForConnection();
                     UpdateSelectedSceneImagePath();
-                    // Manually raise CanExecuteChanged for commands that depend on MapSelectedScene indirectly 
-                    // or if NotifyCanExecuteChangedFor doesn't cover all scenarios (e.g. parameterless RelayCommand)
-                    // For AsyncRelayCommand with CanExecute methods, SetProperty on _mapSelectedScene should trigger it.
+                    UpdateSelectedSceneResidents(); // Обновляем список резидентов
                 }
+                // --- Добавляем обработчики для изменения свойств фильтров ---
+                else if (e.PropertyName == nameof(SearchNameText) ||
+                         e.PropertyName == nameof(SelectedSceneTypeForFilter) ||
+                         e.PropertyName == nameof(SelectedIndoorOptionForFilter) ||
+                         e.PropertyName == nameof(SelectedResidentsOptionForFilter))
+                {
+                    ApplyFilters();
+                }
+                // --- Конец обработчиков ---
             };
+        }
+
+        private void InitializeFilterOptions()
+        {
+            // Типы сцен
+            SceneTypesForFilter.Add(new AllFilterPlaceholder("Все типы"));
+            foreach (SceneType type in Enum.GetValues(typeof(SceneType)))
+            {
+                SceneTypesForFilter.Add(type);
+            }
+
+            // IsIndoor
+            IndoorOptionsForFilter.Add(new FilterOption<bool?>("Indoor: Все", null));
+            IndoorOptionsForFilter.Add(new FilterOption<bool?>("Indoor: Да", true));
+            IndoorOptionsForFilter.Add(new FilterOption<bool?>("Indoor: Нет", false));
+
+            // HasResidents
+            ResidentsOptionsForFilter.Add(new FilterOption<bool?>("Резиденты: Все", null));
+            ResidentsOptionsForFilter.Add(new FilterOption<bool?>("Резиденты: Есть", true));
+            ResidentsOptionsForFilter.Add(new FilterOption<bool?>("Резиденты: Нет", false));
+        }
+
+        private void ApplyFilters()
+        {
+            if (Scenes == null)
+            {
+                FilteredScenes.Clear();
+                return;
+            }
+
+            IEnumerable<Scene> currentFiltered = Scenes;
+
+            // 1. Фильтр по имени
+            if (!string.IsNullOrWhiteSpace(SearchNameText))
+            {
+                currentFiltered = currentFiltered.Where(s => s.Name.Contains(SearchNameText, StringComparison.OrdinalIgnoreCase));
+            }
+
+            // 2. Фильтр по типу сцены
+            if (SelectedSceneTypeForFilter is SceneType selectedType) // Проверяем, что это именно SceneType, а не AllFilterPlaceholder
+            {
+                currentFiltered = currentFiltered.Where(s => s.SceneType == selectedType);
+            }
+
+            // 3. Фильтр IsIndoor
+            if (SelectedIndoorOptionForFilter != null && SelectedIndoorOptionForFilter.Value.HasValue)
+            {
+                currentFiltered = currentFiltered.Where(s => s.IsIndoor == SelectedIndoorOptionForFilter.Value.Value);
+            }
+
+            // 4. Фильтр по наличию резидентов
+            if (SelectedResidentsOptionForFilter != null && SelectedResidentsOptionForFilter.Value.HasValue)
+            {
+                if (SelectedResidentsOptionForFilter.Value.Value) // true означает "Есть резиденты"
+                {
+                    currentFiltered = currentFiltered.Where(s => s.ResidentCount > 0);
+                }
+                else // false означает "Нет резидентов"
+                {
+                    currentFiltered = currentFiltered.Where(s => s.ResidentCount == 0);
+                }
+            }
+            
+            // Обновляем коллекцию FilteredScenes
+            // Чтобы избежать мерцания DataGrid, можно сначала очистить и потом добавить,
+            // или использовать более сложный механизм синхронизации, если необходимо.
+            // Для простоты пока так:
+            var newFilteredList = currentFiltered.ToList();
+            FilteredScenes.Clear();
+            foreach (var scene in newFilteredList)
+            {
+                FilteredScenes.Add(scene);
+            }
+            Debug.WriteLine($"[ApplyFilters] Applied. Filtered count: {FilteredScenes.Count}");
         }
 
         partial void OnMapSelectedSceneChanged(Scene? oldValue, Scene? newValue)
         {
             UpdateAllOtherScenesForConnection();
             UpdateSelectedSceneImagePath(); 
-            // Commands' CanExecute will be re-evaluated due to [NotifyCanExecuteChangedFor]
+            UpdateSelectedSceneResidents(); // Обновляем список резидентов при прямом изменении свойства
         }
 
         private void UpdateSelectedSceneImagePath()
@@ -377,6 +529,7 @@ namespace CRProjectEditor.ViewModels
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     Scenes = loadedScenes ?? new ObservableCollection<Scene>();
+                    // ApplyFilters(); // Вызываем ApplyFilters после загрузки и присвоения Scenes
                 });
                 _notificationService.UpdateStatus($"Загружено {Scenes.Count} сцен.");
                 _notificationService.ShowToast($"Загружено {Scenes.Count} сцен.", ToastType.Success);
@@ -388,6 +541,7 @@ namespace CRProjectEditor.ViewModels
                 _notificationService.UpdateStatus("Ошибка загрузки сцен.");
                 App.Current.Dispatcher.Invoke(() => Scenes.Clear());
             }
+            // ApplyFilters(); // Также вызывается в сеттере Scenes
         }
 
         private async Task GenerateLocationAndRefreshAsync()
@@ -1499,7 +1653,7 @@ namespace CRProjectEditor.ViewModels
                     // Предположим, что файл Content\AssetImageContent.json находится относительно исполняемого файла или проекта.
                     // Для большей надежности, его можно сделать ресурсом или копировать при сборке.
                     // Пока использую жестко заданный путь, как он был указан вами, но с осторожностью.
-                    string templatePath = "C:\\\\Repos\\\\CRProject\\\\CRProjectEditor\\\\CRProjectEditor\\\\CRProjectEditor\\\\CRProjectEditor\\\\Content\\\\AssetImageContent.json";
+                    string templatePath = Path.Combine("Content", "AssetImageSetTemplate.json"); // Assumes Content folder is accessible from working directory or output
                     string contentsJsonPath = Path.Combine(assetFolderPath, "Contents.json");
 
                     if (!File.Exists(templatePath))
@@ -1528,6 +1682,135 @@ namespace CRProjectEditor.ViewModels
                     _notificationService.ShowToast($"Ошибка при создании ассета: {ex.Message}", ToastType.Error);
                     _notificationService.UpdateStatus("Ошибка создания ассета.");
                     Debug.WriteLine($"[CreateAssetAsync] Исключение: {ex}");
+                }
+            }
+        }
+
+        private async Task LoadNpcsDataAsync()
+        {
+            if (!File.Exists(Constants.NPCSPath))
+            {
+                Debug.WriteLine($"[WorldViewModel] Файл NPC не найден: {Constants.NPCSPath}");
+                // _notificationService?.ShowToast("Файл данных NPC не найден.", ToastType.Error); // Раскомментировать, если нужно уведомление
+                return;
+            }
+            try
+            {
+                string jsonString = await File.ReadAllTextAsync(Constants.NPCSPath);
+                if (string.IsNullOrWhiteSpace(jsonString))
+                {
+                    Debug.WriteLine("[WorldViewModel] Файл NPC пуст.");
+                    return;
+                }
+                var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true, AllowTrailingCommas = true };
+                var loadedNpcs = JsonSerializer.Deserialize<List<NpcModel>>(jsonString, options);
+                if (loadedNpcs != null)
+                {
+                    _allNpcs = loadedNpcs;
+                    Debug.WriteLine($"[WorldViewModel] Загружено {_allNpcs.Count} NPC.");
+                    // После загрузки NPC, можно обновить ResidentCount для всех сцен
+                    UpdateAllSceneResidentCounts();
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[WorldViewModel] Ошибка при загрузке NPC: {ex.Message}");
+            }
+        }
+
+        private void UpdateAllSceneResidentCounts()
+        {
+            if (!_allNpcs.Any() || !Scenes.Any()) return;
+
+            foreach (var scene in Scenes)
+            {
+                scene.ResidentCount = _allNpcs.Count(npc => npc.HomeLocationId == scene.Id);
+            }
+            // После обновления ResidentCount, нужно заново применить фильтры,
+            // особенно если есть фильтр по наличию резидентов.
+            ApplyFilters(); 
+        }
+
+        private void UpdateSelectedSceneResidents()
+        {
+            SelectedSceneResidents.Clear();
+            if (MapSelectedScene != null && _allNpcs.Any())
+            {
+                var residents = _allNpcs.Where(npc => npc.HomeLocationId == MapSelectedScene.Id);
+                foreach (var resident in residents)
+                {
+                    SelectedSceneResidents.Add(resident);
+                }
+            }
+            Debug.WriteLine($"[WorldViewModel] Резиденты для сцены {MapSelectedScene?.Id}: {SelectedSceneResidents.Count}");
+        }
+
+        private void ExecuteEditSceneFromGrid(Scene? sceneToEdit)
+        {
+            if (sceneToEdit == null) return;
+
+            // Находим актуальный объект сцены в основной коллекции, чтобы изменения отразились
+            var actualSceneInCollection = Scenes.FirstOrDefault(s => s.Id == sceneToEdit.Id);
+            if (actualSceneInCollection == null)
+            {
+                _notificationService.ShowToast("Сцена для редактирования не найдена в основной коллекции.", ToastType.Error);
+                return;
+            }
+
+            var editWindow = new EditSceneDetailsWindow(actualSceneInCollection, GenerateUniqueLocationName, false); // isIdEditable = false
+            editWindow.Owner = Application.Current.MainWindow;
+
+            if (editWindow.ShowDialog() == true)
+            {
+                bool changed = false;
+                // ID не меняем, так как isIdEditable было false
+
+                if (actualSceneInCollection.Name != editWindow.SceneName)
+                {
+                    actualSceneInCollection.Name = editWindow.SceneName;
+                    changed = true;
+                }
+                if (actualSceneInCollection.Description != editWindow.SceneDescription)
+                {
+                    actualSceneInCollection.Description = editWindow.SceneDescription;
+                    changed = true;
+                }
+                if (actualSceneInCollection.SceneType != editWindow.SelectedSceneType)
+                {
+                    actualSceneInCollection.SceneType = editWindow.SelectedSceneType;
+                    changed = true;
+                }
+                if (actualSceneInCollection.IsIndoor != editWindow.IsIndoor)
+                {
+                    actualSceneInCollection.IsIndoor = editWindow.IsIndoor;
+                    changed = true;
+                }
+                if (actualSceneInCollection.ParentSceneId != editWindow.ParentSceneId)
+                {
+                    actualSceneInCollection.ParentSceneId = editWindow.ParentSceneId;
+                    changed = true;
+                }
+                if (actualSceneInCollection.Population != editWindow.Population)
+                { 
+                    actualSceneInCollection.Population = editWindow.Population;
+                    changed = true;
+                }
+                if (actualSceneInCollection.Radius != editWindow.Radius)
+                {
+                    actualSceneInCollection.Radius = editWindow.Radius;
+                    changed = true;
+                }
+
+                if (changed)
+                {
+                    // Принудительное обновление объекта в коллекции, если это необходимо для UI (хотя ObservableCollection должна справляться)
+                    // int index = Scenes.IndexOf(actualSceneInCollection);
+                    // if (index != -1) Scenes[index] = actualSceneInCollection; 
+                    
+                    // Сохраняем изменения и обновляем фильтры
+                    _ = SaveCurrentMapLayoutAsync(); // Не ждем завершения, но запускаем
+                    ApplyFilters(); // Обновить DataGrid, если что-то поменялось, что влияет на фильтр
+                    _notificationService.ShowToast("Детали сцены обновлены.", ToastType.Success);
                 }
             }
         }

@@ -46,6 +46,10 @@ namespace CRProjectEditor.Models
         [JsonPropertyName("radius")]
         public int Radius { get; set; } // Changed to int for consistency, can be float if needed
 
+        [JsonPropertyName("residentCount")]
+        [JsonIgnore] // Calculated, not directly from JSON
+        public int ResidentCount { get; set; }
+
         // Properties for the coordinate generation algorithm
         [JsonIgnore]
         public Vector2 Point { get; set; } // Using Vector2 for calculations

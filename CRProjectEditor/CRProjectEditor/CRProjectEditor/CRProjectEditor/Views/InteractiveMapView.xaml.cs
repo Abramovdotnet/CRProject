@@ -14,6 +14,7 @@ using System.ComponentModel; // Required for DesignerProperties
 using CRProjectEditor.Tools;
 using System.IO; // Added for File.Exists
 using System.Windows.Media.Imaging; // Added for BitmapImage
+using System.Windows.Media.Animation; // Added for smooth animation
 
 namespace CRProjectEditor.Views
 {
@@ -97,6 +98,12 @@ namespace CRProjectEditor.Views
         }
         public event Action<Scene?>? SceneSelected;
 
+        public void SelectScene(Scene scene)
+        {
+            SelectedScene = scene;
+            SmoothlyCenterOnScene(scene); // Added call for smooth centering
+        }
+
         // Helper to get color for scene type
         private Brush GetSceneTypeBrush(SceneType sceneType)
         {
@@ -152,26 +159,48 @@ namespace CRProjectEditor.Views
         {
             InitializeComponent();
             Debug.WriteLine("InteractiveMapView: Constructor called.");
-            scaleTransform = new ScaleTransform(1, 1);
-            translateTransform = new TranslateTransform(0, 0);
 
-            TransformGroup transformGroup = new TransformGroup();
-            transformGroup.Children.Add(scaleTransform);
-            transformGroup.Children.Add(translateTransform);
-            MapCanvas.RenderTransform = transformGroup;
+            // Initialize scaleTransform and translateTransform from the XAML elements 
+            // within ContentCanvas (named ZoomTransform and PanTransform respectively).
+            // This ensures that the C# code manipulates the correct transforms.
+            if (this.ContentCanvas.RenderTransform is TransformGroup group && group.Children.Count == 2)
+            {
+                 this.scaleTransform = group.Children.OfType<ScaleTransform>().FirstOrDefault();
+                 this.translateTransform = group.Children.OfType<TranslateTransform>().FirstOrDefault();
 
-            MapCanvas.MouseWheel += MapCanvas_MouseWheel;
-            MapCanvas.MouseMove += MapCanvas_MouseMove;
-            MapCanvas.MouseDown += MapCanvas_MouseDown;
-            MapCanvas.MouseUp += MapCanvas_MouseUp;
+                 // Fallback if names are not directly resolvable or order is different, though x:Name should work.
+                 // More robustly, ensure ZoomTransform and PanTransform are the x:Name attributes in XAML.
+                 if (this.scaleTransform == null) this.scaleTransform = this.ZoomTransform; // Assumes x:Name="ZoomTransform" exists
+                 if (this.translateTransform == null) this.translateTransform = this.PanTransform; // Assumes x:Name="PanTransform" exists
+            }
+            else
+            {
+                // If not found as expected, create them and assign to ContentCanvas
+                // This path should ideally not be hit if XAML is correct.
+                Debug.WriteLine("InteractiveMapView: Warning - Could not find transforms on ContentCanvas, creating new ones.");
+                this.scaleTransform = new ScaleTransform(1, 1);
+                this.translateTransform = new TranslateTransform(0, 0);
+                TransformGroup newTransformGroup = new TransformGroup();
+                newTransformGroup.Children.Add(this.scaleTransform);
+                newTransformGroup.Children.Add(this.translateTransform);
+                this.ContentCanvas.RenderTransform = newTransformGroup;
+            }
+            
+            // Ensure MapCanvas itself is not being transformed by C# code here.
+            // MapCanvas.RenderTransform = transformGroup; // THIS LINE IS REMOVED/COMMENTED IF IT WAS HERE
+
+            MapCanvas.MouseWheel += ContentCanvas_MouseWheel;
+            MapCanvas.MouseMove += ContentCanvas_MouseMove;
+            MapCanvas.MouseDown += ContentCanvas_MouseDown;
+            MapCanvas.MouseUp += ContentCanvas_MouseUp;
 
             // Add drag-drop event handlers
-            MapCanvas.DragEnter += MapCanvas_DragEnter;
-            MapCanvas.DragOver += MapCanvas_DragOver;
-            MapCanvas.Drop += MapCanvas_Drop;
+            MapCanvas.DragEnter += ContentCanvas_DragEnter;
+            MapCanvas.DragOver += ContentCanvas_DragOver;
+            MapCanvas.Drop += ContentCanvas_Drop;
 
-            this.Loaded += UserControl_Loaded; 
-            MapCanvas.SizeChanged += MapCanvas_SizeChanged; 
+            this.Loaded += UserControl_Loaded;
+            MapCanvas.SizeChanged += ContentCanvas_SizeChanged; 
         }
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
@@ -180,10 +209,13 @@ namespace CRProjectEditor.Views
             DrawMap();
         }
 
-        private void MapCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void ContentCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            Debug.WriteLine($"InteractiveMapView: MapCanvas_SizeChanged called. New size: {e.NewSize.Width}x{e.NewSize.Height}");
+            Debug.WriteLine($"InteractiveMapView: ContentCanvas_SizeChanged called. New size: {e.NewSize.Width}x{e.NewSize.Height}");
             DrawMap();
+
+            Debug.WriteLine(MapCanvas.ActualHeight);
+            Debug.WriteLine(MapCanvas.ActualWidth);
         }
 
         public static readonly DependencyProperty ScenesProperty =
@@ -227,10 +259,10 @@ namespace CRProjectEditor.Views
             Debug.WriteLine("InteractiveMapView: PopulateScenesRenderInfo called.");
             scenesRenderInfo.Clear();
 
-            Debug.WriteLine("InteractiveMapView: PopulateScenesRenderInfo - Checking Scenes and MapCanvas dimensions.");
-            if (Scenes == null || !Scenes.Any() || MapCanvas.ActualWidth == 0 || MapCanvas.ActualHeight == 0) 
+            Debug.WriteLine("InteractiveMapView: PopulateScenesRenderInfo - Checking Scenes and ContentCanvas dimensions.");
+            if (Scenes == null || !Scenes.Any() || ContentCanvas.ActualWidth == 0 || ContentCanvas.ActualHeight == 0) 
             {
-                Debug.WriteLine($"InteractiveMapView: PopulateScenesRenderInfo - Condition met to return early. Scenes null: {Scenes == null}, Scenes empty: {Scenes?.Any() == false}, Canvas Width: {MapCanvas.ActualWidth}, Canvas Height: {MapCanvas.ActualHeight}");
+                Debug.WriteLine($"InteractiveMapView: PopulateScenesRenderInfo - Condition met to return early. Scenes null: {Scenes == null}, Scenes empty: {Scenes?.Any() == false}, Canvas Width: {ContentCanvas.ActualWidth}, Canvas Height: {ContentCanvas.ActualHeight}");
                 return;
             }
             Debug.WriteLine("InteractiveMapView: PopulateScenesRenderInfo - Proceeding with calculations.");
@@ -248,8 +280,8 @@ namespace CRProjectEditor.Views
             if (contentWidth == 0) contentWidth = _currentWpfRenderScale; 
             if (contentHeight == 0) contentHeight = _currentWpfRenderScale;
 
-            _currentOffsetX = (MapCanvas.ActualWidth - contentWidth) / 2.0;
-            _currentOffsetY = (MapCanvas.ActualHeight - contentHeight) / 2.0;
+            _currentOffsetX = (ContentCanvas.ActualWidth - contentWidth) / 2.0;
+            _currentOffsetY = (ContentCanvas.ActualHeight - contentHeight) / 2.0;
 
             foreach (var scene in Scenes)
             {
@@ -274,17 +306,17 @@ namespace CRProjectEditor.Views
                 return;
             }
 
-            Debug.WriteLine("InteractiveMapView: DrawMap - Checking MapCanvas dimensions.");
-            if (MapCanvas.ActualWidth == 0 || MapCanvas.ActualHeight == 0)
+            Debug.WriteLine("InteractiveMapView: DrawMap - Checking ContentCanvas dimensions.");
+            if (ContentCanvas.ActualWidth == 0 || ContentCanvas.ActualHeight == 0)
             {
-                Debug.WriteLine($"InteractiveMapView: DrawMap - Canvas not ready. Width: {MapCanvas.ActualWidth}, Height: {MapCanvas.ActualHeight}. Clearing children and returning.");
-                MapCanvas.Children.Clear(); 
+                Debug.WriteLine($"InteractiveMapView: DrawMap - Canvas not ready. Width: {ContentCanvas.ActualWidth}, Height: {ContentCanvas.ActualHeight}. Clearing children and returning.");
+                ContentCanvas.Children.Clear(); 
                 scenesRenderInfo.Clear();   
                 _sceneAssociatedLines.Clear(); 
                 return;
             }
 
-            MapCanvas.Children.Clear();
+            ContentCanvas.Children.Clear();
             _sceneMarkers.Clear(); 
             _connectionLines.Clear(); 
             _sceneAssociatedLines.Clear(); 
@@ -370,7 +402,7 @@ namespace CRProjectEditor.Views
                         Stroke = Brushes.Red, 
                         StrokeThickness = 2    
                     };
-                    MapCanvas.Children.Add(line);
+                    ContentCanvas.Children.Add(line);
                     _connectionLines.Add(line); 
 
                     if (!_sceneAssociatedLines.ContainsKey(scene.Id))
@@ -445,8 +477,8 @@ namespace CRProjectEditor.Views
                 // 2. Create TextBlocks
                 var idTextBlock = new TextBlock
                 {
-                    Text = scene.Id.ToString(),
-                    FontSize = 8,
+                    Text = $"ID: {scene.Id.ToString()}",
+                    FontSize = 6,
                     FontWeight = FontWeights.Normal,
                     Foreground = Brushes.WhiteSmoke,
                     VerticalAlignment = VerticalAlignment.Center
@@ -456,12 +488,13 @@ namespace CRProjectEditor.Views
                 {
                     Text = scene.Name,
                     FontWeight = FontWeights.Bold,
-                    FontSize = 9,
+                    FontSize = 7,
                     Foreground = Brushes.WhiteSmoke,
                     TextTrimming = TextTrimming.CharacterEllipsis,
                     // MaxWidth will be implicitly handled by parent panel or can be set if needed
                     VerticalAlignment = VerticalAlignment.Center,
-                    Margin = new Thickness(4, 0, 0, 0) // Space between ID and Name
+                    Margin = new Thickness(4, 0, 0, 0), // Space between ID and Name
+                    ToolTip = $"ID: {scene.Id}\nName: {scene.Name}\nType: {scene.SceneType}"
                 };
 
                 var typeTextBlock = new TextBlock
@@ -481,45 +514,57 @@ namespace CRProjectEditor.Views
                 idAndNamePanel.Children.Add(idTextBlock);
                 idAndNamePanel.Children.Add(nameTextBlock);
                 
-                // 4. Panel for all text content (Vertical: ID+Name line, then Type line)
+                // --- Определение residentCountTextBlock ---
+                var residentCountTextBlock = new TextBlock
+                {
+                    Text = $"Residents: {scene.ResidentCount}",
+                    Foreground = Brushes.Orange, 
+                    HorizontalAlignment = HorizontalAlignment.Center,
+                    FontSize = 7, 
+                    ToolTip = $"Number of NPCs residing in this location: {scene.ResidentCount}"
+                };
+                // --- Конец определения residentCountTextBlock ---
+
+                // 4. Panel for all text content (Vertical: ID+Name line, then Type line, then Residents line)
                 var textContentStack = new StackPanel
                 {
                     Orientation = Orientation.Vertical,
-                    HorizontalAlignment = HorizontalAlignment.Center // Center the block of text
+                    HorizontalAlignment = HorizontalAlignment.Center 
                 };
                 textContentStack.Children.Add(idAndNamePanel);
                 textContentStack.Children.Add(typeTextBlock);
+                textContentStack.Children.Add(residentCountTextBlock);
 
                 // 5. Background Border for text (semi-transparent, contains the text)
                 var textOverlayBorder = new Border
                 {
-                    Background = new SolidColorBrush(Color.FromArgb(200, 20, 20, 20)), // Darker semi-transparent
-                    Padding = new Thickness(4, 2, 4, 2), // Padding inside the text background
-                    HorizontalAlignment = HorizontalAlignment.Stretch, // Stretch across visualElement's width
-                    VerticalAlignment = VerticalAlignment.Bottom,    // Align to the bottom of visualElement
+                    Background = new SolidColorBrush(Color.FromArgb(200, 20, 20, 20)), 
+                    Padding = new Thickness(4, 2, 4, 2), 
+                    HorizontalAlignment = HorizontalAlignment.Stretch, 
+                    VerticalAlignment = VerticalAlignment.Bottom,    // Restored to Bottom
                     Child = textContentStack
-                    // Optional: CornerRadius for bottom of overlay: new CornerRadius(0,0,2,2)
                 };
 
-                // 6. Grid to host visualElement and overlay textOverlayBorder on it
+                // --- Определение contentGrid ---
                 var contentGrid = new Grid
                 {
-                    Width = visualElement.Width,  // Should match visualElement's dimensions (e.g., 100)
-                    Height = visualElement.Height // e.g., 30
+                    Width = visualElement.Width, 
+                    Height = visualElement.Height 
                 };
-                contentGrid.Children.Add(visualElement);     // Image/Color block (layer 0)
-                contentGrid.Children.Add(textOverlayBorder); // Text on semi-transparent background (layer 1)
+                contentGrid.Children.Add(visualElement);     // Слой 0: Изображение/Цветной блок
+                contentGrid.Children.Add(textOverlayBorder); // Слой 1: Текст поверх (используется contentGrid)
+                // --- Конец определения contentGrid ---
 
                 // 7. Main markerBorder (for selection, interaction, overall rounded corners)
                 var markerBorder = new Border
                 {
                     BorderBrush = (_selectedScene != null && _selectedScene.Id == scene.Id) ? Brushes.Gold : Brushes.DarkSlateGray,
                     BorderThickness = new Thickness(1.5),
-                    CornerRadius = new CornerRadius(5), // Overall rounding
+                    CornerRadius = new CornerRadius(5), 
                     Tag = scene,
-                    Padding = new Thickness(1), // Small padding around the contentGrid
-                    Background = Brushes.Transparent, // Main border is transparent
-                    Child = contentGrid
+                    Padding = new Thickness(1), 
+                    Background = Brushes.Transparent, 
+                    Child = contentGrid // Используется contentGrid
                 };
 
                 // Attach event handlers
@@ -528,7 +573,7 @@ namespace CRProjectEditor.Views
                 markerBorder.MouseLeftButtonUp += Marker_MouseLeftButtonUp;
 
                 _sceneMarkers[scene.Id] = markerBorder;
-                MapCanvas.Children.Add(markerBorder);
+                ContentCanvas.Children.Add(markerBorder);
                 markersAddedToCanvas++;
 
                 // Position using Loaded event for accuracy
@@ -545,20 +590,20 @@ namespace CRProjectEditor.Views
             Debug.WriteLine($"InteractiveMapView: DrawMarkers finished. Iterated {scenesIterated} scenes from Scenes coll. Found {scenesFoundInRenderInfo} in scenesRenderInfo. Did NOT find {scenesNotFoundInRenderInfo} in scenesRenderInfo. Added {markersAddedToCanvas} markerBorders to canvas.");
         }
 
-        private void MapCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
+        private void ContentCanvas_MouseWheel(object sender, MouseWheelEventArgs e)
         {
             Debug.WriteLine($"InteractiveMapView: OnMouseWheel called. Delta: {e.Delta}");
-            Point mousePosition = e.GetPosition(MapCanvas); 
+            Point mousePosition = e.GetPosition(ContentCanvas); 
             double zoomFactor = e.Delta > 0 ? 1.1 : 1 / 1.1; 
 
-            var group = MapCanvas.RenderTransform as TransformGroup;
+            var group = ContentCanvas.RenderTransform as TransformGroup;
             if (group == null) 
             {
                 // This should ideally not happen if initialized in constructor
                 group = new TransformGroup();
                 group.Children.Add(new ScaleTransform(1,1,mousePosition.X,mousePosition.Y));
                 group.Children.Add(new TranslateTransform());
-                MapCanvas.RenderTransform = group;
+                ContentCanvas.RenderTransform = group;
             }
             
             var scale = group.Children.OfType<ScaleTransform>().FirstOrDefault();
@@ -581,9 +626,9 @@ namespace CRProjectEditor.Views
             Debug.WriteLine($"InteractiveMapView: OnMouseWheel - New Scale: ({scale.ScaleX:F2}, {scale.ScaleY:F2}), Center: ({scale.CenterX:F2}, {scale.CenterY:F2})");
         }
 
-        private void MapCanvas_MouseDown(object sender, MouseButtonEventArgs e)
+        private void ContentCanvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (e.OriginalSource == MapCanvas) // Click on empty space
+            if (e.OriginalSource == ContentCanvas) // Click on empty space
             {
                 SelectedScene = null;
                 Debug.WriteLine("InteractiveMapView: Clicked on empty canvas space, selection cleared.");
@@ -592,23 +637,27 @@ namespace CRProjectEditor.Views
             // Start panning if left button is pressed, not currently dragging a marker, AND NOT currently drawing a connection
             if (e.ChangedButton == MouseButton.Left && !_isDraggingMarker && !_isDrawingConnectionMode) 
             {
+                // Stop any ongoing animations on the TranslateTransform that might interfere with direct manipulation
+                translateTransform.BeginAnimation(TranslateTransform.XProperty, null);
+                translateTransform.BeginAnimation(TranslateTransform.YProperty, null);
+
                 _panLastMousePosition = e.GetPosition(this); // Use `this` (UserControl) for panning reference
                 _isPanning = true;
                 this.Cursor = Cursors.ScrollAll;
-                MapCanvas.CaptureMouse(); // Capture mouse for panning
-                Debug.WriteLine("InteractiveMapView: OnMouseDown - Panning started.");
+                ContentCanvas.CaptureMouse(); // Capture mouse for panning
+                Debug.WriteLine("InteractiveMapView: OnMouseDown - Panning started, animations cleared.");
                 e.Handled = true; // Prevent marker click if pan starts
             }
         }
 
-        private void MapCanvas_MouseMove(object sender, MouseEventArgs e)
+        private void ContentCanvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (_isPanning && e.LeftButton == MouseButtonState.Pressed) // Panning logic
             {
                 Point currentMousePosition = e.GetPosition(this); // Relative to UserControl
                 Vector delta = currentMousePosition - _panLastMousePosition;
 
-                var group = MapCanvas.RenderTransform as TransformGroup;
+                var group = ContentCanvas.RenderTransform as TransformGroup;
                 var pan = group?.Children.OfType<TranslateTransform>().FirstOrDefault();
                 if (pan != null)
                 {
@@ -620,8 +669,8 @@ namespace CRProjectEditor.Views
             }
             else if (_isDrawingConnectionMode && _connectionSourceScene != null && _tempConnectionLine != null)
             {
-                // This executes when mouse is captured by MapCanvas during connection drawing
-                Point currentMousePositionOnCanvas = e.GetPosition(MapCanvas);
+                // This executes when mouse is captured by ContentCanvas during connection drawing
+                Point currentMousePositionOnCanvas = e.GetPosition(ContentCanvas);
                 _tempConnectionLine.X2 = currentMousePositionOnCanvas.X;
                 _tempConnectionLine.Y2 = currentMousePositionOnCanvas.Y;
                 e.Handled = true; // Consume event as we are actively drawing the connection line
@@ -629,32 +678,32 @@ namespace CRProjectEditor.Views
             // Marker dragging is handled by Marker_MouseMove when mouse is captured by marker
         }
 
-        private void MapCanvas_MouseUp(object sender, MouseButtonEventArgs e)
+        private void ContentCanvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left)
             {
                 if (_isPanning) 
                 {
                     _isPanning = false;
-                    MapCanvas.ReleaseMouseCapture(); // Release mouse capture for panning
+                    ContentCanvas.ReleaseMouseCapture(); // Release mouse capture for panning
                     this.Cursor = Cursors.Arrow;
                     Debug.WriteLine("InteractiveMapView: OnMouseUp - Panning stopped.");
                     e.Handled = true; 
                 }
 
                 // Check for connection drawing completion AFTER checking for panning stop
-                // This is because mouse capture is on MapCanvas for both, but panning might have higher priority on MouseDown
+                // This is because mouse capture is on ContentCanvas for both, but panning might have higher priority on MouseDown
                 if (_isDrawingConnectionMode && _connectionSourceScene != null && _tempConnectionLine != null)
                 {
-                    MapCanvas.Children.Remove(_tempConnectionLine);
-                    // Check if mouse was captured by MapCanvas before releasing. Should be true if _isDrawingConnectionMode is true.
-                    if (MapCanvas.IsMouseCaptured) 
+                    ContentCanvas.Children.Remove(_tempConnectionLine);
+                    // Check if mouse was captured by ContentCanvas before releasing. Should be true if _isDrawingConnectionMode is true.
+                    if (ContentCanvas.IsMouseCaptured) 
                     {
-                         MapCanvas.ReleaseMouseCapture();
+                         ContentCanvas.ReleaseMouseCapture();
                     }
                     this.Cursor = Cursors.Arrow;
 
-                    Point releasePosition = e.GetPosition(MapCanvas);
+                    Point releasePosition = e.GetPosition(ContentCanvas);
                     Scene? targetScene = null;
 
                     // Find if released over another marker
@@ -697,7 +746,7 @@ namespace CRProjectEditor.Views
         public void ResetAndCenterView()
         {
             Debug.WriteLine("InteractiveMapView: ResetAndCenterView called.");
-            if (Scenes == null || !Scenes.Any() || MapCanvas.ActualWidth == 0 || MapCanvas.ActualHeight == 0)
+            if (Scenes == null || !Scenes.Any() || ContentCanvas.ActualWidth == 0 || ContentCanvas.ActualHeight == 0)
             {
                 Debug.WriteLine("InteractiveMapView: ResetAndCenterView - Cannot center, conditions not met.");
                 scaleTransform.ScaleX = 1;
@@ -777,10 +826,10 @@ namespace CRProjectEditor.Views
                     StrokeThickness = 2,
                     StrokeDashArray = new DoubleCollection { 2, 2 }
                 };
-                MapCanvas.Children.Add(_tempConnectionLine);
+                ContentCanvas.Children.Add(_tempConnectionLine);
                 Panel.SetZIndex(_tempConnectionLine, 50); 
                 
-                MapCanvas.CaptureMouse(); 
+                ContentCanvas.CaptureMouse(); 
                 this.Cursor = Cursors.Cross;
                 Debug.WriteLine($"InteractiveMapView: Started drawing connection from {scene.Name}");
                 e.Handled = true; 
@@ -805,7 +854,7 @@ namespace CRProjectEditor.Views
             // This is only called when mouse is captured by the marker itself (during _isDraggingMarker)
             if (_isDraggingMarker && _draggedMarker != null && _draggedScene != null && e.LeftButton == MouseButtonState.Pressed)
             {
-                Point currentMousePositionOnCanvas = e.GetPosition(MapCanvas);
+                Point currentMousePositionOnCanvas = e.GetPosition(ContentCanvas);
                 
                 double newLeft = currentMousePositionOnCanvas.X - _markerDragStartOffset.X;
                 double newTop = currentMousePositionOnCanvas.Y - _markerDragStartOffset.Y;
@@ -878,7 +927,7 @@ namespace CRProjectEditor.Views
         // Original PointToLogical - KEEP THIS
         public Point PointToLogical(Point canvasPoint)
         {
-            var transformedPointByPanZoom = MapCanvas.RenderTransform.Inverse.Transform(canvasPoint);
+            var transformedPointByPanZoom = ContentCanvas.RenderTransform.Inverse.Transform(canvasPoint);
 
             double logicalX = (transformedPointByPanZoom.X - _currentOffsetX) / _currentWpfRenderScale + _currentRenderMinX;
             double logicalY = (transformedPointByPanZoom.Y - _currentOffsetY) / _currentWpfRenderScale + _currentRenderMinY;
@@ -919,7 +968,7 @@ namespace CRProjectEditor.Views
             }
         }
 
-        private void MapCanvas_DragEnter(object sender, DragEventArgs e)
+        private void ContentCanvas_DragEnter(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(SceneType).FullName) || 
                 e.Data.GetDataPresent(typeof(AssetDisplayInfo).FullName))
@@ -933,7 +982,7 @@ namespace CRProjectEditor.Views
             e.Handled = true;
         }
 
-        private void MapCanvas_DragOver(object sender, DragEventArgs e)
+        private void ContentCanvas_DragOver(object sender, DragEventArgs e)
         {
             if (e.Data.GetDataPresent(typeof(SceneType).FullName) || 
                 e.Data.GetDataPresent(typeof(AssetDisplayInfo).FullName))
@@ -947,9 +996,9 @@ namespace CRProjectEditor.Views
             e.Handled = true;
         }
 
-        private void MapCanvas_Drop(object sender, DragEventArgs e)
+        private void ContentCanvas_Drop(object sender, DragEventArgs e)
         {
-            Point dropPositionOnCanvas = e.GetPosition(MapCanvas);
+            Point dropPositionOnCanvas = e.GetPosition(ContentCanvas);
 
             if (e.Data.GetData(typeof(AssetDisplayInfo).FullName) is AssetDisplayInfo assetInfo)
             {
@@ -982,7 +1031,7 @@ namespace CRProjectEditor.Views
                 {
                     try
                     {
-                        GeneralTransform transform = marker.TransformToAncestor(MapCanvas);
+                        GeneralTransform transform = marker.TransformToAncestor(ContentCanvas);
                         Rect markerBounds = transform.TransformBounds(new Rect(new Point(0, 0), marker.RenderSize));
 
                         if (markerBounds.Contains(canvasPoint))
@@ -1003,6 +1052,101 @@ namespace CRProjectEditor.Views
         private static string GetSceneImagePath(Scene scene)
         {
             return $"{Constants.SceneAssetsFolderPath}\\location{scene.Id}.imageset\\location{scene.Id}.png";
+        }
+
+        private void SmoothlyCenterOnScene(Scene sceneToCenter)
+        {
+            if (sceneToCenter == null)
+            {
+                Debug.WriteLine("[SmoothlyCenterOnScene] sceneToCenter is null. Aborting.");
+                return;
+            }
+
+            if (ContentCanvas.ActualWidth == 0 || ContentCanvas.ActualHeight == 0)
+            {
+                Debug.WriteLine($"[SmoothlyCenterOnScene] ContentCanvas ActualWidth/Height is 0 for {sceneToCenter.Name}. Aborting focus until canvas is sized.");
+                // Consider a pending focus mechanism if this happens frequently before Loaded/SizeChanged
+                return;
+            }
+
+            if (!scenesRenderInfo.TryGetValue(sceneToCenter.Id, out Point sceneCanvasCenter))
+            {
+                Debug.WriteLine($"[SmoothlyCenterOnScene] Scene '{sceneToCenter.Name}' (ID: {sceneToCenter.Id}) not found in scenesRenderInfo. Attempting to refresh via DrawMap().");
+                DrawMap(); // Attempt to populate/update scenesRenderInfo
+                if (!scenesRenderInfo.TryGetValue(sceneToCenter.Id, out sceneCanvasCenter))
+                {
+                    Debug.WriteLine($"[SmoothlyCenterOnScene] Scene '{sceneToCenter.Name}' (ID: {sceneToCenter.Id}) still not found in scenesRenderInfo after DrawMap(). Aborting focus.");
+                    return;
+                }
+                Debug.WriteLine($"[SmoothlyCenterOnScene] Scene '{sceneToCenter.Name}' (ID: {sceneToCenter.Id}) found in scenesRenderInfo after DrawMap(). Center: {sceneCanvasCenter.X},{sceneCanvasCenter.Y}");
+            }
+            else
+            {
+                Debug.WriteLine($"[SmoothlyCenterOnScene] Scene '{sceneToCenter.Name}' (ID: {sceneToCenter.Id}) found in scenesRenderInfo. Center: {sceneCanvasCenter.X},{sceneCanvasCenter.Y}");
+            }
+            
+            double currentGlobalScale = scaleTransform.ScaleX; // Assuming uniform scaling (ScaleX == ScaleY)
+
+            // The sceneCanvasCenter.X and sceneCanvasCenter.Y are the coordinates of the scene's center 
+            // on the ContentCanvas *before* the global scaleTransform and translateTransform are applied.
+            // We want to calculate the target translate values for translateTransform such that
+            // the scene's center appears at the center of the ContentCanvas viewport.
+
+            // Corrected calculation considering scaleTransform.CenterX and scaleTransform.CenterY:
+            double transformedSceneX = (sceneCanvasCenter.X - scaleTransform.CenterX) * currentGlobalScale + scaleTransform.CenterX;
+            double transformedSceneY = (sceneCanvasCenter.Y - scaleTransform.CenterY) * currentGlobalScale + scaleTransform.CenterY;
+
+            double targetTranslateX = (ContentCanvas.ActualWidth / 2) - transformedSceneX;
+            double targetTranslateY = (ContentCanvas.ActualHeight / 2) - transformedSceneY;
+
+            Debug.WriteLine($"[SmoothlyCenterOnScene] Focusing on '{sceneToCenter.Name}'. Canvas: {ContentCanvas.ActualWidth}x{ContentCanvas.ActualHeight}, SceneCanvasCenter: ({sceneCanvasCenter.X},{sceneCanvasCenter.Y}), GlobalScale: {currentGlobalScale}, ScaleCenter: ({scaleTransform.CenterX},{scaleTransform.CenterY}), TransformedSceneXY: ({transformedSceneX},{transformedSceneY}), TargetTranslate: ({targetTranslateX},{targetTranslateY})");
+
+            var animationX = new DoubleAnimation
+            {
+                To = targetTranslateX,
+                Duration = TimeSpan.FromMilliseconds(500), // Adjust duration as needed
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+
+            var animationY = new DoubleAnimation
+            {
+                To = targetTranslateY,
+                Duration = TimeSpan.FromMilliseconds(500), // Adjust duration as needed
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+
+            translateTransform.BeginAnimation(TranslateTransform.XProperty, animationX);
+            translateTransform.BeginAnimation(TranslateTransform.YProperty, animationY);
+        }
+
+        private void ZoomSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (scaleTransform == null || ContentCanvas == null) return;
+
+            double newScale = e.NewValue;
+            double oldScale = e.OldValue;
+
+            if (Math.Abs(oldScale - 0) < 0.001 && Math.Abs(newScale - 0) < 0.001) return; // Avoid issues if scales are zero
+            if (Math.Abs(scaleTransform.ScaleX - newScale) < 0.001 && Math.Abs(scaleTransform.ScaleY - newScale) < 0.001) return; // Already at target scale
+
+            // Get the center of the ContentCanvas in its own coordinate system
+            Point canvasCenter = new Point(ContentCanvas.ActualWidth / 2, ContentCanvas.ActualHeight / 2);
+
+            // Set the center of scaling to the center of the visible area of ContentCanvas
+            scaleTransform.CenterX = canvasCenter.X;
+            scaleTransform.CenterY = canvasCenter.Y;
+
+            // Apply the new scale
+            scaleTransform.ScaleX = newScale;
+            scaleTransform.ScaleY = newScale; // Assuming uniform scaling
+
+            // Update the percentage text block
+            if (ZoomPercentageTextBlock != null)
+            {
+                ZoomPercentageTextBlock.Text = $"{newScale * 100:F0}%";
+            }
+
+            Debug.WriteLine($"[ZoomSlider_ValueChanged] New Scale: {newScale:F2}, ScaleCenter set to: ({canvasCenter.X:F2}, {canvasCenter.Y:F2})");
         }
     }
 } 

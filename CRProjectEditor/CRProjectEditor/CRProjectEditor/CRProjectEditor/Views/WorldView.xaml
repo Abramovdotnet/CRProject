@@ -7,6 +7,7 @@
              xmlns:viewModels="clr-namespace:CRProjectEditor.ViewModels"
              xmlns:models="clr-namespace:CRProjectEditor.Models" 
              xmlns:converters="clr-namespace:CRProjectEditor.Converters"
+             xmlns:materialDesign="http://materialdesignthemes.ligaturescholar.com/xaml"
              mc:Ignorable="d" 
              d:DesignHeight="600" d:DesignWidth="1000">
     <UserControl.Resources>
@@ -20,6 +21,15 @@
                 </Trigger>
             </Style.Triggers>
             <Setter Property="Padding" Value="5,2"/>
+        </Style>
+
+        <Style TargetType="DataGridRow">
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#337AB7"/> 
+                    <Setter Property="Foreground" Value="White"/> 
+                </Trigger>
+            </Style.Triggers>
         </Style>
     </UserControl.Resources>
     <Grid>
@@ -152,6 +162,63 @@
                                                Margin="0,5,0,0"/>
                                 </StackPanel>
                             </Border>
+
+                            <!-- Section Title for NPC List -->
+                            <TextBlock Text="Жители Локации:" FontSize="14" FontWeight="Bold" Margin="0,15,0,5"
+                                       Visibility="{Binding MapSelectedScene, Converter={StaticResource NullToVisibilityConverter}}"/>
+
+                            <!-- List of NPCs for the Selected Scene -->
+                            <ListView ItemsSource="{Binding SelectedSceneResidents}" MaxHeight="250" Margin="0,0,0,10"
+                                      Visibility="{Binding MapSelectedScene, Converter={StaticResource NullToVisibilityConverter}}"
+                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                <ListView.ItemContainerStyle>
+                                    <Style TargetType="ListViewItem">
+                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                    </Style>
+                                </ListView.ItemContainerStyle>
+                                <ListView.ItemTemplate>
+                                    <DataTemplate DataType="{x:Type models:NpcModel}">
+                                        <Border BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="0,0,0,1" Padding="5" Margin="0,1" Background="{StaticResource ControlBackgroundBrush}">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="26"/> <!-- Image area -->
+                                                    <ColumnDefinition Width="*"/>    <!-- Details -->
+                                                </Grid.ColumnDefinitions>
+
+                                                <Border Grid.Column="0" Width="22" Height="22" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="1" Margin="0,0,4,0" Background="WhiteSmoke" VerticalAlignment="Top">
+                                                    <Image Source="{Binding ImagePath}" Width="20" Height="20" Stretch="Uniform"/>
+                                                </Border>
+                                                
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock FontWeight="SemiBold" FontSize="12" Foreground="{StaticResource ForegroundBrush}">
+                                                        <Run Text="ID:"/> <Run Text="{Binding Id}"/> - <Run Text="{Binding Name}"/>
+                                                    </TextBlock>
+                                                    <TextBlock FontSize="10" Foreground="{StaticResource ForegroundBrush}" Opacity="0.8">
+                                                        <Run Text="Возраст:"/> <Run Text="{Binding Age}"/>, 
+                                                        <Run Text="Пол:"/> <Run Text="{Binding Sex}"/>, 
+                                                        <Run Text="Профессия:"/> <Run Text="{Binding Profession}"/>
+                                                    </TextBlock>
+                                                    <TextBlock FontSize="10" Foreground="{StaticResource ForegroundBrush}" Opacity="0.8">
+                                                        <Run Text="Вампир:"/>
+                                                        <TextBlock.Style>
+                                                            <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                                <Setter Property="Text" Value="Нет"/>
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding IsVampire}" Value="True">
+                                                                        <Setter Property="Text" Value="Да"/>
+                                                                        <Setter Property="Foreground" Value="OrangeRed"/>
+                                                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </TextBlock.Style>
+                                                    </TextBlock>
+                                                </StackPanel>
+                                            </Grid>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListView.ItemTemplate>
+                            </ListView>
                         </StackPanel>
                     </ScrollViewer>
                 </TabItem>
@@ -203,13 +270,63 @@
         
         <Grid Grid.Column="1">
             <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="0.35*"/>
                 <RowDefinition Height="0.65*"/>
             </Grid.RowDefinitions>
+
+            <!-- Панель фильтров -->
+            <Border Grid.Row="0" BorderBrush="{StaticResource ControlBorderBrush}" BorderThickness="0,0,0,1" Padding="5">
+                <StackPanel Orientation="Vertical">
+                    <TextBlock Text="Фильтры Сцен:" FontWeight="SemiBold" Margin="0,0,0,5"/>
+                    <TextBox Text="{Binding SearchNameText, UpdateSourceTrigger=PropertyChanged}" 
+                             
+                               Style="{StaticResource {x:Type TextBox}}" 
+                               Margin="0,0,0,5"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox Grid.Column="0" ItemsSource="{Binding SceneTypesForFilter}" 
+                                  SelectedItem="{Binding SelectedSceneTypeForFilter}" 
+                                  
+                                  Style="{StaticResource {x:Type ComboBox}}"
+                                  Margin="0,0,5,0"/>
+                        <ComboBox Grid.Column="1" ItemsSource="{Binding IndoorOptionsForFilter}" 
+                                  SelectedItem="{Binding SelectedIndoorOptionForFilter}"
+                                  
+                                  Style="{StaticResource {x:Type ComboBox}}"
+                                  Margin="5,0,5,0"/>
+                        <ComboBox Grid.Column="2" ItemsSource="{Binding ResidentsOptionsForFilter}" 
+                                  SelectedItem="{Binding SelectedResidentsOptionForFilter}"
+                                  
+                                  Style="{StaticResource {x:Type ComboBox}}"
+                                  Margin="5,0,0,0"/>
+                    </Grid>
+                </StackPanel>
+            </Border>
             
-            <DataGrid Grid.Row="0" ItemsSource="{Binding Scenes}"                        
+            <DataGrid Grid.Row="1" ItemsSource="{Binding FilteredScenes}" 
+                      x:Name="ScenesMapDataGrid"
                       AlternationCount="2"
-                      SelectedItem="{Binding MapSelectedScene}">
+                      SelectedItem="{Binding MapSelectedScene}"
+                      IsReadOnly="True"
+                      CanUserAddRows="False"
+                      CanUserDeleteRows="False"
+                      AutoGenerateColumns="False">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridRow">
+                        <EventSetter Event="MouseDoubleClick" Handler="DataGridRow_MouseDoubleClick"/>
+                        <Style.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Background" Value="#337AB7"/> 
+                                <Setter Property="Foreground" Value="White"/> 
+                            </Trigger>
+                        </Style.Triggers>
+                    </Style>
+                </DataGrid.Resources>
                 <DataGrid.Columns>
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="SizeToHeader" MinWidth="40" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="*" MinWidth="150" IsReadOnly="True"/>
@@ -224,7 +341,7 @@
                 </DataGrid.Columns>
             </DataGrid>
             
-            <local:InteractiveMapView x:Name="InteractiveMap" Grid.Row="1" Scenes="{Binding Scenes}"/>
+            <local:InteractiveMapView x:Name="InteractiveMap" Grid.Row="2" Scenes="{Binding Scenes}"/>
         </Grid>
     </Grid>
 </UserControl> 
