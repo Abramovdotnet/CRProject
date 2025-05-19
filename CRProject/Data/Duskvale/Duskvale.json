@@ -2150,7 +2150,7 @@
     "isIndoor": true,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -16,
+    "x": -17,
     "y": 17,
     "connections": [
       {
@@ -2345,11 +2345,1331 @@
     "isIndoor": false,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -13,
-    "y": 16,
+    "x": -12,
+    "y": 18,
     "connections": [
       {
         "connectedSceneId": 214,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 216,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 217,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 219,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 218,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 221,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 216,
+    "name": "Abandoned Castle",
+    "description": "A newly created scene.",
+    "sceneType": "Castle",
+    "isIndoor": true,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -9,
+    "y": 14,
+    "connections": [
+      {
+        "connectedSceneId": 215,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 217,
+    "name": "The Dusk Trader",
+    "description": "A newly created scene.",
+    "sceneType": "Shop",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -15,
+    "y": 19,
+    "connections": [
+      {
+        "connectedSceneId": 215,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 218,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -9,
+    "y": 17,
+    "connections": [
+      {
+        "connectedSceneId": 215,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 219,
+    "name": "New House",
+    "description": "A newly created scene.",
+    "sceneType": "House",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -12,
+    "y": 14,
+    "connections": [
+      {
+        "connectedSceneId": 215,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 221,
+    "name": "The Rusted Pier",
+    "description": "A newly created scene.",
+    "sceneType": "Docks",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -13,
+    "y": 22,
+    "connections": [
+      {
+        "connectedSceneId": 215,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 240,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 222,
+    "name": "The Jadewood",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -29,
+    "y": 20,
+    "connections": [
+      {
+        "connectedSceneId": 226,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 232,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 231,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 223,
+    "name": "The Wychwood Grove",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -23,
+    "y": 26,
+    "connections": [
+      {
+        "connectedSceneId": 240,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 226,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 224,
+    "name": "The Frostwood Wilds",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -22,
+    "y": 21,
+    "connections": [
+      {
+        "connectedSceneId": 240,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 226,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 225,
+    "name": "The Duskvale Thicket",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -39,
+    "y": 13,
+    "connections": [
+      {
+        "connectedSceneId": 231,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 235,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 233,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 228,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 226,
+    "name": "The Howling Abyss",
+    "description": "A newly created scene.",
+    "sceneType": "Cave",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -26,
+    "y": 23,
+    "connections": [
+      {
+        "connectedSceneId": 223,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 224,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 222,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 232,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 227,
+    "name": "The Blighted Cathedral",
+    "description": "A newly created scene.",
+    "sceneType": "Ruins",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -34,
+    "y": 24,
+    "connections": [
+      {
+        "connectedSceneId": 232,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 231,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 237,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 228,
+    "name": "The Duskwood Thicket",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -36,
+    "y": 11,
+    "connections": [
+      {
+        "connectedSceneId": 231,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 225,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 243,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 229,
+    "name": "The Duskdeep Grotto",
+    "description": "A newly created scene.",
+    "sceneType": "Cave",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -37,
+    "y": 20,
+    "connections": [
+      {
+        "connectedSceneId": 231,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 235,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 237,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 230,
+    "name": "The Emberroot Hollow",
+    "description": "A newly created scene.",
+    "sceneType": "Cave",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -44,
+    "y": 24,
+    "connections": [
+      {
+        "connectedSceneId": 239,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 238,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 236,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 234,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 231,
+    "name": "The Frostwood",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -33,
+    "y": 16,
+    "connections": [
+      {
+        "connectedSceneId": 227,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 222,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 229,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 228,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 225,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 232,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 232,
+    "name": "The Frostwood Grove",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -30,
+    "y": 23,
+    "connections": [
+      {
+        "connectedSceneId": 222,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 227,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 231,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 226,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 233,
+    "name": "The Mistwood",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -42,
+    "y": 11,
+    "connections": [
+      {
+        "connectedSceneId": 234,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 246,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 243,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 225,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 234,
+    "name": "The Ironwood",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -41,
+    "y": 21,
+    "connections": [
+      {
+        "connectedSceneId": 235,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 233,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 237,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 230,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 242,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 235,
+    "name": "The Whispering Woods",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -39,
+    "y": 17,
+    "connections": [
+      {
+        "connectedSceneId": 225,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 229,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 234,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 236,
+    "name": "The King\u2019s Road",
+    "description": "A newly created scene.",
+    "sceneType": "Road",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -46,
+    "y": 21,
+    "connections": [
+      {
+        "connectedSceneId": 241,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 230,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 247,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 237,
+    "name": "The Old South Trail",
+    "description": "A newly created scene.",
+    "sceneType": "Road",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -37,
+    "y": 22,
+    "connections": [
+      {
+        "connectedSceneId": 229,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 234,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 227,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 239,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 238,
+    "name": "The Wraithwood",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -49,
+    "y": 25,
+    "connections": [
+      {
+        "connectedSceneId": 230,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 249,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 247,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 239,
+    "name": "The Ironpine Thicket",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -40,
+    "y": 26,
+    "connections": [
+      {
+        "connectedSceneId": 237,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 230,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 240,
+    "name": "The Cobbled Path",
+    "description": "A newly created scene.",
+    "sceneType": "Road",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -17,
+    "y": 23,
+    "connections": [
+      {
+        "connectedSceneId": 221,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 224,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 223,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 241,
+    "name": "The Whispering Forest",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -50,
+    "y": 19,
+    "connections": [
+      {
+        "connectedSceneId": 236,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 242,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 248,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 242,
+    "name": "The Eldertree Grove",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -44,
+    "y": 18,
+    "connections": [
+      {
+        "connectedSceneId": 241,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 246,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 234,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 243,
+    "name": "The Steelroot Forest",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -41,
+    "y": 7,
+    "connections": [
+      {
+        "connectedSceneId": 246,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 233,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 228,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 244,
+    "name": "The Ghostwood",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -48,
+    "y": 9,
+    "connections": [
+      {
+        "connectedSceneId": 246,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 258,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 245,
+    "name": "The Blackthorn Woods",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -47,
+    "y": 17,
+    "connections": [
+      {
+        "connectedSceneId": 246,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 250,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 258,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 246,
+    "name": "The Black Sepulcher",
+    "description": "A newly created scene.",
+    "sceneType": "Crypt",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -47,
+    "y": 13,
+    "connections": [
+      {
+        "connectedSceneId": 245,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 242,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 244,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 243,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 233,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 247,
+    "name": "Stormwatch Bastion",
+    "description": "A newly created scene.",
+    "sceneType": "Castle",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -51,
+    "y": 22,
+    "connections": [
+      {
+        "connectedSceneId": 236,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 253,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 238,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 248,
+    "name": "The Briarthorn",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -55,
+    "y": 20,
+    "connections": [
+      {
+        "connectedSceneId": 241,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 250,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 253,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 255,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 249,
+    "name": "The Wychwood Thicket",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -53,
+    "y": 27,
+    "connections": [
+      {
+        "connectedSceneId": 238,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 253,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 252,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 250,
+    "name": "The Starlit Thicket",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -53,
+    "y": 16,
+    "connections": [
+      {
+        "connectedSceneId": 245,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 256,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 248,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 254,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 258,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 251,
+    "name": "The Ironroot Forest",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -59,
+    "y": 24,
+    "connections": [
+      {
+        "connectedSceneId": 252,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 257,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 255,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 253,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 252,
+    "name": "The Glimmerwood",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -59,
+    "y": 28,
+    "connections": [
+      {
+        "connectedSceneId": 249,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 251,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 257,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 253,
+    "name": "The Starlit Glade",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -55,
+    "y": 23,
+    "connections": [
+      {
+        "connectedSceneId": 247,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 248,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 249,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 251,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 254,
+    "name": "The Shadowfen",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -58,
+    "y": 17,
+    "connections": [
+      {
+        "connectedSceneId": 255,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 250,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 256,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 255,
+    "name": "The Ironpine Grove",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -61,
+    "y": 21,
+    "connections": [
+      {
+        "connectedSceneId": 251,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 248,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 254,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 257,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 256,
+    "name": "The Steelroot Grove",
+    "description": "A newly created scene.",
+    "sceneType": "Forest",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -58,
+    "y": 12,
+    "connections": [
+      {
+        "connectedSceneId": 250,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 254,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 258,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 257,
+    "name": "The Blackfang Cavern",
+    "description": "A newly created scene.",
+    "sceneType": "Cave",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -64,
+    "y": 24,
+    "connections": [
+      {
+        "connectedSceneId": 251,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 255,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 252,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      }
+    ],
+    "population": 0,
+    "radius": 10
+  },
+  {
+    "id": 258,
+    "name": "The Briar Ruins",
+    "description": "A newly created scene.",
+    "sceneType": "Ruins",
+    "isIndoor": false,
+    "childSceneIds": [],
+    "hubSceneIds": [],
+    "x": -52,
+    "y": 12,
+    "connections": [
+      {
+        "connectedSceneId": 250,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 244,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 256,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 245,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       }

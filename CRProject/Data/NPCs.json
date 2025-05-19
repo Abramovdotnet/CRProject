@@ -658,7 +658,7 @@
     "IsVampire": false,
     "Morality": "Neutral",
     "Motivation": "Wealth",
-    "HomeLocationId": 0,
+    "HomeLocationId": 217,
     "IsHomeLocationRelevant": true,
     "Background": "William MacDonald\u0027s success as a merchant is the result of decades of careful planning and calculated risks. His journey into trade began when he was just a boy, helping his father manage their family\u0027s small shop. Over the years, he has built a network of contacts that spans the known world, allowing him to source rare and valuable goods. His ability to read market trends and anticipate demand has made him one of the most successful merchants in Duskvale. He maintains a carefully organized warehouse where every item is cataloged and tracked, ensuring that nothing is lost or misplaced. His business acumen is matched only by his understanding of people, allowing him to negotiate deals that benefit all parties involved. Though he could retire comfortably, he continues to work, finding satisfaction in the challenge of building his business empire. His success has allowed him to support various charitable causes in the city, though he prefers to keep these contributions quiet."
   },
@@ -918,7 +918,7 @@
     "IsVampire": false,
     "Morality": "Neutral good",
     "Motivation": "Service",
-    "HomeLocationId": 0,
+    "HomeLocationId": 218,
     "IsHomeLocationRelevant": true,
     "Background": "Godfrey Nilsen\u0027s life as a servant began when he was just a boy, helping his mother with various household tasks. Over the years, he has developed a reputation for reliability and attention to detail, making him one of the most sought-after servants in Duskvale. His knowledge of household management is extensive, and he takes pride in ensuring that every task is completed to perfection. He maintains a strict schedule, rising before dawn to prepare for the day\u0027s work and often staying late to ensure everything is in order. Though the work is often unnoticed, he finds satisfaction in knowing that his efforts help keep the household running smoothly. His dedication to his work and his ability to anticipate the needs of those he serves have made him a valued member of the household."
   },
@@ -1009,7 +1009,7 @@
     "IsVampire": false,
     "Morality": "Lawful neutral",
     "Motivation": "Leadership",
-    "HomeLocationId": 0,
+    "HomeLocationId": 218,
     "IsHomeLocationRelevant": true,
     "Background": "Henri M\u00FCller\u0027s command of his ship is the result of years spent mastering the art of navigation and leadership. His journey to becoming a captain began when he was just a boy, watching the ships come and go from his hometown\u0027s harbor. Through years of hard work and careful study, he rose through the ranks, proving that skill and determination matter more than age in the maritime world. His ship is known for its efficiency and safety record, a testament to his meticulous attention to detail and his ability to inspire his crew. He maintains strict discipline while fostering a sense of camaraderie among his sailors, understanding that a well-functioning crew is essential for successful voyages. His knowledge of trade routes and weather patterns has made him one of the most respected captains in Duskvale\u0027s merchant fleet. Though the sea can be unforgiving, he finds satisfaction in the challenge of navigating its waters and the responsibility of safely delivering his cargo and crew."
   },
@@ -1334,8 +1334,8 @@
     "IsVampire": false,
     "Morality": "Neutral good",
     "Motivation": "Community",
-    "HomeLocationId": 0,
-    "IsHomeLocationRelevant": true,
+    "HomeLocationId": 219,
+    "IsHomeLocationRelevant": false,
     "Background": "Hedda Nilsen\u0027s life at the tavern began when she was just a girl, helping her mother serve drinks to the merchants and laborers. Her natural charm and quick wit quickly made her a favorite among the regulars. Over the years, she has learned the art of mixing drinks, the importance of remembering names and preferences, and the delicate balance of keeping patrons happy while maintaining order. Her dream of owning her own establishment drives her to save every copper she can spare, and she spends her free time studying the business ledgers of the tavern, learning the intricacies of tavern management. Her ambition is matched only by her dedication to her family, whom she continues to support while building her future. Though young, her dedication to creating a welcoming atmosphere has made her a valued member of the tavern staff."
   },
   {
@@ -1347,8 +1347,8 @@
     "IsVampire": false,
     "Morality": "Lawful good",
     "Motivation": "Duty",
-    "HomeLocationId": 0,
-    "IsHomeLocationRelevant": true,
+    "HomeLocationId": 219,
+    "IsHomeLocationRelevant": false,
     "Background": "Edmund Thomas\u0027s path to becoming a military officer was shaped by his family\u0027s long tradition of service. His father and grandfather before him had served in the city guard, instilling in him a deep sense of duty and honor. Despite his young age, his natural leadership abilities and strategic mind quickly set him apart from his peers. He maintains a strict training regimen, believing that physical and mental preparedness are essential for effective leadership. His approach to command combines firm discipline with genuine concern for his subordinates\u0027 well-being. He has already implemented several innovative training programs that have improved the guard\u0027s effectiveness while reducing injuries. His dedication to his duty and his ability to inspire those under his command have made him a rising star in the city\u0027s military hierarchy."
   },
   {

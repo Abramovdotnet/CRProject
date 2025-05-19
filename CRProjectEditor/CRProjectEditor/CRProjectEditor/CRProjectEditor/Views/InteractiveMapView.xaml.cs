@@ -1002,11 +1002,19 @@ namespace CRProjectEditor.Views
 
         private void ContentCanvas_Drop(object sender, DragEventArgs e)
         {
-            Point dropPositionOnCanvas = e.GetPosition(ContentCanvas);
+            Point dropPositionOnMapCanvas = e.GetPosition(MapCanvas);
 
             if (e.Data.GetData(typeof(AssetDisplayInfo).FullName) is AssetDisplayInfo assetInfo)
             {
-                Scene? targetScene = FindSceneAtCanvasPoint(dropPositionOnCanvas);
+                // Use dropPositionOnMapCanvas for consistency if FindSceneAtCanvasPoint expects MapCanvas coordinates
+                // However, FindSceneAtCanvasPoint currently uses marker.TransformToAncestor(ContentCanvas)
+                // which means it expects points relative to ContentCanvas.
+                // For asset dropping, we might need to transform dropPositionOnMapCanvas to ContentCanvas coordinates
+                // or adjust FindSceneAtCanvasPoint.
+                // For now, let's transform it for FindSceneAtCanvasPoint:
+                Point dropPositionOnContentCanvas = MapCanvas.TranslatePoint(dropPositionOnMapCanvas, ContentCanvas);
+
+                Scene? targetScene = FindSceneAtCanvasPoint(dropPositionOnContentCanvas);
                 if (targetScene != null)
                 {
                     AssetDroppedOnScene?.Invoke(targetScene, assetInfo);
@@ -1020,7 +1028,7 @@ namespace CRProjectEditor.Views
             }
             else if (e.Data.GetData(typeof(SceneType).FullName) is SceneType sceneType)
             {
-                Point logicalDropPosition = PointToLogical(dropPositionOnCanvas); 
+                Point logicalDropPosition = PointToLogical(dropPositionOnMapCanvas); 
                 SceneDroppedOnCanvas?.Invoke(sceneType, logicalDropPosition);
                 e.Handled = true;
             }
