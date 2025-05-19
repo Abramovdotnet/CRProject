@@ -98,10 +98,14 @@ namespace CRProjectEditor.Views
         }
         public event Action<Scene?>? SceneSelected;
 
-        public void SelectScene(Scene scene)
+        public void SelectScene(Scene scene, bool isFocusRequired = false)
         {
             SelectedScene = scene;
-            //SmoothlyCenterOnScene(scene); // Added call for smooth centering
+
+            if (isFocusRequired)
+            {
+                SmoothlyCenterOnScene(scene); // Added call for smooth centering
+            }
         }
 
         // Helper to get color for scene type

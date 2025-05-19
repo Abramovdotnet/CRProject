@@ -22,9 +22,6 @@ namespace CRProjectEditor.Models
         [JsonPropertyName("profession")]
         public string? Profession { get; set; }
 
-        [JsonPropertyName("homeLocationId")]
-        public int HomeLocationId { get; set; }
-
         [JsonPropertyName("isVampire")]
         public bool IsVampire { get; set; }
 
@@ -33,9 +30,6 @@ namespace CRProjectEditor.Models
 
         [JsonPropertyName("motivation")]
         public string? Motivation { get; set; }
-
-        [JsonPropertyName("background")]
-        public string Background { get; set; } = string.Empty;
 
         [JsonIgnore] // Prevent serialization of this UI-specific property
         public string? ImagePath
@@ -61,6 +55,16 @@ namespace CRProjectEditor.Models
 
         [JsonIgnore]
         public bool HasAssets => !string.IsNullOrEmpty(ImagePath);
+
+        [JsonPropertyName("homeLocationId")]
+        public int HomeLocationId { get; set; }
+
+        [JsonIgnore]
+        public bool IsHomeLocationRelevant { get; set; } = true;
+
+
+        [JsonPropertyName("background")]
+        public string Background { get; set; } = string.Empty;
 
         public void RefreshAssetProperties()
         {

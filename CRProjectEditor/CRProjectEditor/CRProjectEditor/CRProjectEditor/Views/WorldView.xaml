@@ -65,7 +65,7 @@
                             </ScrollViewer>
 
                             <Button Content="Сохранить расположение" Command="{Binding SaveCurrentMapLayoutCommand}" Margin="0,5,0,5" Padding="10,5"/>
-                            <Button Content="Сгенерировать координаты" Command="{Binding GenerateCoordinatesCommand}" Margin="0,0,0,10" Padding="10,5"/>
+            
 
                             <!-- Selected Scene Details and Connection Management -->
                             <Separator Margin="0,10,0,10"/>
@@ -333,6 +333,7 @@
                     <DataGridTextColumn Header="Type" Binding="{Binding SceneType}" Width="SizeToCells" MinWidth="80" IsReadOnly="True"/>
                     <DataGridCheckBoxColumn Header="Indoor" Binding="{Binding IsIndoor}" Width="SizeToHeader" MinWidth="60" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Parent ID" Binding="{Binding ParentSceneId}" Width="SizeToHeader" MinWidth="70" IsReadOnly="True"/>
+                    <DataGridTextColumn Header="Residents" Binding="{Binding ResidentCount}" Width="SizeToHeader" MinWidth="70" IsReadOnly="True"/>
                     <DataGridTextColumn Header="X" Binding="{Binding X}" Width="SizeToHeader" MinWidth="50" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Y" Binding="{Binding Y}" Width="SizeToHeader" MinWidth="50" IsReadOnly="True"/>
                     <DataGridTextColumn Header="Child IDs" Binding="{Binding ChildSceneIds, Converter={StaticResource IntListToStringConverter}}" Width="SizeToCells" MinWidth="100" IsReadOnly="True"/>

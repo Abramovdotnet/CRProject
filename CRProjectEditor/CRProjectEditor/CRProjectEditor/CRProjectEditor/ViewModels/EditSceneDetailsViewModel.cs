@@ -174,7 +174,7 @@ namespace CRProjectEditor.ViewModels
             AvailableNpcsView.Clear();
             var sceneNpcIds = new HashSet<int>(SceneNpcsView.Select(npc => npc.Id));
             
-            IEnumerable<NpcModel> filtered = _allNpcsSharedList.Where(npc => !sceneNpcIds.Contains(npc.Id));
+            IEnumerable<NpcModel> filtered = _allNpcsSharedList.Where(npc => !sceneNpcIds.Contains(npc.Id) && npc.HomeLocationId == 0);
 
             if (!string.IsNullOrWhiteSpace(NpcFilterText))
             {

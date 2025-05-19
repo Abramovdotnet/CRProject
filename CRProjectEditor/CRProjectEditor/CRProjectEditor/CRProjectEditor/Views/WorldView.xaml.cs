@@ -44,7 +44,10 @@ namespace CRProjectEditor.Views
                 {
                     InteractiveMap.SceneSelected += (selectedScene) =>
                     {
-                        if (_viewModel != null) _viewModel.MapSelectedScene = selectedScene;
+                        if (_viewModel != null)
+                        {
+                            _viewModel.MapSelectedScene = selectedScene;
+                        }
                     };
                     InteractiveMap.ConnectionRequested += async (sourceScene, targetScene) =>
                     {
@@ -73,7 +76,7 @@ namespace CRProjectEditor.Views
                         {
                             if (dataGrid.SelectedItem != null && dataGrid.SelectedItem is Scene scene)
                             {
-                                InteractiveMap.SelectScene(scene);
+                                InteractiveMap.SelectScene(scene, isFocusRequired: false);
                             }
                         }
                     };

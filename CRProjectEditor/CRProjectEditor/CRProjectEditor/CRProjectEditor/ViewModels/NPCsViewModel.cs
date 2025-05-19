@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Windows.Data; // Required for CollectionViewSource if we were to use it
 using CRProjectEditor.Views; // Для NpcEditView
 using Microsoft.Win32; // Для OpenFileDialog
+using System.Text.Json.Serialization;
 
 namespace CRProjectEditor.ViewModels
 {
@@ -90,6 +91,7 @@ namespace CRProjectEditor.ViewModels
 
         public IAsyncRelayCommand LoadNpcsCommand { get; }
         public IRelayCommand ClearFiltersCommand { get; }
+        public IRelayCommand FixHomeLocationsCommand { get; }
         public IAsyncRelayCommand EditNpcCommand { get; }
         public IAsyncRelayCommand AddOrReplaceAssetCommand { get; }
         public IAsyncRelayCommand DeleteAssetCommand { get; }
@@ -99,6 +101,7 @@ namespace CRProjectEditor.ViewModels
             _notificationService = notificationService;
             LoadNpcsCommand = new AsyncRelayCommand(LoadNpcsAsync);
             ClearFiltersCommand = new RelayCommand(ClearFilters);
+            FixHomeLocationsCommand = new AsyncRelayCommand(FixHomeLocationsAsync);
             EditNpcCommand = new AsyncRelayCommand(OpenEditNpcWindowAsync, CanEditNpc);
             AddOrReplaceAssetCommand = new AsyncRelayCommand(AddOrReplaceAssetAsync, CanManageAsset);
             DeleteAssetCommand = new AsyncRelayCommand(DeleteAssetAsync, CanDeleteAsset);
@@ -139,6 +142,21 @@ namespace CRProjectEditor.ViewModels
             FilterMorality = AnyMorality;
             FilterMotivation = AnyMotivation;
             FilterHasAssets = AssetFilterOption.Any;
+        }
+
+        private async Task FixHomeLocationsAsync()
+        {
+            var invalidHomeLocationNpcs = FilteredNpcs.Where(n => n.IsHomeLocationRelevant == false);
+
+            foreach (var npc in invalidHomeLocationNpcs)
+            {
+                npc.HomeLocationId = 0;
+            }
+
+            await SaveAllNpcsToJsonAsync();
+
+            _notificationService.UpdateStatus($"Исправлено {invalidHomeLocationNpcs.Count()} NPC.");
+            _notificationService.ShowToast($"Исправлено {invalidHomeLocationNpcs.Count()} NPC.", ToastType.Success);
         }
 
         private async Task LoadNpcsAsync()
@@ -187,6 +205,8 @@ namespace CRProjectEditor.ViewModels
                     _notificationService.ShowToast("Не удалось десериализовать данные NPC.", ToastType.Error);
                     _notificationService.UpdateStatus("Ошибка загрузки NPC.");
                 }
+
+                await ValidateNpcHomeLocationsAsync();
             }
             catch (JsonException jsonEx)
             {
@@ -199,6 +219,62 @@ namespace CRProjectEditor.ViewModels
                 Debug.WriteLine($"[NPCsViewModel] Общая ошибка при загрузке NPC: {ex.Message}");
                 _notificationService.ShowToast($"Ошибка при загрузке данных NPC: {ex.Message}", ToastType.Error);
                 _notificationService.UpdateStatus("Ошибка загрузки NPC.");
+            }
+        }
+
+        private async Task ValidateNpcHomeLocationsAsync()
+        {
+            _notificationService.UpdateStatus("Загрузка сцен...");
+            try
+            {
+                if (!File.Exists(Constants.ScenesPath))
+                {
+                    System.Diagnostics.Debug.WriteLine($"Файл сцен не найден: {Constants.ScenesPath}");
+                    _notificationService.ShowToast("Файл сцен не найден. Создайте новую локацию.", ToastType.Warning);
+                    _notificationService.UpdateStatus("Файл сцен не найден.");
+                    return;
+                }
+
+                string jsonString = await File.ReadAllTextAsync(Constants.ScenesPath);
+                if (string.IsNullOrWhiteSpace(jsonString))
+                {
+                    System.Diagnostics.Debug.WriteLine("Файл сцен пуст.");
+                    _notificationService.ShowToast("Файл сцен пуст.", ToastType.Warning);
+                    _notificationService.UpdateStatus("Файл сцен пуст.");
+                    return;
+                }
+
+                var options = new JsonSerializerOptions
+                {
+                    PropertyNameCaseInsensitive = true,
+                    Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) }
+                };
+                var loadedScenes = JsonSerializer.Deserialize<ObservableCollection<Scene>>(jsonString, options);
+
+                ValidateNpcHomeLocations(loadedScenes);
+
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Ошибка загрузки сцен: {ex.Message}");
+                _notificationService.ShowToast($"Ошибка загрузки сцен: {ex.Message}", ToastType.Error);
+                _notificationService.UpdateStatus("Ошибка загрузки сцен.");
+            }
+            // ApplyFilters(); // Также вызывается в сеттере Scenes
+        }
+
+        private void ValidateNpcHomeLocations(IEnumerable<Scene> scenes)
+        {
+            var npcsWithInvalidHomeLocation =
+                from npc in _allNpcs
+                join scene in scenes on npc.HomeLocationId equals scene.Id into sceneGroup
+                from scene in sceneGroup.DefaultIfEmpty()  // left join
+                where scene == null && npc.HomeLocationId != 0  // NPC с несуществующим HomeLocationId
+                select npc;
+
+            foreach (var npc in npcsWithInvalidHomeLocation)
+            {
+                npc.IsHomeLocationRelevant = false;
             }
         }
 
