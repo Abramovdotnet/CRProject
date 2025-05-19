@@ -1,0 +1,108 @@
+<Window x:Class="CRProjectEditor.Views.CreateNpcView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CRProjectEditor.Views"
+        xmlns:vm="clr-namespace:CRProjectEditor.ViewModels"
+        mc:Ignorable="d"
+        Title="Create New NPC" Height="650" Width="450"
+        WindowStartupLocation="CenterScreen"
+        Style="{StaticResource {x:Type Window}}">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="../Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="120"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" Content="ID:" VerticalAlignment="Center" Style="{StaticResource {x:Type Label}}"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding NewNpc.Id, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5" Style="{StaticResource {x:Type TextBox}}"/>
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Sex:" VerticalAlignment="Center" Style="{StaticResource {x:Type Label}}"/>
+        <ComboBox Grid.Row="1" Grid.Column="1" 
+                  ItemsSource="{Binding AvailableSexes}" 
+                  SelectedItem="{Binding NewNpc.Sex, UpdateSourceTrigger=PropertyChanged}" 
+                  Margin="0,5,0,5" Style="{StaticResource {x:Type ComboBox}}"/>
+
+        <Label Grid.Row="2" Grid.Column="0" Content="Name:" VerticalAlignment="Center" Style="{StaticResource {x:Type Label}}"/>
+        <Grid Grid.Row="2" Grid.Column="1" Margin="0,5,0,5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+            <TextBox Grid.Column="0" Text="{Binding NewNpc.Name, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource {x:Type TextBox}}" Margin="0,0,5,0"/>
+            <Button Grid.Column="1" Content="Generate" Command="{Binding GenerateNameCommand}" Style="{StaticResource {x:Type Button}}" Padding="5,2" MinWidth="70"/>
+        </Grid>
+
+        <Label Grid.Row="3" Grid.Column="0" Content="Age:" VerticalAlignment="Center" Style="{StaticResource {x:Type Label}}"/>
+        <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding NewNpc.Age, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5" Style="{StaticResource {x:Type TextBox}}"/>
+
+        <Label Grid.Row="4" Grid.Column="0" Content="Profession:" VerticalAlignment="Center" Style="{StaticResource {x:Type Label}}"/>
+        <ComboBox Grid.Row="4" Grid.Column="1" 
+                  ItemsSource="{Binding AvailableProfessions}" 
+                  SelectedItem="{Binding NewNpc.Profession, UpdateSourceTrigger=PropertyChanged}" 
+                  IsEditable="False" Margin="0,5,0,5" Style="{StaticResource {x:Type ComboBox}}"/>
+
+        <Label Grid.Row="5" Grid.Column="0" Content="Is Vampire:" VerticalAlignment="Center" Style="{StaticResource {x:Type Label}}"/>
+        <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding NewNpc.IsVampire}" Margin="0,5,0,5" VerticalAlignment="Center" Foreground="{StaticResource ForegroundBrush}"/>
+
+        <Label Grid.Row="6" Grid.Column="0" Content="Morality:" VerticalAlignment="Center" Style="{StaticResource {x:Type Label}}"/>
+        <ComboBox Grid.Row="6" Grid.Column="1" 
+                  ItemsSource="{Binding AvailableMoralities}"
+                  SelectedItem="{Binding NewNpc.Morality, UpdateSourceTrigger=PropertyChanged}"
+                  IsEditable="False" Margin="0,5,0,5" Style="{StaticResource {x:Type ComboBox}}"/>
+
+        <Label Grid.Row="7" Grid.Column="0" Content="Motivation:" VerticalAlignment="Center" Style="{StaticResource {x:Type Label}}"/>
+        <ComboBox Grid.Row="7" Grid.Column="1" 
+                  ItemsSource="{Binding AvailableMotivations}"
+                  SelectedItem="{Binding NewNpc.Motivation, UpdateSourceTrigger=PropertyChanged}"
+                  IsEditable="False" Margin="0,5,0,5" Style="{StaticResource {x:Type ComboBox}}"/>
+
+        <Label Grid.Row="8" Grid.Column="0" Content="Scene:" VerticalAlignment="Center" Style="{StaticResource {x:Type Label}}"/>
+        <ComboBox Grid.Row="8" Grid.Column="1" 
+                  ItemsSource="{Binding AvailableScenes}" 
+                  SelectedItem="{Binding SelectedScene, UpdateSourceTrigger=PropertyChanged}"
+                  Margin="0,5,0,5" Style="{StaticResource {x:Type ComboBox}}">
+            <ComboBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="{Binding Name}" FontWeight="Bold"/>
+                        <TextBlock Text=" (" Foreground="Gray"/>
+                        <TextBlock Text="{Binding SceneType}" Foreground="Gray"/>
+                        <TextBlock Text=", Residents: " Foreground="Gray"/>
+                        <TextBlock Text="{Binding ResidentCount}" Foreground="Gray"/>
+                        <TextBlock Text=")" Foreground="Gray"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ComboBox.ItemTemplate>
+        </ComboBox>
+
+        <Label Grid.Row="9" Grid.Column="0" Content="Background:" VerticalAlignment="Top" Margin="0,5,0,0" Style="{StaticResource {x:Type Label}}"/>
+        <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding NewNpc.Background, UpdateSourceTrigger=PropertyChanged}" Margin="0,5,0,5" TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Style="{StaticResource {x:Type TextBox}}" MinHeight="80"/>
+        
+        <StackPanel Grid.Row="10" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="Save" Command="{Binding SaveNpcCommand}" Width="85" Margin="5" Style="{StaticResource {x:Type Button}}"/>
+            <Button Content="Cancel" Command="{Binding CancelCommand}" Width="85" Margin="5" Style="{StaticResource {x:Type Button}}"/>
+        </StackPanel>
+    </Grid>
+</Window> 

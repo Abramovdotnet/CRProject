@@ -207,6 +207,10 @@
                                 <Run Text="{Binding SelectedAvailableNpc.Name}"/>
                 </TextBlock>
                 <TextBlock Margin="0,0,0,3">
+                                <Run Text="Пол: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedAvailableNpc.Sex}"/>
+                </TextBlock>
+                <TextBlock Margin="0,0,0,3">
                                 <Run Text="Возраст: " FontWeight="SemiBold"/>
                                 <Run Text="{Binding SelectedAvailableNpc.Age}"/>
                 </TextBlock>
@@ -220,7 +224,7 @@
                 </TextBlock>
             </StackPanel>
 
-            <Separator/>
+            <Separator/> 
             <StackPanel Margin="20" Visibility="{Binding SelectedSceneNpc, Converter={StaticResource NullToVisibilityConverter}}">
                 <Image Source="{Binding SelectedSceneNpc.ImagePath, Converter={StaticResource ImagePathToImageSourceConverter}}"
                                    Height="200"
@@ -239,8 +243,12 @@
                                 <Run Text="{Binding SelectedSceneNpc.Name}"/>
                 </TextBlock>
                 <TextBlock Margin="0,0,0,3">
+                                <Run Text="Пол: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedSceneNpc.Sex}"/>
+                </TextBlock>
+                <TextBlock Margin="0,0,0,3">
                                 <Run Text="Возраст: " FontWeight="SemiBold"/>
-                                <Run Text="{Binding SelectedSelectedSceneNpcAvailableNpc.Age}"/>
+                                <Run Text="{Binding SelectedSceneNpc.Age}"/>
                 </TextBlock>
                 <TextBlock Margin="0,0,0,3">
                                 <Run Text="Профессия: " FontWeight="SemiBold"/>

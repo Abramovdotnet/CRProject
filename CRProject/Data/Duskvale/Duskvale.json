@@ -711,8 +711,8 @@
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -9,
-    "y": 5,
+    "x": -8,
+    "y": 6,
     "connections": [
       {
         "connectedSceneId": 142,
@@ -1938,8 +1938,8 @@
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -20,
-    "y": -4,
+    "x": -23,
+    "y": -5,
     "connections": [
       {
         "connectedSceneId": 193,
@@ -1980,7 +1980,7 @@
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": -22,
+    "x": -21,
     "y": -1,
     "connections": [
       {

@@ -7,29 +7,37 @@ namespace CRProjectEditor.Models
 {
     public partial class NpcModel : ObservableObject
     {
+        [ObservableProperty]
         [JsonPropertyName("id")]
-        public int Id { get; set; }
+        private int _id;
 
+        [ObservableProperty]
         [JsonPropertyName("name")]
-        public string? Name { get; set; }
+        private string? _name;
 
+        [ObservableProperty]
         [JsonPropertyName("sex")]
-        public string? Sex { get; set; }
+        private string? _sex;
 
+        [ObservableProperty]
         [JsonPropertyName("age")]
-        public int Age { get; set; }
+        private int _age;
 
+        [ObservableProperty]
         [JsonPropertyName("profession")]
-        public string? Profession { get; set; }
+        private string? _profession;
 
+        [ObservableProperty]
         [JsonPropertyName("isVampire")]
-        public bool IsVampire { get; set; }
+        private bool _isVampire;
 
+        [ObservableProperty]
         [JsonPropertyName("morality")]
-        public string? Morality { get; set; }
+        private string? _morality;
 
+        [ObservableProperty]
         [JsonPropertyName("motivation")]
-        public string? Motivation { get; set; }
+        private string? _motivation;
 
         [JsonIgnore] // Prevent serialization of this UI-specific property
         public string? ImagePath
@@ -56,15 +64,18 @@ namespace CRProjectEditor.Models
         [JsonIgnore]
         public bool HasAssets => !string.IsNullOrEmpty(ImagePath);
 
+        [ObservableProperty]
         [JsonPropertyName("homeLocationId")]
-        public int HomeLocationId { get; set; }
+        private int _homeLocationId;
 
+        [ObservableProperty]
         [JsonIgnore]
-        public bool IsHomeLocationRelevant { get; set; } = true;
+        private bool _isHomeLocationRelevant = true;
 
 
+        [ObservableProperty]
         [JsonPropertyName("background")]
-        public string Background { get; set; } = string.Empty;
+        private string _background = string.Empty;
 
         public void RefreshAssetProperties()
         {

@@ -95,6 +95,7 @@ namespace CRProjectEditor.ViewModels
         public IAsyncRelayCommand EditNpcCommand { get; }
         public IAsyncRelayCommand AddOrReplaceAssetCommand { get; }
         public IAsyncRelayCommand DeleteAssetCommand { get; }
+        public IRelayCommand CreateNpcCommand { get; } // Added for creating NPC
 
         public NPCsViewModel(INotificationService notificationService)
         {
@@ -105,6 +106,7 @@ namespace CRProjectEditor.ViewModels
             EditNpcCommand = new AsyncRelayCommand(OpenEditNpcWindowAsync, CanEditNpc);
             AddOrReplaceAssetCommand = new AsyncRelayCommand(AddOrReplaceAssetAsync, CanManageAsset);
             DeleteAssetCommand = new AsyncRelayCommand(DeleteAssetAsync, CanDeleteAsset);
+            CreateNpcCommand = new RelayCommand(OpenCreateNpcWindow); // Initialize the new command
             _ = LoadNpcsAsync(); 
             _ = LoadAssetTemplateAsync(); // Загружаем шаблон при инициализации
         }
@@ -341,56 +343,86 @@ namespace CRProjectEditor.ViewModels
         {
             if (SelectedNpc == null) return;
 
-            var npcToEditCopy = SelectedNpc; // NpcEditViewModel создаст свою копию
+            // Создаем копию для редактирования, чтобы изменения не применялись сразу
+            var npcToEditCopy = new NpcModel
+            {
+                Id = SelectedNpc.Id,
+                Name = SelectedNpc.Name,
+                Sex = SelectedNpc.Sex,
+                Age = SelectedNpc.Age,
+                Profession = SelectedNpc.Profession,
+                IsVampire = SelectedNpc.IsVampire,
+                Morality = SelectedNpc.Morality,
+                Motivation = SelectedNpc.Motivation,
+                HomeLocationId = SelectedNpc.HomeLocationId,
+                Background = SelectedNpc.Background
+                // ImagePath, HasAssets, IsHomeLocationRelevant не копируем, они вычисляемые или UI-специфичные для основного списка
+            };
 
             var editViewModel = new NpcEditViewModel(
-                npcToEditCopy, 
-                this.AvailableSexes, 
-                this.AvailableProfessions, 
-                this.AvailableMoralities, 
-                this.AvailableMotivations
+                npcToEditCopy,
+                _allNpcs.Where(n => n.Id != npcToEditCopy.Id).ToList(), // Pass other NPCs for validation if needed
+                _notificationService
             );
-            
+
             var editView = new NpcEditView
             {
                 DataContext = editViewModel,
                 Owner = System.Windows.Application.Current.MainWindow // Устанавливаем владельца для модального окна
             };
 
-            // Настройка CloseAction для ViewModel
-            editViewModel.CloseAction = (dialogResult) =>
-            {
-                editView.DialogResult = dialogResult;
+            // Обработка закрытия окна редактирования из ViewModel
+            editViewModel.RequestClose += async (saved) => {
+                if (saved)
+                {
+                    var originalNpc = _allNpcs.FirstOrDefault(n => n.Id == editViewModel.EditingNpc.Id);
+                    if (originalNpc != null)
+                    {
+                        originalNpc.Name = editViewModel.EditingNpc.Name;
+                        originalNpc.Sex = editViewModel.EditingNpc.Sex;
+                        originalNpc.Age = editViewModel.EditingNpc.Age;
+                        originalNpc.Profession = editViewModel.EditingNpc.Profession;
+                        originalNpc.HomeLocationId = editViewModel.EditingNpc.HomeLocationId;
+                        originalNpc.IsVampire = editViewModel.EditingNpc.IsVampire;
+                        originalNpc.Morality = editViewModel.EditingNpc.Morality;
+                        originalNpc.Motivation = editViewModel.EditingNpc.Motivation;
+                        originalNpc.Background = editViewModel.EditingNpc.Background;
+                        originalNpc.RefreshAssetProperties(); // Обновить ImagePath и HasAssets
+                    }
+                    await SaveAllNpcsToJsonAsync();
+                    await LoadNpcsAsync(); // Перезагрузить, чтобы обновить UI и коллекции фильтров
+                    _notificationService.ShowToast("NPC успешно обновлен.", ToastType.Success);
+                }
                 editView.Close();
             };
 
-            bool? result = editView.ShowDialog();
+            editView.ShowDialog();
+        }
+        
+        private void OpenCreateNpcWindow()
+        {
+            var createViewModel = new CreateNpcViewModel(_allNpcs, _notificationService);
+            // Передаем список существующих ID для валидации уникальности -- This is now handled inside CreateNpcViewModel constructor
+            // createViewModel.ExistingNpcIds = _allNpcs.Select(n => n.Id).ToList(); 
 
-            if (result == true)
+            var createView = new CreateNpcView
             {
-                // Пользователь сохранил изменения. Обновляем оригинальный NPC.
-                var originalNpc = _allNpcs.FirstOrDefault(n => n.Id == editViewModel.EditingNpc.Id);
-                if (originalNpc != null)
-                {
-                    originalNpc.Name = editViewModel.EditingNpc.Name;
-                    originalNpc.Sex = editViewModel.EditingNpc.Sex;
-                    originalNpc.Age = editViewModel.EditingNpc.Age;
-                    originalNpc.Profession = editViewModel.EditingNpc.Profession;
-                    originalNpc.HomeLocationId = editViewModel.EditingNpc.HomeLocationId;
-                    originalNpc.IsVampire = editViewModel.EditingNpc.IsVampire;
-                    originalNpc.Morality = editViewModel.EditingNpc.Morality;
-                    originalNpc.Motivation = editViewModel.EditingNpc.Motivation;
-                    originalNpc.Background = editViewModel.EditingNpc.Background;
-                    // Важно: ImagePath и HasAssets пересчитаются автоматически в NpcModel
-                    // Также нужно обновить свойства, если NpcModel не уведомляет об изменениях сам (но он ObservableObject)
-                    // Для обновления DataGrid, если он не среагировал, можно попробовать обновить элемент в FilteredNpcs
-                    // или просто вызвать ApplyFilters()
-                }
+                DataContext = createViewModel,
+                Owner = System.Windows.Application.Current.MainWindow
+            };
 
-                await SaveAllNpcsToJsonAsync();
-                ApplyFilters(); // Переприменяем фильтры, чтобы обновить отображаемый список
-                _notificationService.ShowToast("NPC успешно обновлен.", ToastType.Success);
-            }
+            createViewModel.NpcCreated += async (newNpc) => {
+                _allNpcs.Add(newNpc);
+                await SaveAllNpcsToJsonAsync(); 
+                await LoadNpcsAsync(); 
+                _notificationService.ShowToast($"NPC '{newNpc.Name}' создан.", ToastType.Success);
+            };
+
+            createViewModel.RequestClose += () => {
+                createView.Close();
+            };
+
+            createView.ShowDialog();
         }
 
         private async Task SaveAllNpcsToJsonAsync()

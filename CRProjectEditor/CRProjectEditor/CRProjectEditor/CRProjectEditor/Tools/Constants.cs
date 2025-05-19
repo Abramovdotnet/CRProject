@@ -10,5 +10,7 @@
         internal const string SceneAssetsFolderPath = "C:\\Repos\\CRProject\\CRProject\\Assets.xcassets\\Locations";
         internal const string NPCSAssetsFolderPath = "C:\\Repos\\CRProject\\CRProject\\Assets.xcassets\\NPCs";
         internal const string LocationNamesPath = "C:\\Repos\\CRProject\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\Content\\LocationNames.json";
+        internal const string NpcNamesPath = "C:\\Repos\\CRProject\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\Content\\Names.json";
+        internal const string NpcSurnamesPath = "C:\\Repos\\CRProject\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\CRProjectEditor\\Content\\Surnames.json";
     }
 }

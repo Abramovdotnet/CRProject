@@ -73,6 +73,7 @@
                     
                     <Button Content="Очистить фильтры" Command="{Binding ClearFiltersCommand}" Margin="0,10,0,10"/>
                     <Button Content="Исправить HomeLocationId" Command="{Binding FixHomeLocationsCommand}" Margin="0,10,0,10"/>
+                    <Button Content="Создать NPC" Command="{Binding CreateNpcCommand}" Margin="0,10,0,10"/>
 
                     <GroupBox Header="Выбранный NPC" 
                               Margin="0,10,0,0" 
@@ -105,6 +106,10 @@
                             <TextBlock Margin="0,0,0,3">
                                 <Run Text="Имя: " FontWeight="SemiBold"/>
                                 <Run Text="{Binding SelectedNpc.Name}"/>
+                            </TextBlock>
+                            <TextBlock Margin="0,0,0,3">
+                                <Run Text="Пол: " FontWeight="SemiBold"/>
+                                <Run Text="{Binding SelectedNpc.Sex}"/>
                             </TextBlock>
                             <TextBlock Margin="0,0,0,3">
                                 <Run Text="Возраст: " FontWeight="SemiBold"/>
