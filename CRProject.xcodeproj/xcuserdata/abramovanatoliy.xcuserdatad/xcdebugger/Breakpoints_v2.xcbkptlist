@@ -414,8 +414,8 @@
             filePath = "CRProject/Services/NPCBehaviorService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "76"
-            endingLineNumber = "76"
+            startingLineNumber = "66"
+            endingLineNumber = "66"
             landmarkName = "handleNPCMovementBehavior(npc:gameTimeService:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -430,8 +430,8 @@
             filePath = "CRProject/Services/NPCBehaviorService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "119"
-            endingLineNumber = "119"
+            startingLineNumber = "109"
+            endingLineNumber = "109"
             landmarkName = "handleNPCMovementBehavior(npc:gameTimeService:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -446,8 +446,8 @@
             filePath = "CRProject/Services/NPCBehaviorService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "95"
-            endingLineNumber = "95"
+            startingLineNumber = "85"
+            endingLineNumber = "85"
             landmarkName = "handleNPCMovementBehavior(npc:gameTimeService:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -526,8 +526,8 @@
             filePath = "CRProject/Services/NPCBehaviorService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "75"
-            endingLineNumber = "75"
+            startingLineNumber = "65"
+            endingLineNumber = "65"
             landmarkName = "handleNPCMovementBehavior(npc:gameTimeService:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1163,6 +1163,22 @@
             startingLineNumber = "323"
             endingLineNumber = "323"
             landmarkName = "executeModifyStatAction(_:player:npc:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E8C39BFA-571B-4D8E-8B1D-ACC84ED70409"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/NPCBehaviorService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "updateNPCsActivities()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
