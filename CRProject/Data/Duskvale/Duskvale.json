@@ -180,6 +180,11 @@
         "connectedSceneId": 164,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 168,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
       }
     ],
     "population": 0,
@@ -742,7 +747,7 @@
     "parentSceneId": 0,
     "childSceneIds": [],
     "hubSceneIds": [],
-    "x": 0,
+    "x": -2,
     "y": 7,
     "connections": [
       {
@@ -917,6 +922,11 @@
       },
       {
         "connectedSceneId": 158,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 168,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       }
@@ -1129,6 +1139,16 @@
       },
       {
         "connectedSceneId": 165,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 143,
+        "travelTime": 1,
+        "connectionType": "ManualCanvas"
+      },
+      {
+        "connectedSceneId": 161,
         "travelTime": 1,
         "connectionType": "ManualCanvas"
       }
