@@ -3,27 +3,21 @@ import SwiftUI // <<< Added for UIHostingController
 
 // Структура для хранения данных, необходимых для отрисовки одного маркера
 struct MarkerDrawingData {
-    let scene: Scene // Оригинальные данные сцены
-    let frame: CGRect // Общий прямоугольник для всего элемента маркера
-    let coloredRectangleFrame: CGRect // Прямоугольник для цветной/изображенческой части
+    let scene: Scene
+    let frame: CGRect
+    let coloredRectangleFrame: CGRect
     let iconFrame: CGRect
     let nameLabelFrame: CGRect
     let typeLabelFrame: CGRect
-    
     let nameText: String
     let typeText: String
-    let iconImageName: String // SF Symbol для иконки типа
-    
-    let baseBackgroundColor: UIColor // Базовый цвет фона (по типу сцены)
+    let iconImageName: String
+    let baseBackgroundColor: UIColor
     let nameLabelColor: UIColor
     let typeLabelColor: UIColor
     let iconTintColor: UIColor
-    
-    // let sceneImage: UIImage? // УДАЛЕНО: Предзагруженное изображение, если есть
-    let sceneImageNameSuffix: String // Суффикс для имени изображения ("location<ID>")
-    
-    var isLocked: Bool // Будет обновляться
-    var isCurrent: Bool // Будет обновляться
+    var isLocked: Bool
+    var isCurrent: Bool
 }
 
 // Новый класс View, который будет заниматься отрисовкой всех маркеров и линий
@@ -60,163 +54,66 @@ class MarkerView: UIView {
 
         for data in markerDrawDataList {
             let markerFrame = data.frame
-            let intersectsDrawRect = markerFrame.intersects(rect)
-            
-            if !intersectsDrawRect { continue } 
-
+            if !markerFrame.intersects(rect) { continue }
             context.saveGState()
             context.translateBy(x: data.frame.origin.x, y: data.frame.origin.y)
-
-            // Пытаемся загрузить изображение сцены
-            var sceneImageToDraw: UIImage? = nil
-            if !data.sceneImageNameSuffix.isEmpty { // Убедимся, что имя не пустое
-                // >>> ОТЛАДКА (Закомментировано)
-                /*
-                print("[MarkerView] Attempting to load image: '\(data.sceneImageNameSuffix)' for scene ID: \(data.scene.id)")
-                sceneImageToDraw = UIImage(named: data.sceneImageNameSuffix)
-                if sceneImageToDraw == nil {
-                    print("[MarkerView] Image '\(data.sceneImageNameSuffix)' NOT FOUND for scene ID: \(data.scene.id).")
-                } else {
-                    print("[MarkerView] Image '\(data.sceneImageNameSuffix)' LOADED SUCCESSFULLY for scene ID: \(data.scene.id).")
-                }
-                */
-                // <<< КОНЕЦ ОТЛАДКИ
-                sceneImageToDraw = UIImage(named: data.sceneImageNameSuffix) // Оставляем только загрузку
-            }
-            
-            let hasImage = (sceneImageToDraw != nil)
-            let actualBackgroundColor = hasImage ? .clear : data.baseBackgroundColor
-
-            // --- Отрисовка основного цветного/изображенческого прямоугольника ---
+            // --- Draw main colored rectangle (always opaque) ---
+            let backgroundColor = data.baseBackgroundColor // Already opaque
             if data.isCurrent {
-                if hasImage { // Свечение для маркеров с изображением
-                    context.saveGState()
-                    UIColor.yellow.withAlphaComponent(0.6).setFill()
-                    context.setShadow(offset: .zero, blur: 8.0, color: UIColor.yellow.withAlphaComponent(0.8).cgColor)
-                    let glowRect = data.coloredRectangleFrame.insetBy(dx: -4, dy: -4)
-                    let glowPath = UIBezierPath(roundedRect: glowRect, cornerRadius: 10)
-                    glowPath.fill()
-                    context.restoreGState()
-
-                    actualBackgroundColor.setFill() // Должен быть .clear
-                    let backgroundPath = UIBezierPath(roundedRect: data.coloredRectangleFrame, cornerRadius: 8)
-                    backgroundPath.fill()
-                } else { // Свечение для маркеров без изображения (только цветной фон)
-                    context.saveGState() 
-                    context.setShadow(offset: .zero, blur: 8.0, color: UIColor.yellow.cgColor)
-                    
-                    actualBackgroundColor.setFill() // Это будет data.baseBackgroundColor
-                    let shadowCastingPath = UIBezierPath(roundedRect: data.coloredRectangleFrame, cornerRadius: 8)
-                    shadowCastingPath.fill()
-                    context.restoreGState() 
-                }
-            } else { // Не текущий, просто рисуем фон
-                actualBackgroundColor.setFill()
+                context.saveGState()
+                context.setShadow(offset: .zero, blur: 8.0, color: UIColor.yellow.cgColor)
+                backgroundColor.setFill()
+                let shadowCastingPath = UIBezierPath(roundedRect: data.coloredRectangleFrame, cornerRadius: 8)
+                shadowCastingPath.fill()
+                context.restoreGState()
+            } else {
+                backgroundColor.setFill()
                 let backgroundPath = UIBezierPath(roundedRect: data.coloredRectangleFrame, cornerRadius: 8)
                 backgroundPath.fill()
             }
-
-            // Рисуем изображение поверх фона, если оно есть
-            if let image = sceneImageToDraw { // Используем загруженное изображение
-                context.saveGState()
-                let imagePath = UIBezierPath(roundedRect: data.coloredRectangleFrame, cornerRadius: 8)
-                imagePath.addClip()
-                image.draw(in: data.coloredRectangleFrame)
-                context.restoreGState()
-            }
-            
-            // Рисуем рамку для цветного прямоугольника
+            // Draw border
             UIColor.black.setStroke()
             let borderDrawingPath = UIBezierPath(roundedRect: data.coloredRectangleFrame, cornerRadius: 8)
             borderDrawingPath.lineWidth = 0.5
             borderDrawingPath.stroke()
-
-            // --- ОТЛАДКА: Рисуем точку в центре цветного прямоугольника ---
-            /*
-            let debugMarkerDotColor = UIColor.magenta
-            let debugMarkerDotSize: CGFloat = 4.0
-            let dotX_relative = data.coloredRectangleFrame.midX - debugMarkerDotSize / 2.0
-            let dotY_relative = data.coloredRectangleFrame.midY - debugMarkerDotSize / 2.0
-            let debugDotRect = CGRect(x: dotX_relative, y: dotY_relative, width: debugMarkerDotSize, height: debugMarkerDotSize)
-            context.setFillColor(debugMarkerDotColor.cgColor)
-            context.fillEllipse(in: debugDotRect)
-            */
-            // --- КОНЕЦ ОТЛАДКИ ---
-
-            // --- Отрисовка иконки ---
-            let baseIconFrame = data.iconFrame 
-
+            // --- Draw icon, name, and type inside colored rectangle ---
+            let iconFrame = data.iconFrame
             if data.isLocked {
                 let lockIconSFName = "lock.fill"
                 let lockIconColor = UIColor(white: 0.85, alpha: 1.0)
-                
                 let spacingBetweenIcons: CGFloat = 2.0
-                
-                let maxWidthPerIcon = (baseIconFrame.width - spacingBetweenIcons) / 2.0
-                let maxHeightPerIcon = baseIconFrame.height
+                let maxWidthPerIcon = (iconFrame.width - spacingBetweenIcons) / 2.0
+                let maxHeightPerIcon = iconFrame.height
                 let iconSideLength = max(1.0, min(maxWidthPerIcon, maxHeightPerIcon))
-                
                 let totalOccupiedWidth = iconSideLength * 2 + spacingBetweenIcons
-                
-                let startX = baseIconFrame.origin.x + (baseIconFrame.width - totalOccupiedWidth) / 2.0
-                let startY = baseIconFrame.origin.y + (baseIconFrame.height - iconSideLength) / 2.0
-
-                let typeIconActualRect = CGRect(
-                    x: startX,
-                    y: startY,
-                    width: iconSideLength,
-                    height: iconSideLength
-                )
-                
-                let lockIconActualRect = CGRect(
-                    x: typeIconActualRect.maxX + spacingBetweenIcons,
-                    y: startY,
-                    width: iconSideLength,
-                    height: iconSideLength
-                )
-
+                let startX = iconFrame.origin.x + (iconFrame.width - totalOccupiedWidth) / 2.0
+                let startY = iconFrame.origin.y + (iconFrame.height - iconSideLength) / 2.0
+                let typeIconActualRect = CGRect(x: startX, y: startY, width: iconSideLength, height: iconSideLength)
+                let lockIconActualRect = CGRect(x: typeIconActualRect.maxX + spacingBetweenIcons, y: startY, width: iconSideLength, height: iconSideLength)
                 if let typeIconImage = UIImage(systemName: data.iconImageName) {
                     typeIconImage.withTintColor(data.iconTintColor).draw(in: typeIconActualRect)
                 }
-
                 if let lockImage = UIImage(systemName: lockIconSFName) {
                     lockImage.withTintColor(lockIconColor).draw(in: lockIconActualRect)
                 }
-
             } else {
-                let iconSideLength = min(baseIconFrame.width, baseIconFrame.height)
-                let centeredIconX = baseIconFrame.origin.x + (baseIconFrame.width - iconSideLength) / 2.0
-                let centeredIconY = baseIconFrame.origin.y + (baseIconFrame.height - iconSideLength) / 2.0
+                let iconSideLength = min(iconFrame.width, iconFrame.height)
+                let centeredIconX = iconFrame.origin.x + (iconFrame.width - iconSideLength) / 2.0
+                let centeredIconY = iconFrame.origin.y + (iconFrame.height - iconSideLength) / 2.0
                 let centeredSquareFrame = CGRect(x: centeredIconX, y: centeredIconY, width: iconSideLength, height: iconSideLength)
-
                 if let icon = UIImage(systemName: data.iconImageName) {
-                    icon.withTintColor(data.iconTintColor).draw(in: centeredSquareFrame) 
+                    icon.withTintColor(data.iconTintColor).draw(in: centeredSquareFrame)
                 }
             }
-
-            // --- Отрисовка названия локации ---
+            // Draw name (centered)
             let nameParagraphStyle = NSMutableParagraphStyle()
             nameParagraphStyle.alignment = .center
             nameParagraphStyle.lineBreakMode = .byTruncatingTail
-            
             let nameShadow = NSShadow()
             nameShadow.shadowColor = UIColor.black.withAlphaComponent(0.5)
             nameShadow.shadowOffset = CGSize(width: 0.7, height: 0.7)
             nameShadow.shadowBlurRadius = 1.0
-            
-            let nameFont: UIFont
-            if let optimaBoldFont = UIFont(name: "Optima-Bold", size: 12) {
-                nameFont = optimaBoldFont
-            } else if let optimaRegularFont = UIFont(name: "Optima-Regular", size: 12) {
-                if let boldDescriptor = optimaRegularFont.fontDescriptor.withSymbolicTraits(UIFontDescriptor.SymbolicTraits.traitBold) {
-                    nameFont = UIFont(descriptor: boldDescriptor, size: 12)
-                } else {
-                    nameFont = optimaRegularFont
-                }
-            } else {
-                nameFont = UIFont.systemFont(ofSize: 12, weight: .bold)
-            }
-
+            let nameFont: UIFont = UIFont(name: "Optima-Bold", size: 13) ?? UIFont.systemFont(ofSize: 13, weight: .bold)
             let nameAttribs: [NSAttributedString.Key: Any] = [
                 .font: nameFont,
                 .foregroundColor: data.nameLabelColor,
@@ -224,19 +121,15 @@ class MarkerView: UIView {
                 .shadow: nameShadow
             ]
             (data.nameText as NSString).draw(with: data.nameLabelFrame, options: [.usesLineFragmentOrigin, .truncatesLastVisibleLine], attributes: nameAttribs, context: nil)
-
-            // --- Отрисовка типа локации ---
+            // Draw type (centered, below name)
             let typeParagraphStyle = NSMutableParagraphStyle()
             typeParagraphStyle.alignment = .center
             typeParagraphStyle.lineBreakMode = .byTruncatingTail
-            
             let typeShadow = NSShadow()
             typeShadow.shadowColor = UIColor.black.withAlphaComponent(0.5)
             typeShadow.shadowOffset = CGSize(width: 0.7, height: 0.7)
             typeShadow.shadowBlurRadius = 1.0
-            
             let typeFont = UIFont(name: "Optima-Regular", size: 11) ?? UIFont.systemFont(ofSize: 11)
-
             let typeAttribs: [NSAttributedString.Key: Any] = [
                 .font: typeFont,
                 .foregroundColor: data.typeLabelColor,
@@ -244,7 +137,6 @@ class MarkerView: UIView {
                 .shadow: typeShadow
             ]
             (data.typeText as NSString).draw(with: data.typeLabelFrame, options: [.usesLineFragmentOrigin, .truncatesLastVisibleLine], attributes: typeAttribs, context: nil)
-
             context.restoreGState()
         }
     }
@@ -425,10 +317,10 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
                 // Конфигурируем markerRenderingView, добавляем его в zoomableViewContainer (поверх linesView)
                 self.configureMarkerView(boundsForMarkerView: self.zoomableViewContainer.bounds)
                 self.zoomableViewContainer.addSubview(self.markerRenderingView)
-                
-                // Устанавливаем начальную прозрачность перед анимацией
-                self.linesView.alpha = 0.0
-                self.markerRenderingView.alpha = 0.0
+                // Явно выставляем frame после добавления
+                self.markerRenderingView.frame = self.zoomableViewContainer.bounds
+                print("[DEBUG] markerRenderingView.frame = \(self.markerRenderingView.frame), bounds = \(self.markerRenderingView.bounds)")
+                self.markerRenderingView.alpha = 1.0
 
                 // Передаем данные и параметры в markerRenderingView
                 self.markerRenderingView.markerDrawDataList = self.markerDrawDataList
@@ -449,6 +341,11 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
                 }
                 self.linesView.currentSceneId = GameStateService.shared.currentScene?.id 
                 self.linesView.setNeedsDisplay() // Запрос на перерисовку линий
+
+                // --- ДОБАВЛЯЕМ ЯВНУЮ УСТАНОВКУ contentSize ПОСЛЕ ВСЕХ ДОБАВЛЕНИЙ ---
+                self.scrollView.contentSize = self.zoomableViewContainer.bounds.size
+                print("[FINAL] scrollView.contentSize = \(self.scrollView.contentSize), zoomableViewContainer.bounds = \(self.zoomableViewContainer.bounds)")
+                // --- КОНЕЦ ДОБАВЛЕНИЯ ---
 
                 // ВОССТАНАВЛИВАЕМ ИНИЦИАЛЬНУЮ УСТАНОВКУ ПОДСВЕТКИ И ИНФОРМАЦИИ О ТЕКУЩЕЙ СЦЕНЕ
                 let initialSceneId = GameStateService.shared.currentScene?.id
@@ -746,48 +643,46 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
 
     // Новый метод для инициализации координат маркеров и scenePointCache только один раз
     private func initializeMarkerDrawDataIfNeeded() {
-        guard markerDrawDataList.isEmpty else { return }
-        guard !allScenes.isEmpty else { return }
+        print("[WorldMap] initializeMarkerDrawDataIfNeeded called. allScenes.count = \(allScenes.count)")
+        markerDrawDataList.removeAll() // Убираем guard, всегда пересоздаем
+        guard !allScenes.isEmpty else {
+            print("[WorldMap] allScenes is empty, nothing to draw.")
+            return
+        }
         var newMarkerDataList: [MarkerDrawingData] = []
         newMarkerDataList.reserveCapacity(allScenes.count)
         var newCalculatedPoints: [Int: CGPoint] = [:]
         newCalculatedPoints.reserveCapacity(allScenes.count)
+        var minX: CGFloat = .greatestFiniteMagnitude
+        var maxX: CGFloat = -.greatestFiniteMagnitude
+        var minY: CGFloat = .greatestFiniteMagnitude
+        var maxY: CGFloat = -.greatestFiniteMagnitude
         for scene in allScenes {
             let sceneX = CGFloat(scene.x) * coordinateScale
             let sceneY = CGFloat(scene.y) * coordinateScale
+            minX = min(minX, sceneX)
+            maxX = max(maxX, sceneX)
+            minY = min(minY, sceneY)
+            maxY = max(maxY, sceneY)
             let elementOriginX = (sceneX - minMapX) + padding
             let elementOriginY = (sceneY - minMapY) + padding
-            let sceneElementFrame = CGRect(origin: CGPoint(x: elementOriginX, y: elementOriginY), size: sceneElementSize)
+            let sceneElementFrame = CGRect(origin: CGPoint(x: elementOriginX, y: elementOriginY), size: coloredRectangleSize)
             let coloredRectFrame = CGRect(origin: .zero, size: coloredRectangleSize)
-            let infoOriginY = coloredRectangleSize.height + spacingBelowRectangle
-            let infoContentPadding: CGFloat = 5
-            let iconSize = CGSize(width: 20, height: 20)
-            let textStartX: CGFloat = iconSize.width + infoContentPadding * 2
-            let labelWidth = sceneElementSize.width - textStartX - infoContentPadding
-            let nameLabelHeight: CGFloat = 22
-            let typeLabelHeight: CGFloat = 20
-            let iconFrame = CGRect(x: infoContentPadding, y: infoOriginY + infoContentPadding, width: iconSize.width, height: iconSize.height)
-            let nameLabelFrame = CGRect(x: textStartX, y: infoOriginY + infoContentPadding, width: labelWidth, height: nameLabelHeight)
-            let typeLabelFrame = CGRect(x: textStartX, y: nameLabelFrame.maxY - 4, width: labelWidth, height: typeLabelHeight)
-            var baseColorForType: UIColor = UIColor.white.withAlphaComponent(0.7)
-            switch scene.sceneType {
-                case .tavern: baseColorForType = UIColor.brown.withAlphaComponent(0.7)
-                case .square: baseColorForType = UIColor.systemGreen.withAlphaComponent(0.7)
-                case .blacksmith: baseColorForType = UIColor.darkGray.withAlphaComponent(0.7)
-                case .house: baseColorForType = UIColor.systemBlue.withAlphaComponent(0.7)
-                case .road: baseColorForType = UIColor.lightGray.withAlphaComponent(0.7)
-                case .temple: baseColorForType = UIColor.systemPurple.withAlphaComponent(0.7)
-                case .shop: baseColorForType = UIColor.systemOrange.withAlphaComponent(0.7)
-                case .cathedral: baseColorForType = UIColor.systemIndigo.withAlphaComponent(0.7)
-                case .castle: baseColorForType = UIColor.systemGray.withAlphaComponent(0.8)
-                case .crypt: baseColorForType = UIColor.darkGray.withAlphaComponent(0.8)
-                case .mine: baseColorForType = UIColor.brown.withAlphaComponent(0.6)
-                case .forest: baseColorForType = UIColor.systemGreen.withAlphaComponent(0.6)
-                case .cave: baseColorForType = UIColor.systemBrown.withAlphaComponent(0.7)
-                case .ruins: baseColorForType = UIColor.systemGray2.withAlphaComponent(0.7)
-                default: break
-            }
-            let imageNameSuffixForScene = "location\(scene.id)"
+            // --- Новая разметка для Optima иконки и типа ---
+            let iconSize = CGSize(width: 18, height: 18)
+            let nameLabelHeight: CGFloat = 14
+            let typeLabelHeight: CGFloat = 12
+            let spacing1: CGFloat = 2 // между иконкой и названием
+            let spacing2: CGFloat = 0 // между названием и типом
+            let totalContentHeight = iconSize.height + spacing1 + nameLabelHeight + spacing2 + typeLabelHeight
+            let startY = (coloredRectangleSize.height - totalContentHeight) / 2
+            let iconFrame = CGRect(x: (coloredRectangleSize.width - iconSize.width) / 2, y: startY, width: iconSize.width, height: iconSize.height)
+            let nameLabelFrame = CGRect(x: 4, y: iconFrame.maxY + spacing1, width: coloredRectangleSize.width - 8, height: nameLabelHeight)
+            let typeLabelFrame = CGRect(x: 4, y: nameLabelFrame.maxY + spacing2, width: coloredRectangleSize.width - 8, height: typeLabelHeight)
+            // --- Цвет фона по npcActivityType ---
+            let baseColorForType: UIColor = SceneTypeColorProvider.color(for: scene.sceneType)
+            // --- Цвет иконки: белый если фон тёмный, иначе чёрный ---
+            let iconTintColor: UIColor = baseColorForType.isDarkColor ? .white : .black
             let markerData = MarkerDrawingData(
                 scene: scene,
                 frame: sceneElementFrame,
@@ -801,8 +696,7 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
                 baseBackgroundColor: baseColorForType,
                 nameLabelColor: .white,
                 typeLabelColor: .systemGreen,
-                iconTintColor: .black,
-                sceneImageNameSuffix: imageNameSuffixForScene,
+                iconTintColor: iconTintColor,
                 isLocked: scene.isLocked,
                 isCurrent: false
             )
@@ -810,9 +704,14 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
             let pointX = markerData.frame.origin.x + markerData.coloredRectangleFrame.midX
             let pointY = markerData.frame.origin.y + markerData.coloredRectangleFrame.midY
             newCalculatedPoints[scene.id] = CGPoint(x: pointX, y: pointY)
+            print("[WorldMap] Scene id=\(scene.id) name=\(scene.name) x=\(scene.x) y=\(scene.y) -> frame=\(sceneElementFrame)")
         }
+        print("[WorldMap] minX=\(minX) maxX=\(maxX) minY=\(minY) maxY=\(maxY)")
+        print("[WorldMap] markerDrawDataList.count = \(newMarkerDataList.count)")
         markerDrawDataList = newMarkerDataList
         pendingScenePointCache = newCalculatedPoints
+        markerRenderingView?.setNeedsDisplay()
+        print("[WorldMap] markerRenderingView.setNeedsDisplay() called")
     }
 
     // Замена setupMarkersAndLines - теперь это в основном про linesView
@@ -1089,5 +988,351 @@ class MapLinesView: UIView {
                 drawnConnections.insert(connectionKey) 
             }
         }
+    }
+}
+
+// --- ВСПОМОГАТЕЛЬНЫЙ КЛАСС ДЛЯ ЦВЕТА ---
+extension UIColor {
+    var isDarkColor: Bool {
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        getRed(&r, green: &g, blue: &b, alpha: &a)
+        // Простая формула яркости
+        let brightness = (r * 299 + g * 587 + b * 114) / 1000
+        return brightness < 0.5
+    }
+}
+
+class SceneTypeColorProvider {
+    static func color(for type: SceneType) -> UIColor {
+        switch type {
+        case .tavern: return UIColor(red: 0.7, green: 0.4, blue: 0.1, alpha: 1)
+        case .square: return UIColor.systemGreen
+        case .blacksmith: return UIColor.darkGray
+        case .house: return UIColor.systemBlue
+        case .road: return UIColor.lightGray
+        case .temple: return UIColor.systemPurple
+        case .shop: return UIColor.systemOrange
+        case .cathedral: return UIColor.systemIndigo
+        case .castle: return UIColor.systemGray
+        case .crypt: return UIColor.darkGray
+        case .mine: return UIColor.brown
+        case .forest: return UIColor.systemGreen
+        case .cave: return UIColor.brown
+        case .ruins: return UIColor.systemGray2
+        case .brothel: return UIColor.systemPink
+        case .bathhouse: return UIColor.systemTeal
+        case .docks: return UIColor.systemTeal
+        case .manor: return UIColor.systemYellow
+        case .military: return UIColor.systemRed
+        case .warehouse: return UIColor.systemGray3
+        case .bookstore: return UIColor.systemTeal
+        case .alchemistShop: return UIColor.systemPurple
+        case .district: return UIColor.systemGray4
+        case .town: return UIColor.systemGray5
+        case .cloister: return UIColor.systemGray6
+        case .cemetery: return UIColor.systemGray
+        case .dungeon: return UIColor.black
+        default: return UIColor.systemGray
+        }
+    }
+}
+
+// --- ПРОТОТИП: Виртуализированная карта для 10 000+ сцен ---
+
+import UIKit
+
+class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
+    private let coordinateScale: CGFloat = 80.0 // Оставим как в редакторе, чтобы совпадало позиционирование
+    private let markerSize = CGSize(width: 120, height: 60) // Было 50, теперь 60
+    private let padding: CGFloat = 50.0
+    private var allScenes: [Scene] = []
+    private var currentSceneId: Int? { GameStateService.shared.currentScene?.id }
+    private var scrollView: UIScrollView!
+    private var contentView: UIView!
+    private var markerViews: [Int: UIButton] = [:] // sceneId -> marker
+    private var linesLayer: CAShapeLayer!
+    private var visibleSceneIds: Set<Int> = []
+    private var minMapX: CGFloat = 0
+    private var minMapY: CGFloat = 0
+    private var contentSize: CGSize = .zero
+    private var greenLinesLayer: CAShapeLayer! // Новый слой для зелёных линий
+    private var currentLocationInfoView: UIView! // Новый view для названия и типа текущей локации
+    private var currentLocationNameLabel: UILabel!
+    private var currentLocationTypeLabel: UILabel!
+    private var markerImageCache: [Int: UIImage?] = [:] // Кэш для ассетов маркеров
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .black
+        loadSceneData()
+        guard !allScenes.isEmpty else { return }
+        calculateContentBounds()
+        setupScrollView()
+        setupContentView()
+        setupLinesLayer()
+        setupCurrentLocationInfoView()
+        updateVisibleMarkersAndLines()
+        centerOnCurrentScene(animated: false)
+        updateCurrentLocationInfo()
+    }
+    
+    private func loadSceneData() {
+        allScenes = LocationReader.getLocations()
+    }
+    
+    private func calculateContentBounds() {
+        let xs = allScenes.map { CGFloat($0.x) * coordinateScale }
+        let ys = allScenes.map { CGFloat($0.y) * coordinateScale }
+        minMapX = xs.min() ?? 0
+        minMapY = ys.min() ?? 0
+        let maxMapX = xs.max() ?? 0
+        let maxMapY = ys.max() ?? 0
+        contentSize = CGSize(
+            width: (maxMapX - minMapX) + markerSize.width + 2 * padding,
+            height: (maxMapY - minMapY) + markerSize.height + 2 * padding
+        )
+    }
+    
+    private func setupScrollView() {
+        scrollView = UIScrollView(frame: view.bounds)
+        scrollView.delegate = self
+        scrollView.backgroundColor = .black
+        scrollView.minimumZoomScale = 0.1
+        scrollView.maximumZoomScale = 5.0
+        scrollView.contentSize = contentSize
+        scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(scrollView)
+    }
+    
+    private func setupContentView() {
+        contentView = UIView(frame: CGRect(origin: .zero, size: contentSize))
+        contentView.backgroundColor = .clear
+        scrollView.addSubview(contentView)
+    }
+    
+    private func setupLinesLayer() {
+        linesLayer = CAShapeLayer()
+        linesLayer.frame = contentView.bounds
+        linesLayer.strokeColor = UIColor.gray.cgColor
+        linesLayer.lineWidth = 1.0
+        linesLayer.fillColor = nil
+        contentView.layer.addSublayer(linesLayer)
+
+        greenLinesLayer = CAShapeLayer()
+        greenLinesLayer.frame = contentView.bounds
+        greenLinesLayer.strokeColor = UIColor.systemGreen.cgColor
+        greenLinesLayer.lineWidth = 2.0
+        greenLinesLayer.fillColor = nil
+        contentView.layer.addSublayer(greenLinesLayer)
+    }
+    
+    private func setupCurrentLocationInfoView() {
+        let infoView = UIView()
+        infoView.backgroundColor = .clear
+        infoView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(infoView)
+        // Название
+        let nameLabel = UILabel()
+        nameLabel.font = UIFont(name: "Optima-Bold", size: 26) ?? UIFont.systemFont(ofSize: 26, weight: .bold)
+        nameLabel.textColor = .white
+        nameLabel.textAlignment = .center
+        nameLabel.numberOfLines = 1
+        nameLabel.layer.shadowColor = UIColor.black.cgColor
+        nameLabel.layer.shadowRadius = 3
+        nameLabel.layer.shadowOpacity = 0.7
+        nameLabel.layer.shadowOffset = CGSize(width: 1, height: 1)
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        infoView.addSubview(nameLabel)
+        // Тип
+        let typeLabel = UILabel()
+        typeLabel.font = UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18)
+        typeLabel.textColor = .systemYellow
+        typeLabel.textAlignment = .center
+        typeLabel.numberOfLines = 2
+        typeLabel.adjustsFontSizeToFitWidth = true
+        typeLabel.minimumScaleFactor = 0.5
+        typeLabel.lineBreakMode = .byTruncatingTail
+        typeLabel.layer.shadowColor = UIColor.black.cgColor
+        typeLabel.layer.shadowRadius = 2
+        typeLabel.layer.shadowOpacity = 0.7
+        typeLabel.layer.shadowOffset = CGSize(width: 1, height: 1)
+        typeLabel.translatesAutoresizingMaskIntoConstraints = false
+        infoView.addSubview(typeLabel)
+        // Constraints
+        NSLayoutConstraint.activate([
+            infoView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            infoView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 18),
+            infoView.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, multiplier: 0.9),
+            nameLabel.topAnchor.constraint(equalTo: infoView.topAnchor),
+            nameLabel.leadingAnchor.constraint(equalTo: infoView.leadingAnchor),
+            nameLabel.trailingAnchor.constraint(equalTo: infoView.trailingAnchor),
+            typeLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2),
+            typeLabel.leadingAnchor.constraint(equalTo: infoView.leadingAnchor),
+            typeLabel.trailingAnchor.constraint(equalTo: infoView.trailingAnchor),
+            typeLabel.bottomAnchor.constraint(equalTo: infoView.bottomAnchor)
+        ])
+        self.currentLocationInfoView = infoView
+        self.currentLocationNameLabel = nameLabel
+        self.currentLocationTypeLabel = typeLabel
+    }
+
+    private func updateCurrentLocationInfo() {
+        guard let scene = allScenes.first(where: { $0.id == currentSceneId }) else { return }
+        currentLocationNameLabel.text = scene.name
+        currentLocationTypeLabel.text = scene.sceneType.displayName
+    }
+
+    private func updateVisibleMarkersAndLines() {
+        let visibleRect = scrollView.convert(scrollView.bounds, to: contentView)
+        let margin: CGFloat = 200 // чуть больше, чтобы не мигали на границе
+        let extendedRect = visibleRect.insetBy(dx: -margin, dy: -margin)
+        var newVisibleIds: Set<Int> = []
+        for scene in allScenes {
+            let pos = scenePosition(scene)
+            let markerFrame = CGRect(origin: pos, size: markerSize)
+            if markerFrame.intersects(extendedRect) {
+                newVisibleIds.insert(scene.id)
+                if markerViews[scene.id] == nil {
+                    let marker = UIButton(type: .custom)
+                    marker.frame = markerFrame
+                    // --- Картинка ассета, если есть ---
+                    let image: UIImage? = {
+                        if let cached = markerImageCache[scene.id] { return cached }
+                        let img = UIImage(named: "location\(scene.id)")
+                        markerImageCache[scene.id] = img
+                        return img
+                    }()
+                    if let img = image {
+                        let imageView = UIImageView(frame: marker.bounds)
+                        imageView.image = img
+                        imageView.contentMode = .scaleAspectFill
+                        imageView.clipsToBounds = true
+                        marker.addSubview(imageView)
+                    } else {
+                        let bgColor = SceneTypeColorProvider.color(for: scene.sceneType)
+                        marker.backgroundColor = bgColor
+                    }
+                    let bgColor = marker.backgroundColor ?? .black
+                    let iconTint: UIColor = bgColor.isDarkColor ? .white : .black
+                    let iconImageView = UIImageView(frame: CGRect(x: (markerSize.width-18)/2, y: 4, width: 18, height: 18))
+                    iconImageView.contentMode = .scaleAspectFit
+                    iconImageView.image = UIImage(systemName: scene.sceneType.iconName)
+                    iconImageView.tintColor = iconTint
+                    marker.addSubview(iconImageView)
+                    let nameLabel = UILabel(frame: CGRect(x: 4, y: 24, width: markerSize.width-8, height: 16))
+                    nameLabel.text = scene.name
+                    nameLabel.font = UIFont(name: "Optima-Bold", size: 13) ?? UIFont.systemFont(ofSize: 13, weight: .bold)
+                    nameLabel.textColor = .white
+                    nameLabel.textAlignment = .center
+                    nameLabel.adjustsFontSizeToFitWidth = true
+                    nameLabel.minimumScaleFactor = 0.7
+                    nameLabel.lineBreakMode = .byTruncatingTail
+                    nameLabel.layer.zPosition = 10
+                    marker.addSubview(nameLabel)
+                    let typeLabel = UILabel(frame: CGRect(x: 4, y: 40, width: markerSize.width-8, height: 18))
+                    typeLabel.text = scene.sceneType.displayName
+                    typeLabel.font = UIFont(name: "Optima-Regular", size: 11) ?? UIFont.systemFont(ofSize: 11)
+                    typeLabel.textColor = .white
+                    typeLabel.textAlignment = .center
+                    typeLabel.numberOfLines = 2
+                    typeLabel.adjustsFontSizeToFitWidth = true
+                    typeLabel.minimumScaleFactor = 0.5
+                    typeLabel.lineBreakMode = .byTruncatingTail
+                    typeLabel.layer.shadowColor = UIColor.black.cgColor
+                    typeLabel.layer.shadowRadius = 1.5
+                    typeLabel.layer.shadowOpacity = 0.7
+                    typeLabel.layer.shadowOffset = CGSize(width: 0.5, height: 0.5)
+                    typeLabel.layer.zPosition = 10
+                    marker.addSubview(typeLabel)
+                    marker.layer.cornerRadius = 8
+                    marker.layer.borderWidth = 1.0
+                    marker.layer.borderColor = (scene.id == currentSceneId) ? UIColor.yellow.cgColor : UIColor.black.cgColor
+                    marker.tag = scene.id
+                    marker.addTarget(self, action: #selector(markerTapped(_:)), for: .touchUpInside)
+                    contentView.addSubview(marker)
+                    markerViews[scene.id] = marker
+                } else {
+                    let marker = markerViews[scene.id]!
+                    marker.layer.borderColor = (scene.id == currentSceneId) ? UIColor.yellow.cgColor : UIColor.black.cgColor
+                }
+            }
+        }
+        for (sceneId, marker) in markerViews where !newVisibleIds.contains(sceneId) {
+            marker.removeFromSuperview()
+        }
+        markerViews = markerViews.filter { newVisibleIds.contains($0.key) }
+        visibleSceneIds = newVisibleIds
+        drawLines()
+    }
+    
+    private func scenePosition(_ scene: Scene) -> CGPoint {
+        let x = (CGFloat(scene.x) * coordinateScale - minMapX) + padding
+        let y = (CGFloat(scene.y) * coordinateScale - minMapY) + padding
+        return CGPoint(x: x, y: y)
+    }
+    
+    private func drawLines() {
+        let grayPath = UIBezierPath()
+        let greenPath = UIBezierPath()
+        for scene in allScenes {
+            let start = scenePosition(scene)
+            for conn in scene.connections {
+                guard let target = allScenes.first(where: { $0.id == conn.connectedSceneId }) else { continue }
+                // Рисуем, если хотя бы один маркер видим
+                if !visibleSceneIds.contains(scene.id) && !visibleSceneIds.contains(target.id) { continue }
+                let end = scenePosition(target)
+                let line = UIBezierPath()
+                line.move(to: CGPoint(x: start.x + markerSize.width/2, y: start.y + markerSize.height/2))
+                line.addLine(to: CGPoint(x: end.x + markerSize.width/2, y: end.y + markerSize.height/2))
+                // Только для connections текущей сцены и если target доступен — зелёная линия
+                if scene.id == currentSceneId && !target.isLocked {
+                    greenPath.append(line)
+                } else {
+                    grayPath.append(line)
+                }
+            }
+        }
+        linesLayer.path = grayPath.cgPath
+        greenLinesLayer.path = greenPath.cgPath
+    }
+    
+    @objc private func markerTapped(_ sender: UIButton) {
+        let sceneId = sender.tag
+        if let scene = allScenes.first(where: { $0.id == sceneId }) {
+            try? GameStateService.shared.changeLocation(to: sceneId)
+            currentSceneChanged(to: sceneId)
+        }
+    }
+    
+    private func currentSceneChanged(to sceneId: Int) {
+        // Обновить выделение
+        for (id, marker) in markerViews {
+            marker.layer.borderColor = (id == sceneId) ? UIColor.yellow.cgColor : UIColor.black.cgColor
+        }
+        centerOnCurrentScene(animated: true)
+        updateVisibleMarkersAndLines()
+        updateCurrentLocationInfo()
+    }
+    
+    private func centerOnCurrentScene(animated: Bool) {
+        guard let sceneId = currentSceneId, let scene = allScenes.first(where: { $0.id == sceneId }) else { return }
+        let pos = scenePosition(scene)
+        let center = CGPoint(x: pos.x + markerSize.width/2, y: pos.y + markerSize.height/2)
+        let visibleSize = scrollView.bounds.size
+        var offset = CGPoint(x: center.x - visibleSize.width/2, y: center.y - visibleSize.height/2)
+        offset.x = max(0, min(offset.x, scrollView.contentSize.width - visibleSize.width))
+        offset.y = max(0, min(offset.y, scrollView.contentSize.height - visibleSize.height))
+        scrollView.setContentOffset(offset, animated: animated)
+    }
+    
+    // UIScrollViewDelegate
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        updateVisibleMarkersAndLines()
+    }
+    func scrollViewDidZoom(_ scrollView: UIScrollView) {
+        updateVisibleMarkersAndLines()
+    }
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return contentView
     }
 } 
