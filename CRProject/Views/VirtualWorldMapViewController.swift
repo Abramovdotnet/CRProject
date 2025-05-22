@@ -104,6 +104,9 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         updateCurrentLocationInfo()
         setupTopWidget()
         view.bringSubviewToFront(topWidgetContainerView)
+        // --- Добавляю кнопку обратной навигации ---
+        setupBackButton()
+        // --- конец кнопки ---
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -144,7 +147,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     
     private func setupBackgroundImage() {
         backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
-        backgroundImageView.image = UIImage(named: "mapBackground")
+        backgroundImageView.image = UIImage(named: "mapBackgroundAlt")
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.clipsToBounds = false
         view.addSubview(backgroundImageView)
@@ -209,7 +212,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     private func setupLinesLayer() {
         linesLayer = CAShapeLayer()
         linesLayer.frame = contentView.bounds
-        linesLayer.strokeColor = UIColor.gray.cgColor
+        linesLayer.strokeColor = UIColor.darkGray.cgColor
         linesLayer.lineWidth = 1.0
         linesLayer.fillColor = nil
         contentView.layer.addSublayer(linesLayer)
@@ -234,8 +237,8 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         nameLabel.textAlignment = .center
         nameLabel.numberOfLines = 1
         nameLabel.layer.shadowColor = UIColor.black.cgColor
-        nameLabel.layer.shadowRadius = 3
-        nameLabel.layer.shadowOpacity = 0.7
+        nameLabel.layer.shadowRadius = 2
+        nameLabel.layer.shadowOpacity = 0.5
         nameLabel.layer.shadowOffset = CGSize(width: 1, height: 1)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         infoView.addSubview(nameLabel)
@@ -315,6 +318,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                         imageView!.clipsToBounds = true
                         imageView!.layer.cornerRadius = 8
                         imageView!.alpha = assetAlpha
+                        imageView!.tag = 1111 // tag для ассета
                         marker.addSubview(imageView!)
                         // Цветной фон не нужен, если ассет есть (будет проявляться через alpha)
                         marker.backgroundColor = bgColor
@@ -326,6 +330,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                         imageView!.clipsToBounds = true
                         imageView!.layer.cornerRadius = 8
                         imageView!.alpha = assetAlpha
+                        imageView!.tag = 1111 // tag для ассета
                         marker.addSubview(imageView!)
                         marker.backgroundColor = bgColor
                     } else {
@@ -339,6 +344,12 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     iconImageView.contentMode = .scaleAspectFit
                     iconImageView.image = UIImage(systemName: scene.sceneType.iconName)
                     iconImageView.tintColor = iconTint
+                    // --- Тень для иконки ---
+                    iconImageView.layer.shadowColor = UIColor.black.cgColor
+                    iconImageView.layer.shadowRadius = 1
+                    iconImageView.layer.shadowOpacity = 0.7
+                    iconImageView.layer.shadowOffset = CGSize(width: 0, height: 1)
+                    // --- конец тени ---
                     marker.addSubview(iconImageView)
                     let nameLabel = UILabel(frame: CGRect(x: 4, y: 24, width: markerSize.width-8, height: 16))
                     nameLabel.text = scene.name
@@ -349,6 +360,12 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     nameLabel.minimumScaleFactor = 0.7
                     nameLabel.lineBreakMode = .byTruncatingTail
                     nameLabel.layer.zPosition = 10
+                    // --- Тень для текста ---
+                    nameLabel.layer.shadowColor = UIColor.black.cgColor
+                    nameLabel.layer.shadowRadius = 0.5
+                    nameLabel.layer.shadowOpacity = 0.7
+                    nameLabel.layer.shadowOffset = CGSize(width: 0, height: 0.5)
+                    // --- конец тени ---
                     marker.addSubview(nameLabel)
                     let typeLabel = UILabel(frame: CGRect(x: 4, y: 40, width: markerSize.width-8, height: 18))
                     typeLabel.text = scene.sceneType.displayName
@@ -359,10 +376,12 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     typeLabel.adjustsFontSizeToFitWidth = true
                     typeLabel.minimumScaleFactor = 0.5
                     typeLabel.lineBreakMode = .byTruncatingTail
+                    // --- Тень для текста ---
                     typeLabel.layer.shadowColor = UIColor.black.cgColor
-                    typeLabel.layer.shadowRadius = 1.5
-                    typeLabel.layer.shadowOpacity = 0.7
-                    typeLabel.layer.shadowOffset = CGSize(width: 0.5, height: 0.5)
+                    typeLabel.layer.shadowRadius = 1
+                    typeLabel.layer.shadowOpacity = 0.8
+                    typeLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
+                    // --- конец тени ---
                     typeLabel.layer.zPosition = 10
                     marker.addSubview(typeLabel)
                     marker.layer.cornerRadius = 8
@@ -376,7 +395,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                         marker.layer.borderColor = UIColor.black.cgColor
                     }
                     // --- конец цвета обводки ---
-                    // --- Добавляю тень для маркера ---
+                    // --- Добавляем тень для маркера ---
                     marker.layer.shadowColor = UIColor.black.cgColor
                     marker.layer.shadowOpacity = 0.4
                     marker.layer.shadowRadius = 3
@@ -404,7 +423,26 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                         lockImageView.tag = lockTag
                         marker.addSubview(lockImageView)
                     }
-                    // --- конец добавления замка ---
+                    // --- Добавляем иконку компаса для текущей локации ---
+                    if scene.id == currentSceneId {
+                        let compassSize: CGFloat = 72
+                        let compassTag = 9998
+                        let compassImageView = UIImageView(frame: CGRect(
+                            x: markerSize.width - 6, // чуть правее маркера
+                            y: (markerSize.height - compassSize) / 2,
+                            width: compassSize,
+                            height: compassSize
+                        ))
+                        compassImageView.contentMode = .scaleAspectFit
+                        compassImageView.image = UIImage(named: "vampireSigil")
+                        compassImageView.layer.shadowColor = UIColor.black.cgColor
+                        compassImageView.layer.shadowRadius = 1
+                        compassImageView.layer.shadowOpacity = 0.5
+                        compassImageView.layer.shadowOffset = CGSize(width: 1, height: 1)
+                        compassImageView.tag = compassTag
+                        marker.addSubview(compassImageView)
+                    }
+                    // --- конец компаса ---
                     contentView.addSubview(marker)
                     markerViews[scene.id] = marker
                 } else {
@@ -419,10 +457,10 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     }
                     // --- конец цвета обводки ---
                     // Обновить alpha ассета при изменении зума
-                    if let imageView = marker.subviews.compactMap({ $0 as? UIImageView }).first {
+                    if let assetImageView = marker.subviews.first(where: { $0 is UIImageView && $0.tag == 1111 }) as? UIImageView {
                         let assetAlpha = assetAlphaForZoom(scrollView.zoomScale)
-                        imageView.alpha = assetAlpha
-                        imageView.isHidden = assetAlpha <= 0.01
+                        assetImageView.alpha = assetAlpha
+                        assetImageView.isHidden = assetAlpha <= 0.01
                     }
                     // --- Добавляем/убираем иконку замка при обновлении ---
                     let lockTag = 9999
@@ -450,6 +488,30 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                         marker.subviews.filter { $0.tag == lockTag }.forEach { $0.removeFromSuperview() }
                     }
                     // --- конец обновления замка ---
+                    // --- Добавляем/убираем иконку компаса при обновлении ---
+                    let compassTag = 9998
+                    if scene.id == currentSceneId {
+                        if marker.subviews.first(where: { $0.tag == compassTag }) == nil {
+                            let compassSize: CGFloat = 22
+                            let compassImageView = UIImageView(frame: CGRect(
+                                x: markerSize.width - 6,
+                                y: (markerSize.height - compassSize) / 2,
+                                width: compassSize,
+                                height: compassSize
+                            ))
+                            compassImageView.contentMode = .scaleAspectFit
+                            compassImageView.image = UIImage(named: "compassAlt")
+                            compassImageView.layer.shadowColor = UIColor.black.cgColor
+                            compassImageView.layer.shadowRadius = 2
+                            compassImageView.layer.shadowOpacity = 0.7
+                            compassImageView.layer.shadowOffset = CGSize(width: 1, height: 1)
+                            compassImageView.tag = compassTag
+                            marker.addSubview(compassImageView)
+                        }
+                    } else {
+                        marker.subviews.filter { $0.tag == compassTag }.forEach { $0.removeFromSuperview() }
+                    }
+                    // --- конец обновления компаса ---
                 }
             }
         }
@@ -553,4 +615,57 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         // Линейная интерполяция
         return (zoom - 0.3) / (0.7 - 0.3)
     }
+    
+    // --- Кнопка обратной навигации ---
+    private func setupBackButton() {
+        let buttonSize: CGFloat = 40
+        let backButton = UIButton(type: .custom)
+        backButton.translatesAutoresizingMaskIntoConstraints = false
+        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
+        let icon = UIImage(systemName: "arrow.uturn.left", withConfiguration: config)?.withRenderingMode(.alwaysTemplate)
+        backButton.setImage(icon, for: .normal)
+        backButton.tintColor = .white
+        backButton.backgroundColor = UIColor(white: 0.08, alpha: 0.98)
+        backButton.layer.cornerRadius = buttonSize / 2
+        backButton.layer.masksToBounds = false
+        // Outer glow (CALayer)
+        let glowLayer = CALayer()
+        glowLayer.frame = CGRect(x: -1, y: -1, width: buttonSize + 2, height: buttonSize + 2)
+        glowLayer.cornerRadius = (buttonSize + 2) / 2
+        glowLayer.backgroundColor = UIColor.white.withAlphaComponent(0.9).cgColor
+        glowLayer.shadowColor = UIColor.black.cgColor
+        glowLayer.shadowRadius = 8
+        glowLayer.shadowOpacity = 1.0
+        glowLayer.shadowOffset = CGSize(width: 0, height: 0)
+        glowLayer.opacity = 0.7
+        backButton.layer.insertSublayer(glowLayer, at: 0)
+        // Анимация нажатия
+        backButton.addTarget(self, action: #selector(backButtonTouchDown), for: .touchDown)
+        backButton.addTarget(self, action: #selector(backButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
+        view.addSubview(backButton)
+        NSLayoutConstraint.activate([
+            backButton.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 12),
+            backButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
+            backButton.widthAnchor.constraint(equalToConstant: buttonSize),
+            backButton.heightAnchor.constraint(equalToConstant: buttonSize)
+        ])
+        view.bringSubviewToFront(backButton)
+    }
+    @objc private func backButtonTapped() {
+        navigationController?.popViewController(animated: true)
+    }
+    @objc private func backButtonTouchDown(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.08) {
+            sender.transform = CGAffineTransform(scaleX: 0.88, y: 0.88)
+            sender.alpha = 0.8
+        }
+    }
+    @objc private func backButtonTouchUp(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.12) {
+            sender.transform = .identity
+            sender.alpha = 1.0
+        }
+    }
+    // --- конец кнопки ---
 } 
