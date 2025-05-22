@@ -8,7 +8,7 @@ struct WorldMapViewRepresentable: UIViewControllerRepresentable {
 
     func makeUIViewController(context: Context) -> UIViewController {
         // Используем новый прототипный контроллер
-        return VirtualWorldMapViewController()
+        return VirtualWorldMapViewController(mainViewModel: mainViewModel)
     }
 
     func updateUIViewController(_ uiViewController: UIViewController, context: Context) {

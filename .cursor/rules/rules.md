@@ -55,11 +55,12 @@
     UIKit: `/Users/abramovanatoliy/Documents/CRProject/CRProject/Views/QuestJournalViewController.swift`
     SwiftUI-враппер: `/Users/abramovanatoliy/Documents/CRProject/CRProject/Views/QuestJournalView.swift`
   - Карта мира:
-    UIKit: `/Users/abramovanatoliy/Documents/CRProject/CRProject/Views/WorldMapViewController.swift`
+    UIKit: `/Users/abramovanatoliy/Documents/CRProject/CRProject/Views/VirtualWorldMapViewController.swift`
     SwiftUI-враппер: `/Users/abramovanatoliy/Documents/CRProject/CRProject/Views/WorldMapView.swift`
   - Сетка NPC:
     SwiftUI: `/Users/abramovanatoliy/Documents/CRProject/CRProject/Views/MainSceneViews/NPCSGridView.swift` (враппер внутри файла)
-
+  - Топ виджет:
+    SwiftUI: `/Users/abramovanatoliy/Documents/CRProject/CRProject/Views/MainSceneViews/TopWidgetView.swift` 
 ## 6. Согласованность моделей и парсеров
 
 - При изменении классов NPC, Scene, Player, Profession или SceneType:
