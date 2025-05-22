@@ -601,10 +601,11 @@ class WorldMapViewController: UIViewController, UIScrollViewDelegate {
     private func setupScrollView() {
         scrollView = UIScrollView(frame: view.bounds)
         scrollView.delegate = self
-        scrollView.minimumZoomScale = 0.1
-        scrollView.maximumZoomScale = 5.0
+        scrollView.minimumZoomScale = 0.5
+        scrollView.maximumZoomScale = 3 // Ограничиваем максимальный зум до 90%
         scrollView.backgroundColor = .clear // <<< Make ScrollView background clear
         scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        scrollView.bouncesZoom = false // Отключаем bounce эффект для зума
         view.addSubview(scrollView)
     }
 
@@ -1059,7 +1060,8 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     private var currentLocationInfoView: UIView! // Новый view для названия и типа текущей локации
     private var currentLocationNameLabel: UILabel!
     private var currentLocationTypeLabel: UILabel!
-    private var markerImageCache: [Int: UIImage?] = [:] // Кэш для ассетов маркеров
+    private var markerImageCache = NSCache<NSNumber, UIImage>() // Кэш для ассетов маркеров
+    private var didAnimateContentAppearance = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -1069,11 +1071,25 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         calculateContentBounds()
         setupScrollView()
         setupContentView()
+        scrollView.alpha = 0 // Скрываем scrollView перед анимацией
         setupLinesLayer()
         setupCurrentLocationInfoView()
+        currentLocationInfoView.alpha = 0 // Скрываем инфо о локации перед анимацией
         updateVisibleMarkersAndLines()
         centerOnCurrentScene(animated: false)
         updateCurrentLocationInfo()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if !didAnimateContentAppearance {
+            didAnimateContentAppearance = true
+            print("[DEBUG] scrollView.alpha before animation: \(self.scrollView.alpha), currentLocationInfoView.alpha: \(self.currentLocationInfoView.alpha)")
+            UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseOut, animations: {
+                self.scrollView.alpha = 1.0
+                self.currentLocationInfoView.alpha = 1.0
+            }, completion: nil)
+        }
     }
     
     private func loadSceneData() {
@@ -1097,10 +1113,11 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         scrollView = UIScrollView(frame: view.bounds)
         scrollView.delegate = self
         scrollView.backgroundColor = .black
-        scrollView.minimumZoomScale = 0.1
-        scrollView.maximumZoomScale = 5.0
+        scrollView.minimumZoomScale = 0.3
+        scrollView.maximumZoomScale = 2.0
         scrollView.contentSize = contentSize
         scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        scrollView.bouncesZoom = false // Отключаем bounce эффект для зума
         view.addSubview(scrollView)
     }
     
@@ -1187,6 +1204,8 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         let margin: CGFloat = 200 // чуть больше, чтобы не мигали на границе
         let extendedRect = visibleRect.insetBy(dx: -margin, dy: -margin)
         var newVisibleIds: Set<Int> = []
+        let zoom = scrollView.zoomScale
+        let assetAlpha = assetAlphaForZoom(zoom)
         for scene in allScenes {
             let pos = scenePosition(scene)
             let markerFrame = CGRect(origin: pos, size: markerSize)
@@ -1195,24 +1214,35 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                 if markerViews[scene.id] == nil {
                     let marker = UIButton(type: .custom)
                     marker.frame = markerFrame
+                    var imageView: UIImageView? = nil
                     // --- Картинка ассета, если есть ---
-                    let image: UIImage? = {
-                        if let cached = markerImageCache[scene.id] { return cached }
-                        let img = UIImage(named: "location\(scene.id)")
-                        markerImageCache[scene.id] = img
-                        return img
-                    }()
-                    if let img = image {
-                        let imageView = UIImageView(frame: marker.bounds)
-                        imageView.image = img
-                        imageView.contentMode = .scaleAspectFill
-                        imageView.clipsToBounds = true
-                        marker.addSubview(imageView)
+                    var bgColor = SceneTypeColorProvider.color(for: scene.sceneType)
+                    if let img = markerImageCache.object(forKey: NSNumber(value: scene.id)) {
+                        imageView = UIImageView(frame: marker.bounds)
+                        imageView!.image = img
+                        imageView!.contentMode = .scaleAspectFill
+                        imageView!.clipsToBounds = true
+                        imageView!.layer.cornerRadius = 8
+                        imageView!.alpha = assetAlpha
+                        marker.addSubview(imageView!)
+                        // Цветной фон не нужен, если ассет есть (будет проявляться через alpha)
+                        marker.backgroundColor = bgColor
+                    } else if let img = UIImage(named: "location\(scene.id)") {
+                        markerImageCache.setObject(img, forKey: NSNumber(value: scene.id))
+                        imageView = UIImageView(frame: marker.bounds)
+                        imageView!.image = img
+                        imageView!.contentMode = .scaleAspectFill
+                        imageView!.clipsToBounds = true
+                        imageView!.layer.cornerRadius = 8
+                        imageView!.alpha = assetAlpha
+                        marker.addSubview(imageView!)
+                        marker.backgroundColor = bgColor
                     } else {
-                        let bgColor = SceneTypeColorProvider.color(for: scene.sceneType)
                         marker.backgroundColor = bgColor
                     }
-                    let bgColor = marker.backgroundColor ?? .black
+                    // Если ассет есть и alpha=0, скрыть imageView
+                    if let iv = imageView, assetAlpha <= 0.01 { iv.isHidden = true } else { imageView?.isHidden = false }
+                    // Цвет иконки по фону
                     let iconTint: UIColor = bgColor.isDarkColor ? .white : .black
                     let iconImageView = UIImageView(frame: CGRect(x: (markerSize.width-18)/2, y: 4, width: 18, height: 18))
                     iconImageView.contentMode = .scaleAspectFit
@@ -1254,6 +1284,12 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                 } else {
                     let marker = markerViews[scene.id]!
                     marker.layer.borderColor = (scene.id == currentSceneId) ? UIColor.yellow.cgColor : UIColor.black.cgColor
+                    // Обновить alpha ассета при изменении зума
+                    if let imageView = marker.subviews.compactMap({ $0 as? UIImageView }).first {
+                        let assetAlpha = assetAlphaForZoom(scrollView.zoomScale)
+                        imageView.alpha = assetAlpha
+                        imageView.isHidden = assetAlpha <= 0.01
+                    }
                 }
             }
         }
@@ -1319,10 +1355,24 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         let pos = scenePosition(scene)
         let center = CGPoint(x: pos.x + markerSize.width/2, y: pos.y + markerSize.height/2)
         let visibleSize = scrollView.bounds.size
-        var offset = CGPoint(x: center.x - visibleSize.width/2, y: center.y - visibleSize.height/2)
-        offset.x = max(0, min(offset.x, scrollView.contentSize.width - visibleSize.width))
-        offset.y = max(0, min(offset.y, scrollView.contentSize.height - visibleSize.height))
-        scrollView.setContentOffset(offset, animated: animated)
+        let contentSize = scrollView.contentSize
+        // Проверяем, что размеры актуальны
+        guard contentSize.width > 0, contentSize.height > 0, visibleSize.width > 0, visibleSize.height > 0 else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) { [weak self] in
+                self?.centerOnCurrentScene(animated: animated)
+            }
+            return
+        }
+        var offset = CGPoint(
+            x: max(0, min(center.x - visibleSize.width/2, contentSize.width - visibleSize.width)),
+            y: max(0, min(center.y - visibleSize.height/2, contentSize.height - visibleSize.height))
+        )
+        // Если карта меньше экрана — offset = 0
+        if contentSize.width <= visibleSize.width { offset.x = 0 }
+        if contentSize.height <= visibleSize.height { offset.y = 0 }
+        DispatchQueue.main.async {
+            self.scrollView.setContentOffset(offset, animated: animated)
+        }
     }
     
     // UIScrollViewDelegate
@@ -1334,5 +1384,13 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     }
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return contentView
+    }
+    // Функция для вычисления прозрачности ассета в зависимости от зума
+    private func assetAlphaForZoom(_ zoom: CGFloat) -> CGFloat {
+        // Примерная логика: zoom >= 0.7 — ассет полностью видим, zoom <= 0.3 — полностью прозрачен
+        if zoom >= 0.7 { return 1.0 }
+        if zoom <= 0.3 { return 0.0 }
+        // Линейная интерполяция
+        return (zoom - 0.3) / (0.7 - 0.3)
     }
 } 
