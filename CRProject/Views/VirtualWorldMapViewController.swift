@@ -445,6 +445,18 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     // --- конец компаса ---
                     contentView.addSubview(marker)
                     markerViews[scene.id] = marker
+                    // --- Анимация мерцания для текущей локации ---
+                    if scene.id == currentSceneId {
+                        marker.layer.removeAllAnimations()
+                        marker.alpha = 1.0
+                        UIView.animate(withDuration: 1.0, delay: 0, options: [.autoreverse, .repeat, .allowUserInteraction], animations: {
+                            marker.alpha = 0.7
+                        }, completion: nil)
+                    } else {
+                        marker.layer.removeAllAnimations()
+                        marker.alpha = 1.0
+                    }
+                    // --- конец анимации ---
                 } else {
                     let marker = markerViews[scene.id]!
                     // --- Обновляю цвет обводки при обновлении ---
@@ -492,7 +504,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     let compassTag = 9998
                     if scene.id == currentSceneId {
                         if marker.subviews.first(where: { $0.tag == compassTag }) == nil {
-                            let compassSize: CGFloat = 22
+                            let compassSize: CGFloat = 72
                             let compassImageView = UIImageView(frame: CGRect(
                                 x: markerSize.width - 6,
                                 y: (markerSize.height - compassSize) / 2,
@@ -500,10 +512,10 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                                 height: compassSize
                             ))
                             compassImageView.contentMode = .scaleAspectFit
-                            compassImageView.image = UIImage(named: "compassAlt")
+                            compassImageView.image = UIImage(named: "vampireSigil")
                             compassImageView.layer.shadowColor = UIColor.black.cgColor
-                            compassImageView.layer.shadowRadius = 2
-                            compassImageView.layer.shadowOpacity = 0.7
+                            compassImageView.layer.shadowRadius = 1
+                            compassImageView.layer.shadowOpacity = 0.5
                             compassImageView.layer.shadowOffset = CGSize(width: 1, height: 1)
                             compassImageView.tag = compassTag
                             marker.addSubview(compassImageView)
@@ -512,6 +524,18 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                         marker.subviews.filter { $0.tag == compassTag }.forEach { $0.removeFromSuperview() }
                     }
                     // --- конец обновления компаса ---
+                    // --- Анимация мерцания для текущей локации при обновлении ---
+                    if scene.id == currentSceneId {
+                        marker.layer.removeAllAnimations()
+                        marker.alpha = 1.0
+                        UIView.animate(withDuration: 1.0, delay: 0, options: [.autoreverse, .repeat, .allowUserInteraction], animations: {
+                            marker.alpha = 0.7
+                        }, completion: nil)
+                    } else {
+                        marker.layer.removeAllAnimations()
+                        marker.alpha = 1.0
+                    }
+                    // --- конец анимации ---
                 }
             }
         }
