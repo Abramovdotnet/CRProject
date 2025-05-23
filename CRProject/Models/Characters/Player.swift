@@ -32,6 +32,7 @@ class Player: ObservableObject, Character, Codable {
     var intimidationDay: Int = 0
     var homeLocationId: Int = 0
     var hiddenAt: HidingCell = .none
+    var isInvisible: Bool = false
     var onCraftingProcess: Bool = false
     @Published var isArrested: Bool = false
     @Published var arrestTime: Int = 0

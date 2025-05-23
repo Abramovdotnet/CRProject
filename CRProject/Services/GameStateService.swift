@@ -88,6 +88,13 @@ class GameStateService : ObservableObject, GameService{
         }
     }
     
+    func movePlayerToNearestHideout() {
+        guard let player = player else { return }
+        guard let firstAvailableHideout = currentScene?.sceneType.possibleHidingCells().first else { return }
+        
+        player.hiddenAt = firstAvailableHideout
+    }
+    
     func whisperToRandomNpc() {
         if player?.hiddenAt != HidingCell.none {
             guard let npcs = currentScene?.getNPCs().filter( { $0.currentActivity != .sleep && $0.currentActivity != .bathe && $0.currentActivity != .fleeing && $0.isSpecialBehaviorSet == false }) else { return }

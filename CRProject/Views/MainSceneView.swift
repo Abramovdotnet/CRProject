@@ -51,7 +51,7 @@ struct MainSceneView: View {
     
     private var isPlayerHidden: Bool {
         guard let player = gameStateService.getPlayer() else { return false }
-        return player.hiddenAt != .none
+        return player.isInvisible
     }
     
     private var isPlayerArrested: Bool {
@@ -191,6 +191,7 @@ struct MainSceneView: View {
                                             icon: "eye.circle.fill",
                                             color: Theme.textColor,
                                             action: {
+                                                viewModel.getGameStateService().movePlayerToNearestHideout()
                                                 navigationPath.append(NavigationDestination.hidingCell)
                                             }
                                         )

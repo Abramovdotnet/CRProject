@@ -22,6 +22,7 @@ class TimeBarView: UIView {
     private var appearStartTime: CFTimeInterval = 0
     private var appearDuration: CFTimeInterval = 0.5
     private var appearDisplayLink: CADisplayLink?
+    private var cachedIconXs: [CGFloat] = []
 
     enum IconType { case sun, moon }
     struct IconAnim {
@@ -162,24 +163,26 @@ class TimeBarView: UIView {
         let hours = (Int(floor(center)) - hoursRange ... Int(floor(center)) + hoursRange)
         let barY = barHeight/2 + topMargin
         let offset = (virtualHour - floor(virtualHour)) * hourWidth
+        let fadeCount = 2 // сколько часов с каждого края затухают
+        var hourXs: [CGFloat] = []
         ctx.setFillColor(UIColor.white.withAlphaComponent(0.25 * barAlpha).cgColor)
         ctx.fill(CGRect(x: fadeWidth, y: barY, width: totalWidth-2*fadeWidth, height: 2))
-        let fadeGradient = CGGradient(colorsSpace: nil, colors: [UIColor.clear.cgColor, UIColor.white.withAlphaComponent(0.25 * barAlpha).cgColor] as CFArray, locations: [0,1])!
-        ctx.saveGState()
-        ctx.clip(to: CGRect(x: 0, y: 0, width: fadeWidth, height: barY+20))
-        ctx.drawLinearGradient(fadeGradient, start: CGPoint(x: 0, y: 0), end: CGPoint(x: fadeWidth, y: 0), options: [])
-        ctx.restoreGState()
-        ctx.saveGState()
-        ctx.clip(to: CGRect(x: totalWidth-fadeWidth, y: 0, width: fadeWidth, height: barY+20))
-        ctx.drawLinearGradient(fadeGradient, start: CGPoint(x: totalWidth, y: 0), end: CGPoint(x: totalWidth-fadeWidth, y: 0), options: [])
-        ctx.restoreGState()
         for (idx, hour) in hours.enumerated() {
             let x = centerX + CGFloat(idx - hoursRange) * hourWidth - CGFloat(offset)
+            hourXs.append(x)
             let isCurrent = hour == Int(round(virtualHour))
             let isNight = ((hour % 24 + 24) % 24) >= 20 || ((hour % 24 + 24) % 24) < 6
             let barColor: UIColor = isNight ? UIColor.systemIndigo : UIColor.systemYellow
-            let textColor: UIColor = isCurrent ? UIColor.systemYellow : UIColor.white
-            ctx.setFillColor(barColor.withAlphaComponent((isCurrent ? 1 : 0.5) * barAlpha).cgColor)
+            let opacity: CGFloat
+            if idx < fadeCount {
+                opacity = CGFloat(idx + 1) / CGFloat(fadeCount + 1)
+            } else if idx > hours.count - fadeCount - 1 {
+                opacity = CGFloat(hours.count - idx) / CGFloat(fadeCount + 1)
+            } else {
+                opacity = 1.0
+            }
+            let textColor: UIColor = isCurrent ? UIColor.systemYellow : UIColor.white.withAlphaComponent(opacity)
+            ctx.setFillColor(barColor.withAlphaComponent(((isCurrent ? 1 : 0.5) * barAlpha * opacity)).cgColor)
             ctx.fill(CGRect(x: x-1, y: barY-7, width: 2, height: 14))
             let hourStr = "\(((hour % 24 + 24) % 24))"
             let attr: [NSAttributedString.Key: Any] = [
@@ -189,14 +192,19 @@ class TimeBarView: UIView {
             let size = hourStr.size(withAttributes: attr)
             hourStr.draw(at: CGPoint(x: x-size.width/2, y: barY-markerHeight-hourLabelOffset), withAttributes: attr)
         }
-        let iconPositions: [CGFloat] = [fadeWidth + hourWidth/2, centerX, totalWidth-fadeWidth-hourWidth/2]
+        // Кешируем x-координаты для иконок только если не идёт анимация
+        let isAnimating = displayLink != nil
+        if !isAnimating && hourXs.count > hoursRange {
+            cachedIconXs = [hourXs.first!, hourXs[hoursRange], hourXs.last!]
+        }
+        let iconXs = cachedIconXs.isEmpty ? [hourXs.first!, hourXs[hoursRange], hourXs.last!] : cachedIconXs
         for i in 0..<3 {
             let iconType = iconAnims[i].type
             let iconAlpha = iconAnims[i].alpha * barAlpha
             let iconName = iconType == .moon ? "moon.fill" : "sun.max.fill"
             let iconConfig = UIImage.SymbolConfiguration(pointSize: i == 1 ? 22 : 18, weight: .bold)
             if let icon = UIImage(systemName: iconName, withConfiguration: iconConfig)?.withRenderingMode(.alwaysOriginal) {
-                let iconRect = CGRect(x: iconPositions[i]-12, y: barY-markerHeight-hourLabelOffset-22, width: 24, height: 24)
+                let iconRect = CGRect(x: iconXs[i]-10, y: barY-markerHeight-hourLabelOffset-28, width: 20, height: 20)
                 let tint = iconType == .moon ? UIColor.systemIndigo : UIColor.systemYellow
                 icon.withTintColor(tint.withAlphaComponent(iconAlpha), renderingMode: .alwaysOriginal).draw(in: iconRect)
             }
@@ -280,8 +288,8 @@ class HidingCellViewController: UIViewController {
         view.addSubview(timeBarView)
         NSLayoutConstraint.activate([
             timeBarView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 16),
-            timeBarView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            timeBarView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            timeBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            timeBarView.widthAnchor.constraint(equalToConstant: 600),
             timeBarView.heightAnchor.constraint(equalToConstant: 56)
         ])
         timeBarView.currentHour = GameTimeService.shared.currentHour
@@ -352,14 +360,6 @@ struct HidingCellTimeBar: View {
                     .frame(height: 2)
                     .cornerRadius(1)
                     .position(x: centerX, y: barHeight / 2)
-                // Fade по краям
-                HStack(spacing: 0) {
-                    LinearGradient(gradient: Gradient(colors: [Color.clear, Color.white.opacity(0.25)]), startPoint: .leading, endPoint: .trailing)
-                        .frame(width: fadeWidth, height: barHeight)
-                    Spacer()
-                    LinearGradient(gradient: Gradient(colors: [Color.white.opacity(0.25), Color.clear]), startPoint: .leading, endPoint: .trailing)
-                        .frame(width: fadeWidth, height: barHeight)
-                }
                 // Часовые шкалы
                 HStack(spacing: 0) {
                     ForEach(Array(hours.enumerated()), id: \.offset) { idx, hour in
