@@ -166,7 +166,10 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
     func addCharacter(_ character: any Character) {
         _characters[character.id] = character
         character.currentLocationId = self.id
-        
+        if let npc = character as? NPC {
+            npc.currentSceneX = self.x
+            npc.currentSceneY = self.y
+        }
         NotificationCenter.default.post(name: .sceneCharactersChanged, object: self)
     }
     
@@ -176,11 +179,13 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
     
     func setCharacters(_ characters: [any Character]) {
         _characters = characters.reduce(into: [:]) { $0[$1.id] = $1 }
-        
         for character in characters {
             character.currentLocationId = self.id
+            if let npc = character as? NPC {
+                npc.currentSceneX = self.x
+                npc.currentSceneY = self.y
+            }
         }
-        
         // Post notification when characters are changed
         NotificationCenter.default.post(name: .sceneCharactersChanged, object: self)
     }

@@ -5,6 +5,8 @@
 //  Created by Abramov Anatoliy on 11.04.2025.
 //
 
+import UIKit
+
 class NPCBehaviorService: GameService {
     static let shared = NPCBehaviorService()
     private let gameEventBusService: GameEventsBusService
@@ -19,6 +21,8 @@ class NPCBehaviorService: GameService {
     // Cache for eligible non-resident professions
     private let eligibleNonResidentProfessions: Set<Profession> = [.mercenary, .thug, .pilgrim, .merchant, .alchemist]
     
+    private var scenesByType: [SceneType: [Scene]] = [:]
+    
     init() {
         self.gameEventBusService = DependencyManager.shared.resolve()
         self.gameTimeService = DependencyManager.shared.resolve()
@@ -26,6 +30,7 @@ class NPCBehaviorService: GameService {
         self.locationGraph = LocationGraph(scenes: allScenes)
         self.npcs = NPCReader.getNPCs()
         self.npcInteractionService = NPCInteractionService()
+        self.scenesByType = Dictionary(grouping: allScenes, by: { $0.sceneType })
         DependencyManager.shared.register(npcInteractionService)
     }
     
@@ -112,61 +117,33 @@ class NPCBehaviorService: GameService {
         }
         
         let allScenes = LocationReader.getLocations()
-        
         let validSceneTypeStrings = newActivity.getValidLocations(for: npc.profession)
-        
         if validSceneTypeStrings.isEmpty && newActivity != .idle && newActivity != .travel {
             DebugLogService.shared.log("NPC \(npc.name) activity \(newActivity.rawValue) has no valid location types defined. NPC stays.", category: "NPCBehavior")
             activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
             return
         }
-
         let targetSceneTypes = validSceneTypeStrings.compactMap { SceneType(rawValue: $0) ?? SceneType(rawValue: $0.lowercased()) ?? SceneType(rawValue: $0.capitalized) }
-
-        var candidateScenes: [Scene] = []
-        if newActivity == .idle || newActivity == .travel {
-            if validSceneTypeStrings.isEmpty {
-                 activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
-                 return
-            }
-             candidateScenes = allScenes.filter { scene in targetSceneTypes.contains(scene.sceneType) }
-        } else {
-            candidateScenes = allScenes.filter { scene in targetSceneTypes.contains(scene.sceneType) }
-        }
-
+        let candidateScenes = targetSceneTypes.flatMap { scenesByType[$0] ?? [] }
         if candidateScenes.isEmpty {
-            DebugLogService.shared.log("NPC \(npc.name) activity \(newActivity.rawValue): No candidate scenes found for types [\(validSceneTypeStrings.joined(separator: ", "))]. NPC stays.", category: "NPCBehavior")
+            DebugLogService.shared.log("NPC \(npc.name) activity \(newActivity.rawValue): No candidate scenes found for types [\(validSceneTypeStrings.joined(separator: ", ")). NPC stays.", category: "NPCBehavior")
             activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
             return
         }
-        
-        var shortestPathLength = Int.max
-        var bestTargetScene: Scene? = nil
-        
-        if let currentNpcScene = allScenes.first(where: { $0.id == npc.currentLocationId }),
-           candidateScenes.contains(where: { $0.id == currentNpcScene.id }) {
+        // --- Новый алгоритм: ближайшая по X/Y ---
+        var npcX = npc.currentSceneX
+        var npcY = npc.currentSceneY
+        if (npcX == 0 && npcY == 0), let homeScene = allScenes.first(where: { $0.id == npc.homeLocationId }) {
+            npcX = homeScene.x
+            npcY = homeScene.y
         }
-
-        for candidateScene in candidateScenes {
-            if candidateScene.id == npc.currentLocationId {
-                if bestTargetScene == nil || 0 < shortestPathLength {
-                    shortestPathLength = 0
-                    bestTargetScene = candidateScene
-                }
-                continue
-            }
-
-            if let path = locationGraph.findShortestPath(from: npc.currentLocationId, to: candidateScene.id) {
-                if !path.isEmpty {
-                    let currentPathCost = path.count 
-                    if currentPathCost < shortestPathLength {
-                        shortestPathLength = currentPathCost
-                        bestTargetScene = candidateScene
-                    }
-                }
-            }
-        }
-
+        let bestTargetScene = candidateScenes.min(by: {
+            let dx1 = $0.x - npcX
+            let dy1 = $0.y - npcY
+            let dx2 = $1.x - npcX
+            let dy2 = $1.y - npcY
+            return (dx1*dx1 + dy1*dy1) < (dx2*dx2 + dy2*dy2)
+        })
         if let targetScene = bestTargetScene {
             if targetScene.id == npc.currentLocationId {
                 activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
@@ -184,15 +161,14 @@ class NPCBehaviorService: GameService {
                     let runtimeTargetScene = try LocationReader.getRuntimeLocation(by: targetScene.id)
                     runtimeTargetScene.addCharacter(npc)
                     activitiesAssigned.append(assignedActivity(isStay: false, activity: newActivity))
-                    DebugLogService.shared.log("NPC \(npc.name) moving to \(targetScene.name) for activity \(newActivity.rawValue). Path length: \(shortestPathLength)", category: "NPCBehavior")
-
+                    DebugLogService.shared.log("NPC \(npc.name) moving to \(targetScene.name) for activity \(newActivity.rawValue). (X: \(targetScene.x), Y: \(targetScene.y))", category: "NPCBehavior")
                 } catch {
                     DebugLogService.shared.log("Failed to move NPC \(npc.name) to \(targetScene.name): \(error.localizedDescription)", category: "NPCBehavior")
                     activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
                 }
             }
         } else {
-            DebugLogService.shared.log("NPC \(npc.name) activity \(newActivity.rawValue): No suitable target scene found or path to them. NPC stays.", category: "NPCBehavior")
+            DebugLogService.shared.log("NPC \(npc.name) activity \(newActivity.rawValue): No suitable target scene found. NPC stays.", category: "NPCBehavior")
             activitiesAssigned.append(assignedActivity(isStay: true, activity: newActivity))
         }
     }
@@ -321,7 +297,7 @@ class NPCBehaviorService: GameService {
                 type: .common
             )
             
-            PopUpState.shared.show(title: "Burial", details: "\(npc.name) sent on his final journey. Date: Day \(GameTimeService.shared.currentDay) at \(GameTimeService.shared.currentHour):00", image: .asset(name: "graveIcon"))
+            UIKitPopUpManager.shared.show(title: "Burial", description: "\(npc.name) sent on his final journey. Date: Day \(GameTimeService.shared.currentDay) at \(GameTimeService.shared.currentHour):00", icon: UIImage(named: "graveIcon"))
         } catch {
             gameEventBusService.addDangerMessage(message: "Failed to move \(npc.name) to cemetery: \(error.localizedDescription)")
         }

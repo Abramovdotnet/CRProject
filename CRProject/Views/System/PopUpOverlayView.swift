@@ -108,4 +108,25 @@ struct PopUpOverlayView: View {
         }
         .animation(.easeInOut, value: state.stack)
     }
+}
+
+// Пример использования новой UIKit плашки в SwiftUI:
+struct PopUpBannerDemoView: View {
+    @State private var showBanner = false
+    var body: some View {
+        VStack {
+            Button("Показать баннер") {
+                showBanner = true
+            }
+        }
+        .background(
+            Group {
+                if showBanner {
+                    PopUpBannerWrapper(title: "Пример уведомления!", description: "Это описание уведомления.", icon: UIImage(systemName: "bell.fill"))
+                        .frame(width: 0, height: 0) // не занимает места
+                        .onAppear { showBanner = false }
+                }
+            }
+        )
+    }
 } 

@@ -246,7 +246,7 @@ class NPCInteractionService : GameService {
         otherNPC.deathStatus = .investigated
         
         
-        PopUpState.shared.show(title: "Casualty discovered", details: "Guards will arrive soon to check what happened", image: .system(name: NPCInteraction.findOutCasualty.icon, color: NPCInteraction.findOutCasualty.color))
+        UIKitPopUpManager.shared.show(title: "Casualty discovered", description: "Guards will arrive soon to check what happened", icon: UIImage(systemName: NPCInteraction.findOutCasualty.icon))
     }
     
     private func handleCasualtyAwareness(currentNPC: NPC, otherNPC: NPC) {
@@ -376,7 +376,7 @@ class NPCInteractionService : GameService {
         otherNPC.npcInteractionSpecialTime = daysJailed * 24
         otherNPC.currentActivity = .jailed
         
-        PopUpState.shared.show(title: "Arrest", details: "\(otherNPC.name) has been arrested by \(currentNPC.name) for \(daysJailed) days by \(reason.rawValue)! You could look at him at Dungeon", image: .system(name: NPCInteraction.arrest.icon, color: NPCInteraction.arrest.color))
+        UIKitPopUpManager.shared.show(title: "Arrest", description: "\(otherNPC.name) has been arrested by \(currentNPC.name) for \(daysJailed) days by \(reason.rawValue)! You could look at him at Dungeon", icon: UIImage(systemName: NPCInteraction.arrest.icon))
     }
     
     private func handleTheft(currentNPC: NPC, otherNPC: NPC) {

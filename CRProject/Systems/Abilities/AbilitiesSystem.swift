@@ -7,6 +7,7 @@
 
 import SwiftUICore
 import Combine
+import UIKit
 
 class AbilitiesSystem: ObservableObject {
     var id: Int = 0
@@ -50,7 +51,7 @@ class AbilitiesSystem: ObservableObject {
         if !playerAbilities.contains(ability) {
             playerAbilities.append(ability)
             
-            PopUpState.shared.show(title: "\(ability.name) ability unlocked", details: "\(ability.description)", image: .system(name: ability.icon, color: ability.color))
+            UIKitPopUpManager.shared.show(title: "\(ability.name) ability unlocked", description: ability.description, icon: UIImage(systemName: ability.icon))
             
             if ability == .smithingNovice {
                 guard let player = GameStateService.shared.player else { return }

@@ -384,7 +384,6 @@ struct MainSceneView: View {
                     .foregroundColor(Theme.textColor)
                     .animation(.easeInOut(duration: 0.5), value: lowBloodRedOpacity)
                     .navigationBarHidden(true)
-                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                     .withDebugOverlay(viewModel: viewModel)
                     .navigationDestination(for: NavigationDestination.self) { destination in
                         switch destination {
@@ -412,14 +411,12 @@ struct MainSceneView: View {
                                         mainViewModel: viewModel,
                                         isSkipable: !dialogueViewModel.isSpecificDialogueSet
                                     )
-                                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                                         .onDisappear {
                                             activeDialogueViewModel = nil
                                         }
                                 } else {
                                     Text("Loading Dialogue...")
                                         .foregroundColor(Theme.textColor)
-                                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                                         .onAppear {
                                             // If dialogue not available, go back safely
                                             if !navigationPath.isEmpty {
@@ -447,7 +444,6 @@ struct MainSceneView: View {
                                 
                                 if let npc = npcManager.selectedNPC {
                                     VampireGazeView(npc: npc, isPresented: $viewModel.isShowingVampireGazeView, mainViewModel: viewModel)
-                                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                                         .onDisappear {
                                             viewModel.isShowingVampireGazeView = false
                                         }
@@ -470,7 +466,6 @@ struct MainSceneView: View {
                                 
                                 if let npc = npcManager.selectedNPC {
                                     TradeView(player: gameStateService.player!, npc: npc, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
-                                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                                 }
                             }
                             .navigationBarHidden(true)
@@ -488,7 +483,6 @@ struct MainSceneView: View {
                                 Color.black.edgesIgnoringSafeArea(.all)
                                 
                                 CharacterInventoryView(character: gameStateService.player!, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
-                                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                             }
                             .navigationBarHidden(true)
                             .gesture(
@@ -505,7 +499,6 @@ struct MainSceneView: View {
                                 Color.black.edgesIgnoringSafeArea(.all)
                                 
                                 SmithingView(player: gameStateService.player!, mainViewModel: viewModel)
-                                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                             }
                             .navigationBarHidden(true)
                             .gesture(
@@ -522,7 +515,6 @@ struct MainSceneView: View {
                                 Color.black.edgesIgnoringSafeArea(.all)
                                 
                                 AbilitiesView(scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
-                                    .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                             }
                             .navigationBarHidden(true)
                             .gesture(
@@ -540,7 +532,6 @@ struct MainSceneView: View {
                                 
                                 if let npc = npcManager.selectedNPC {
                                     LootView(player: gameStateService.player!, npc: npc, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
-                                        .overlay(PopUpOverlayView().environmentObject(PopUpState.shared))
                                 }
                             }
                             .navigationBarHidden(true)

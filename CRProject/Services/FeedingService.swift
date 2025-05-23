@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 
 class FeedingService: GameService {
     private let bloodService: BloodManagementService
@@ -33,7 +34,7 @@ class FeedingService: GameService {
         }
         
         if prey.bloodMeter.currentBlood - amount <= 0 && QuestService.shared.isImportantNpc(npcId: prey.id) {
-            PopUpState.shared.show(title: "Fate", details: "\(prey.name) didn't played his role im my life yet. I cannot kill him for now.", image: .system(name: NPCActivityType.quest.icon, color: NPCActivityType.quest.color))
+            UIKitPopUpManager.shared.show(title: "Fate", description: "\(prey.name) didn't played his role im my life yet. I cannot kill him for now.", icon: UIImage(systemName: NPCActivityType.quest.icon))
         } else {
             prey.isBeasyByPlayerAction = true
             
@@ -101,8 +102,7 @@ class FeedingService: GameService {
         }
         
         if QuestService.shared.isImportantNpc(npcId: prey.id) {
-            
-            PopUpState.shared.show(title: "Fate", details: "\(prey.name) didn't played his role im my life yet. I cannot kill him for now.", image: .system(name: NPCActivityType.quest.icon, color: NPCActivityType.quest.color))
+            UIKitPopUpManager.shared.show(title: "Fate", description: "\(prey.name) didn't played his role im my life yet. I cannot kill him for now.", icon: UIImage(systemName: NPCActivityType.quest.icon))
         } else {
             try bloodService.emptyBlood(vampire: vampire, prey: prey)
             

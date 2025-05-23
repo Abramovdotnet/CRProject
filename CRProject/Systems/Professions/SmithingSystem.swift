@@ -5,6 +5,8 @@
 //  Created by Abramov Anatoliy on 25.04.2025.
 //
 
+import UIKit
+
 class SmithingSystem {
     static let shared = SmithingSystem()
     
@@ -113,7 +115,7 @@ class SmithingSystem {
         if firstUnknownRecipe?.professionLevel ?? 0 > player.smithingProgress.level {
             player.smithingProgress.level += 1
             
-            PopUpState.shared.show(title: "New smithing level unlocked", image: .system(name: Ability.smithingNovice.icon, color: Ability.smithingNovice.color))
+            UIKitPopUpManager.shared.show(title: "New smithing level unlocked", description: "You have reached a new smithing level!", icon: UIImage(systemName: Ability.smithingNovice.icon))
 
         }
         

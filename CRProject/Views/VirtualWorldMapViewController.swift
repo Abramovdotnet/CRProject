@@ -75,6 +75,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     private var didAnimateContentAppearance = false
     private let topWidgetContainerView = UIView()
     private var topWidgetViewController: TopWidgetUIViewController?
+    private var dustEffectView: UIHostingController<DustEmitterView>? // Для эффекта пыли
     
     init(mainViewModel: MainSceneViewModel) {
         self.mainViewModel = mainViewModel
@@ -88,6 +89,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupBackgroundImage()
+        setupDustEffect() // Добавляем эффект пыли сразу после фона
         loadSceneData()
         guard !allScenes.isEmpty else { return }
         calculateContentBounds()
@@ -147,7 +149,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     
     private func setupBackgroundImage() {
         backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
-        backgroundImageView.image = UIImage(named: "mapBackgroundAlt")
+        backgroundImageView.image = UIImage(named: "mapBackground")
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.clipsToBounds = false
         view.addSubview(backgroundImageView)
@@ -157,6 +159,22 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
             backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+    }
+    
+    private func setupDustEffect() {
+        let dustViewHostingController = UIHostingController(rootView: DustEmitterView())
+        dustViewHostingController.view.backgroundColor = .clear
+        dustViewHostingController.view.translatesAutoresizingMaskIntoConstraints = false
+        addChild(dustViewHostingController)
+        view.insertSubview(dustViewHostingController.view, aboveSubview: backgroundImageView)
+        NSLayoutConstraint.activate([
+            dustViewHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            dustViewHostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            dustViewHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            dustViewHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        dustViewHostingController.didMove(toParent: self)
+        self.dustEffectView = dustViewHostingController
     }
     
     private func loadSceneData() {
@@ -425,16 +443,16 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     }
                     // --- Добавляем иконку компаса для текущей локации ---
                     if scene.id == currentSceneId {
-                        let compassSize: CGFloat = 72
+                        let compassSize: CGFloat = 42
                         let compassTag = 9998
                         let compassImageView = UIImageView(frame: CGRect(
-                            x: markerSize.width - 6, // чуть правее маркера
+                            x: markerSize.width + 6, // чуть правее маркера
                             y: (markerSize.height - compassSize) / 2,
                             width: compassSize,
                             height: compassSize
                         ))
                         compassImageView.contentMode = .scaleAspectFit
-                        compassImageView.image = UIImage(named: "vampireSigil")
+                        compassImageView.image = UIImage(named: "batIcon")
                         compassImageView.layer.shadowColor = UIColor.black.cgColor
                         compassImageView.layer.shadowRadius = 1
                         compassImageView.layer.shadowOpacity = 0.5
@@ -504,15 +522,15 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     let compassTag = 9998
                     if scene.id == currentSceneId {
                         if marker.subviews.first(where: { $0.tag == compassTag }) == nil {
-                            let compassSize: CGFloat = 72
+                            let compassSize: CGFloat = 42
                             let compassImageView = UIImageView(frame: CGRect(
-                                x: markerSize.width - 6,
+                                x: markerSize.width + 6,
                                 y: (markerSize.height - compassSize) / 2,
                                 width: compassSize,
                                 height: compassSize
                             ))
                             compassImageView.contentMode = .scaleAspectFit
-                            compassImageView.image = UIImage(named: "vampireSigil")
+                            compassImageView.image = UIImage(named: "batIcon")
                             compassImageView.layer.shadowColor = UIColor.black.cgColor
                             compassImageView.layer.shadowRadius = 1
                             compassImageView.layer.shadowOpacity = 0.5
@@ -580,6 +598,11 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     
     @objc private func markerTapped(_ sender: UIButton) {
         let sceneId = sender.tag
+        // --- Фикс: запрет на перемещение в текущую локацию ---
+        if sceneId == currentSceneId {
+            // Можно добавить всплывающее сообщение или анимацию, если нужно
+            return
+        }
         if let scene = allScenes.first(where: { $0.id == sceneId }) {
             try? GameStateService.shared.changeLocation(to: sceneId)
             currentSceneChanged(to: sceneId)

@@ -61,6 +61,9 @@ class NPC: ObservableObject, Character, Codable {
     
     @Published var deathStatus: DeathStatus = .none
     
+    @Published var currentSceneX: Int = 0 // X координата текущей сцены NPC
+    @Published var currentSceneY: Int = 0 // Y координата текущей сцены NPC
+    
     init() {}
     
     init(name: String, sex: Sex, age: Int, profession: Profession, isVampire: Bool, id: Int) {
@@ -177,6 +180,7 @@ class NPC: ObservableObject, Character, Codable {
         case currentActivity, background, playerRelationship, npcsRelationship, items, lastPlayerInteractionDate
         case deathStatus, hasInteractedWithPlayer, spentNightWithPlayer, providedAlibis
         case alliedWithNPCId, lastDreamStealDay
+        case currentSceneX, currentSceneY
     }
 
     required init(from decoder: Decoder) throws {
@@ -232,6 +236,9 @@ class NPC: ObservableObject, Character, Codable {
             // This will be resolved after all NPCs are loaded
             DebugLogService.shared.log("NPC \(id) is allied with NPC \(alliedWithNPCId)", category: "NPC")
         }
+        
+        currentSceneX = try container.decodeIfPresent(Int.self, forKey: .currentSceneX) ?? 0
+        currentSceneY = try container.decodeIfPresent(Int.self, forKey: .currentSceneY) ?? 0
     }
     
     func isTradeAvailable() -> Bool {
@@ -281,5 +288,8 @@ class NPC: ObservableObject, Character, Codable {
         try container.encode(lastDreamStealDay, forKey: .lastDreamStealDay)
         
         try container.encodeIfPresent(alliedWithNPC?.id, forKey: .alliedWithNPCId)
+        
+        try container.encode(currentSceneX, forKey: .currentSceneX)
+        try container.encode(currentSceneY, forKey: .currentSceneY)
     }
 }
