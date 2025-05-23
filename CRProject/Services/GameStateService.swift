@@ -81,32 +81,10 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func movePlayerThroughHideouts(to: HidingCell) {
-        let locationChange =  player?.hiddenAt == to
         player?.hiddenAt = to
         
         if player?.hiddenAt != nil {
             npcManager.selectedNPC = nil
-        }
-             
-        if !locationChange {
-            // Only increase awareness if player doesn't have the Ghost ability
-            if !AbilitiesSystem.shared.hasGhost {
-                // Get active NPCs
-                guard let npcs = currentScene?.getNPCs().filter( { $0.currentActivity != .sleep && $0.currentActivity != .bathe && $0.currentActivity != .fleeing && $0.isSpecialBehaviorSet == false }) else { return }
-                
-                let npcCount = npcs.count
-                
-                if npcCount > 0 {
-                    let awarenessIncrease = 4 * npcCount
-                    vampireNatureRevealService.increaseAwareness(amount: Float(awarenessIncrease))
-                    gameEventsBus.addWarningMessage("* \(npcCount) characters just saw by strange \(to == .none ? "appearance" : "disappearance")! *")
-                }
-            }
-            
-            // Track disappearances for Ghost ability
-            if to != .none {
-                StatisticsService.shared.increaseDisappearances()
-            }
         }
     }
     
@@ -318,5 +296,17 @@ class GameStateService : ObservableObject, GameService{
     
     var isNightTime: Bool {
         return gameTime.isNightTime
+    }
+    
+    /// Проверяет, может ли игрок спрятаться на текущей сцене
+    func checkCouldHide() -> Bool {
+        guard let scene = currentScene else { return false }
+        let npcs = scene.getNPCs()
+        if npcs.isEmpty { return true }
+        let awakeNpcs = npcs.filter { $0.currentActivity != .sleep && $0.isAlive }
+        if awakeNpcs.isEmpty { return true }
+        // Если есть бодрствующие, все ли они не под чарами (isSpecialBehaviorSet == false)?
+        let allAwakeAreNotSpecial = awakeNpcs.allSatisfy { $0.isSpecialBehaviorSet == true }
+        return allAwakeAreNotSpecial
     }
 }

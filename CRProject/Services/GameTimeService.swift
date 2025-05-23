@@ -8,7 +8,7 @@ extension Notification.Name {
     static let dayAppears = Notification.Name("dayAppears")
 }
 
-class GameTimeService: GameService {
+class GameTimeService: GameService, ObservableObject {
     @Published private(set) var currentDay: Int = 0
     @Published private(set) var currentHour: Int = 0
     @Published private(set) var currentTime: Date

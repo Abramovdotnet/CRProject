@@ -25,6 +25,7 @@ struct MainSceneView: View {
         case abilities
         case loot
         case questJournal
+        case hidingCell
     }
     
     init(viewModel: MainSceneViewModel) {
@@ -184,7 +185,16 @@ struct MainSceneView: View {
                                             }
                                         )
                                     }
-                                    
+                                    // Показываем кнопку HidingCell только если можно спрятаться
+                                    if gameStateService.checkCouldHide() {
+                                        MainSceneActionButton(
+                                            icon: "eye.circle.fill",
+                                            color: Theme.textColor,
+                                            action: {
+                                                navigationPath.append(NavigationDestination.hidingCell)
+                                            }
+                                        )
+                                    }
                                     // Hide
                                     if let player = GameStateService.shared.player, player.hiddenAt == .none && AbilitiesSystem.shared.hasInvisibility {
                                         ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
@@ -195,7 +205,6 @@ struct MainSceneView: View {
                                                     showSmokeEffect = true
                                                     viewModel.getGameStateService().movePlayerThroughHideouts(to: hideout)
                                                     StatisticsService.shared.increaseDisappearances()
-                                                    
                                                     // Reset smoke effect after animation
                                                     DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                                                         showSmokeEffect = false
@@ -213,7 +222,6 @@ struct MainSceneView: View {
                                                 }
                                             )
                                             .disabled(viewModel.currentScene?.isIndoor == false && !gameStateService.isNightTime)
-                                            
                                             if AbilitiesSystem.shared.hasWhisper {
                                                 MainSceneActionButton(
                                                     icon: Ability.whisper.icon,
@@ -559,6 +567,20 @@ struct MainSceneView: View {
                                         }
                                     }
                             )
+                        case .hidingCell:
+                            ZStack {
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                HidingCellView(mainSceneViewModel: viewModel)
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 {
+                                            safePopNavigation()
+                                        }
+                                    }
+                            )
                         }
                     }
                 }
@@ -652,32 +674,15 @@ struct MainSceneView: View {
     }
     
     func setDefaultHideoutButtonScale(hideoutType: HidingCell) {
-        switch hideoutType {
-        case .shadow:
-            shadowHideoutScale = 1
-            break
-        default:
-            noneHideoutScale = 1
-        }
+        shadowHideoutScale = 1.0
     }
     
     func reduceHideoutButtonScale(hideoutType: HidingCell) {
-        switch hideoutType {
-        case .shadow:
-            shadowHideoutScale = 0.9
-            break
-        default:
-            noneHideoutScale = 0.9
-        }
+        shadowHideoutScale = 0.9
     }
     
     func getHideoutButtonScale(hideoutType: HidingCell) -> CGFloat {
-        switch hideoutType {
-        case .shadow:
-            return shadowHideoutScale
-        case .none:
-            return noneHideoutScale
-        }
+        return shadowHideoutScale
     }
 }
 
