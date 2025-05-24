@@ -26,6 +26,7 @@ struct MainSceneView: View {
         case loot
         case questJournal
         case hidingCell
+        case combat
     }
     
     init(viewModel: MainSceneViewModel) {
@@ -376,6 +377,15 @@ struct MainSceneView: View {
                                                 )
                                             }
                                         }
+                                        if let selectedNPC = npcManager.selectedNPC, selectedNPC.isAlive {
+                                            MainSceneActionButton(
+                                                icon: "cross.case.fill", // Иконка боя
+                                                color: Theme.bloodProgressColor,
+                                                action: {
+                                                    navigationPath.append(NavigationDestination.combat)
+                                                }
+                                            )
+                                        }
                                     }
                                     
                                     Spacer()
@@ -579,6 +589,24 @@ struct MainSceneView: View {
                                 HidingCellView(mainSceneViewModel: viewModel)
                             }
                             .navigationBarHidden(true)
+                        case .combat:
+                            ZStack {
+                                Color.black.edgesIgnoringSafeArea(.all)
+                                if let npc = npcManager.selectedNPC {
+                                    CombatViewRepresentable(mainViewModel: viewModel, npc: npc)
+                                } else {
+                                    Text("No NPC selected").foregroundColor(.white)
+                                }
+                            }
+                            .navigationBarHidden(true)
+                            .gesture(
+                                DragGesture()
+                                    .onEnded { gesture in
+                                        if gesture.translation.width > 100 {
+                                            safePopNavigation()
+                                        }
+                                    }
+                            )
                         }
                     }
                 }

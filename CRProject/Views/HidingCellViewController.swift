@@ -57,7 +57,6 @@ class TimeBarView: UIView {
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
     private func animateToHour(_ hour: Int) {
-        print("[TimeBar] animateToHour: from \(virtualHour) to \(hour)")
         displayLink?.invalidate()
         animationStart = virtualHour
         let target = animationStart < Double(hour) ? Double(hour) : Double(hour) + 24
@@ -68,7 +67,6 @@ class TimeBarView: UIView {
     }
 
     @objc private func handleAnimationStep() {
-        print("[TimeBar] handleAnimationStep: virtualHour = \(virtualHour), animationStart = \(animationStart), animationEnd = \(animationEnd)")
         let elapsed = CACurrentMediaTime() - animationStartTime
         let progress = min(1, elapsed / animationDuration)
         let eased = 0.5 - 0.5 * cos(.pi * progress) // easeInOut

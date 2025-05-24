@@ -1,0 +1,90 @@
+{
+  "actionChances": {
+    "attack": 0.8,
+    "bite": 0.7,
+    "dominate": 0.5,
+    "escape": 0.2,
+    "shadowStep": 0.3
+  },
+  "damageValues": {
+    "attack": 25,
+    "bite": 20
+  },
+  "equipmentModifiers": {
+    "weapon": {
+      "sword": 10,
+      "dagger": 5,
+      "stake": 20
+    },
+    "armor": {
+      "leather": 5,
+      "chainmail": 10,
+      "plate": 15
+    }
+  },
+  "bite": {
+    "healPercent": 0.5,
+    "allowedTargets": ["human", "npc"]
+  },
+  "publicBiteReveal": true,
+  "bloodModifiers": {
+    "low": -0.2,
+    "medium": 0.0,
+    "high": 0.1
+  },
+  "witnessChance": 0.4,
+  "aftermath": {
+    "noiseLevel": {
+      "bite": 0.2,
+      "attack": 0.5,
+      "escape": 0.1
+    },
+    "investigationThreshold": 0.4
+  },
+  "criticalChance": 0.1,
+  "criticalEffects": {
+    "success": "instant_kill",
+    "fail": "npc_calls_guards"
+  },
+  "consequences": {
+    "attack": {
+      "success": "target_killed",
+      "fail": "no_effect"
+    },
+    "bite": {
+      "success": "target_killed",
+      "fail": "no_effect"
+    },
+    "dominate": {
+      "success": "npc_dominated",
+      "fail": "no_effect"
+    },
+    "escape": {
+      "success": "npc_escaped",
+      "fail": "npc_killed"
+    },
+    "shadowStep": {
+      "success": "player_escaped",
+      "fail": "no_effect"
+    }
+  },
+  "professionModifiers": {
+    "guard": {
+      "escapeChance": 0.1,
+      "damageTaken": 0.8
+    },
+    "noble": {
+      "escapeChance": 0.3,
+      "damageTaken": 1.2
+    },
+    "peasant": {
+      "escapeChance": 0.5,
+      "damageTaken": 1.0
+    },
+    "vampire": {
+      "escapeChance": 0.2,
+      "damageTaken": 0.5
+    }
+  },
+  "allowedTypes": ["duel", "ambush"]
+} 
