@@ -375,6 +375,7 @@ class TimeBarView: UIView {
 class HidingCellViewController: UIViewController {
     private let mainViewModel: MainSceneViewModel
     private let backgroundImageView = UIImageView()
+    private var dustEffectView: UIHostingController<DustEmitterView>? // Для эффекта пыли
     private let cellTitleLabel = UILabel()
     private let topWidgetContainerView = UIView()
     private var topWidgetViewController: TopWidgetUIViewController?
@@ -401,6 +402,7 @@ class HidingCellViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         setupBackgroundImage()
+        setupDustEffect()
         setupCellTitleLabel()
         setupTopWidget()
         setupTimeBar()
@@ -439,6 +441,11 @@ class HidingCellViewController: UIViewController {
             height: view.bounds.height + extraSpaceY
         )
         view.sendSubviewToBack(backgroundImageView)
+        // Dust effect должен быть над фоном, но под UI
+        if let dustView = dustEffectView?.view {
+            dustView.frame = view.bounds
+            view.insertSubview(dustView, aboveSubview: backgroundImageView)
+        }
         // Обновляем borderLayer для advanceTimeButton
         if let borderLayer = advanceTimeBorderLayer {
             borderLayer.frame = advanceTimeCircleButton.bounds
@@ -476,6 +483,17 @@ class HidingCellViewController: UIViewController {
         backgroundImageView.clipsToBounds = true
         view.addSubview(backgroundImageView)
         view.sendSubviewToBack(backgroundImageView)
+    }
+
+    private func setupDustEffect() {
+        let dustViewHostingController = UIHostingController(rootView: DustEmitterView())
+        dustViewHostingController.view.backgroundColor = .clear
+        dustViewHostingController.view.translatesAutoresizingMaskIntoConstraints = true // Для frame-based layout
+        dustViewHostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        addChild(dustViewHostingController)
+        view.addSubview(dustViewHostingController.view)
+        dustViewHostingController.didMove(toParent: self)
+        self.dustEffectView = dustViewHostingController
     }
 
     private func setupTopWidget() {
