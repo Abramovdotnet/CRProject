@@ -230,22 +230,12 @@ class HidingCellViewController: UIViewController {
     private let timeBarView = TimeBarView()
     private let advanceTimeButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Advance Time", for: .normal)
-        button.titleLabel?.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor.black.withAlphaComponent(0.7)
-        button.layer.cornerRadius = 10
-        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     private let leaveButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Leave", for: .normal)
-        button.titleLabel?.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
-        button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor.black.withAlphaComponent(0.7)
-        button.layer.cornerRadius = 10
-        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
+        button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     private let dangerStatusView = UIView()
@@ -290,9 +280,12 @@ class HidingCellViewController: UIViewController {
         super.viewDidAppear(animated)
         timeBarView.animateAppear()
         updateLeaveButtonVisibility(animated: true)
-        UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseInOut], animations: {
+        self.dangerStatusView.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        self.dangerStatusView.alpha = 0
+        UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 0.5, options: []) {
+            self.dangerStatusView.transform = .identity
             self.dangerStatusView.alpha = 1
-        }, completion: nil)
+        }
     }
 
     override func viewDidLayoutSubviews() {
@@ -307,6 +300,11 @@ class HidingCellViewController: UIViewController {
             height: view.bounds.height + extraSpaceY
         )
         view.sendSubviewToBack(backgroundImageView)
+        // Обновляем borderLayer для advanceTimeButton
+        if let borderLayer = advanceTimeBorderLayer {
+            borderLayer.frame = advanceTimeButton.bounds
+            borderLayer.path = UIBezierPath(roundedRect: advanceTimeButton.bounds, cornerRadius: 12).cgPath
+        }
     }
 
     private func setupCellTitleLabel() {
@@ -370,6 +368,59 @@ class HidingCellViewController: UIViewController {
         advanceTimeButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(advanceTimeButton)
         advanceTimeButton.addTarget(self, action: #selector(advanceTimeTapped), for: .touchUpInside)
+        // Стилизация кнопки Advance Time
+        let advBlur = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
+        advBlur.frame = advanceTimeButton.bounds
+        advBlur.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        advBlur.isUserInteractionEnabled = false
+        advBlur.layer.cornerRadius = 12
+        advBlur.clipsToBounds = true
+        advanceTimeButton.insertSubview(advBlur, at: 0)
+        advanceTimeButton.setImage(UIImage(systemName: "clock.fill"), for: .normal)
+        advanceTimeButton.setTitle("Advance Time", for: .normal)
+        advanceTimeButton.tintColor = .systemYellow
+        advanceTimeButton.setTitleColor(.white, for: .normal)
+        advanceTimeButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        advanceTimeButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0)
+        advanceTimeButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+        advanceTimeButton.contentHorizontalAlignment = .center
+        advanceTimeButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 32, bottom: 10, right: 32)
+        advanceTimeButton.titleLabel?.lineBreakMode = .byClipping
+        advanceTimeButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        advanceTimeButton.titleLabel?.minimumScaleFactor = 0.7
+        advanceTimeButton.backgroundColor = UIColor(red: 0.18, green: 0.08, blue: 0.13, alpha: 0.7) // насыщенный бордовый
+        advanceTimeButton.layer.cornerRadius = 12
+        advanceTimeButton.clipsToBounds = true
+        advanceTimeButton.layer.shadowColor = UIColor.yellow.cgColor
+        advanceTimeButton.layer.shadowRadius = 8
+        advanceTimeButton.layer.shadowOpacity = 0.4
+        advanceTimeButton.layer.shadowOffset = .zero
+        // Скруглённый border через CAShapeLayer
+        let borderLayer = CAShapeLayer()
+        borderLayer.path = UIBezierPath(roundedRect: advanceTimeButton.bounds, cornerRadius: 12).cgPath
+        borderLayer.strokeColor = UIColor.systemYellow.withAlphaComponent(0.3).cgColor
+        borderLayer.fillColor = UIColor.clear.cgColor
+        borderLayer.lineWidth = 1.2
+        borderLayer.frame = advanceTimeButton.bounds
+        borderLayer.name = "roundedBorder"
+        // Удаляем старый border, если есть
+        advanceTimeButton.layer.sublayers?.removeAll(where: { $0.name == "roundedBorder" })
+        advanceTimeButton.layer.addSublayer(borderLayer)
+        advanceTimeButton.imageView?.contentMode = .scaleAspectFit
+        if let titleLabel = advanceTimeButton.titleLabel { advanceTimeButton.bringSubviewToFront(titleLabel) }
+        if let imageView = advanceTimeButton.imageView {
+            advanceTimeButton.bringSubviewToFront(imageView)
+            imageView.layer.shadowColor = UIColor.yellow.cgColor
+            imageView.layer.shadowRadius = 6
+            imageView.layer.shadowOpacity = 0.7
+            imageView.layer.shadowOffset = .zero
+            imageView.layer.masksToBounds = false
+            imageView.layer.cornerRadius = 0
+            imageView.layer.shadowPath = nil
+        }
+        advanceTimeButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+        advanceTimeButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        buttonsStackView.addArrangedSubview(advanceTimeButton)
     }
 
     private func setupLeaveButton() {
@@ -377,13 +428,81 @@ class HidingCellViewController: UIViewController {
         view.addSubview(leaveButton)
         leaveButton.addTarget(self, action: #selector(leaveTapped), for: .touchUpInside)
         leaveButton.alpha = 0 // по умолчанию скрыта, появится по логике
+        // Стилизация кнопки Leave
+        let leaveBlur = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
+        leaveBlur.frame = leaveButton.bounds
+        leaveBlur.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        leaveBlur.isUserInteractionEnabled = false
+        leaveBlur.layer.cornerRadius = 12
+        leaveBlur.clipsToBounds = true
+        leaveButton.insertSubview(leaveBlur, at: 0)
+        leaveButton.setImage(UIImage(systemName: "door.left.hand.open"), for: .normal)
+        leaveButton.setTitle("Leave", for: .normal)
+        leaveButton.tintColor = .systemTeal
+        leaveButton.setTitleColor(.white, for: .normal)
+        leaveButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        leaveButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0)
+        leaveButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+        leaveButton.contentHorizontalAlignment = .center
+        leaveButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 32, bottom: 10, right: 32)
+        leaveButton.titleLabel?.lineBreakMode = .byClipping
+        leaveButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        leaveButton.titleLabel?.minimumScaleFactor = 0.7
+        leaveButton.backgroundColor = UIColor(red: 0.10, green: 0.13, blue: 0.18, alpha: 0.7) // насыщенный синий
+        leaveButton.layer.cornerRadius = 12
+        leaveButton.clipsToBounds = true
+        leaveButton.layer.shadowColor = UIColor.cyan.cgColor
+        leaveButton.layer.shadowRadius = 8
+        leaveButton.layer.shadowOpacity = 0.4
+        leaveButton.layer.shadowOffset = .zero
+        leaveButton.layer.borderColor = UIColor.systemTeal.withAlphaComponent(0.3).cgColor
+        leaveButton.layer.borderWidth = 1.2
+        leaveButton.imageView?.contentMode = .scaleAspectFit
+        if let titleLabel = leaveButton.titleLabel { leaveButton.bringSubviewToFront(titleLabel) }
+        if let imageView = leaveButton.imageView {
+            leaveButton.bringSubviewToFront(imageView)
+            imageView.layer.shadowColor = UIColor.cyan.cgColor
+            imageView.layer.shadowRadius = 6
+            imageView.layer.shadowOpacity = 0.7
+            imageView.layer.shadowOffset = .zero
+            imageView.layer.masksToBounds = false
+            imageView.layer.cornerRadius = 0
+            imageView.layer.shadowPath = nil
+        }
+        leaveButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+        leaveButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
     }
 
     private func setupDangerStatusView() {
         dangerStatusView.translatesAutoresizingMaskIntoConstraints = false
-        dangerStatusView.backgroundColor = UIColor.black.withAlphaComponent(0.55)
-        dangerStatusView.layer.cornerRadius = 16
+        // Blur + внутренняя текстура + свечение
+        let blur = UIBlurEffect(style: .systemUltraThinMaterialDark)
+        let blurView = UIVisualEffectView(effect: blur)
+        blurView.frame = dangerStatusView.bounds
+        blurView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        dangerStatusView.addSubview(blurView)
+        // Текстура (например, semi-transparent pattern)
+        let textureView = UIImageView(image: UIImage(named: "paperTexture")?.withRenderingMode(.alwaysTemplate))
+        textureView.alpha = 0.18
+        textureView.contentMode = .scaleAspectFill
+        textureView.frame = dangerStatusView.bounds
+        textureView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        dangerStatusView.addSubview(textureView)
+        dangerStatusView.backgroundColor = UIColor(red: 0.18, green: 0.08, blue: 0.13, alpha: 0.5)
+        dangerStatusView.layer.cornerRadius = 18
         dangerStatusView.layer.masksToBounds = true
+        // Внутреннее свечение
+        let glow = CALayer()
+        glow.frame = dangerStatusView.bounds.insetBy(dx: -8, dy: -8)
+        glow.backgroundColor = UIColor.clear.cgColor
+        glow.shadowColor = UIColor.purple.withAlphaComponent(0.4).cgColor
+        glow.shadowRadius = 16
+        glow.shadowOpacity = 1
+        glow.shadowOffset = .zero
+        dangerStatusView.layer.insertSublayer(glow, at: 0)
+        // Бордер
+        dangerStatusView.layer.borderColor = UIColor.systemPurple.withAlphaComponent(0.3).cgColor
+        dangerStatusView.layer.borderWidth = 0.7
         view.addSubview(dangerStatusView)
 
         dangerStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -396,11 +515,33 @@ class HidingCellViewController: UIViewController {
         dangerIconView.translatesAutoresizingMaskIntoConstraints = false
         dangerIconView.contentMode = .scaleAspectFit
         dangerStackView.addArrangedSubview(dangerIconView)
+        // Свечение (тень) для dangerIconView
+        dangerIconView.layer.shadowColor = UIColor.systemGreen.cgColor // по умолчанию, обновляется в updateDangerStatus
+        dangerIconView.layer.shadowRadius = 14
+        dangerIconView.layer.shadowOpacity = 0.95
+        dangerIconView.layer.shadowOffset = .zero
+        dangerIconView.layer.masksToBounds = false
+        dangerIconView.layer.shadowPath = nil
+        // Усиление свечения: прозрачный слой под иконкой
+        let glowLayer = CALayer()
+        glowLayer.backgroundColor = UIColor.clear.cgColor
+        glowLayer.shadowColor = UIColor.systemGreen.cgColor
+        glowLayer.shadowRadius = 22
+        glowLayer.shadowOpacity = 0.7
+        glowLayer.shadowOffset = .zero
+        glowLayer.frame = CGRect(x: 0, y: 0, width: 32, height: 32)
+        glowLayer.position = CGPoint(x: 16, y: 16)
+        glowLayer.name = "dangerGlow"
+        dangerIconView.layer.insertSublayer(glowLayer, at: 0)
 
         dangerLabel.translatesAutoresizingMaskIntoConstraints = false
-        dangerLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        dangerLabel.font = UIFont(name: "Papyrus", size: 16) ?? UIFont(name: "Cochin", size: 16) ?? UIFont.systemFont(ofSize: 16)
         dangerLabel.textColor = .white
         dangerLabel.textAlignment = .center
+        dangerLabel.layer.shadowColor = UIColor.black.cgColor
+        dangerLabel.layer.shadowRadius = 2
+        dangerLabel.layer.shadowOpacity = 0.7
+        dangerLabel.layer.shadowOffset = CGSize(width: 1, height: 1)
         dangerStackView.addArrangedSubview(dangerLabel)
 
         NSLayoutConstraint.activate([
@@ -424,6 +565,44 @@ class HidingCellViewController: UIViewController {
         buttonsStackView.alignment = .center
         buttonsStackView.distribution = .equalCentering
         view.addSubview(buttonsStackView)
+        // Стилизация кнопки Advance Time
+        let advBlur = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
+        advBlur.frame = advanceTimeButton.bounds
+        advBlur.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        advBlur.isUserInteractionEnabled = false
+        advanceTimeButton.insertSubview(advBlur, at: 0)
+        advanceTimeButton.setImage(UIImage(systemName: "clock.fill"), for: .normal)
+        advanceTimeButton.setTitle("Advance Time", for: .normal)
+        advanceTimeButton.tintColor = .systemYellow
+        advanceTimeButton.setTitleColor(.white, for: .normal)
+        advanceTimeButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        advanceTimeButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0)
+        advanceTimeButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+        advanceTimeButton.contentHorizontalAlignment = .center
+        advanceTimeButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 32, bottom: 10, right: 32)
+        advanceTimeButton.titleLabel?.lineBreakMode = .byClipping
+        advanceTimeButton.titleLabel?.adjustsFontSizeToFitWidth = true
+        advanceTimeButton.titleLabel?.minimumScaleFactor = 0.7
+        advanceTimeButton.backgroundColor = UIColor(red: 0.18, green: 0.08, blue: 0.13, alpha: 0.7) // насыщенный бордовый
+        advanceTimeButton.layer.cornerRadius = 12
+        advanceTimeButton.clipsToBounds = true
+        advanceTimeButton.layer.shadowColor = UIColor.yellow.cgColor
+        advanceTimeButton.layer.shadowRadius = 8
+        advanceTimeButton.layer.shadowOpacity = 0.4
+        advanceTimeButton.layer.shadowOffset = .zero
+        advanceTimeButton.layer.borderColor = UIColor.systemYellow.withAlphaComponent(0.3).cgColor
+        advanceTimeButton.layer.borderWidth = 1.2
+        advanceTimeButton.imageView?.contentMode = .scaleAspectFit
+        if let titleLabel = advanceTimeButton.titleLabel { advanceTimeButton.bringSubviewToFront(titleLabel) }
+        if let imageView = advanceTimeButton.imageView {
+            advanceTimeButton.bringSubviewToFront(imageView)
+            imageView.layer.shadowColor = UIColor.yellow.cgColor
+            imageView.layer.shadowRadius = 6
+            imageView.layer.shadowOpacity = 0.7
+            imageView.layer.shadowOffset = .zero
+        }
+        advanceTimeButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+        advanceTimeButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
         buttonsStackView.addArrangedSubview(advanceTimeButton)
     }
 
@@ -544,6 +723,12 @@ class HidingCellViewController: UIViewController {
             label.textColor = newColor
             iconView.image = newIcon
             iconView.tintColor = newColor
+            iconView.layer.shadowColor = newColor.cgColor // обновляем цвет свечения
+            // Обновляем цвет свечения у glowLayer
+            if let glow = iconView.layer.sublayers?.first(where: { $0.name == "dangerGlow" }) {
+                glow.shadowColor = newColor.cgColor
+            }
+            container.layer.borderColor = newColor.cgColor // цвет рамки = цвету статуса
         }
 
         if animated {
@@ -575,18 +760,37 @@ class HidingCellViewController: UIViewController {
 
     private func dangerStatusInfo(for count: Int) -> (icon: String, color: UIColor, text: String) {
         if count == 0 {
-            return ("checkmark.shield", UIColor.systemGreen, "All is calm")
+            return ("moon.stars", UIColor.systemGreen, "You are safe... for now.")
         } else if count <= 2 {
-            return ("eye", UIColor.systemYellow, "Some movement outside")
+            return ("eye", UIColor.systemYellow, "Some movement outside...")
         } else if count <= 5 {
-            return ("exclamationmark.triangle", UIColor.systemOrange, "Someone is clearly awake outside")
+            return ("flame", UIColor.systemOrange, "Someone is clearly awake outside")
         } else {
-            return ("exclamationmark.octagon.fill", UIColor.systemRed, "Very dangerous to go out!")
+            return ("shield.lefthalf.filled", UIColor.systemRed, "Very dangerous to go out!")
         }
     }
 
     @objc private func updateDangerStatusNotification() {
         updateDangerStatus(animated: true)
+    }
+
+    // Анимация нажатия для кнопок
+    @objc private func buttonTouchDown(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.08) {
+            sender.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
+            sender.alpha = 0.85
+        }
+    }
+    @objc private func buttonTouchUp(_ sender: UIButton) {
+        UIView.animate(withDuration: 0.12) {
+            sender.transform = .identity
+            sender.alpha = 1.0
+        }
+    }
+
+    // MARK: - Border обновление для advanceTimeButton
+    private var advanceTimeBorderLayer: CAShapeLayer? {
+        return advanceTimeButton.layer.sublayers?.compactMap { $0 as? CAShapeLayer }.first(where: { $0.name == "roundedBorder" })
     }
 }
 
