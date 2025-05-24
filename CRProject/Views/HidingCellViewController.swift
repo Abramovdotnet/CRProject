@@ -165,13 +165,26 @@ class TimeBarView: UIView {
         let offset = (virtualHour - floor(virtualHour)) * hourWidth
         let fadeCount = 2 // сколько часов с каждого края затухают
         var hourXs: [CGFloat] = []
-        ctx.setFillColor(UIColor.white.withAlphaComponent(0.25 * barAlpha).cgColor)
+        // --- Основная линия времени с тенью ---
+        ctx.saveGState()
+        ctx.setShadow(offset: .zero, blur: 8, color: UIColor.black.withAlphaComponent(0.22 * barAlpha).cgColor)
+        ctx.setFillColor(UIColor.white.withAlphaComponent(0.18 * barAlpha).cgColor)
         ctx.fill(CGRect(x: fadeWidth, y: barY, width: totalWidth-2*fadeWidth, height: 2))
+        ctx.restoreGState()
+        // --- Часы ---
+        var currentPulse: CGFloat = 1.0
+        var currentHourX: CGFloat? = nil
         for (idx, hour) in hours.enumerated() {
             let x = centerX + CGFloat(idx - hoursRange) * hourWidth - CGFloat(offset)
             hourXs.append(x)
+            let margin: CGFloat = 12
+            if x < fadeWidth - margin || x > totalWidth - fadeWidth + margin {
+                continue // не рисуем маркер и эффекты вне шкалы
+            }
             let isCurrent = hour == Int(round(virtualHour))
             let isNight = ((hour % 24 + 24) % 24) >= 20 || ((hour % 24 + 24) % 24) < 6
+            let isDawn = ((hour % 24 + 24) % 24) == 6
+            let isDusk = ((hour % 24 + 24) % 24) == 20
             let barColor: UIColor = isNight ? UIColor.systemIndigo : UIColor.systemYellow
             var opacity: CGFloat = 1.0
             if idx == 0 {
@@ -186,15 +199,134 @@ class TimeBarView: UIView {
                 opacity = CGFloat(hours.count - idx) / CGFloat(fadeCount + 1)
             }
             let textColor: UIColor = isCurrent ? UIColor.systemYellow : UIColor.white.withAlphaComponent(opacity)
+            // --- Glow для текущего часа (пульсация) ---
+            if isCurrent {
+                currentPulse = 0.7 + 0.3 * CGFloat(sin(CACurrentMediaTime()*2))
+                currentHourX = x
+                ctx.saveGState()
+                ctx.setShadow(offset: .zero, blur: 22, color: UIColor.systemYellow.withAlphaComponent(0.7 * barAlpha * currentPulse).cgColor)
+                ctx.setFillColor(UIColor.systemYellow.withAlphaComponent(0.7 * barAlpha * currentPulse).cgColor)
+                ctx.fillEllipse(in: CGRect(x: x-15, y: barY-20, width: 30, height: 30))
+                ctx.restoreGState()
+            }
+            // --- Тень под маркерами ---
+            ctx.saveGState()
+            ctx.setShadow(offset: .zero, blur: 4, color: UIColor.black.withAlphaComponent(0.22 * barAlpha).cgColor)
             ctx.setFillColor(barColor.withAlphaComponent(((isCurrent ? 1 : 0.5) * barAlpha * opacity)).cgColor)
             ctx.fill(CGRect(x: x-1, y: barY-7, width: 2, height: 14))
+            ctx.restoreGState()
+            // --- Glow/тень под цифрами ---
             let hourStr = "\(((hour % 24 + 24) % 24))"
             let attr: [NSAttributedString.Key: Any] = [
                 .font: isCurrent ? fontCurrent : font,
                 .foregroundColor: textColor.withAlphaComponent((isCurrent ? 1 : 0.95) * barAlpha)
             ]
             let size = hourStr.size(withAttributes: attr)
+            ctx.saveGState()
+            ctx.setShadow(offset: .zero, blur: 6, color: UIColor.black.withAlphaComponent(0.45 * barAlpha).cgColor)
             hourStr.draw(at: CGPoint(x: x-size.width/2, y: barY-markerHeight-hourLabelOffset), withAttributes: attr)
+            ctx.restoreGState()
+            // --- Пламя/блик для дневных часов ---
+            if !isNight && !isCurrent {
+                ctx.saveGState()
+                ctx.setShadow(offset: .zero, blur: 8, color: UIColor.systemYellow.withAlphaComponent(0.12 * opacity).cgColor)
+                ctx.setFillColor(UIColor.systemYellow.withAlphaComponent(0.08 * opacity).cgColor)
+                ctx.fillEllipse(in: CGRect(x: x-6, y: barY-10, width: 12, height: 12))
+                ctx.restoreGState()
+            }
+            // --- Мерцание для ночных часов ---
+            if isNight && !isCurrent {
+                ctx.saveGState()
+                ctx.setShadow(offset: .zero, blur: 8, color: UIColor.systemIndigo.withAlphaComponent(0.12 * opacity).cgColor)
+                ctx.setFillColor(UIColor.systemIndigo.withAlphaComponent(0.08 * opacity).cgColor)
+                ctx.fillEllipse(in: CGRect(x: x-6, y: barY-10, width: 12, height: 12))
+                ctx.restoreGState()
+            }
+            ctx.setFillColor(barColor.withAlphaComponent(((isCurrent ? 1 : 0.5) * barAlpha * opacity)).cgColor)
+            ctx.fill(CGRect(x: x-1, y: barY-7, width: 2, height: 14))
+            // --- Подписи Night/Dawn/Day/Dusk с тенью и капсулой ---
+            let isCurrentLabel = isCurrent && ((isDawn && hour % 24 == 6) || (isDusk && hour % 24 == 20) || (hour % 24 == 0) || (hour % 24 == 12))
+            if isDawn {
+                let dawnAttr: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.italicSystemFont(ofSize: 12),
+                    .foregroundColor: UIColor.yellow.withAlphaComponent(1.0)
+                ]
+                let dawnStr = "Dawn"
+                let dawnSize = dawnStr.size(withAttributes: dawnAttr)
+                if !isCurrentLabel {
+                    let capsuleRect = CGRect(x: x-dawnSize.width/2-8, y: barY+18, width: dawnSize.width+16, height: dawnSize.height)
+                    ctx.saveGState()
+                    ctx.setFillColor(UIColor.black.withAlphaComponent(0.18).cgColor)
+                    let capsulePath = UIBezierPath(roundedRect: capsuleRect, cornerRadius: dawnSize.height/2)
+                    ctx.addPath(capsulePath.cgPath)
+                    ctx.fillPath()
+                    ctx.restoreGState()
+                }
+                ctx.saveGState()
+                ctx.setShadow(offset: .zero, blur: 2, color: UIColor.black.withAlphaComponent(0.5).cgColor)
+                dawnStr.draw(at: CGPoint(x: x-dawnSize.width/2, y: barY+18), withAttributes: dawnAttr)
+                ctx.restoreGState()
+            } else if isDusk {
+                let duskAttr: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.italicSystemFont(ofSize: 12),
+                    .foregroundColor: UIColor.systemIndigo.withAlphaComponent(1.0)
+                ]
+                let duskStr = "Dusk"
+                let duskSize = duskStr.size(withAttributes: duskAttr)
+                if !isCurrentLabel {
+                    let capsuleRect = CGRect(x: x-duskSize.width/2-8, y: barY+18, width: duskSize.width+16, height: duskSize.height)
+                    ctx.saveGState()
+                    ctx.setFillColor(UIColor.black.withAlphaComponent(0.18).cgColor)
+                    let capsulePath = UIBezierPath(roundedRect: capsuleRect, cornerRadius: duskSize.height/2)
+                    ctx.addPath(capsulePath.cgPath)
+                    ctx.fillPath()
+                    ctx.restoreGState()
+                }
+                ctx.saveGState()
+                ctx.setShadow(offset: .zero, blur: 2, color: UIColor.black.withAlphaComponent(0.5).cgColor)
+                duskStr.draw(at: CGPoint(x: x-duskSize.width/2, y: barY+18), withAttributes: duskAttr)
+                ctx.restoreGState()
+            } else if isNight && hour % 24 == 0 {
+                let nightAttr: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.italicSystemFont(ofSize: 12),
+                    .foregroundColor: UIColor.systemTeal.withAlphaComponent(1.0)
+                ]
+                let nightStr = "Night"
+                let nightSize = nightStr.size(withAttributes: nightAttr)
+                if !isCurrentLabel {
+                    let capsuleRect = CGRect(x: x-nightSize.width/2-8, y: barY+18, width: nightSize.width+16, height: nightSize.height)
+                    ctx.saveGState()
+                    ctx.setFillColor(UIColor.black.withAlphaComponent(0.18).cgColor)
+                    let capsulePath = UIBezierPath(roundedRect: capsuleRect, cornerRadius: nightSize.height/2)
+                    ctx.addPath(capsulePath.cgPath)
+                    ctx.fillPath()
+                    ctx.restoreGState()
+                }
+                ctx.saveGState()
+                ctx.setShadow(offset: .zero, blur: 2, color: UIColor.black.withAlphaComponent(0.5).cgColor)
+                nightStr.draw(at: CGPoint(x: x-nightSize.width/2, y: barY+18), withAttributes: nightAttr)
+                ctx.restoreGState()
+            } else if !isNight && hour % 24 == 12 {
+                let dayAttr: [NSAttributedString.Key: Any] = [
+                    .font: UIFont.italicSystemFont(ofSize: 12),
+                    .foregroundColor: UIColor.systemYellow.withAlphaComponent(1.0)
+                ]
+                let dayStr = "Day"
+                let daySize = dayStr.size(withAttributes: dayAttr)
+                if !isCurrentLabel {
+                    let capsuleRect = CGRect(x: x-daySize.width/2-8, y: barY+18, width: daySize.width+16, height: daySize.height)
+                    ctx.saveGState()
+                    ctx.setFillColor(UIColor.black.withAlphaComponent(0.18).cgColor)
+                    let capsulePath = UIBezierPath(roundedRect: capsuleRect, cornerRadius: daySize.height/2)
+                    ctx.addPath(capsulePath.cgPath)
+                    ctx.fillPath()
+                    ctx.restoreGState()
+                }
+                ctx.saveGState()
+                ctx.setShadow(offset: .zero, blur: 2, color: UIColor.black.withAlphaComponent(0.5).cgColor)
+                dayStr.draw(at: CGPoint(x: x-daySize.width/2, y: barY+18), withAttributes: dayAttr)
+                ctx.restoreGState()
+            }
         }
         // Кешируем x-координаты для иконок только если не идёт анимация
         let isAnimating = displayLink != nil
@@ -206,13 +338,32 @@ class TimeBarView: UIView {
             let iconType = iconAnims[i].type
             let iconAlpha = iconAnims[i].alpha * barAlpha
             let iconName = iconType == .moon ? "moon.fill" : "sun.max.fill"
-            let iconConfig = UIImage.SymbolConfiguration(pointSize: i == 1 ? 22 : 18, weight: .bold)
+            let iconConfig = UIImage.SymbolConfiguration(pointSize: i == 1 ? 32 : 24, weight: .bold)
             if let icon = UIImage(systemName: iconName, withConfiguration: iconConfig)?.withRenderingMode(.alwaysOriginal) {
-                let iconRect = CGRect(x: iconXs[i]-10, y: barY-markerHeight-hourLabelOffset-28, width: 20, height: 20)
+                let iconRect = CGRect(x: iconXs[i]-16, y: barY-markerHeight-hourLabelOffset-32, width: 32, height: 32)
                 let tint = iconType == .moon ? UIColor.systemIndigo : UIColor.systemYellow
+                // Glow для иконок
+                ctx.saveGState()
+                ctx.setShadow(offset: .zero, blur: 18, color: tint.withAlphaComponent(0.7 * iconAlpha).cgColor)
                 icon.withTintColor(tint.withAlphaComponent(iconAlpha), renderingMode: .alwaysOriginal).draw(in: iconRect)
+                ctx.restoreGState()
             }
         }
+        // --- Клык-указатель ---
+        let fangX = currentHourX ?? hourXs[hoursRange]
+        let fangY = barY+8
+        ctx.saveGState()
+        ctx.setShadow(offset: .zero, blur: 8, color: UIColor.systemYellow.withAlphaComponent(0.7 * barAlpha * currentPulse).cgColor)
+        ctx.setFillColor(UIColor.systemYellow.withAlphaComponent(0.85 * barAlpha * currentPulse).cgColor)
+        let fangPath = UIBezierPath()
+        fangPath.move(to: CGPoint(x: fangX, y: fangY))
+        fangPath.addLine(to: CGPoint(x: fangX-6, y: fangY+18))
+        fangPath.addQuadCurve(to: CGPoint(x: fangX+6, y: fangY+18), controlPoint: CGPoint(x: fangX, y: fangY+28))
+        fangPath.addLine(to: CGPoint(x: fangX, y: fangY))
+        fangPath.close()
+        ctx.addPath(fangPath.cgPath)
+        ctx.fillPath()
+        ctx.restoreGState()
     }
     private func opacityForIndex(idx: Int, total: Int, fade: Int) -> CGFloat {
         if idx < fade { return CGFloat(idx+1)/CGFloat(fade+1) }
@@ -228,23 +379,14 @@ class HidingCellViewController: UIViewController {
     private let topWidgetContainerView = UIView()
     private var topWidgetViewController: TopWidgetUIViewController?
     private let timeBarView = TimeBarView()
-    private let advanceTimeButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
-    private let leaveButton: UIButton = {
-        let button = UIButton(type: .system)
-        button.translatesAutoresizingMaskIntoConstraints = false
-        return button
-    }()
     private let dangerStatusView = UIView()
     private let dangerIconView = UIImageView()
     private let dangerLabel = UILabel()
     private let dangerStackView = UIStackView()
-    private let buttonsStackView = UIStackView()
-    private let leaveButtonStackView = UIStackView()
+    private var advanceTimeCircleButton: UIButton!
+    private var leaveCircleButton: UIButton!
     private var didAppearOnce = false
+    private let buttonSize: CGFloat = 40
 
     init(mainViewModel: MainSceneViewModel) {
         self.mainViewModel = mainViewModel
@@ -262,11 +404,8 @@ class HidingCellViewController: UIViewController {
         setupCellTitleLabel()
         setupTopWidget()
         setupTimeBar()
-        setupAdvanceTimeButton()
-        setupLeaveButton()
         setupDangerStatusView()
-        setupButtonsStackView()
-        setupLeaveButtonStackView()
+        setupCircleActionButtons()
         setupLayout()
         subscribeToTimeUpdates()
         // Отключаем свайп-назад
@@ -302,8 +441,8 @@ class HidingCellViewController: UIViewController {
         view.sendSubviewToBack(backgroundImageView)
         // Обновляем borderLayer для advanceTimeButton
         if let borderLayer = advanceTimeBorderLayer {
-            borderLayer.frame = advanceTimeButton.bounds
-            borderLayer.path = UIBezierPath(roundedRect: advanceTimeButton.bounds, cornerRadius: 12).cgPath
+            borderLayer.frame = advanceTimeCircleButton.bounds
+            borderLayer.path = UIBezierPath(roundedRect: advanceTimeCircleButton.bounds, cornerRadius: 12).cgPath
         }
     }
 
@@ -356,121 +495,12 @@ class HidingCellViewController: UIViewController {
         timeBarView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(timeBarView)
         NSLayoutConstraint.activate([
-            timeBarView.topAnchor.constraint(equalTo: cellTitleLabel.bottomAnchor, constant: 24),
+            timeBarView.topAnchor.constraint(equalTo: cellTitleLabel.bottomAnchor, constant: 8),
             timeBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             timeBarView.widthAnchor.constraint(equalToConstant: 600),
-            timeBarView.heightAnchor.constraint(equalToConstant: 56)
+            timeBarView.heightAnchor.constraint(equalToConstant: 105)
         ])
         timeBarView.currentHour = GameTimeService.shared.currentHour
-    }
-
-    private func setupAdvanceTimeButton() {
-        advanceTimeButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(advanceTimeButton)
-        advanceTimeButton.addTarget(self, action: #selector(advanceTimeTapped), for: .touchUpInside)
-        // Стилизация кнопки Advance Time
-        let advBlur = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
-        advBlur.frame = advanceTimeButton.bounds
-        advBlur.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        advBlur.isUserInteractionEnabled = false
-        advBlur.layer.cornerRadius = 12
-        advBlur.clipsToBounds = true
-        advanceTimeButton.insertSubview(advBlur, at: 0)
-        advanceTimeButton.setImage(UIImage(systemName: "clock.fill"), for: .normal)
-        advanceTimeButton.setTitle("Advance Time", for: .normal)
-        advanceTimeButton.tintColor = .systemYellow
-        advanceTimeButton.setTitleColor(.white, for: .normal)
-        advanceTimeButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
-        advanceTimeButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0)
-        advanceTimeButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
-        advanceTimeButton.contentHorizontalAlignment = .center
-        advanceTimeButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 32, bottom: 10, right: 32)
-        advanceTimeButton.titleLabel?.lineBreakMode = .byClipping
-        advanceTimeButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        advanceTimeButton.titleLabel?.minimumScaleFactor = 0.7
-        advanceTimeButton.backgroundColor = UIColor(red: 0.18, green: 0.08, blue: 0.13, alpha: 0.7) // насыщенный бордовый
-        advanceTimeButton.layer.cornerRadius = 12
-        advanceTimeButton.clipsToBounds = true
-        advanceTimeButton.layer.shadowColor = UIColor.yellow.cgColor
-        advanceTimeButton.layer.shadowRadius = 8
-        advanceTimeButton.layer.shadowOpacity = 0.4
-        advanceTimeButton.layer.shadowOffset = .zero
-        // Скруглённый border через CAShapeLayer
-        let borderLayer = CAShapeLayer()
-        borderLayer.path = UIBezierPath(roundedRect: advanceTimeButton.bounds, cornerRadius: 12).cgPath
-        borderLayer.strokeColor = UIColor.systemYellow.withAlphaComponent(0.3).cgColor
-        borderLayer.fillColor = UIColor.clear.cgColor
-        borderLayer.lineWidth = 1.2
-        borderLayer.frame = advanceTimeButton.bounds
-        borderLayer.name = "roundedBorder"
-        // Удаляем старый border, если есть
-        advanceTimeButton.layer.sublayers?.removeAll(where: { $0.name == "roundedBorder" })
-        advanceTimeButton.layer.addSublayer(borderLayer)
-        advanceTimeButton.imageView?.contentMode = .scaleAspectFit
-        if let titleLabel = advanceTimeButton.titleLabel { advanceTimeButton.bringSubviewToFront(titleLabel) }
-        if let imageView = advanceTimeButton.imageView {
-            advanceTimeButton.bringSubviewToFront(imageView)
-            imageView.layer.shadowColor = UIColor.yellow.cgColor
-            imageView.layer.shadowRadius = 6
-            imageView.layer.shadowOpacity = 0.7
-            imageView.layer.shadowOffset = .zero
-            imageView.layer.masksToBounds = false
-            imageView.layer.cornerRadius = 0
-            imageView.layer.shadowPath = nil
-        }
-        advanceTimeButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
-        advanceTimeButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
-        buttonsStackView.addArrangedSubview(advanceTimeButton)
-    }
-
-    private func setupLeaveButton() {
-        leaveButton.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(leaveButton)
-        leaveButton.addTarget(self, action: #selector(leaveTapped), for: .touchUpInside)
-        leaveButton.alpha = 0 // по умолчанию скрыта, появится по логике
-        // Стилизация кнопки Leave
-        let leaveBlur = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
-        leaveBlur.frame = leaveButton.bounds
-        leaveBlur.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        leaveBlur.isUserInteractionEnabled = false
-        leaveBlur.layer.cornerRadius = 12
-        leaveBlur.clipsToBounds = true
-        leaveButton.insertSubview(leaveBlur, at: 0)
-        leaveButton.setImage(UIImage(systemName: "door.left.hand.open"), for: .normal)
-        leaveButton.setTitle("Leave", for: .normal)
-        leaveButton.tintColor = .systemTeal
-        leaveButton.setTitleColor(.white, for: .normal)
-        leaveButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
-        leaveButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0)
-        leaveButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
-        leaveButton.contentHorizontalAlignment = .center
-        leaveButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 32, bottom: 10, right: 32)
-        leaveButton.titleLabel?.lineBreakMode = .byClipping
-        leaveButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        leaveButton.titleLabel?.minimumScaleFactor = 0.7
-        leaveButton.backgroundColor = UIColor(red: 0.10, green: 0.13, blue: 0.18, alpha: 0.7) // насыщенный синий
-        leaveButton.layer.cornerRadius = 12
-        leaveButton.clipsToBounds = true
-        leaveButton.layer.shadowColor = UIColor.cyan.cgColor
-        leaveButton.layer.shadowRadius = 8
-        leaveButton.layer.shadowOpacity = 0.4
-        leaveButton.layer.shadowOffset = .zero
-        leaveButton.layer.borderColor = UIColor.systemTeal.withAlphaComponent(0.3).cgColor
-        leaveButton.layer.borderWidth = 1.2
-        leaveButton.imageView?.contentMode = .scaleAspectFit
-        if let titleLabel = leaveButton.titleLabel { leaveButton.bringSubviewToFront(titleLabel) }
-        if let imageView = leaveButton.imageView {
-            leaveButton.bringSubviewToFront(imageView)
-            imageView.layer.shadowColor = UIColor.cyan.cgColor
-            imageView.layer.shadowRadius = 6
-            imageView.layer.shadowOpacity = 0.7
-            imageView.layer.shadowOffset = .zero
-            imageView.layer.masksToBounds = false
-            imageView.layer.cornerRadius = 0
-            imageView.layer.shadowPath = nil
-        }
-        leaveButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
-        leaveButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
     }
 
     private func setupDangerStatusView() {
@@ -558,62 +588,67 @@ class HidingCellViewController: UIViewController {
         ])
     }
 
-    private func setupButtonsStackView() {
-        buttonsStackView.translatesAutoresizingMaskIntoConstraints = false
-        buttonsStackView.axis = .vertical
-        buttonsStackView.spacing = 18
-        buttonsStackView.alignment = .center
-        buttonsStackView.distribution = .equalCentering
-        view.addSubview(buttonsStackView)
-        // Стилизация кнопки Advance Time
-        let advBlur = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterialDark))
-        advBlur.frame = advanceTimeButton.bounds
-        advBlur.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        advBlur.isUserInteractionEnabled = false
-        advanceTimeButton.insertSubview(advBlur, at: 0)
-        advanceTimeButton.setImage(UIImage(systemName: "clock.fill"), for: .normal)
-        advanceTimeButton.setTitle("Advance Time", for: .normal)
-        advanceTimeButton.tintColor = .systemYellow
-        advanceTimeButton.setTitleColor(.white, for: .normal)
-        advanceTimeButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
-        advanceTimeButton.titleEdgeInsets = UIEdgeInsets(top: 0, left: 12, bottom: 0, right: 0)
-        advanceTimeButton.imageEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
-        advanceTimeButton.contentHorizontalAlignment = .center
-        advanceTimeButton.contentEdgeInsets = UIEdgeInsets(top: 10, left: 32, bottom: 10, right: 32)
-        advanceTimeButton.titleLabel?.lineBreakMode = .byClipping
-        advanceTimeButton.titleLabel?.adjustsFontSizeToFitWidth = true
-        advanceTimeButton.titleLabel?.minimumScaleFactor = 0.7
-        advanceTimeButton.backgroundColor = UIColor(red: 0.18, green: 0.08, blue: 0.13, alpha: 0.7) // насыщенный бордовый
-        advanceTimeButton.layer.cornerRadius = 12
-        advanceTimeButton.clipsToBounds = true
-        advanceTimeButton.layer.shadowColor = UIColor.yellow.cgColor
-        advanceTimeButton.layer.shadowRadius = 8
-        advanceTimeButton.layer.shadowOpacity = 0.4
-        advanceTimeButton.layer.shadowOffset = .zero
-        advanceTimeButton.layer.borderColor = UIColor.systemYellow.withAlphaComponent(0.3).cgColor
-        advanceTimeButton.layer.borderWidth = 1.2
-        advanceTimeButton.imageView?.contentMode = .scaleAspectFit
-        if let titleLabel = advanceTimeButton.titleLabel { advanceTimeButton.bringSubviewToFront(titleLabel) }
-        if let imageView = advanceTimeButton.imageView {
-            advanceTimeButton.bringSubviewToFront(imageView)
-            imageView.layer.shadowColor = UIColor.yellow.cgColor
-            imageView.layer.shadowRadius = 6
-            imageView.layer.shadowOpacity = 0.7
-            imageView.layer.shadowOffset = .zero
-        }
-        advanceTimeButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
-        advanceTimeButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
-        buttonsStackView.addArrangedSubview(advanceTimeButton)
-    }
-
-    private func setupLeaveButtonStackView() {
-        leaveButtonStackView.translatesAutoresizingMaskIntoConstraints = false
-        leaveButtonStackView.axis = .vertical
-        leaveButtonStackView.spacing = 0
-        leaveButtonStackView.alignment = .center
-        leaveButtonStackView.distribution = .equalCentering
-        view.addSubview(leaveButtonStackView)
-        leaveButtonStackView.addArrangedSubview(leaveButton)
+    private func setupCircleActionButtons() {
+        // Advance Time
+        advanceTimeCircleButton = UIButton(type: .custom)
+        advanceTimeCircleButton.translatesAutoresizingMaskIntoConstraints = false
+        let hourglassIcon = UIImage(systemName: "hourglass.bottomhalf.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .bold))?.withRenderingMode(.alwaysTemplate)
+        advanceTimeCircleButton.setImage(hourglassIcon, for: .normal)
+        advanceTimeCircleButton.tintColor = .white
+        advanceTimeCircleButton.backgroundColor = UIColor(white: 0.08, alpha: 0.98)
+        advanceTimeCircleButton.layer.cornerRadius = buttonSize / 2
+        advanceTimeCircleButton.layer.masksToBounds = false
+        // Glow
+        let advGlow = CALayer()
+        advGlow.frame = CGRect(x: -1, y: -1, width: buttonSize + 2, height: buttonSize + 2)
+        advGlow.cornerRadius = (buttonSize + 2) / 2
+        advGlow.backgroundColor = UIColor.white.withAlphaComponent(0.7).cgColor
+        advGlow.shadowColor = UIColor.white.cgColor
+        advGlow.shadowRadius = 8
+        advGlow.shadowOpacity = 1.0
+        advGlow.shadowOffset = .zero
+        advGlow.opacity = 0.7
+        advanceTimeCircleButton.layer.insertSublayer(advGlow, at: 0)
+        advanceTimeCircleButton.addTarget(self, action: #selector(advanceTimeTapped), for: .touchUpInside)
+        advanceTimeCircleButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+        advanceTimeCircleButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        view.addSubview(advanceTimeCircleButton)
+        // Leave
+        leaveCircleButton = UIButton(type: .custom)
+        leaveCircleButton.translatesAutoresizingMaskIntoConstraints = false
+        let leaveIcon = UIImage(systemName: "arrow.uturn.left", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .bold))?.withRenderingMode(.alwaysTemplate)
+        leaveCircleButton.setImage(leaveIcon, for: .normal)
+        leaveCircleButton.tintColor = .white
+        leaveCircleButton.backgroundColor = UIColor(white: 0.08, alpha: 0.98)
+        leaveCircleButton.layer.cornerRadius = buttonSize / 2
+        leaveCircleButton.layer.masksToBounds = false
+        // Glow
+        let leaveGlow = CALayer()
+        leaveGlow.frame = CGRect(x: -1, y: -1, width: buttonSize + 2, height: buttonSize + 2)
+        leaveGlow.cornerRadius = (buttonSize + 2) / 2
+        leaveGlow.backgroundColor = UIColor.white.withAlphaComponent(0.7).cgColor
+        leaveGlow.shadowColor = UIColor.white.cgColor
+        leaveGlow.shadowRadius = 8
+        leaveGlow.shadowOpacity = 1.0
+        leaveGlow.shadowOffset = .zero
+        leaveGlow.opacity = 0.7
+        leaveCircleButton.layer.insertSublayer(leaveGlow, at: 0)
+        leaveCircleButton.addTarget(self, action: #selector(leaveTapped), for: .touchUpInside)
+        leaveCircleButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
+        leaveCircleButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
+        view.addSubview(leaveCircleButton)
+        // Constraints
+        NSLayoutConstraint.activate([
+            advanceTimeCircleButton.centerYAnchor.constraint(equalTo: timeBarView.centerYAnchor),
+            advanceTimeCircleButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 18),
+            advanceTimeCircleButton.widthAnchor.constraint(equalToConstant: buttonSize),
+            advanceTimeCircleButton.heightAnchor.constraint(equalToConstant: buttonSize),
+            leaveCircleButton.centerYAnchor.constraint(equalTo: timeBarView.centerYAnchor),
+            leaveCircleButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -18),
+            leaveCircleButton.widthAnchor.constraint(equalToConstant: buttonSize),
+            leaveCircleButton.heightAnchor.constraint(equalToConstant: buttonSize)
+        ])
+        leaveCircleButton.alpha = 0 // по умолчанию скрыта, появится по логике
     }
 
     private func setupLayout() {
@@ -638,23 +673,24 @@ class HidingCellViewController: UIViewController {
             topWidgetViewController!.view.trailingAnchor.constraint(equalTo: topWidgetContainerView.trailingAnchor, constant: -2),
             topWidgetViewController!.view.bottomAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: -2),
 
-            timeBarView.topAnchor.constraint(equalTo: cellTitleLabel.bottomAnchor, constant: 24),
+            timeBarView.topAnchor.constraint(equalTo: cellTitleLabel.bottomAnchor, constant: 8),
             timeBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             timeBarView.widthAnchor.constraint(equalToConstant: 600),
-            timeBarView.heightAnchor.constraint(equalToConstant: 56),
+            timeBarView.heightAnchor.constraint(equalToConstant: 105),
 
             dangerStatusView.topAnchor.constraint(equalTo: timeBarView.bottomAnchor, constant: 18),
             dangerStatusView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             dangerStatusView.heightAnchor.constraint(equalToConstant: 40),
             dangerStatusView.widthAnchor.constraint(lessThanOrEqualToConstant: 380),
 
-            buttonsStackView.topAnchor.constraint(equalTo: dangerStatusView.bottomAnchor, constant: 24),
-            buttonsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            buttonsStackView.heightAnchor.constraint(equalToConstant: 48),
-
-            leaveButtonStackView.topAnchor.constraint(equalTo: buttonsStackView.bottomAnchor, constant: 16),
-            leaveButtonStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            leaveButtonStackView.heightAnchor.constraint(equalToConstant: 48)
+            advanceTimeCircleButton.centerYAnchor.constraint(equalTo: timeBarView.centerYAnchor),
+            advanceTimeCircleButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 18),
+            advanceTimeCircleButton.widthAnchor.constraint(equalToConstant: buttonSize),
+            advanceTimeCircleButton.heightAnchor.constraint(equalToConstant: buttonSize),
+            leaveCircleButton.centerYAnchor.constraint(equalTo: timeBarView.centerYAnchor),
+            leaveCircleButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -18),
+            leaveCircleButton.widthAnchor.constraint(equalToConstant: buttonSize),
+            leaveCircleButton.heightAnchor.constraint(equalToConstant: buttonSize)
         ])
     }
 
@@ -677,12 +713,12 @@ class HidingCellViewController: UIViewController {
         let targetAlpha: CGFloat = shouldShow ? 1.0 : 0.0
         if animated {
             UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseInOut], animations: {
-                self.leaveButton.alpha = targetAlpha
+                self.leaveCircleButton.alpha = targetAlpha
             }, completion: nil)
         } else {
-            leaveButton.alpha = targetAlpha
+            leaveCircleButton.alpha = targetAlpha
         }
-        leaveButton.isUserInteractionEnabled = shouldShow
+        leaveCircleButton.isUserInteractionEnabled = shouldShow
     }
 
     @objc private func advanceTimeTapped() {
@@ -790,7 +826,7 @@ class HidingCellViewController: UIViewController {
 
     // MARK: - Border обновление для advanceTimeButton
     private var advanceTimeBorderLayer: CAShapeLayer? {
-        return advanceTimeButton.layer.sublayers?.compactMap { $0 as? CAShapeLayer }.first(where: { $0.name == "roundedBorder" })
+        return advanceTimeCircleButton.layer.sublayers?.compactMap { $0 as? CAShapeLayer }.first(where: { $0.name == "roundedBorder" })
     }
 }
 
