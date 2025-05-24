@@ -526,6 +526,13 @@ namespace CRProjectEditor.ViewModels
                 };
                 var loadedScenes = JsonSerializer.Deserialize<ObservableCollection<Scene>>(jsonString, options);
 
+                var allConnectionIds = loadedScenes.SelectMany(s => s.Connections).Select(c => c.ConnectedSceneId).Distinct();
+
+                var noExistsScenes = loadedScenes.Where(s => !allConnectionIds.Contains(s.Id));
+
+                var orderedByX = loadedScenes.OrderBy(s => s.X);
+                var orderedByY = loadedScenes.OrderBy(s => s.Y);
+
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     Scenes = loadedScenes ?? new ObservableCollection<Scene>();

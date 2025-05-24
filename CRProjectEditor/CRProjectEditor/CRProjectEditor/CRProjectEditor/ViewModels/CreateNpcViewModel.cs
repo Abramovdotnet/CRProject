@@ -50,6 +50,7 @@ namespace CRProjectEditor.ViewModels
 
         public IRelayCommand SaveNpcCommand { get; }
         public IRelayCommand CancelCommand { get; }
+        public IRelayCommand RandomizeNpcCommand { get; }
 
         public event Action? RequestClose;
         public event Action<NpcModel>? NpcCreated;
@@ -100,6 +101,7 @@ namespace CRProjectEditor.ViewModels
             GenerateNameCommand = new RelayCommand(GenerateName, CanGenerateName);
             SaveNpcCommand = new RelayCommand(SaveNpc, CanSaveNpc);
             CancelCommand = new RelayCommand(Cancel);
+            RandomizeNpcCommand = new RelayCommand(RandomizeNpc);
             
             NewNpc.PropertyChanged += (s, e) => {
                 SaveNpcCommand.NotifyCanExecuteChanged();
@@ -328,6 +330,49 @@ namespace CRProjectEditor.ViewModels
         private void Cancel()
         {
             RequestClose?.Invoke();
+        }
+
+        private void RandomizeNpc()
+        {
+            // ID: всегда max + 1
+            int newId = ExistingNpcIds.Any() ? ExistingNpcIds.Max() + 1 : 1;
+            NewNpc.Id = newId;
+
+            // Sex
+            if (AvailableSexes.Any())
+                NewNpc.Sex = AvailableSexes[_random.Next(AvailableSexes.Count)];
+
+            // Name (генерируем через GenerateName, если возможно)
+            if (CanGenerateName())
+                GenerateName();
+            else
+                NewNpc.Name = string.Empty;
+
+            // Age
+            NewNpc.Age = _random.Next(18, 81);
+
+            // Profession
+            if (AvailableProfessions.Any())
+                NewNpc.Profession = AvailableProfessions[_random.Next(AvailableProfessions.Count)];
+            else
+                NewNpc.Profession = null;
+
+            // Morality
+            if (AvailableMoralities.Any())
+                NewNpc.Morality = AvailableMoralities[_random.Next(AvailableMoralities.Count)];
+            else
+                NewNpc.Morality = null;
+
+            // Motivation
+            if (AvailableMotivations.Any())
+                NewNpc.Motivation = AvailableMotivations[_random.Next(AvailableMotivations.Count)];
+            else
+                NewNpc.Motivation = null;
+
+            // Background (случайная строка или пусто)
+            NewNpc.Background = string.Empty;
+
+            // isVampire и homeLocationId НЕ трогаем
         }
     }
 } 

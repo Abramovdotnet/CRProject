@@ -32,7 +32,7 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto" MinWidth="450" MaxWidth="600"/>
+            <ColumnDefinition MinWidth="600" MaxWidth="660"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
@@ -74,6 +74,19 @@
                     <Button Content="Очистить фильтры" Command="{Binding ClearFiltersCommand}" Margin="0,10,0,10"/>
                     <Button Content="Исправить HomeLocationId" Command="{Binding FixHomeLocationsCommand}" Margin="0,10,0,10"/>
                     <Button Content="Создать NPC" Command="{Binding CreateNpcCommand}" Margin="0,10,0,10"/>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,10" VerticalAlignment="Center">
+                        <Button Content="Generate Count" Command="{Binding OpenGenerateNpcBatchDialogCommand}" Width="120"/>
+                        <TextBox Text="{Binding GenerateNpcCount, UpdateSourceTrigger=PropertyChanged}" Width="40" Margin="10,0,0,0" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                        <TextBlock Text="Age:" Margin="15,0,0,0" VerticalAlignment="Center"/>
+                        <Slider Minimum="18" Maximum="80" Value="{Binding GenerateNpcMinAge, UpdateSourceTrigger=PropertyChanged}" Width="80" Margin="5,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding GenerateNpcMinAge}" Margin="2,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="-" Margin="2,0,0,0" VerticalAlignment="Center"/>
+                        <Slider Minimum="18" Maximum="80" Value="{Binding GenerateNpcMaxAge, UpdateSourceTrigger=PropertyChanged}" Width="80" Margin="2,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="{Binding GenerateNpcMaxAge}" Margin="2,0,0,0" VerticalAlignment="Center"/>
+                        <TextBlock Text="Profession:" Margin="15,0,0,0" VerticalAlignment="Center"/>
+                        <ComboBox ItemsSource="{Binding AvailableProfessions}" SelectedItem="{Binding GenerateNpcProfession, UpdateSourceTrigger=PropertyChanged}" Width="120" Margin="5,0,0,0" Style="{StaticResource {x:Type ComboBox}}"/>
+                    </StackPanel>
 
                     <GroupBox Header="Выбранный NPC" 
                               Margin="0,10,0,0" 

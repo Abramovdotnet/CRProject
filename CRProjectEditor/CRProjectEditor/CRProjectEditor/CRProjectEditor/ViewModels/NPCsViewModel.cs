@@ -15,6 +15,7 @@ using System.Windows.Data; // Required for CollectionViewSource if we were to us
 using CRProjectEditor.Views; // Для NpcEditView
 using Microsoft.Win32; // Для OpenFileDialog
 using System.Text.Json.Serialization;
+using System.Windows;
 
 namespace CRProjectEditor.ViewModels
 {
@@ -88,6 +89,20 @@ namespace CRProjectEditor.ViewModels
         private const string AnyMorality = "Любая";
         private const string AnyMotivation = "Любая";
 
+        [ObservableProperty]
+        private int _generateNpcCount = 1;
+
+        [ObservableProperty]
+        private int _generateNpcMinAge = 18;
+
+        [ObservableProperty]
+        private int _generateNpcMaxAge = 80;
+
+        [ObservableProperty]
+        private string _generateNpcProfession = "Any";
+
+        [ObservableProperty]
+        private ObservableCollection<NpcModel> _generatedNpcs = new ObservableCollection<NpcModel>();
 
         public IAsyncRelayCommand LoadNpcsCommand { get; }
         public IRelayCommand ClearFiltersCommand { get; }
@@ -96,6 +111,10 @@ namespace CRProjectEditor.ViewModels
         public IAsyncRelayCommand AddOrReplaceAssetCommand { get; }
         public IAsyncRelayCommand DeleteAssetCommand { get; }
         public IRelayCommand CreateNpcCommand { get; } // Added for creating NPC
+        public IRelayCommand OpenGenerateNpcBatchDialogCommand { get; }
+        public IRelayCommand SaveGeneratedNpcsCommand { get; }
+        public IRelayCommand CancelGeneratedNpcsCommand { get; }
+        public IRelayCommand RemoveGeneratedNpcCommand { get; }
 
         public NPCsViewModel(INotificationService notificationService)
         {
@@ -107,6 +126,10 @@ namespace CRProjectEditor.ViewModels
             AddOrReplaceAssetCommand = new AsyncRelayCommand(AddOrReplaceAssetAsync, CanManageAsset);
             DeleteAssetCommand = new AsyncRelayCommand(DeleteAssetAsync, CanDeleteAsset);
             CreateNpcCommand = new RelayCommand(OpenCreateNpcWindow); // Initialize the new command
+            OpenGenerateNpcBatchDialogCommand = new RelayCommand(OpenGenerateNpcBatchDialog);
+            SaveGeneratedNpcsCommand = new RelayCommand(SaveGeneratedNpcs);
+            CancelGeneratedNpcsCommand = new RelayCommand(CancelGeneratedNpcs);
+            RemoveGeneratedNpcCommand = new RelayCommand<NpcModel>(RemoveGeneratedNpc);
             _ = LoadNpcsAsync(); 
             _ = LoadAssetTemplateAsync(); // Загружаем шаблон при инициализации
         }
@@ -607,6 +630,70 @@ namespace CRProjectEditor.ViewModels
                 Debug.WriteLine($"[NPCsViewModel] Ошибка при удалении ассета: {ex.Message}");
                 _notificationService.ShowToast($"Ошибка при удалении ассета: {ex.Message}", ToastType.Error);
                 _notificationService.UpdateStatus("Ошибка удаления ассета.");
+            }
+        }
+
+        private void OpenGenerateNpcBatchDialog()
+        {
+            GeneratedNpcs.Clear();
+            var allNpcsCopy = _allNpcs.ToList();
+            var random = new Random();
+            for (int i = 0; i < GenerateNpcCount; i++)
+            {
+                var vm = new CreateNpcViewModel(allNpcsCopy, _notificationService);
+                vm.RandomizeNpcCommand.Execute(null);
+                int minAge = Math.Min(GenerateNpcMinAge, GenerateNpcMaxAge);
+                int maxAge = Math.Max(GenerateNpcMinAge, GenerateNpcMaxAge);
+                vm.NewNpc.Age = random.Next(minAge, maxAge + 1);
+                if (!string.IsNullOrEmpty(GenerateNpcProfession) && GenerateNpcProfession != "Any")
+                    vm.NewNpc.Profession = GenerateNpcProfession;
+                var npc = vm.NewNpc;
+                allNpcsCopy.Add(npc);
+                GeneratedNpcs.Add(npc);
+            }
+            var dialog = new Views.GenerateNpcBatchDialog { DataContext = this };
+            dialog.ShowDialog();
+        }
+
+        private void SaveGeneratedNpcs()
+        {
+            foreach (var npc in GeneratedNpcs)
+            {
+                _allNpcs.Add(npc);
+            }
+            _ = SaveAllNpcsToJsonAsync();
+            GeneratedNpcs.Clear();
+            // Закрыть окно
+            foreach (Window window in System.Windows.Application.Current.Windows)
+            {
+                if (window is Views.GenerateNpcBatchDialog)
+                {
+                    window.Close();
+                    break;
+                }
+            }
+            _ = LoadNpcsAsync();
+        }
+
+        private void CancelGeneratedNpcs()
+        {
+            GeneratedNpcs.Clear();
+            // Закрыть окно
+            foreach (Window window in System.Windows.Application.Current.Windows)
+            {
+                if (window is Views.GenerateNpcBatchDialog)
+                {
+                    window.Close();
+                    break;
+                }
+            }
+        }
+
+        private void RemoveGeneratedNpc(NpcModel npc)
+        {
+            if (npc != null && GeneratedNpcs.Contains(npc))
+            {
+                GeneratedNpcs.Remove(npc);
             }
         }
     }
