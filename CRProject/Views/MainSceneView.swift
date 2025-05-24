@@ -49,7 +49,7 @@ struct MainSceneView: View {
     // Reference to grid view for scrolling
     private var gridViewRef: NPCSGridView?
     
-    private var isPlayerHidden: Bool {
+    private var isPlayerInvisible: Bool {
         guard let player = gameStateService.getPlayer() else { return false }
         return player.isInvisible
     }
@@ -57,6 +57,11 @@ struct MainSceneView: View {
     private var isPlayerArrested: Bool {
         guard let player = gameStateService.getPlayer() else { return false }
         return player.isArrested
+    }
+    
+    private var isPlayerHidden: Bool {
+        guard let player = gameStateService.getPlayer() else { return false }
+        return player.hiddenAt != .none
     }
     
     // Computed property for red overlay opacity based on blood
@@ -91,7 +96,7 @@ struct MainSceneView: View {
                         Image(uiImage: UIImage(named: "location\(viewModel.currentScene!.id.description)") ?? UIImage(named: "MainSceneBackground")!)
                             .resizable()
                             .ignoresSafeArea()
-                            .saturation(isPlayerHidden ? 0 : 1)
+                            .saturation(isPlayerInvisible ? 0 : 1)
                             .animation(.easeInOut(duration: 0.3), value: isPlayerHidden)
                             .overlay(
                                 Group {
@@ -148,13 +153,13 @@ struct MainSceneView: View {
                                         }
                                     )
                                     // Swtich NPCs/Chat view
-                                    MainSceneActionButton(
+                                    /*MainSceneActionButton(
                                         icon: showHistory ? "person.3.fill" : "widget.large",
                                         color: Theme.textColor,
                                         action: {
                                             showHistory.toggle()
                                         }
-                                    )
+                                    )*/
                                     
                                     if viewModel.currentScene?.sceneType == .blacksmith {
                                         MainSceneActionButton(
@@ -175,7 +180,7 @@ struct MainSceneView: View {
                                         }
                                     )
                                     
-                                    if !isPlayerHidden && !isPlayerArrested {
+                                    if !isPlayerArrested {
                                         // Show navigation
                                         MainSceneActionButton(
                                             icon: "map.fill",
@@ -574,18 +579,9 @@ struct MainSceneView: View {
                                 HidingCellView(mainSceneViewModel: viewModel)
                             }
                             .navigationBarHidden(true)
-                            .gesture(
-                                DragGesture()
-                                    .onEnded { gesture in
-                                        if gesture.translation.width > 100 {
-                                            safePopNavigation()
-                                        }
-                                    }
-                            )
                         }
                     }
                 }
-       
             }
             .onAppear {
 
@@ -663,6 +659,14 @@ struct MainSceneView: View {
             }
             .onDisappear {
                 NotificationCenter.default.removeObserver(self, name: Notification.Name("openDialogueTrigger"), object: nil)
+            }
+            .onChange(of: isPlayerHidden) { isPlayerHidden in
+                if isPlayerHidden {
+                    DispatchQueue.main.async {
+                        navigationPath = NavigationPath()
+                        navigationPath.append(NavigationDestination.hidingCell)
+                    }
+                }
             }
         }
     }

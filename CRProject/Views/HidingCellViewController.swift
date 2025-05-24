@@ -173,13 +173,17 @@ class TimeBarView: UIView {
             let isCurrent = hour == Int(round(virtualHour))
             let isNight = ((hour % 24 + 24) % 24) >= 20 || ((hour % 24 + 24) % 24) < 6
             let barColor: UIColor = isNight ? UIColor.systemIndigo : UIColor.systemYellow
-            let opacity: CGFloat
-            if idx < fadeCount {
+            var opacity: CGFloat = 1.0
+            if idx == 0 {
+                let frac = CGFloat(virtualHour - floor(virtualHour))
+                opacity = frac
+            } else if idx == hours.count - 1 {
+                let frac = 1 - CGFloat(virtualHour - floor(virtualHour))
+                opacity = frac
+            } else if idx < fadeCount {
                 opacity = CGFloat(idx + 1) / CGFloat(fadeCount + 1)
             } else if idx > hours.count - fadeCount - 1 {
                 opacity = CGFloat(hours.count - idx) / CGFloat(fadeCount + 1)
-            } else {
-                opacity = 1.0
             }
             let textColor: UIColor = isCurrent ? UIColor.systemYellow : UIColor.white.withAlphaComponent(opacity)
             ctx.setFillColor(barColor.withAlphaComponent(((isCurrent ? 1 : 0.5) * barAlpha * opacity)).cgColor)
@@ -220,19 +224,37 @@ class TimeBarView: UIView {
 class HidingCellViewController: UIViewController {
     private let mainViewModel: MainSceneViewModel
     private let backgroundImageView = UIImageView()
+    private let cellTitleLabel = UILabel()
     private let topWidgetContainerView = UIView()
     private var topWidgetViewController: TopWidgetUIViewController?
     private let timeBarView = TimeBarView()
     private let advanceTimeButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Advance Time", for: .normal)
-        button.titleLabel?.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
+        button.titleLabel?.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = UIColor.systemGray.withAlphaComponent(0.7)
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.7)
         button.layer.cornerRadius = 10
         button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
         return button
     }()
+    private let leaveButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Leave", for: .normal)
+        button.titleLabel?.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        button.layer.cornerRadius = 10
+        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 24, bottom: 8, right: 24)
+        return button
+    }()
+    private let dangerStatusView = UIView()
+    private let dangerIconView = UIImageView()
+    private let dangerLabel = UILabel()
+    private let dangerStackView = UIStackView()
+    private let buttonsStackView = UIStackView()
+    private let leaveButtonStackView = UIStackView()
+    private var didAppearOnce = false
 
     init(mainViewModel: MainSceneViewModel) {
         self.mainViewModel = mainViewModel
@@ -247,23 +269,72 @@ class HidingCellViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .black
         setupBackgroundImage()
+        setupCellTitleLabel()
         setupTopWidget()
         setupTimeBar()
         setupAdvanceTimeButton()
+        setupLeaveButton()
+        setupDangerStatusView()
+        setupButtonsStackView()
+        setupLeaveButtonStackView()
         setupLayout()
         subscribeToTimeUpdates()
+        // Отключаем свайп-назад
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        updateLeaveButtonVisibility(animated: false)
+        dangerStatusView.alpha = 0
+        updateDangerStatus(animated: false)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         timeBarView.animateAppear()
+        updateLeaveButtonVisibility(animated: true)
+        UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseInOut], animations: {
+            self.dangerStatusView.alpha = 1
+        }, completion: nil)
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Увеличиваю горизонтальный extraSpace
+        let extraSpaceX: CGFloat = 200
+        let extraSpaceY: CGFloat = 100
+        backgroundImageView.frame = CGRect(
+            x: -extraSpaceX / 2,
+            y: -extraSpaceY / 2,
+            width: view.bounds.width + extraSpaceX,
+            height: view.bounds.height + extraSpaceY
+        )
+        view.sendSubviewToBack(backgroundImageView)
+    }
+
+    private func setupCellTitleLabel() {
+        guard let scene = GameStateService.shared.currentScene else { return }
+        cellTitleLabel.font = UIFont(name: "Optima-Bold", size: 26) ?? UIFont.systemFont(ofSize: 26, weight: .bold)
+        cellTitleLabel.textColor = .white
+        cellTitleLabel.textAlignment = .center
+        cellTitleLabel.numberOfLines = 1
+        cellTitleLabel.layer.shadowColor = UIColor.black.cgColor
+        cellTitleLabel.layer.shadowRadius = 2
+        cellTitleLabel.layer.shadowOpacity = 0.5
+        cellTitleLabel.layer.shadowOffset = CGSize(width: 1, height: 1)
+        cellTitleLabel.translatesAutoresizingMaskIntoConstraints = false
+
+        let hiddenAt = GameStateService.shared.player?.hiddenAt ?? .none
+        cellTitleLabel.text = "\(scene.name): \(hiddenAt.description)" 
+        view.addSubview(cellTitleLabel)
     }
 
     private func setupBackgroundImage() {
         backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
         let hiddenAt = GameStateService.shared.player?.hiddenAt ?? .none
-        let imageName = hiddenAt != .none ? hiddenAt.rawValue : "hiding_default"
-        backgroundImageView.image = UIImage(named: imageName)
+        let assetName = hiddenAt != .none ? hiddenAt.rawValue : nil
+        if let assetName = assetName, UIImage(named: assetName) != nil {
+            backgroundImageView.image = UIImage(named: assetName)
+        } else {
+            backgroundImageView.image = UIImage(named: "gaze2")
+        }
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.clipsToBounds = true
         view.addSubview(backgroundImageView)
@@ -287,7 +358,7 @@ class HidingCellViewController: UIViewController {
         timeBarView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(timeBarView)
         NSLayoutConstraint.activate([
-            timeBarView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 16),
+            timeBarView.topAnchor.constraint(equalTo: cellTitleLabel.bottomAnchor, constant: 24),
             timeBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             timeBarView.widthAnchor.constraint(equalToConstant: 600),
             timeBarView.heightAnchor.constraint(equalToConstant: 56)
@@ -298,11 +369,72 @@ class HidingCellViewController: UIViewController {
     private func setupAdvanceTimeButton() {
         advanceTimeButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(advanceTimeButton)
-        NSLayoutConstraint.activate([
-            advanceTimeButton.topAnchor.constraint(equalTo: timeBarView.bottomAnchor, constant: 18),
-            advanceTimeButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        ])
         advanceTimeButton.addTarget(self, action: #selector(advanceTimeTapped), for: .touchUpInside)
+    }
+
+    private func setupLeaveButton() {
+        leaveButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(leaveButton)
+        leaveButton.addTarget(self, action: #selector(leaveTapped), for: .touchUpInside)
+        leaveButton.alpha = 0 // по умолчанию скрыта, появится по логике
+    }
+
+    private func setupDangerStatusView() {
+        dangerStatusView.translatesAutoresizingMaskIntoConstraints = false
+        dangerStatusView.backgroundColor = UIColor.black.withAlphaComponent(0.55)
+        dangerStatusView.layer.cornerRadius = 16
+        dangerStatusView.layer.masksToBounds = true
+        view.addSubview(dangerStatusView)
+
+        dangerStackView.translatesAutoresizingMaskIntoConstraints = false
+        dangerStackView.axis = .horizontal
+        dangerStackView.spacing = 10
+        dangerStackView.alignment = .center
+        dangerStackView.distribution = .equalCentering
+        dangerStatusView.addSubview(dangerStackView)
+
+        dangerIconView.translatesAutoresizingMaskIntoConstraints = false
+        dangerIconView.contentMode = .scaleAspectFit
+        dangerStackView.addArrangedSubview(dangerIconView)
+
+        dangerLabel.translatesAutoresizingMaskIntoConstraints = false
+        dangerLabel.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        dangerLabel.textColor = .white
+        dangerLabel.textAlignment = .center
+        dangerStackView.addArrangedSubview(dangerLabel)
+
+        NSLayoutConstraint.activate([
+            dangerStatusView.topAnchor.constraint(equalTo: timeBarView.bottomAnchor, constant: 18),
+            dangerStatusView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            dangerStatusView.heightAnchor.constraint(equalToConstant: 40),
+            dangerStatusView.widthAnchor.constraint(lessThanOrEqualToConstant: 380),
+
+            dangerStackView.centerXAnchor.constraint(equalTo: dangerStatusView.centerXAnchor),
+            dangerStackView.centerYAnchor.constraint(equalTo: dangerStatusView.centerYAnchor),
+            dangerStackView.leadingAnchor.constraint(greaterThanOrEqualTo: dangerStatusView.leadingAnchor, constant: 16),
+            dangerStackView.trailingAnchor.constraint(lessThanOrEqualTo: dangerStatusView.trailingAnchor, constant: -16),
+            dangerStackView.heightAnchor.constraint(equalTo: dangerStatusView.heightAnchor)
+        ])
+    }
+
+    private func setupButtonsStackView() {
+        buttonsStackView.translatesAutoresizingMaskIntoConstraints = false
+        buttonsStackView.axis = .vertical
+        buttonsStackView.spacing = 18
+        buttonsStackView.alignment = .center
+        buttonsStackView.distribution = .equalCentering
+        view.addSubview(buttonsStackView)
+        buttonsStackView.addArrangedSubview(advanceTimeButton)
+    }
+
+    private func setupLeaveButtonStackView() {
+        leaveButtonStackView.translatesAutoresizingMaskIntoConstraints = false
+        leaveButtonStackView.axis = .vertical
+        leaveButtonStackView.spacing = 0
+        leaveButtonStackView.alignment = .center
+        leaveButtonStackView.distribution = .equalCentering
+        view.addSubview(leaveButtonStackView)
+        leaveButtonStackView.addArrangedSubview(leaveButton)
     }
 
     private func setupLayout() {
@@ -312,6 +444,11 @@ class HidingCellViewController: UIViewController {
             backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
 
+            cellTitleLabel.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 2),
+            cellTitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            cellTitleLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            cellTitleLabel.heightAnchor.constraint(equalToConstant: 22),
+
             topWidgetContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 2),
             topWidgetContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
             topWidgetContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
@@ -320,20 +457,136 @@ class HidingCellViewController: UIViewController {
             topWidgetViewController!.view.topAnchor.constraint(equalTo: topWidgetContainerView.topAnchor, constant: 2),
             topWidgetViewController!.view.leadingAnchor.constraint(equalTo: topWidgetContainerView.leadingAnchor, constant: 2),
             topWidgetViewController!.view.trailingAnchor.constraint(equalTo: topWidgetContainerView.trailingAnchor, constant: -2),
-            topWidgetViewController!.view.bottomAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: -2)
+            topWidgetViewController!.view.bottomAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: -2),
+
+            timeBarView.topAnchor.constraint(equalTo: cellTitleLabel.bottomAnchor, constant: 24),
+            timeBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            timeBarView.widthAnchor.constraint(equalToConstant: 600),
+            timeBarView.heightAnchor.constraint(equalToConstant: 56),
+
+            dangerStatusView.topAnchor.constraint(equalTo: timeBarView.bottomAnchor, constant: 18),
+            dangerStatusView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            dangerStatusView.heightAnchor.constraint(equalToConstant: 40),
+            dangerStatusView.widthAnchor.constraint(lessThanOrEqualToConstant: 380),
+
+            buttonsStackView.topAnchor.constraint(equalTo: dangerStatusView.bottomAnchor, constant: 24),
+            buttonsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            buttonsStackView.heightAnchor.constraint(equalToConstant: 48),
+
+            leaveButtonStackView.topAnchor.constraint(equalTo: buttonsStackView.bottomAnchor, constant: 16),
+            leaveButtonStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            leaveButtonStackView.heightAnchor.constraint(equalToConstant: 48)
         ])
     }
 
     private func subscribeToTimeUpdates() {
         NotificationCenter.default.addObserver(self, selector: #selector(updateTimeBar), name: .timeAdvanced, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTimeOrStateChanged), name: .timeAdvanced, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateDangerStatusNotification), name: .timeAdvanced, object: nil)
     }
 
     @objc private func updateTimeBar() {
         timeBarView.currentHour = GameTimeService.shared.currentHour
     }
 
+    @objc private func handleTimeOrStateChanged() {
+        updateLeaveButtonVisibility(animated: true)
+    }
+
+    private func updateLeaveButtonVisibility(animated: Bool) {
+        let shouldShow = GameStateService.shared.couldLeaveHideout()
+        let targetAlpha: CGFloat = shouldShow ? 1.0 : 0.0
+        if animated {
+            UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseInOut], animations: {
+                self.leaveButton.alpha = targetAlpha
+            }, completion: nil)
+        } else {
+            leaveButton.alpha = targetAlpha
+        }
+        leaveButton.isUserInteractionEnabled = shouldShow
+    }
+
     @objc private func advanceTimeTapped() {
         GameTimeService.shared.advanceTime()
+    }
+
+    @objc private func leaveTapped() {
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true // вернуть свайп после ухода
+        GameStateService.shared.movePlayerThroughHideouts(to: .none)
+        navigationController?.popViewController(animated: true)
+    }
+
+    private func updateDangerStatus(animated: Bool) {
+        let count = GameStateService.shared.getAwakeNpcsCount()
+        let (icon, color, text) = dangerStatusInfo(for: count)
+        let font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        let newText = text
+        let newIcon = UIImage(systemName: icon)?.withRenderingMode(.alwaysTemplate)
+        let newColor = color
+
+        let label = self.dangerLabel
+        let iconView = self.dangerIconView
+        let stack = self.dangerStackView
+        let container = self.dangerStatusView
+
+        let targetWidth: CGFloat = {
+            // Оцениваем ширину текста + иконки + паддинги
+            let textWidth = (newText as NSString).size(withAttributes: [.font: font]).width
+            let iconWidth: CGFloat = 28 + 10 // иконка + spacing
+            let minWidth: CGFloat = 120
+            let maxWidth: CGFloat = 380
+            return min(max(textWidth + iconWidth + 32, minWidth), maxWidth)
+        }()
+
+        let updateBlock = {
+            label.font = font
+            label.text = newText
+            label.textColor = newColor
+            iconView.image = newIcon
+            iconView.tintColor = newColor
+        }
+
+        if animated {
+            UIView.animate(withDuration: 0.18, delay: 0, options: [.curveEaseIn], animations: {
+                stack.alpha = 0
+            }, completion: { _ in
+                updateBlock()
+                // Анимируем ширину контейнера
+                if let widthConstraint = container.constraints.first(where: { $0.firstAttribute == .width }) {
+                    widthConstraint.constant = targetWidth
+                }
+                UIView.animate(withDuration: 0.22, delay: 0, options: [.curveEaseInOut], animations: {
+                    container.layoutIfNeeded()
+                }, completion: { _ in
+                    UIView.animate(withDuration: 0.18, delay: 0, options: [.curveEaseOut], animations: {
+                        stack.alpha = 1
+                    }, completion: nil)
+                })
+            })
+        } else {
+            updateBlock()
+            if let widthConstraint = container.constraints.first(where: { $0.firstAttribute == .width }) {
+                widthConstraint.constant = targetWidth
+            }
+            container.layoutIfNeeded()
+            stack.alpha = 1
+        }
+    }
+
+    private func dangerStatusInfo(for count: Int) -> (icon: String, color: UIColor, text: String) {
+        if count == 0 {
+            return ("checkmark.shield", UIColor.systemGreen, "All is calm")
+        } else if count <= 2 {
+            return ("eye", UIColor.systemYellow, "Some movement outside")
+        } else if count <= 5 {
+            return ("exclamationmark.triangle", UIColor.systemOrange, "Someone is clearly awake outside")
+        } else {
+            return ("exclamationmark.octagon.fill", UIColor.systemRed, "Very dangerous to go out!")
+        }
+    }
+
+    @objc private func updateDangerStatusNotification() {
+        updateDangerStatus(animated: true)
     }
 }
 

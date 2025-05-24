@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import SwiftUICore
 import Combine
 
@@ -90,9 +91,15 @@ class GameStateService : ObservableObject, GameService{
     
     func movePlayerToNearestHideout() {
         guard let player = player else { return }
-        guard let firstAvailableHideout = currentScene?.sceneType.possibleHidingCells().first else { return }
+        guard let firstAvailableHideout = currentScene?.sceneType.possibleHidingCells().shuffled().first else { return }
         
         player.hiddenAt = firstAvailableHideout
+    }
+    
+    func couldLeaveHideout() -> Bool {
+        guard let player = player else { return false }
+        guard let scene = currentScene else { return false }
+        return (AbilitiesSystem.shared.hasDayWalker && player.bloodMeter.currentBlood > 80.0) || gameTime.isNightTime || scene.isIndoor
     }
     
     func whisperToRandomNpc() {
@@ -173,16 +180,19 @@ class GameStateService : ObservableObject, GameService{
         // Reset selection if npc left location
         guard let scene = currentScene else { return }
         
+        
+        if !scene.isIndoor && !gameTime.isNightTime && (!AbilitiesSystem.shared.hasDayWalker || (AbilitiesSystem.shared.hasDayWalker &&  (player?.bloodMeter.currentBlood)! <= 70.0)) {
+            endGame()
+        }
+        
         if npcManager.selectedNPC != nil {
             if !scene.hasCharacter(with: npcManager.selectedNPC!.id) {
                 npcManager.selectedNPC = nil
             }
         }
         
-        if !scene.isIndoor && !gameTime.isNightTime {
-            if !AbilitiesSystem.shared.hasDayWalker && (player?.bloodMeter.currentBlood)! >= 70.0 {
-                forcePlayerToFindHideout()
-            }
+        if isNeedToHide() {
+            forcePlayerToFindHideout()
         }
         
         if AbilitiesSystem.shared.hasInsight {
@@ -222,13 +232,13 @@ class GameStateService : ObservableObject, GameService{
         if player.hiddenAt == HidingCell.none {
             player.hiddenAt = scene.sceneType.possibleHidingCells().randomElement() ?? .none
             
-            gameEventsBus.addWarningMessage("* My blood boiling under direct sunlight!*" )
+            gameEventsBus.addWarningMessage("You fleed from sun to nearby hiding spot")
+            UIKitPopUpManager.shared.show(title: "Dawn", description: "Sun rises. You fleed to nearby spot", icon: UIImage(systemName: "sun.max.fill"))
         }
     }
     
     func handleNightAppears() {
         player?.desiredVictim.updateDesiredVictim()
-        
         CoinsManagementService.shared.updateWorldEconomy()
         ItemsManagementService.shared.distributeDailyItems()
     }
@@ -269,13 +279,10 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return }
         guard let player = player else { return }
         
-        if !scene.isIndoor && !gameTime.isNightTime {
-            endGame()
-        }
-        
         if player.hiddenAt != .none {
             gameEventsBus.addWarningMessage("* Thirst madness forces me get out from hideout! *")
-            movePlayerThroughHideouts(to: .none)
+            UIKitPopUpManager.shared.show(title: "Starved", description: "Your blood thirst became uncontrollable. Hight risk to drain anyone nearby", icon: UIImage(systemName: "drop"))
+            return
         }
         
         if player.onCraftingProcess {
@@ -290,7 +297,8 @@ class GameStateService : ObservableObject, GameService{
         let randomVictim = npcs.randomElement()
 
         if let randomVictim = randomVictim {
-            gameEventsBus.addWarningMessage("* Relentless blood thirst! *")
+            gameEventsBus.addWarningMessage("* Thirst madness forces me get out from hideout! *")
+            UIKitPopUpManager.shared.show(title: "Blood madness", description: "Beast inside you took control over you. You just drained \(randomVictim.name) empty!", icon: UIImage(systemName: "drop.fill"))
             try? FeedingService.shared.emptyBlood(vampire: player, prey: randomVictim, in: scene.id)
             
             VibrationService.shared.errorVibration()
@@ -315,5 +323,30 @@ class GameStateService : ObservableObject, GameService{
         // Если есть бодрствующие, все ли они не под чарами (isSpecialBehaviorSet == false)?
         let allAwakeAreNotSpecial = awakeNpcs.allSatisfy { $0.isSpecialBehaviorSet == true }
         return allAwakeAreNotSpecial
+    }
+    
+    func isNeedToHide() -> Bool {
+        guard let scene = currentScene else { return false }
+        guard let player = player else { return false }
+        
+        if scene.isIndoor || gameTime.isNightTime {
+            return false
+        } else {
+            if AbilitiesSystem.shared.hasDayWalker && player.bloodMeter.currentBlood > 70.0 {
+                return false
+            } else {
+                return player.hiddenAt == .none
+            }
+        }
+    }
+    
+    
+    func getAwakeNpcsCount() -> Int {
+        guard let scene = currentScene else { return 0 }
+        
+        let npcs = scene.getNPCs()
+            .filter( { $0.isAlive && !$0.isSpecialBehaviorSet && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer && $0.currentActivity != .sleep })
+        
+        return npcs.count
     }
 }
