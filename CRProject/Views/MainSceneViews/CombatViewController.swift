@@ -223,7 +223,6 @@ class CombatViewController: UIViewController {
             witnessWarningLabel.isHidden = true
         }
         for type in actions {
-            let button = UIButton(type: .system)
             // Получаем шанс успеха
             let chance = CombatService.shared.getBaseChance(for: type)
             let chancePercent = Int(chance * 100)
@@ -242,108 +241,14 @@ class CombatViewController: UIViewController {
                     return type.consequenceDescription
                 }
             }()
-            // Цвета для действий
-            let (titleColor, iconColor): (UIColor, UIColor) = {
-                switch type {
-                case .attack: return (.systemOrange, .systemOrange)
-                case .feed: return (.systemPink, .systemPink)
-                case .dominate: return (.systemBlue, .systemBlue)
-                case .drain: return (.systemRed, .systemRed)
-                default: return (.white, .white)
-                }
-            }()
-            // --- Новый стиль: иконка в первой строке через NSTextAttachment ---
-            let iconAttachment = NSTextAttachment()
-            if let iconImage = UIImage(systemName: type.icon)?.withRenderingMode(.alwaysTemplate) {
-                let iconSize: CGFloat = 18
-                UIGraphicsBeginImageContextWithOptions(CGSize(width: iconSize, height: iconSize), false, 0.0)
-                iconImage.withTintColor(iconColor).draw(in: CGRect(x: 0, y: 0, width: iconSize, height: iconSize))
-                let resizedIcon = UIGraphicsGetImageFromCurrentImageContext()
-                UIGraphicsEndImageContext()
-                iconAttachment.image = resizedIcon
-                iconAttachment.bounds = CGRect(x: 0, y: -2, width: iconSize, height: iconSize)
+            let button = ActionButtonView(type: type, chancePercent: chancePercent, consequenceDescription: consequenceDescription) { [weak self] in
+                self?.lastActionType = type
+                let action = CombatAction(type: type, initiatorId: "", targetId: "", parameters: nil)
+                CombatService.shared.performAction(action)
+                self?.updateUIAfterAction()
             }
-            let iconString = NSAttributedString(attachment: iconAttachment)
-            // --- paragraph style для переноса строк ---
-            let paragraphStyle = NSMutableParagraphStyle()
-            paragraphStyle.lineBreakMode = .byWordWrapping
-            paragraphStyle.alignment = .center
-            // Success и Fail разными цветами и с маленькими иконками
-            let consequenceLines = consequenceDescription.components(separatedBy: "\n")
-            let successLine = consequenceLines.first ?? ""
-            let failLine = consequenceLines.count > 1 ? consequenceLines[1] : ""
-            let successAttr = NSAttributedString(string: successLine.isEmpty ? "" : "\u{2713} " + successLine + "\n", attributes: [
-                .font: UIFont(name: "Optima-Regular", size: 10) ?? UIFont.systemFont(ofSize: 10),
-                .foregroundColor: UIColor(red: 0.66, green: 1.0, blue: 0.69, alpha: 1.0), // #A8FFB0
-                .paragraphStyle: paragraphStyle
-            ])
-            let failAttr = NSAttributedString(string: failLine.isEmpty ? "" : "\u{2717} " + failLine, attributes: [
-                .font: UIFont(name: "Optima-Regular", size: 10) ?? UIFont.systemFont(ofSize: 10),
-                .foregroundColor: UIColor(red: 1.0, green: 0.42, blue: 0.42, alpha: 1.0), // #FF6B6B
-                .paragraphStyle: paragraphStyle
-            ])
-            let firstLine = NSMutableAttributedString()
-            firstLine.append(iconString)
-            firstLine.append(NSAttributedString(string: " \(type.displayName) \(chancePercent)%\n\n", attributes: [
-                .font: UIFont(name: "Optima-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14),
-                .foregroundColor: titleColor,
-                .paragraphStyle: paragraphStyle
-            ]))
-            let attrTitle = NSMutableAttributedString()
-            attrTitle.append(firstLine)
-            attrTitle.append(successAttr)
-            attrTitle.append(failAttr)
-            button.setAttributedTitle(attrTitle, for: .normal)
-            button.titleLabel?.numberOfLines = 0
-            button.titleLabel?.lineBreakMode = .byWordWrapping
-            button.titleLabel?.textAlignment = .center
-            // --- Стилизация кнопки ---
-            button.backgroundColor = UIColor(red: 0.14, green: 0.14, blue: 0.16, alpha: 0.92) // #23232A
-            button.layer.cornerRadius = 10
-            button.layer.borderWidth = 2
-            // Менее насыщенная рамка
-            button.layer.borderColor = iconColor.withAlphaComponent(0.5).cgColor
-            // Внутреннее свечение (glow)
-            let glow = CALayer()
-            glow.frame = button.bounds.insetBy(dx: 4, dy: 4)
-            glow.cornerRadius = 8
-            glow.backgroundColor = iconColor.withAlphaComponent(0.18).cgColor
-            glow.shadowColor = iconColor.cgColor
-            glow.shadowRadius = 8
-            glow.shadowOpacity = 0.5
-            glow.shadowOffset = .zero
-            button.layer.insertSublayer(glow, at: 1)
-            // Внутренняя тень (inner shadow)
-            let innerShadow = CALayer()
-            innerShadow.frame = button.bounds
-            innerShadow.cornerRadius = 10
-            innerShadow.backgroundColor = UIColor.clear.cgColor
-            innerShadow.shadowColor = UIColor.black.cgColor
-            innerShadow.shadowOffset = CGSize(width: 0, height: 2)
-            innerShadow.shadowOpacity = 0.25
-            innerShadow.shadowRadius = 6
-            button.layer.insertSublayer(innerShadow, at: 2)
-            // Ограничение максимальной и минимальной высоты кнопки
-            button.heightAnchor.constraint(lessThanOrEqualToConstant: 155).isActive = true
-            button.heightAnchor.constraint(greaterThanOrEqualToConstant: 90).isActive = true
-            button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
-            // Добавляем тень к тексту на кнопке
-            button.titleLabel?.layer.shadowColor = UIColor.black.cgColor
-            button.titleLabel?.layer.shadowOpacity = 0.7
-            button.titleLabel?.layer.shadowRadius = 3
-            button.titleLabel?.layer.shadowOffset = CGSize(width: 0, height: 2)
-            button.addTarget(self, action: #selector(actionButtonTapped(_:)), for: .touchUpInside)
-            button.tag = type.rawValue
             actionsStack.addArrangedSubview(button)
         }
-    }
-    
-    @objc private func actionButtonTapped(_ sender: UIButton) {
-        guard let actionType = CombatActionType(rawValue: sender.tag) else { return }
-        lastActionType = actionType
-        let action = CombatAction(type: actionType, initiatorId: "", targetId: "", parameters: nil)
-        CombatService.shared.performAction(action)
-        updateUIAfterAction()
     }
     
     // Маппинг последствий на текст, цвет и иконку для игрока

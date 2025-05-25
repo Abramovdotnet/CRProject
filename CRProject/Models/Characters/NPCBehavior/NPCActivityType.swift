@@ -48,6 +48,7 @@ enum NPCActivityType: String, CaseIterable, Codable {
     case duzzled = "Duzzled"
     case casualty = "Casualty"
     case jailed = "Jailed"
+    case combat = "Combat"
     
     // Action activities
     case seductedByPlayer = "Seducted"
@@ -109,6 +110,7 @@ extension NPCActivityType {
         case .flirt: return []
         case .lookingForProtection: return ["tavern", "manor"]
         case .jailed: return ["dungeon"]
+        case .combat: return []
             
         // Action
         case .seductedByPlayer: return []
@@ -223,6 +225,7 @@ extension NPCActivityType {
         case .flirt: return "heart"
         case .lookingForProtection: return "hand.thumbsup.fill"
         case .jailed: return "lock.shield.fill"
+        case .combat: return "flame"
             
         // Action
         case .seductedByPlayer: return "heart.fill"
@@ -280,6 +283,7 @@ extension NPCActivityType {
         case .flirt: return .red
         case .lookingForProtection: return .pink
         case .jailed: return .orange
+        case .combat: return .red
             
         // Action
         case .seductedByPlayer: return .red

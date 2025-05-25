@@ -738,6 +738,7 @@ class HidingCellViewController: UIViewController {
     }
 
     @objc private func advanceTimeTapped() {
+        VibrationService.shared.lightTap()
         GameTimeService.shared.advanceTime()
     }
 

@@ -12,10 +12,16 @@ final class CombatService {
     private(set) var resultSummary: String?
     
     func startCombat(player: Player, npc: NPC) {
+        prepareNpc(npc: npc)
         self.player = player
         self.npc = npc
         self.history = []
         self.resultSummary = nil
+    }
+    
+    func prepareNpc(npc: NPC) {
+        npc.currentActivity = .combat
+        npc.isSpecialBehaviorSet = true
     }
     
     func performAction(_ action: CombatAction) {
@@ -69,6 +75,10 @@ final class CombatService {
         if !npc.isAlive {
             npc.currentActivity = .casualty
             npc.deathStatus = .unknown
+        }
+        
+        if !player.isAlive {
+            GameStateService.shared.endGame()
         }
         // Можно добавить обновление UI/Notification
     }

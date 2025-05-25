@@ -53,6 +53,10 @@ class FeedingService: GameService {
                 StatisticsService.shared.increasefeedingsOverSleepingVictims()
             }
             
+            if prey.currentActivity == .combat {
+                awarenessIncreaseValue -= 60
+            }
+            
             if vampire.desiredVictim.isDesiredVictim(npc: prey){
                 vampire.bloodMeter.addBlood(amount * 3)
                 vampire.desiredVictim.updateDesiredVictim()
@@ -78,7 +82,7 @@ class FeedingService: GameService {
             
             NPCInteractionManager.shared.playerInteracted(with: prey)
             
-            setWitnessesIfExists(sceneId: sceneId)
+            setWitnessesIfExists(sceneId: sceneId, exceptId: prey.id)
             
             
             if advanceTime {
@@ -134,11 +138,11 @@ class FeedingService: GameService {
         }
     }
     
-    func setWitnessesIfExists(sceneId: Int) {
+    func setWitnessesIfExists(sceneId: Int, exceptId: Int = 0) {
         let scene = try? LocationReader.getRuntimeLocation(by: sceneId)
         
         let npcs = scene?.getNPCs()
-            .filter( { $0.isAlive && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer && $0.currentActivity != .sleep })
+            .filter( { $0.id != exceptId && $0.isAlive && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer && $0.currentActivity != .sleep })
         
         guard var npcs else { return }
         guard let player = GameStateService.shared.player else { return }

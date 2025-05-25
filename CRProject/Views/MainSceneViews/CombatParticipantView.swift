@@ -214,7 +214,7 @@ class CombatParticipantView: UIView {
             nameLabel.widthAnchor.constraint(equalTo: cardBackground.widthAnchor),
             nameLabel.heightAnchor.constraint(equalToConstant: 18)
         ])
-        nameLabel.font = UIFont(name: "Optima-Bold", size: 13) ?? UIFont.boldSystemFont(ofSize: 13)
+        nameLabel.font = UIFont(name: "Optima-Regular", size: 12) ?? UIFont.boldSystemFont(ofSize: 12)
         nameLabel.textColor = UIColor.white
         nameLabel.textAlignment = .center
         nameLabel.backgroundColor = UIColor.clear

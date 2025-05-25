@@ -307,7 +307,7 @@ class GameStateService : ObservableObject, GameService{
         }
     }
     
-    private func endGame() {
+    func endGame() {
         self.showEndGame = true
     }
     
