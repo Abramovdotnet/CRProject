@@ -28,7 +28,7 @@ final class CombatService {
         guard let player = player, let npc = npc else { return }
         history.append(action)
         let outgoingDamage = 25
-        let incomingDamage = 25
+        let incomingDamage = 15
         let baseChance: Double = getBaseChance(for: action.type)
         let roll = Double.random(in: 0...1)
         let isSuccess = roll < baseChance

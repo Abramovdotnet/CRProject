@@ -163,7 +163,7 @@ class CombatViewController: UIViewController {
             actionsStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
 
             // --- Combat log ---
-            resultLabel.topAnchor.constraint(equalTo: centerWidgetsContainer.bottomAnchor, constant: 124),
+            resultLabel.topAnchor.constraint(equalTo: centerWidgetsContainer.bottomAnchor, constant: 40),
             resultLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             resultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
         ])
