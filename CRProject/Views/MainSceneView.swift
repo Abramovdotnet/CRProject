@@ -379,7 +379,7 @@ struct MainSceneView: View {
                                         }
                                         if let selectedNPC = npcManager.selectedNPC, selectedNPC.isAlive {
                                             MainSceneActionButton(
-                                                icon: "cross.case.fill", // Иконка боя
+                                                icon: "flame", // Иконка боя
                                                 color: Theme.bloodProgressColor,
                                                 action: {
                                                     navigationPath.append(NavigationDestination.combat)

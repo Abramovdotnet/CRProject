@@ -155,7 +155,7 @@ class CombatViewController: UIViewController {
             witnessWarningLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
 
             actionsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            actionsStack.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 24),
+            actionsStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
 
             // --- Combat log ---
             resultLabel.topAnchor.constraint(equalTo: centerWidgetsContainer.bottomAnchor, constant: 124),

@@ -382,8 +382,8 @@ class HidingCellViewController: UIViewController {
     private let dangerIconView = UIImageView()
     private let dangerLabel = UILabel()
     private let dangerStackView = UIStackView()
-    private var advanceTimeCircleButton: UIButton!
-    private var leaveCircleButton: UIButton!
+    private var advanceTimeButton: ActionButtonSmallView!
+    private var leaveButton: ActionButtonSmallView!
     private var didAppearOnce = false
     private let buttonSize: CGFloat = 40
 
@@ -443,11 +443,6 @@ class HidingCellViewController: UIViewController {
         if let dustView = dustEffectView?.view {
             dustView.frame = view.bounds
             view.insertSubview(dustView, aboveSubview: backgroundImageView)
-        }
-        // Обновляем borderLayer для advanceTimeButton
-        if let borderLayer = advanceTimeBorderLayer {
-            borderLayer.frame = advanceTimeCircleButton.bounds
-            borderLayer.path = UIBezierPath(roundedRect: advanceTimeCircleButton.bounds, cornerRadius: 12).cgPath
         }
     }
 
@@ -605,66 +600,19 @@ class HidingCellViewController: UIViewController {
     }
 
     private func setupCircleActionButtons() {
-        // Advance Time
-        advanceTimeCircleButton = UIButton(type: .custom)
-        advanceTimeCircleButton.translatesAutoresizingMaskIntoConstraints = false
-        let hourglassIcon = UIImage(systemName: "hourglass.bottomhalf.fill", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .bold))?.withRenderingMode(.alwaysTemplate)
-        advanceTimeCircleButton.setImage(hourglassIcon, for: .normal)
-        advanceTimeCircleButton.tintColor = .white
-        advanceTimeCircleButton.backgroundColor = UIColor(white: 0.08, alpha: 0.98)
-        advanceTimeCircleButton.layer.cornerRadius = buttonSize / 2
-        advanceTimeCircleButton.layer.masksToBounds = false
-        // Glow
-        let advGlow = CALayer()
-        advGlow.frame = CGRect(x: -1, y: -1, width: buttonSize + 2, height: buttonSize + 2)
-        advGlow.cornerRadius = (buttonSize + 2) / 2
-        advGlow.backgroundColor = UIColor.white.withAlphaComponent(0.7).cgColor
-        advGlow.shadowColor = UIColor.white.cgColor
-        advGlow.shadowRadius = 8
-        advGlow.shadowOpacity = 1.0
-        advGlow.shadowOffset = .zero
-        advGlow.opacity = 0.7
-        advanceTimeCircleButton.layer.insertSublayer(advGlow, at: 0)
-        advanceTimeCircleButton.addTarget(self, action: #selector(advanceTimeTapped), for: .touchUpInside)
-        advanceTimeCircleButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
-        advanceTimeCircleButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
-        view.addSubview(advanceTimeCircleButton)
-        // Leave
-        leaveCircleButton = UIButton(type: .custom)
-        leaveCircleButton.translatesAutoresizingMaskIntoConstraints = false
-        let leaveIcon = UIImage(systemName: "arrow.uturn.left", withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .bold))?.withRenderingMode(.alwaysTemplate)
-        leaveCircleButton.setImage(leaveIcon, for: .normal)
-        leaveCircleButton.tintColor = .white
-        leaveCircleButton.backgroundColor = UIColor(white: 0.08, alpha: 0.98)
-        leaveCircleButton.layer.cornerRadius = buttonSize / 2
-        leaveCircleButton.layer.masksToBounds = false
-        // Glow
-        let leaveGlow = CALayer()
-        leaveGlow.frame = CGRect(x: -1, y: -1, width: buttonSize + 2, height: buttonSize + 2)
-        leaveGlow.cornerRadius = (buttonSize + 2) / 2
-        leaveGlow.backgroundColor = UIColor.white.withAlphaComponent(0.7).cgColor
-        leaveGlow.shadowColor = UIColor.white.cgColor
-        leaveGlow.shadowRadius = 8
-        leaveGlow.shadowOpacity = 1.0
-        leaveGlow.shadowOffset = .zero
-        leaveGlow.opacity = 0.7
-        leaveCircleButton.layer.insertSublayer(leaveGlow, at: 0)
-        leaveCircleButton.addTarget(self, action: #selector(leaveTapped), for: .touchUpInside)
-        leaveCircleButton.addTarget(self, action: #selector(buttonTouchDown(_:)), for: .touchDown)
-        leaveCircleButton.addTarget(self, action: #selector(buttonTouchUp(_:)), for: [.touchUpInside, .touchUpOutside, .touchCancel])
-        view.addSubview(leaveCircleButton)
-        // Constraints
-        NSLayoutConstraint.activate([
-            advanceTimeCircleButton.centerYAnchor.constraint(equalTo: timeBarView.centerYAnchor),
-            advanceTimeCircleButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 18),
-            advanceTimeCircleButton.widthAnchor.constraint(equalToConstant: buttonSize),
-            advanceTimeCircleButton.heightAnchor.constraint(equalToConstant: buttonSize),
-            leaveCircleButton.centerYAnchor.constraint(equalTo: timeBarView.centerYAnchor),
-            leaveCircleButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -18),
-            leaveCircleButton.widthAnchor.constraint(equalToConstant: buttonSize),
-            leaveCircleButton.heightAnchor.constraint(equalToConstant: buttonSize)
-        ])
-        leaveCircleButton.alpha = 0 // по умолчанию скрыта, появится по логике
+        // Advance Time Button
+        advanceTimeButton = ActionButtonSmallView(title: "Spent time", icon: "hourglass.bottomhalf.fill", color: .white, onTap: { [weak self] in
+            self?.advanceTimeTapped()
+        })
+        advanceTimeButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(advanceTimeButton)
+        // Leave Button
+        leaveButton = ActionButtonSmallView(title: "Leave", icon: "arrow.uturn.left", color: .white, onTap: { [weak self] in
+            self?.leaveTapped()
+        })
+        leaveButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(leaveButton)
+        leaveButton.alpha = 0 // по умолчанию скрыта, появится по логике
     }
 
     private func setupLayout() {
@@ -677,7 +625,7 @@ class HidingCellViewController: UIViewController {
             cellTitleLabel.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 2),
             cellTitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             cellTitleLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            cellTitleLabel.heightAnchor.constraint(equalToConstant: 22),
+            cellTitleLabel.heightAnchor.constraint(equalToConstant: 82),
 
             topWidgetContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 2),
             topWidgetContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 20),
@@ -699,14 +647,10 @@ class HidingCellViewController: UIViewController {
             dangerStatusView.heightAnchor.constraint(equalToConstant: 40),
             dangerStatusView.widthAnchor.constraint(lessThanOrEqualToConstant: 380),
 
-            advanceTimeCircleButton.centerYAnchor.constraint(equalTo: timeBarView.centerYAnchor),
-            advanceTimeCircleButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 18),
-            advanceTimeCircleButton.widthAnchor.constraint(equalToConstant: buttonSize),
-            advanceTimeCircleButton.heightAnchor.constraint(equalToConstant: buttonSize),
-            leaveCircleButton.centerYAnchor.constraint(equalTo: timeBarView.centerYAnchor),
-            leaveCircleButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -18),
-            leaveCircleButton.widthAnchor.constraint(equalToConstant: buttonSize),
-            leaveCircleButton.heightAnchor.constraint(equalToConstant: buttonSize)
+            advanceTimeButton.topAnchor.constraint(equalTo: cellTitleLabel.centerYAnchor),
+            advanceTimeButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 18),
+            leaveButton.topAnchor.constraint(equalTo: cellTitleLabel.centerYAnchor),
+            leaveButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -18)
         ])
     }
 
@@ -729,12 +673,12 @@ class HidingCellViewController: UIViewController {
         let targetAlpha: CGFloat = shouldShow ? 1.0 : 0.0
         if animated {
             UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseInOut], animations: {
-                self.leaveCircleButton.alpha = targetAlpha
+                self.leaveButton.alpha = targetAlpha
             }, completion: nil)
         } else {
-            leaveCircleButton.alpha = targetAlpha
+            leaveButton.alpha = targetAlpha
         }
-        leaveCircleButton.isUserInteractionEnabled = shouldShow
+        leaveButton.isUserInteractionEnabled = shouldShow
     }
 
     @objc private func advanceTimeTapped() {
@@ -825,25 +769,6 @@ class HidingCellViewController: UIViewController {
 
     @objc private func updateDangerStatusNotification() {
         updateDangerStatus(animated: true)
-    }
-
-    // Анимация нажатия для кнопок
-    @objc private func buttonTouchDown(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.08) {
-            sender.transform = CGAffineTransform(scaleX: 0.95, y: 0.95)
-            sender.alpha = 0.85
-        }
-    }
-    @objc private func buttonTouchUp(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.12) {
-            sender.transform = .identity
-            sender.alpha = 1.0
-        }
-    }
-
-    // MARK: - Border обновление для advanceTimeButton
-    private var advanceTimeBorderLayer: CAShapeLayer? {
-        return advanceTimeCircleButton.layer.sublayers?.compactMap { $0 as? CAShapeLayer }.first(where: { $0.name == "roundedBorder" })
     }
 }
 

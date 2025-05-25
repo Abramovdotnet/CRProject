@@ -2,6 +2,7 @@ import UIKit
 
 class ActionButtonSmallView: UIButton {
     private var onTap: (() -> Void)?
+    private let iconGlowView = UIImageView()
     private let iconImageView = UIImageView()
     private let actionTitleLabel = UILabel()
     private let topRowStack = UIStackView()
@@ -29,6 +30,11 @@ class ActionButtonSmallView: UIButton {
             default: return (.white, .white)
             }
         }()
+        // --- Radial Glow под иконкой ---
+        iconGlowView.translatesAutoresizingMaskIntoConstraints = false
+        iconGlowView.image = Self.makeRadialGlowImage(size: CGSize(width: 32, height: 32), color: iconColor)
+        iconGlowView.contentMode = .scaleAspectFill
+        iconGlowView.isUserInteractionEnabled = false
         // --- Иконка ---
         iconImageView.image = UIImage(systemName: type.icon)
         iconImageView.tintColor = iconColor
@@ -36,6 +42,20 @@ class ActionButtonSmallView: UIButton {
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         iconImageView.widthAnchor.constraint(equalToConstant: 16).isActive = true
         iconImageView.heightAnchor.constraint(equalToConstant: 16).isActive = true
+        // --- Свечение для иконки (через тень, чуть слабее) ---
+        iconImageView.layer.shadowColor = iconColor.cgColor
+        iconImageView.layer.shadowRadius = 2
+        iconImageView.layer.shadowOpacity = 0.3
+        iconImageView.layer.shadowOffset = .zero
+        // --- GlowView под иконкой ---
+        iconImageView.addSubview(iconGlowView)
+        iconImageView.sendSubviewToBack(iconGlowView)
+        NSLayoutConstraint.activate([
+            iconGlowView.centerXAnchor.constraint(equalTo: iconImageView.centerXAnchor),
+            iconGlowView.centerYAnchor.constraint(equalTo: iconImageView.centerYAnchor),
+            iconGlowView.widthAnchor.constraint(equalTo: iconImageView.widthAnchor, constant: 12),
+            iconGlowView.heightAnchor.constraint(equalTo: iconImageView.heightAnchor, constant: 12)
+        ])
         // --- Название действия ---
         actionTitleLabel.text = type.displayName
         actionTitleLabel.font = UIFont(name: "Optima-Regular", size: 13) ?? UIFont.systemFont(ofSize: 13)
@@ -59,17 +79,21 @@ class ActionButtonSmallView: UIButton {
         // --- Стилизация кнопки ---
         backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.7)
         layer.cornerRadius = 8
-        layer.borderWidth = 1
-        layer.borderColor = iconColor.withAlphaComponent(0.5).cgColor
+      
+        // --- Свечение для кнопки ---
+        self.layer.shadowColor = iconColor.cgColor
+        self.layer.shadowRadius = 16
+        self.layer.shadowOpacity = 0.4
+        self.layer.shadowOffset = .zero
         // Фиксированная ширина
         widthAnchor.constraint(equalToConstant: 110).isActive = true
         // Делаю stackView и subviews неинтерактивными
         topRowStack.isUserInteractionEnabled = false
+        iconGlowView.isUserInteractionEnabled = false
         iconImageView.isUserInteractionEnabled = false
         actionTitleLabel.isUserInteractionEnabled = false
         // Делаю всю кнопку кликабельной
         self.isUserInteractionEnabled = true
-        self.contentEdgeInsets = .zero
         // Тень к тексту
         actionTitleLabel.layer.shadowColor = UIColor.black.cgColor
         actionTitleLabel.layer.shadowOpacity = 0.7
@@ -115,6 +139,12 @@ class ActionButtonSmallView: UIButton {
         // Очищаем stack и удаляем из superview
         topRowStack.arrangedSubviews.forEach { topRowStack.removeArrangedSubview($0); $0.removeFromSuperview() }
         topRowStack.removeFromSuperview()
+        // --- Radial Glow под иконкой ---
+        iconGlowView.translatesAutoresizingMaskIntoConstraints = false
+        iconGlowView.image = Self.makeRadialGlowImage(size: CGSize(width: 32, height: 32), color: color)
+        iconGlowView.contentMode = .scaleAspectFill
+        iconGlowView.isUserInteractionEnabled = false
+        iconGlowView.alpha = 0.8
         // --- Иконка ---
         iconImageView.image = UIImage(systemName: icon)
         iconImageView.tintColor = color
@@ -122,6 +152,20 @@ class ActionButtonSmallView: UIButton {
         iconImageView.translatesAutoresizingMaskIntoConstraints = false
         iconImageView.widthAnchor.constraint(equalToConstant: 16).isActive = true
         iconImageView.heightAnchor.constraint(equalToConstant: 16).isActive = true
+        // --- Свечение для иконки (через тень, чуть слабее) ---
+        iconImageView.layer.shadowColor = color.cgColor
+        iconImageView.layer.shadowRadius = 2
+        iconImageView.layer.shadowOpacity = 0.3
+        iconImageView.layer.shadowOffset = .zero
+        // --- GlowView под иконкой ---
+        iconImageView.addSubview(iconGlowView)
+        iconImageView.sendSubviewToBack(iconGlowView)
+        NSLayoutConstraint.activate([
+            iconGlowView.centerXAnchor.constraint(equalTo: iconImageView.centerXAnchor),
+            iconGlowView.centerYAnchor.constraint(equalTo: iconImageView.centerYAnchor),
+            iconGlowView.widthAnchor.constraint(equalTo: iconImageView.widthAnchor, constant: 12),
+            iconGlowView.heightAnchor.constraint(equalTo: iconImageView.heightAnchor, constant: 12)
+        ])
         // --- Название ---
         actionTitleLabel.text = title
         actionTitleLabel.font = UIFont(name: "Optima-Regular", size: 13) ?? UIFont.systemFont(ofSize: 13)
@@ -143,12 +187,19 @@ class ActionButtonSmallView: UIButton {
             topRowStack.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -6)
         ])
         // --- Стилизация кнопки ---
-        backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.7)
+        backgroundColor = UIColor(red: 0.0, green: 0.0, blue: 0.0, alpha: 0.8)
         layer.cornerRadius = 8
-        layer.borderWidth = 1
+        layer.borderWidth = 0.3
         layer.borderColor = color.withAlphaComponent(0.5).cgColor
+ 
+        // --- Свечение для кнопки ---
+        self.layer.shadowColor = color.cgColor
+        self.layer.shadowRadius = 6
+        self.layer.shadowOpacity = 0.5
+        self.layer.shadowOffset = .zero
         widthAnchor.constraint(equalToConstant: 110).isActive = true
         topRowStack.isUserInteractionEnabled = false
+        iconGlowView.isUserInteractionEnabled = false
         iconImageView.isUserInteractionEnabled = false
         actionTitleLabel.isUserInteractionEnabled = false
         self.isUserInteractionEnabled = true
@@ -157,5 +208,19 @@ class ActionButtonSmallView: UIButton {
         actionTitleLabel.layer.shadowOpacity = 0.7
         actionTitleLabel.layer.shadowRadius = 2
         actionTitleLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
+    }
+    
+    // Генерация radial alpha glow
+    private static func makeRadialGlowImage(size: CGSize, color: UIColor) -> UIImage? {
+        let scale = UIScreen.main.scale
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        guard let ctx = UIGraphicsGetCurrentContext() else { return nil }
+        let colors = [color.withAlphaComponent(0.35).cgColor, color.withAlphaComponent(0.0).cgColor] as CFArray
+        let center = CGPoint(x: size.width/2, y: size.height/2)
+        let grad = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors, locations: [0,1])
+        ctx.drawRadialGradient(grad!, startCenter: center, startRadius: 0, endCenter: center, endRadius: size.width/2, options: .drawsAfterEndLocation)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return img?.withRenderingMode(.alwaysOriginal)
     }
 } 

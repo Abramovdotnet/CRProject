@@ -1,5 +1,6 @@
 import UIKit
 import SwiftUI // <<< Added for UIHostingController
+// Добавляю импорт для ActionButtonSmallView
 
 // --- ВСПОМОГАТЕЛЬНЫЙ КЛАСС ДЛЯ ЦВЕТА ---
 extension UIColor {
@@ -665,54 +666,16 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     
     // --- Кнопка обратной навигации ---
     private func setupBackButton() {
-        let buttonSize: CGFloat = 40
-        let backButton = UIButton(type: .custom)
-        backButton.translatesAutoresizingMaskIntoConstraints = false
-        let config = UIImage.SymbolConfiguration(pointSize: 20, weight: .bold)
-        let icon = UIImage(systemName: "arrow.uturn.left", withConfiguration: config)?.withRenderingMode(.alwaysTemplate)
-        backButton.setImage(icon, for: .normal)
-        backButton.tintColor = .white
-        backButton.backgroundColor = UIColor(white: 0.08, alpha: 0.98)
-        backButton.layer.cornerRadius = buttonSize / 2
-        backButton.layer.masksToBounds = false
-        // Outer glow (CALayer)
-        let glowLayer = CALayer()
-        glowLayer.frame = CGRect(x: -1, y: -1, width: buttonSize + 2, height: buttonSize + 2)
-        glowLayer.cornerRadius = (buttonSize + 2) / 2
-        glowLayer.backgroundColor = UIColor.white.withAlphaComponent(0.9).cgColor
-        glowLayer.shadowColor = UIColor.black.cgColor
-        glowLayer.shadowRadius = 8
-        glowLayer.shadowOpacity = 1.0
-        glowLayer.shadowOffset = CGSize(width: 0, height: 0)
-        glowLayer.opacity = 0.7
-        backButton.layer.insertSublayer(glowLayer, at: 0)
-        // Анимация нажатия
-        backButton.addTarget(self, action: #selector(backButtonTouchDown), for: .touchDown)
-        backButton.addTarget(self, action: #selector(backButtonTouchUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
-        backButton.addTarget(self, action: #selector(backButtonTapped), for: .touchUpInside)
-        view.addSubview(backButton)
+        let leaveButton = ActionButtonSmallView(title: "Leave", icon: "arrow.uturn.left", color: .white, onTap: { [weak self] in
+            self?.navigationController?.popViewController(animated: true)
+        })
+        leaveButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(leaveButton)
         NSLayoutConstraint.activate([
-            backButton.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 12),
-            backButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10),
-            backButton.widthAnchor.constraint(equalToConstant: buttonSize),
-            backButton.heightAnchor.constraint(equalToConstant: buttonSize)
+            leaveButton.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 12),
+            leaveButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -10)
         ])
-        view.bringSubviewToFront(backButton)
-    }
-    @objc private func backButtonTapped() {
-        navigationController?.popViewController(animated: true)
-    }
-    @objc private func backButtonTouchDown(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.08) {
-            sender.transform = CGAffineTransform(scaleX: 0.88, y: 0.88)
-            sender.alpha = 0.8
-        }
-    }
-    @objc private func backButtonTouchUp(_ sender: UIButton) {
-        UIView.animate(withDuration: 0.12) {
-            sender.transform = .identity
-            sender.alpha = 1.0
-        }
+        view.bringSubviewToFront(leaveButton)
     }
     // --- конец кнопки ---
 } 
