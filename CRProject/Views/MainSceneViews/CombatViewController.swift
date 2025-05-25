@@ -176,13 +176,13 @@ class CombatViewController: UIViewController {
             witnessWarningLabel.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 16),
             witnessWarningLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             witnessWarningLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-            vsLabel.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 12),
             vsLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            playerView.topAnchor.constraint(equalTo: vsLabel.bottomAnchor, constant: 8),
+            vsLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            playerView.centerYAnchor.constraint(equalTo: vsLabel.centerYAnchor),
             playerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             playerView.widthAnchor.constraint(equalToConstant: 120),
             playerView.heightAnchor.constraint(equalToConstant: 170),
-            npcView.centerYAnchor.constraint(equalTo: playerView.centerYAnchor),
+            npcView.centerYAnchor.constraint(equalTo: vsLabel.centerYAnchor),
             npcView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             npcView.widthAnchor.constraint(equalToConstant: 120),
             npcView.heightAnchor.constraint(equalToConstant: 170),
@@ -191,8 +191,7 @@ class CombatViewController: UIViewController {
             resultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             actionsStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
             actionsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            actionsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-            actionsStack.heightAnchor.constraint(equalToConstant: 48),
+            actionsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24)
         ])
     }
     
@@ -237,6 +236,8 @@ class CombatViewController: UIViewController {
                     return "Success: Sink your fangs: +25 HP to you, -25 HP to enemy\nFail: You are repelled: -25 HP to you"
                 case .drain:
                     return "Success: Devour completely: Enemy dies, you absorb all their blood\nFail: You are wounded: -25 HP to you"
+                case .dominate:
+                    return "Dominate (no damage)"
                 default:
                     return type.consequenceDescription
                 }
@@ -251,30 +252,81 @@ class CombatViewController: UIViewController {
                 default: return (.white, .white)
                 }
             }()
-            // Составляем title с иконкой, шансом и последствиями
-            let icon = UIImage(systemName: type.icon)?.withRenderingMode(.alwaysTemplate)
-            button.setImage(icon, for: .normal)
-            button.tintColor = iconColor
-            button.imageView?.contentMode = .scaleAspectFit
-            // TODO: imageEdgeInsets deprecated in iOS 15+, оставить для совместимости
-            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -6, bottom: 0, right: 6)
-            let title = "\(type.displayName)  \(chancePercent)%\n\(consequenceDescription)"
-            let attrTitle = NSMutableAttributedString(string: title)
-            // Основной стиль (название действия)
-            attrTitle.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "Optima-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14), range: NSRange(location: 0, length: type.displayName.count))
-            attrTitle.addAttribute(NSAttributedString.Key.foregroundColor, value: titleColor, range: NSRange(location: 0, length: type.displayName.count))
-            // Шанс
-            let chanceRange = (title as NSString).range(of: "\(chancePercent)%")
-            attrTitle.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemYellow, range: chanceRange)
-            // Последствия (весь текст после процента)
-            let consRange = (title as NSString).range(of: consequenceDescription)
-            attrTitle.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "Optima-Regular", size: 11) ?? UIFont.systemFont(ofSize: 11), range: consRange)
-            attrTitle.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemRed, range: consRange)
+            // --- Новый стиль: иконка в первой строке через NSTextAttachment ---
+            let iconAttachment = NSTextAttachment()
+            if let iconImage = UIImage(systemName: type.icon)?.withRenderingMode(.alwaysTemplate) {
+                let iconSize: CGFloat = 18
+                UIGraphicsBeginImageContextWithOptions(CGSize(width: iconSize, height: iconSize), false, 0.0)
+                iconImage.withTintColor(iconColor).draw(in: CGRect(x: 0, y: 0, width: iconSize, height: iconSize))
+                let resizedIcon = UIGraphicsGetImageFromCurrentImageContext()
+                UIGraphicsEndImageContext()
+                iconAttachment.image = resizedIcon
+                iconAttachment.bounds = CGRect(x: 0, y: -2, width: iconSize, height: iconSize)
+            }
+            let iconString = NSAttributedString(attachment: iconAttachment)
+            // --- paragraph style для переноса строк ---
+            let paragraphStyle = NSMutableParagraphStyle()
+            paragraphStyle.lineBreakMode = .byWordWrapping
+            paragraphStyle.alignment = .center
+            // Success и Fail разными цветами и с маленькими иконками
+            let consequenceLines = consequenceDescription.components(separatedBy: "\n")
+            let successLine = consequenceLines.first ?? ""
+            let failLine = consequenceLines.count > 1 ? consequenceLines[1] : ""
+            let successAttr = NSAttributedString(string: successLine.isEmpty ? "" : "\u{2713} " + successLine + "\n", attributes: [
+                .font: UIFont(name: "Optima-Regular", size: 10) ?? UIFont.systemFont(ofSize: 10),
+                .foregroundColor: UIColor(red: 0.66, green: 1.0, blue: 0.69, alpha: 1.0), // #A8FFB0
+                .paragraphStyle: paragraphStyle
+            ])
+            let failAttr = NSAttributedString(string: failLine.isEmpty ? "" : "\u{2717} " + failLine, attributes: [
+                .font: UIFont(name: "Optima-Regular", size: 10) ?? UIFont.systemFont(ofSize: 10),
+                .foregroundColor: UIColor(red: 1.0, green: 0.42, blue: 0.42, alpha: 1.0), // #FF6B6B
+                .paragraphStyle: paragraphStyle
+            ])
+            let firstLine = NSMutableAttributedString()
+            firstLine.append(iconString)
+            firstLine.append(NSAttributedString(string: " \(type.displayName) \(chancePercent)%\n\n", attributes: [
+                .font: UIFont(name: "Optima-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14),
+                .foregroundColor: titleColor,
+                .paragraphStyle: paragraphStyle
+            ]))
+            let attrTitle = NSMutableAttributedString()
+            attrTitle.append(firstLine)
+            attrTitle.append(successAttr)
+            attrTitle.append(failAttr)
             button.setAttributedTitle(attrTitle, for: .normal)
-            button.titleLabel?.numberOfLines = 3
+            button.titleLabel?.numberOfLines = 0
+            button.titleLabel?.lineBreakMode = .byWordWrapping
             button.titleLabel?.textAlignment = .center
-            button.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+            // --- Стилизация кнопки ---
+            button.backgroundColor = UIColor(red: 0.14, green: 0.14, blue: 0.16, alpha: 0.92) // #23232A
             button.layer.cornerRadius = 10
+            button.layer.borderWidth = 2
+            // Менее насыщенная рамка
+            button.layer.borderColor = iconColor.withAlphaComponent(0.5).cgColor
+            // Внутреннее свечение (glow)
+            let glow = CALayer()
+            glow.frame = button.bounds.insetBy(dx: 4, dy: 4)
+            glow.cornerRadius = 8
+            glow.backgroundColor = iconColor.withAlphaComponent(0.18).cgColor
+            glow.shadowColor = iconColor.cgColor
+            glow.shadowRadius = 8
+            glow.shadowOpacity = 0.5
+            glow.shadowOffset = .zero
+            button.layer.insertSublayer(glow, at: 1)
+            // Внутренняя тень (inner shadow)
+            let innerShadow = CALayer()
+            innerShadow.frame = button.bounds
+            innerShadow.cornerRadius = 10
+            innerShadow.backgroundColor = UIColor.clear.cgColor
+            innerShadow.shadowColor = UIColor.black.cgColor
+            innerShadow.shadowOffset = CGSize(width: 0, height: 2)
+            innerShadow.shadowOpacity = 0.25
+            innerShadow.shadowRadius = 6
+            button.layer.insertSublayer(innerShadow, at: 2)
+            // Ограничение максимальной и минимальной высоты кнопки
+            button.heightAnchor.constraint(lessThanOrEqualToConstant: 155).isActive = true
+            button.heightAnchor.constraint(greaterThanOrEqualToConstant: 90).isActive = true
+            button.contentEdgeInsets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
             // Добавляем тень к тексту на кнопке
             button.titleLabel?.layer.shadowColor = UIColor.black.cgColor
             button.titleLabel?.layer.shadowOpacity = 0.7
@@ -376,6 +428,7 @@ class CombatViewController: UIViewController {
     
     @objc private func closeCombat() {
         if let onLeave = onLeave {
+            GameTimeService.shared.advanceTime()
             onLeave()
         } else {
             self.dismiss(animated: true, completion: nil)
