@@ -75,6 +75,7 @@ final class CombatService {
         if !npc.isAlive {
             npc.currentActivity = .casualty
             npc.deathStatus = .unknown
+            npc.isSpecialBehaviorSet = false
         }
         
         if !player.isAlive {

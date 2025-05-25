@@ -1,17 +1,9 @@
-//
-//  NPCCell.swift
-//  CRProject
-//
-//  Created by Abramov Anatoliy on 07.05.2025.
-//
-
-
 import UIKit
 import SwiftUI
 import CoreMotion
 import Combine
 
-class NPCCell: UICollectionViewCell {
+class UniversalCharacterCell: UIView {
     private let avatarImageView = UIImageView()
     private let avatarShadowContainer = UIView()
     private let professionIcon = UIImageView()
@@ -45,7 +37,7 @@ class NPCCell: UICollectionViewCell {
         cardBackground.layer.borderWidth = 0 // Remove border
         cardBackground.clipsToBounds = false // Ensure shadow isn't clipped by card background
         cardBackground.layer.masksToBounds = false // Explicitly set masksToBounds to false
-        contentView.addSubview(cardBackground)
+        addSubview(cardBackground)
         
         // Avatar setup - increased size by 20%
         let newAvatarSize: CGFloat = 84
@@ -231,37 +223,27 @@ class NPCCell: UICollectionViewCell {
         glowAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         desiredVictimIndicator.layer.add(glowAnimation, forKey: "glowAnimation")
     }
-    
+
     func configure(with npc: NPC, isSelected: Bool, isDisabled: Bool) {
-        // Store reference to current NPC
         self.currentNPC = npc
-        
-        // Длительность анимации для всех изменений
         let animationDuration: TimeInterval = 0.2
-        
-        // Card background - adjust for selection state (removed red border)
         UIView.animate(withDuration: animationDuration) {
             if isSelected {
-                self.cardBackground.layer.borderColor = UIColor.clear.cgColor // Remove red border
+                self.cardBackground.layer.borderColor = UIColor.clear.cgColor
                 self.cardBackground.layer.borderWidth = 0
             } else {
                 self.cardBackground.layer.borderColor = UIColor.clear.cgColor
                 self.cardBackground.layer.borderWidth = 0
             }
         }
-        
-        // Explicitly set shadow container opacity based on selection state
         if npc.isUnknown && isSelected {
-            avatarShadowContainer.layer.shadowOpacity = 0.8 // Show shadow if unknown AND selected
+            avatarShadowContainer.layer.shadowOpacity = 0.8
         } else {
-            avatarShadowContainer.layer.shadowOpacity = isSelected ? 0 : 0.8 // Standard logic for other cases
+            avatarShadowContainer.layer.shadowOpacity = isSelected ? 0 : 0.8
         }
-        
-        // Avatar image - плавная смена изображения
         let newImage = npc.isUnknown ?
             UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder") :
             UIImage(named: "npc\(npc.id)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")
-            
         if avatarImageView.image != newImage {
             UIView.transition(with: avatarImageView,
                              duration: animationDuration,
@@ -270,73 +252,49 @@ class NPCCell: UICollectionViewCell {
                 self.avatarImageView.image = newImage
             }, completion: nil)
         }
-        
-        // Set avatar border based on selection
         UIView.animate(withDuration: animationDuration) {
             if npc.isUnknown && isSelected {
-                self.avatarImageView.layer.borderWidth = 1 // Keep border if unknown AND selected
+                self.avatarImageView.layer.borderWidth = 1
                 self.avatarImageView.layer.borderColor = UIColor.black.cgColor
             } else {
-                self.avatarImageView.layer.borderWidth = isSelected ? 0 : 1 // Standard logic for other cases
-                self.avatarImageView.layer.borderColor = UIColor.black.cgColor // Ensure black for unselected
+                self.avatarImageView.layer.borderWidth = isSelected ? 0 : 1
+                self.avatarImageView.layer.borderColor = UIColor.black.cgColor
             }
         }
-        
-        // Health indicator - ensure it's visible when selected with glow effect
         CATransaction.begin()
         CATransaction.setAnimationDuration(animationDuration)
         healthIndicator.opacity = isSelected ? 1.0 : 0.0
         healthIndicator.shadowOpacity = isSelected ? 0.8 : 0.0
         CATransaction.commit()
-        
-        // Update the health indicator path - positioned at outer border of avatar
         if !npc.isUnknown {
             let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
-            // Use the radius of health indicator (which is slightly larger than avatar)
             let radius = healthIndicator.bounds.width / 2 - 2
             let startAngle = -CGFloat.pi / 2
             let endAngle = startAngle + 2 * .pi * CGFloat(npc.bloodMeter.currentBlood / 100)
-            
             let path = UIBezierPath(arcCenter: center, radius: radius,
                                    startAngle: startAngle, endAngle: endAngle,
                                    clockwise: true)
-            
-            // Анимация изменения пути для индикатора здоровья
             CATransaction.begin()
             CATransaction.setAnimationDuration(animationDuration)
             healthIndicator.path = path.cgPath
             CATransaction.commit()
         }
-        
-        // Profession icon - плавная смена иконки
         if !npc.isUnknown {
             let iconConfig = UIImage.SymbolConfiguration(pointSize: 12)
             let newProfessionImage = UIImage(systemName: npc.profession.icon, withConfiguration: iconConfig)
-            
-            // Convert SwiftUI Color to UIColor
             let color = convertSwiftUIColorToUIColor(npc.profession.color)
-            
             UIView.transition(with: professionIcon,
                              duration: animationDuration,
                              options: .transitionCrossDissolve,
                              animations: {
                 self.professionIcon.image = newProfessionImage
                 self.professionIcon.tintColor = color
-                
-                // Центрируем иконку внутри фона
                 self.professionIcon.contentMode = .center
             }, completion: nil)
-            
-            // Анимация изменения цвета рамки и тени
             UIView.animate(withDuration: animationDuration) {
-                // Set circular background border color to match the profession color
                 self.professionIcon.layer.borderColor = color.cgColor
-                
-                // Плавное появление профессии
                 self.professionIcon.alpha = 1.0
             }
-            
-            // Add glow effect to match color with анимацией
             CATransaction.begin()
             CATransaction.setAnimationDuration(animationDuration)
             professionIcon.layer.shadowColor = color.cgColor
@@ -344,43 +302,28 @@ class NPCCell: UICollectionViewCell {
             professionIcon.layer.shadowOpacity = 0.6
             professionIcon.layer.shadowOffset = CGSize.zero
             CATransaction.commit()
-            
             professionIcon.isHidden = false
         } else {
             UIView.animate(withDuration: animationDuration) {
                 self.professionIcon.alpha = 0.0
             }
         }
-        
-        // Activity icon - плавная смена иконки
         if !npc.isUnknown {
             let iconConfig = UIImage.SymbolConfiguration(pointSize: 12)
             let newActivityImage = UIImage(systemName: npc.currentActivity.icon, withConfiguration: iconConfig)
-            
-            // Convert SwiftUI Color to UIColor
             let color = convertSwiftUIColorToUIColor(npc.currentActivity.color)
-            
             UIView.transition(with: activityIcon,
                              duration: animationDuration,
                              options: .transitionCrossDissolve,
                              animations: {
                 self.activityIcon.image = newActivityImage
                 self.activityIcon.tintColor = color
-                
-                // Центрируем иконку внутри фона
                 self.activityIcon.contentMode = .center
             }, completion: nil)
-            
-            // Анимация изменения цвета рамки и тени
             UIView.animate(withDuration: animationDuration) {
-                // Set circular background border color to match the activity color
                 self.activityIcon.layer.borderColor = color.cgColor
-                
-                // Плавное появление активности
                 self.activityIcon.alpha = 1.0
             }
-            
-            // Add glow effect to match color with анимацией
             CATransaction.begin()
             CATransaction.setAnimationDuration(animationDuration)
             activityIcon.layer.shadowColor = color.cgColor
@@ -388,20 +331,15 @@ class NPCCell: UICollectionViewCell {
             activityIcon.layer.shadowOpacity = 0.6
             activityIcon.layer.shadowOffset = CGSize.zero
             CATransaction.commit()
-            
             activityIcon.isHidden = false
         } else {
             UIView.animate(withDuration: animationDuration) {
                 self.activityIcon.alpha = 0.0
             }
         }
-        
-        // Health percentage - плавное обновление текста
         if !npc.isUnknown {
-            // Format health percentage to ensure it displays correctly - full number without truncation
             let healthValue = Int(npc.bloodMeter.currentBlood)
             let healthText = "\(healthValue)%"
-            
             if healthPercentageLabel.text != healthText {
                 UIView.transition(with: healthPercentageLabel,
                                  duration: animationDuration,
@@ -410,10 +348,7 @@ class NPCCell: UICollectionViewCell {
                     self.healthPercentageLabel.text = healthText
                 }, completion: nil)
             }
-            
             healthPercentageLabel.isHidden = false
-            
-            // Color the health percentage based on blood level with анимацией
             UIView.animate(withDuration: animationDuration) {
                 if npc.bloodMeter.currentBlood < 30 {
                     self.healthPercentageLabel.textColor = UIColor.red
@@ -428,55 +363,43 @@ class NPCCell: UICollectionViewCell {
                 self.healthPercentageLabel.alpha = 0.0
             }
         }
-        
-        // Desired victim indicator - плавное появление/исчезновение
         if !npc.isUnknown, let player = GameStateService.shared.getPlayer(),
            player.desiredVictim.isDesiredVictim(npc: npc) {
-            
-            // Плавное появление индикатора
             UIView.animate(withDuration: animationDuration) {
                 self.desiredVictimIndicator.alpha = 1.0
                 self.desiredVictimIndicator.isHidden = false
             }
-            
-            // Установка иконки с уменьшенным размером и плавным появлением
             UIView.transition(with: desiredVictimIndicator,
                              duration: animationDuration,
                              options: .transitionCrossDissolve,
                              animations: {
                 let iconConfig = UIImage.SymbolConfiguration(pointSize: 12)
                 self.desiredVictimIndicator.image = UIImage(named: "sphere1")
-                self.desiredVictimIndicator.tintColor = UIColor.white // Reset tint to show original image colors
+                self.desiredVictimIndicator.tintColor = UIColor.white
             }, completion: nil)
-            
-            // Усиливаем эффект свечения когда NPC выбран with анимацией
             CATransaction.begin()
             CATransaction.setAnimationDuration(animationDuration)
             if isSelected {
                 desiredVictimIndicator.layer.shadowColor = UIColor.systemRed.cgColor
-                desiredVictimIndicator.layer.shadowRadius = 15 // Увеличено с 8 до 15
+                desiredVictimIndicator.layer.shadowRadius = 15
                 desiredVictimIndicator.layer.shadowOpacity = 1.0
             } else {
                 desiredVictimIndicator.layer.shadowColor = UIColor.systemRed.cgColor
-                desiredVictimIndicator.layer.shadowRadius = 12 // Увеличено с 6 до 12
-                desiredVictimIndicator.layer.shadowOpacity = 1.0 // Увеличено с 0.9 до 1.0
+                desiredVictimIndicator.layer.shadowRadius = 12
+                desiredVictimIndicator.layer.shadowOpacity = 1.0
             }
             CATransaction.commit()
-            
-            // Make sure animation is running with enhanced effects
             if desiredVictimIndicator.layer.animation(forKey: "pulseAnimation") == nil {
                 let pulseAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-                pulseAnimation.duration = 0.5 // Уменьшено с 0.8 до 0.5
+                pulseAnimation.duration = 0.5
                 pulseAnimation.fromValue = 0.3
                 pulseAnimation.toValue = 1.0
                 pulseAnimation.autoreverses = true
                 pulseAnimation.repeatCount = Float.infinity
                 pulseAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
                 desiredVictimIndicator.layer.add(pulseAnimation, forKey: "pulseAnimation")
-                
-                // Add shadow radius animation for more dramatic glow effect
                 let glowAnimation = CABasicAnimation(keyPath: "shadowRadius")
-                glowAnimation.duration = 0.5 // Уменьшено с 0.8 до 0.5
+                glowAnimation.duration = 0.5
                 glowAnimation.fromValue = isSelected ? 10 : 8
                 glowAnimation.toValue = isSelected ? 18 : 15
                 glowAnimation.autoreverses = true
@@ -485,95 +408,69 @@ class NPCCell: UICollectionViewCell {
                 desiredVictimIndicator.layer.add(glowAnimation, forKey: "glowAnimation")
             }
         } else {
-            // Плавное исчезновение индикатора
             UIView.animate(withDuration: animationDuration) {
                 self.desiredVictimIndicator.alpha = 0.0
             } completion: { _ in
                 self.desiredVictimIndicator.isHidden = true
-                // Remove animation if hidden
                 self.desiredVictimIndicator.layer.removeAnimation(forKey: "pulseAnimation")
                 self.desiredVictimIndicator.layer.removeAnimation(forKey: "glowAnimation")
             }
         }
-        
-        // Disabled state - плавное изменение прозрачности
         UIView.animate(withDuration: animationDuration) {
             self.cardBackground.alpha = npc.isAlive ? (isDisabled ? 0.5 : 1.0) : 0.4
         }
-        
-        // Update Quest Indicator Icon
-        guard !npc.isUnknown else { // Не показывать для неизвестных NPC
+        guard !npc.isUnknown else {
             questIndicatorIcon.isHidden = true
-            questIndicatorIcon.layer.removeAnimation(forKey: "questGlowAnimation") // Остановить анимацию
-            return // Выходим, если NPC неизвестен, чтобы не вызывать QuestService
+            questIndicatorIcon.layer.removeAnimation(forKey: "questGlowAnimation")
+            return
         }
-
-        // Читаем предварительно вычисленные квестовые флаги из объекта NPC
-        // Предполагаем, что npc.hasNewQuests и npc.questStageUpdateAvaiting теперь Bool
         let npcCanGiveNewQuest = npc.hasNewQuests 
         let npcIsAwaitingAction = npc.questStageUpdateAvaiting
-
         var shouldShowIcon = false
         var iconTintColor = UIColor.clear
         var iconShadowColor = UIColor.clear
-
         if npcIsAwaitingAction {
-            // Уменьшаем размер символа, чтобы он не касался краев
-            let symbolConfig = UIImage.SymbolConfiguration(pointSize: iconSize * 0.55) // 55% от размера иконки
+            let symbolConfig = UIImage.SymbolConfiguration(pointSize: iconSize * 0.55)
             questIndicatorIcon.image = UIImage(systemName: "exclamationmark", withConfiguration: symbolConfig)
             iconTintColor = UIColor.systemBlue
             iconShadowColor = UIColor.systemBlue.withAlphaComponent(0.9)
             shouldShowIcon = true
         } else if npcCanGiveNewQuest {
-            // Уменьшаем размер символа
-            let symbolConfig = UIImage.SymbolConfiguration(pointSize: iconSize * 0.55) // 55% от размера иконки
+            let symbolConfig = UIImage.SymbolConfiguration(pointSize: iconSize * 0.55)
             questIndicatorIcon.image = UIImage(systemName: "exclamationmark", withConfiguration: symbolConfig)
             iconTintColor = UIColor.systemYellow
             iconShadowColor = UIColor.systemYellow.withAlphaComponent(0.9)
             shouldShowIcon = true
         }
-
         questIndicatorIcon.tintColor = iconTintColor
-        // Устанавливаем цвет фона такой же, как у символа, но с некоторой прозрачностью
-        // questIndicatorIcon.backgroundColor = iconTintColor.withAlphaComponent(0.7) 
-        // Устанавливаем темный фон, как у других иконок
         questIndicatorIcon.backgroundColor = UIColor.black.withAlphaComponent(0.7)
-        questIndicatorIcon.layer.borderColor = iconTintColor.cgColor // Устанавливаем цвет контура
+        questIndicatorIcon.layer.borderColor = iconTintColor.cgColor
         questIndicatorIcon.layer.shadowColor = iconShadowColor.cgColor
         questIndicatorIcon.isHidden = !shouldShowIcon
-
         if shouldShowIcon {
-            // Добавляем или обновляем анимацию свечения, только если она еще не запущена
             if questIndicatorIcon.layer.animation(forKey: "questGlowAnimation") == nil {
                 let glow = CABasicAnimation(keyPath: "shadowOpacity")
-                glow.fromValue = 0.6 // Увеличим начальное значение для более сильного свечения
-                glow.toValue = 1.0   // Максимальное значение для полного свечения
+                glow.fromValue = 0.6
+                glow.toValue = 1.0
                 glow.autoreverses = true
-                glow.duration = 0.7 // Немного ускорим
+                glow.duration = 0.7
                 glow.repeatCount = .infinity
                 questIndicatorIcon.layer.add(glow, forKey: "questGlowAnimation")
             }
-            questIndicatorIcon.layer.shadowOpacity = 1.0 // Устанавливаем начальную видимость свечения на максимум
+            questIndicatorIcon.layer.shadowOpacity = 1.0
         } else {
             questIndicatorIcon.layer.removeAnimation(forKey: "questGlowAnimation")
-            questIndicatorIcon.layer.shadowOpacity = 0 // Выключаем свечение
+            questIndicatorIcon.layer.shadowOpacity = 0
         }
-
-        // Selection state - animate the glow
         UIView.animate(withDuration: animationDuration) {
-            // Плавная анимация для тени/свечения (только glow, без рамки)
             self.selectionGlowLayer.shadowOpacity = isSelected ? 0.7 : 0
         }
-
-        // Явно показываем шкалу здоровья, если isSelected == true
         if isSelected {
             healthIndicator.opacity = 1.0
         }
     }
-    
-    // Helper method to convert SwiftUI Color to UIColor
+
     private func convertSwiftUIColorToUIColor(_ color: Color) -> UIColor {
-        // Use modern system colors for better appearance
         if color == .red { return UIColor.systemRed }
         if color == .blue { return UIColor.systemBlue }
         if color == .green { return UIColor.systemGreen }
@@ -586,108 +483,55 @@ class NPCCell: UICollectionViewCell {
             if #available(iOS 15.0, *) {
                 return UIColor.systemBrown
             } else {
-                return UIColor(red: 0.6, green: 0.4, blue: 0.2, alpha: 1.0) // Brown approximation
+                return UIColor(red: 0.6, green: 0.4, blue: 0.2, alpha: 1.0)
             }
         }
-        
-        // Additional colors used in NPCActivityType
         if color == .mint { 
             if #available(iOS 15.0, *) {
                 return UIColor.systemMint
             } else {
-                return UIColor(red: 0, green: 0.8, blue: 0.6, alpha: 1.0) // Mint approximation
+                return UIColor(red: 0, green: 0.8, blue: 0.6, alpha: 1.0)
             }
         }
-        
-        // Default fallback - white with slight blue tint
         return UIColor.white
     }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        
-        if let npc = currentNPC {
-        }
-        
-        currentNPC = nil
-        avatarImageView.image = nil
-        selectionGlowLayer.shadowOpacity = 0
-        healthIndicator.opacity = 0
-        healthIndicator.isHidden = false // Ensure it's not hidden for future use
-        healthPercentageLabel.text = "" // Clear text before reuse
-        professionIcon.image = nil
-        activityIcon.image = nil
-        desiredVictimIndicator.isHidden = true
-        healthPercentageLabel.isHidden = true
-        
-        // Stop animation
-        desiredVictimIndicator.layer.removeAnimation(forKey: "pulseAnimation")
-        desiredVictimIndicator.layer.removeAnimation(forKey: "glowAnimation")
-        
-        // Reset background style (removed border setting)
-        // cardBackground.layer.borderColor = UIColor.gray.withAlphaComponent(0.2).cgColor
-        // cardBackground.layer.borderWidth = 1
-        
-        // Reset avatar border
-        avatarImageView.layer.borderWidth = 1 // Use new border width
-        avatarImageView.layer.borderColor = UIColor.black.cgColor
-    }
-    
+
     override func layoutSubviews() {
         super.layoutSubviews()
-        
-        // Update positions in case of frame changes
-        cardBackground.frame = bounds // Use full bounds
-        
-        // Increased avatar size by 20%
+        cardBackground.frame = bounds
         let newAvatarSizeLayout: CGFloat = 84
         let newAvatarRadiusLayout: CGFloat = newAvatarSizeLayout / 2
         let avatarFrameLayout = CGRect(x: (bounds.width - newAvatarSizeLayout) / 2, y: 8, width: newAvatarSizeLayout, height: newAvatarSizeLayout)
         avatarImageView.frame = avatarFrameLayout
-        avatarShadowContainer.frame = avatarFrameLayout // Update shadow container frame as well
-        avatarShadowContainer.layer.cornerRadius = newAvatarRadiusLayout // Ensure corner radius updates
-        avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: avatarShadowContainer.layer.cornerRadius).cgPath // Update shadow path on layout change
-        
-        // Health percentage positioned right at the bottom edge of the avatar
+        avatarShadowContainer.frame = avatarFrameLayout
+        avatarShadowContainer.layer.cornerRadius = newAvatarRadiusLayout
+        avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: avatarShadowContainer.layer.cornerRadius).cgPath
         let healthWidth: CGFloat = 40
         let healthHeight: CGFloat = 18
-        let healthX = avatarFrameLayout.midX - healthWidth/2 // Use layout frame
-        let healthY = avatarFrameLayout.maxY // Use layout frame
+        let healthX = avatarFrameLayout.midX - healthWidth/2
+        let healthY = avatarFrameLayout.maxY
         healthPercentageLabel.frame = CGRect(x: healthX, y: healthY, width: healthWidth, height: healthHeight)
-        
-        // Profession icon - positioned on the left edge of the avatar
-        let avatarRadiusLayout = avatarFrameLayout.width / 2 // Use layout frame
-        let profX = avatarFrameLayout.minX - 10 // Use layout frame
-        let profY = avatarFrameLayout.maxY - iconSize - 8 // Use layout frame
+        let avatarRadiusLayout = avatarFrameLayout.width / 2
+        let profX = avatarFrameLayout.minX - 10
+        let profY = avatarFrameLayout.maxY - iconSize - 8
         professionIcon.frame = CGRect(x: profX, y: profY, width: iconSize, height: iconSize)
-        professionIcon.layer.cornerRadius = iconSize / 2 // Ensure circular shape in layout updates
-        
-        // Activity icon - positioned on the right edge of the avatar
-        let activityX = avatarFrameLayout.maxX - iconSize + 10 // Use layout frame
-        let activityY = avatarFrameLayout.maxY - iconSize - 8 // Use layout frame
+        professionIcon.layer.cornerRadius = iconSize / 2
+        let activityX = avatarFrameLayout.maxX - iconSize + 10
+        let activityY = avatarFrameLayout.maxY - iconSize - 8
         activityIcon.frame = CGRect(x: activityX, y: activityY, width: iconSize, height: iconSize)
-        activityIcon.layer.cornerRadius = iconSize / 2 // Ensure circular shape in layout updates
-        
-        // Position health indicator circle on the outer border of the avatar
-        let healthIndicatorSize = avatarFrameLayout.width + 6 // Use layout frame
-        let healthIndicatorX = avatarFrameLayout.midX - healthIndicatorSize/2 // Use layout frame
-        let healthIndicatorY = avatarFrameLayout.midY - healthIndicatorSize/2 // Use layout frame
+        activityIcon.layer.cornerRadius = iconSize / 2
+        let healthIndicatorSize = avatarFrameLayout.width + 6
+        let healthIndicatorX = avatarFrameLayout.midX - healthIndicatorSize/2
+        let healthIndicatorY = avatarFrameLayout.midY - healthIndicatorSize/2
         healthIndicator.frame = CGRect(x: healthIndicatorX, y: healthIndicatorY, width: healthIndicatorSize, height: healthIndicatorSize)
-        
-        // Update the selection glow layer frame to match the avatar
-        selectionGlowLayer.frame = avatarFrameLayout // Use layout frame
-        
-        // Always check if this cell should show health indicator
-        if let npc = currentNPC, NPCInteractionManager.shared.selectedNPC?.id == npc.id {
+        selectionGlowLayer.frame = avatarFrameLayout
+        if let npc = currentNPC {
             healthIndicator.opacity = 1.0
-            
-            // Update health indicator path - use outer border position
             if !npc.isUnknown {
                 let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
                 let radius = healthIndicator.bounds.width / 2 - 2
                 let startAngle = -CGFloat.pi / 2
                 let endAngle = startAngle + 2 * .pi * CGFloat(npc.bloodMeter.currentBlood / 100)
-                
                 let path = UIBezierPath(arcCenter: center, radius: radius,
                                         startAngle: startAngle, endAngle: endAngle,
                                         clockwise: true)
@@ -695,4 +539,4 @@ class NPCCell: UICollectionViewCell {
             }
         }
     }
-}
+} 

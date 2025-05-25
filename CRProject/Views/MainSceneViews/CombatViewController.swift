@@ -9,7 +9,7 @@ class CombatViewController: UIViewController {
     private let titleLabel = UILabel()
     private let iconImageView = UIImageView()
     private let playerView = CombatParticipantView(alignment: .left)
-    private let npcView = CombatParticipantView(alignment: .right)
+    private let universalNpcCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 120, height: 170))
     private let vsLabel = UILabel()
     private let actionsStack = UIStackView()
     private let resultLabel = UILabel()
@@ -104,6 +104,10 @@ class CombatViewController: UIViewController {
             finishButton.widthAnchor.constraint(equalToConstant: 180),
             finishButton.heightAnchor.constraint(equalToConstant: 44)
         ])
+        // --- Добавляем тап по npcCell ---
+        let tap = UITapGestureRecognizer(target: self, action: #selector(npcCellTapped))
+        universalNpcCell.addGestureRecognizer(tap)
+        universalNpcCell.isUserInteractionEnabled = true
     }
     
     override func viewDidLayoutSubviews() {
@@ -151,9 +155,9 @@ class CombatViewController: UIViewController {
         view.addSubview(vsLabel)
         // Участники боя
         playerView.translatesAutoresizingMaskIntoConstraints = false
-        npcView.translatesAutoresizingMaskIntoConstraints = false
+        universalNpcCell.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(playerView)
-        view.addSubview(npcView)
+        view.addSubview(universalNpcCell)
         // Стек кнопок действий
         actionsStack.axis = .horizontal
         actionsStack.spacing = 16
@@ -182,10 +186,10 @@ class CombatViewController: UIViewController {
             playerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             playerView.widthAnchor.constraint(equalToConstant: 120),
             playerView.heightAnchor.constraint(equalToConstant: 170),
-            npcView.centerYAnchor.constraint(equalTo: vsLabel.centerYAnchor),
-            npcView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            npcView.widthAnchor.constraint(equalToConstant: 120),
-            npcView.heightAnchor.constraint(equalToConstant: 170),
+            universalNpcCell.centerYAnchor.constraint(equalTo: vsLabel.centerYAnchor),
+            universalNpcCell.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
+            universalNpcCell.widthAnchor.constraint(equalToConstant: 120),
+            universalNpcCell.heightAnchor.constraint(equalToConstant: 170),
             resultLabel.bottomAnchor.constraint(equalTo: actionsStack.topAnchor, constant: -12),
             resultLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             resultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
@@ -199,7 +203,7 @@ class CombatViewController: UIViewController {
         guard let player = player else { return }
         CombatService.shared.startCombat(player: player, npc: npc)
         playerView.configure(with: player, isSelected: true, isDisabled: false)
-        npcView.configure(with: npc, isSelected: false, isDisabled: false)
+        universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
         checkCombatEnd()
     }
     
@@ -312,7 +316,7 @@ class CombatViewController: UIViewController {
         if let player = player {
             playerView.configure(with: player, isSelected: true, isDisabled: false)
         }
-        npcView.configure(with: npc, isSelected: false, isDisabled: false)
+        universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
         checkCombatEnd()
         setupActionButtons()
     }
@@ -344,6 +348,10 @@ class CombatViewController: UIViewController {
         if let onLoot = onLoot {
             onLoot()
         }
+    }
+    
+    @objc private func npcCellTapped() {
+        universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
     }
     
     private func setupTopWidget() {
