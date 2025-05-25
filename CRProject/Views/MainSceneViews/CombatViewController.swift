@@ -20,9 +20,6 @@ class CombatViewController: UIViewController {
     private let overlayView = UIView()
     private var dustEffectView: UIHostingController<DustEmitterView>?
     // Кнопки после завершения боя
-    private let postCombatStack = UIStackView()
-    private let leaveButton = UIButton(type: .system)
-    private let lootButton = UIButton(type: .system)
     private let witnessWarningLabel = UILabel()
     private let centerWidgetsContainer = UIView()
     
@@ -53,62 +50,6 @@ class CombatViewController: UIViewController {
         setupCombatUI()
         setupInitialCombatState()
         setupActionButtons()
-        // --- Кнопки после боя ---
-        postCombatStack.axis = .horizontal
-        postCombatStack.spacing = 24
-        postCombatStack.distribution = .fillEqually
-        postCombatStack.translatesAutoresizingMaskIntoConstraints = false
-        postCombatStack.isHidden = true
-        view.addSubview(postCombatStack)
-        NSLayoutConstraint.activate([
-            postCombatStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            postCombatStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
-            postCombatStack.widthAnchor.constraint(equalToConstant: 320),
-            postCombatStack.heightAnchor.constraint(equalToConstant: 48)
-        ])
-        // Leave
-        leaveButton.setTitle("Leave", for: .normal)
-        leaveButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18)
-        leaveButton.setTitleColor(.white, for: .normal)
-        leaveButton.backgroundColor = UIColor.black.withAlphaComponent(0.8)
-        leaveButton.layer.cornerRadius = 12
-        leaveButton.layer.shadowColor = UIColor.black.cgColor
-        leaveButton.layer.shadowOpacity = 0.7
-        leaveButton.layer.shadowRadius = 3
-        leaveButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-        leaveButton.addTarget(self, action: #selector(closeCombat), for: .touchUpInside)
-        postCombatStack.addArrangedSubview(leaveButton)
-        // Loot
-        lootButton.setTitle("Loot", for: .normal)
-        lootButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18)
-        lootButton.setTitleColor(.white, for: .normal)
-        lootButton.backgroundColor = UIColor.systemYellow.withAlphaComponent(0.8)
-        lootButton.layer.cornerRadius = 12
-        lootButton.layer.shadowColor = UIColor.black.cgColor
-        lootButton.layer.shadowOpacity = 0.7
-        lootButton.layer.shadowRadius = 3
-        lootButton.layer.shadowOffset = CGSize(width: 0, height: 2)
-        lootButton.addTarget(self, action: #selector(openLoot), for: .touchUpInside)
-        postCombatStack.addArrangedSubview(lootButton)
-        finishButton.setTitle("Finish Combat", for: .normal)
-        finishButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18)
-        finishButton.setTitleColor(.white, for: .normal)
-        finishButton.backgroundColor = UIColor.systemRed.withAlphaComponent(0.8)
-        finishButton.layer.cornerRadius = 12
-        finishButton.translatesAutoresizingMaskIntoConstraints = false
-        finishButton.isHidden = true
-        finishButton.addTarget(self, action: #selector(closeCombat), for: .touchUpInside)
-        view.addSubview(finishButton)
-        NSLayoutConstraint.activate([
-            finishButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            finishButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -90),
-            finishButton.widthAnchor.constraint(equalToConstant: 180),
-            finishButton.heightAnchor.constraint(equalToConstant: 44)
-        ])
-        // --- Добавляем тап по npcCell ---
-        let tap = UITapGestureRecognizer(target: self, action: #selector(npcCellTapped))
-        universalNpcCell.addGestureRecognizer(tap)
-        universalNpcCell.isUserInteractionEnabled = true
     }
     
     override func viewDidLayoutSubviews() {
@@ -233,12 +174,29 @@ class CombatViewController: UIViewController {
     
     private func setupActionButtons() {
         actionsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        var actions: [CombatActionType] = [.attack, .feed, .drain]
+        if isCombatEnded {
+            let leaveButton = ActionButtonSmallView(title: "Leave", icon: "arrowshape.turn.up.left.fill", color: .white) { [weak self] in
+                self?.closeCombat()
+            }
+            actionsStack.addArrangedSubview(leaveButton)
+            if npc.isAlive == false {
+                let lootButton = ActionButtonSmallView(title: "Loot", icon: "bag.fill", color: .systemYellow) { [weak self] in
+                    self?.openLoot()
+                }
+                actionsStack.addArrangedSubview(lootButton)
+            }
+            return
+        }
+        var actions: [(title: String, icon: String, color: UIColor, handler: () -> Void)] = [
+            ("Attack", "flame", .systemOrange, { [weak self] in self?.lastActionType = .attack; let action = CombatAction(type: .attack, initiatorId: "", targetId: "", parameters: nil); CombatService.shared.performAction(action); self?.updateUIAfterAction() }),
+            ("Bite", "mouth.fill", .systemPink, { [weak self] in self?.lastActionType = .feed; let action = CombatAction(type: .feed, initiatorId: "", targetId: "", parameters: nil); CombatService.shared.performAction(action); self?.updateUIAfterAction() }),
+            ("Drain", "drop.triangle.fill", .systemRed, { [weak self] in self?.lastActionType = .drain; let action = CombatAction(type: .drain, initiatorId: "", targetId: "", parameters: nil); CombatService.shared.performAction(action); self?.updateUIAfterAction() })
+        ]
         if AbilitiesSystem.shared.hasDomination {
-            actions.insert(.dominate, at: 2)
+            actions.insert(("Dominate", "eye", .systemBlue, { [weak self] in self?.lastActionType = .dominate; let action = CombatAction(type: .dominate, initiatorId: "", targetId: "", parameters: nil); CombatService.shared.performAction(action); self?.updateUIAfterAction() }), at: 2)
         }
         let witnesses = GameStateService.shared.getAwakeNpcsCount()
-        let hasVampireAction = actions.contains(where: { $0 == .feed || $0 == .drain || $0 == .dominate })
+        let hasVampireAction = actions.contains(where: { $0.title == "Bite" || $0.title == "Drain" || $0.title == "Dominate" })
         if witnesses > 0 && hasVampireAction {
             witnessWarningLabel.text = "⚠️ There are witnesses! Vampire actions will have consequences. (\(witnesses))"
             witnessWarningLabel.textColor = UIColor.systemRed
@@ -250,17 +208,11 @@ class CombatViewController: UIViewController {
         } else {
             witnessWarningLabel.isHidden = true
         }
-        for type in actions {
+        for (title, icon, color, handler) in actions {
             // Получаем шанс успеха
-            let chance = CombatService.shared.getBaseChance(for: type)
+            let chance = CombatService.shared.getBaseChance(for: CombatActionType(rawValue: actions.firstIndex(where: { $0.title == title }) ?? 0) ?? .attack)
             let chancePercent = Int(chance * 100)
-            let button = ActionButtonSmallView(type: type) { [weak self] in
-                self?.lastActionType = type
-                let action = CombatAction(type: type, initiatorId: "", targetId: "", parameters: nil)
-                CombatService.shared.performAction(action)
-                self?.updateUIAfterAction()
-            }
-            // Добавляем шанс к названию только для боевых действий
+            let button = ActionButtonSmallView(title: title, icon: icon, color: color, onTap: handler)
             button.setSubtitle("\(chancePercent)%")
             actionsStack.addArrangedSubview(button)
         }
@@ -338,10 +290,9 @@ class CombatViewController: UIViewController {
         let isNpcDead = !npc.isAlive
         if isPlayerDead || isNpcDead {
             isCombatEnded = true
-            actionsStack.isUserInteractionEnabled = false
-            actionsStack.isHidden = true
+            actionsStack.isUserInteractionEnabled = true
+            actionsStack.isHidden = false
             finishButton.isHidden = true
-            postCombatStack.isHidden = false
             resultLabel.text = isPlayerDead ? "You died!" : "Enemy defeated!"
         }
     }
