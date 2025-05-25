@@ -8,11 +8,10 @@ class CombatViewController: UIViewController {
     // UI
     private let titleLabel = UILabel()
     private let iconImageView = UIImageView()
-    private let playerView = CombatParticipantView(alignment: .left)
+    private let universalPlayerCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 120, height: 170))
     private let universalNpcCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 120, height: 170))
     private let vsLabel = UILabel()
     private let actionsStack = UIStackView()
-    private let combatRowStack = UIStackView()
     private let resultLabel = UILabel()
     private let finishButton = UIButton(type: .system)
     private let topWidgetContainerView = UIView()
@@ -25,6 +24,7 @@ class CombatViewController: UIViewController {
     private let leaveButton = UIButton(type: .system)
     private let lootButton = UIButton(type: .system)
     private let witnessWarningLabel = UILabel()
+    private let centerWidgetsContainer = UIView()
     
     // State
     private var player: Player? { GameStateService.shared.player }
@@ -154,6 +154,7 @@ class CombatViewController: UIViewController {
         vsLabel.layer.shadowOpacity = 0.7
         vsLabel.layer.shadowRadius = 3
         vsLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
+      
 
         // Actions stack (vertical, отдельно)
         actionsStack.axis = .vertical
@@ -162,23 +163,37 @@ class CombatViewController: UIViewController {
         actionsStack.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(actionsStack)
 
-        // Player and NPC views
-        playerView.translatesAutoresizingMaskIntoConstraints = false
+        // --- Центрируем карточки и VS в отдельном контейнере ---
+        centerWidgetsContainer.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(centerWidgetsContainer)
+        NSLayoutConstraint.activate([
+            centerWidgetsContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            centerWidgetsContainer.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+        // Добавляем карточки и VS внутрь контейнера
+        universalPlayerCell.translatesAutoresizingMaskIntoConstraints = false
+        vsLabel.translatesAutoresizingMaskIntoConstraints = false
         universalNpcCell.translatesAutoresizingMaskIntoConstraints = false
-        playerView.widthAnchor.constraint(equalToConstant: 120).isActive = true
-        playerView.heightAnchor.constraint(equalToConstant: 170).isActive = true
-        universalNpcCell.widthAnchor.constraint(equalToConstant: 120).isActive = true
-        universalNpcCell.heightAnchor.constraint(equalToConstant: 170).isActive = true
-
-        // Combat row stack (horizontal, только центральные виджеты)
-        combatRowStack.axis = .horizontal
-        combatRowStack.alignment = .center
-        combatRowStack.spacing = 16
-        combatRowStack.translatesAutoresizingMaskIntoConstraints = false
-        combatRowStack.addArrangedSubview(playerView)
-        combatRowStack.addArrangedSubview(vsLabel)
-        combatRowStack.addArrangedSubview(universalNpcCell)
-        view.addSubview(combatRowStack)
+        centerWidgetsContainer.addSubview(universalPlayerCell)
+        centerWidgetsContainer.addSubview(vsLabel)
+        centerWidgetsContainer.addSubview(universalNpcCell)
+        let avatarOffset: CGFloat = -43
+        NSLayoutConstraint.activate([
+            // Player слева от центра
+            universalPlayerCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 43),
+            universalPlayerCell.trailingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: -30),
+            universalPlayerCell.widthAnchor.constraint(equalToConstant: 120),
+            universalPlayerCell.heightAnchor.constraint(equalToConstant: 170),
+            
+            vsLabel.centerXAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor),
+            vsLabel.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 15),
+            
+            // NPC справа от центра
+            universalNpcCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 43),
+            universalNpcCell.leadingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: 30),
+            universalNpcCell.widthAnchor.constraint(equalToConstant: 120),
+            universalNpcCell.heightAnchor.constraint(equalToConstant: 170)
+        ])
 
         // Combat log/result label
         resultLabel.font = UIFont(name: "Optima-Regular", size: 15) ?? UIFont.systemFont(ofSize: 15)
@@ -201,10 +216,8 @@ class CombatViewController: UIViewController {
             actionsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
             actionsStack.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 24),
 
-            combatRowStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            combatRowStack.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 24),
-
-            resultLabel.topAnchor.constraint(equalTo: combatRowStack.bottomAnchor, constant: 24),
+            // --- Combat log ---
+            resultLabel.topAnchor.constraint(equalTo: centerWidgetsContainer.bottomAnchor, constant: 124),
             resultLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             resultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
         ])
@@ -213,7 +226,7 @@ class CombatViewController: UIViewController {
     private func setupInitialCombatState() {
         guard let player = player else { return }
         CombatService.shared.startCombat(player: player, npc: npc)
-        playerView.configure(with: player, isSelected: true, isDisabled: false)
+        universalPlayerCell.configure(with: player, isDisabled: false)
         universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
         checkCombatEnd()
     }
@@ -312,7 +325,7 @@ class CombatViewController: UIViewController {
             resultLabel.text = ""
         }
         if let player = player {
-            playerView.configure(with: player, isSelected: true, isDisabled: false)
+            universalPlayerCell.configure(with: player, isDisabled: false)
         }
         universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
         checkCombatEnd()

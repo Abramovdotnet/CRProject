@@ -63,7 +63,7 @@ class ActionButtonSmallView: UIButton {
         layer.borderWidth = 1
         layer.borderColor = iconColor.withAlphaComponent(0.5).cgColor
         // Фиксированная ширина
-        widthAnchor.constraint(equalToConstant: 130).isActive = true
+        widthAnchor.constraint(equalToConstant: 110).isActive = true
         // Делаю stackView и subviews неинтерактивными
         topRowStack.isUserInteractionEnabled = false
         iconImageView.isUserInteractionEnabled = false

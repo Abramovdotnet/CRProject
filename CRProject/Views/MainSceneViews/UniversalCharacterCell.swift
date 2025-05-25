@@ -470,6 +470,104 @@ class UniversalCharacterCell: UIView {
         }
     }
 
+    // MARK: - Новый метод для Player
+    func configure(with player: Player, isDisabled: Bool) {
+        // Всегда ведём себя как isSelected = true
+        let animationDuration: TimeInterval = 0.2
+        // --- Glow и фон ---
+        UIView.animate(withDuration: animationDuration) {
+            self.cardBackground.layer.borderColor = UIColor.clear.cgColor
+            self.cardBackground.layer.borderWidth = 0
+        }
+        avatarShadowContainer.layer.shadowOpacity = 0.8
+        // --- Аватар ---
+        let newImage = UIImage(named: "playerAvatar") ?? UIImage(named: "defaultMalePlaceholder")
+        if avatarImageView.image != newImage {
+            UIView.transition(with: avatarImageView,
+                             duration: animationDuration,
+                             options: .transitionCrossDissolve,
+                             animations: {
+                self.avatarImageView.image = newImage
+            }, completion: nil)
+        }
+        UIView.animate(withDuration: animationDuration) {
+            self.avatarImageView.layer.borderWidth = 1
+            self.avatarImageView.layer.borderColor = UIColor.black.cgColor
+        }
+        // --- Индикатор здоровья ---
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(animationDuration)
+        healthIndicator.opacity = 1.0
+        healthIndicator.shadowOpacity = 0.8
+        // Кольцо здоровья
+        let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
+        let radius = healthIndicator.bounds.width / 2 - 2
+        let startAngle = -CGFloat.pi / 2
+        let endAngle = startAngle + 2 * .pi * CGFloat(player.bloodMeter.currentBlood / 100)
+        let path = UIBezierPath(arcCenter: center, radius: radius,
+                               startAngle: startAngle, endAngle: endAngle,
+                               clockwise: true)
+        healthIndicator.path = path.cgPath
+        CATransaction.commit()
+        // --- Профессия скрыта ---
+        professionIcon.isHidden = true
+        // --- Активность: всегда "drop" красного цвета ---
+        let iconConfig = UIImage.SymbolConfiguration(pointSize: 12)
+        let dropImage = UIImage(systemName: "drop", withConfiguration: iconConfig)
+        UIView.transition(with: activityIcon,
+                         duration: animationDuration,
+                         options: .transitionCrossDissolve,
+                         animations: {
+            self.activityIcon.image = dropImage
+            self.activityIcon.tintColor = UIColor.systemRed
+            self.activityIcon.contentMode = .center
+        }, completion: nil)
+        UIView.animate(withDuration: animationDuration) {
+            self.activityIcon.layer.borderColor = UIColor.systemRed.cgColor
+            self.activityIcon.alpha = 1.0
+        }
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(animationDuration)
+        activityIcon.layer.shadowColor = UIColor.systemRed.cgColor
+        activityIcon.layer.shadowRadius = 3
+        activityIcon.layer.shadowOpacity = 0.6
+        activityIcon.layer.shadowOffset = CGSize.zero
+        CATransaction.commit()
+        activityIcon.isHidden = false
+        // --- Здоровье ---
+        let healthValue = Int(player.bloodMeter.currentBlood)
+        let healthText = "\(healthValue)%"
+        if healthPercentageLabel.text != healthText {
+            UIView.transition(with: healthPercentageLabel,
+                             duration: animationDuration,
+                             options: .transitionCrossDissolve,
+                             animations: {
+                self.healthPercentageLabel.text = healthText
+            }, completion: nil)
+        }
+        healthPercentageLabel.isHidden = false
+        UIView.animate(withDuration: animationDuration) {
+            if player.bloodMeter.currentBlood < 30 {
+                self.healthPercentageLabel.textColor = UIColor.red
+            } else if player.bloodMeter.currentBlood < 60 {
+                self.healthPercentageLabel.textColor = UIColor.orange
+            } else {
+                self.healthPercentageLabel.textColor = UIColor.white
+            }
+        }
+        // --- Индикаторы жертвы и квеста скрыты ---
+        desiredVictimIndicator.isHidden = true
+        questIndicatorIcon.isHidden = true
+        // --- Анимация прозрачности карточки ---
+        UIView.animate(withDuration: animationDuration) {
+            self.cardBackground.alpha = player.isAlive ? (isDisabled ? 0.5 : 1.0) : 0.4
+        }
+        // --- Glow ---
+        UIView.animate(withDuration: animationDuration) {
+            self.selectionGlowLayer.shadowOpacity = 0.7
+        }
+    }
+
     private func convertSwiftUIColorToUIColor(_ color: Color) -> UIColor {
         if color == .red { return UIColor.systemRed }
         if color == .blue { return UIColor.systemBlue }
