@@ -224,7 +224,7 @@ class CombatParticipantView: UIView {
         nameLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
     }
     
-    func configure(with participant: CombatParticipant, isSelected: Bool, isDisabled: Bool) {
+    func configure(with character: any Character, isSelected: Bool, isDisabled: Bool) {
         let animationDuration: TimeInterval = 0.2
         UIView.animate(withDuration: animationDuration) {
             self.cardBackground.layer.borderColor = UIColor.clear.cgColor
@@ -232,10 +232,10 @@ class CombatParticipantView: UIView {
         }
         avatarShadowContainer.layer.shadowOpacity = isSelected ? 0.8 : 0.8
         let imageName: String
-        if participant.isPlayer {
+        if character.isVampire {
             imageName = "player1"
         } else {
-            imageName = "npc\(participant.id)"
+            imageName = "npc\(character.id)"
         }
         let newImage = UIImage(named: imageName) ?? UIImage(named: "defaultMalePlaceholder")
         if avatarImageView.image != newImage {
@@ -254,19 +254,19 @@ class CombatParticipantView: UIView {
         let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
         let radius = healthIndicator.bounds.width / 2 - 2
         let startAngle = -CGFloat.pi / 2
-        let percent = max(0, min(1, CGFloat(participant.health) / 100.0))
+        let percent = max(0, min(1, CGFloat(character.bloodMeter.currentBlood) / 100.0))
         let endAngle = startAngle + 2 * .pi * percent
         let path = UIBezierPath(arcCenter: center, radius: radius, startAngle: startAngle, endAngle: endAngle, clockwise: true)
         healthIndicator.path = path.cgPath
         CATransaction.commit()
-        professionIcon.image = UIImage(systemName: participant.profession.icon)
+        professionIcon.image = UIImage(systemName: character.profession.icon)
         professionIcon.tintColor = UIColor.systemGray
-        let combatIconName = participant.isPlayer ? "shield.fill" : "sword"
+        let combatIconName = character.isVampire ? "shield.fill" : "sword"
         let combatIconImage = UIImage(systemName: combatIconName)
         combatIcon.image = combatIconImage
-        combatIcon.tintColor = participant.isPlayer ? UIColor.systemBlue : UIColor.systemRed
-        nameLabel.text = participant.name
-        let healthValue = Int(participant.health)
+        combatIcon.tintColor = character.isVampire ? UIColor.systemBlue : UIColor.systemRed
+        nameLabel.text = character.name
+        let healthValue = Int(character.bloodMeter.currentBlood)
         let healthText = "\(healthValue)%"
         if healthPercentageLabel.text != healthText {
             UIView.transition(with: healthPercentageLabel, duration: animationDuration, options: .transitionCrossDissolve, animations: {
@@ -275,9 +275,9 @@ class CombatParticipantView: UIView {
         }
         healthPercentageLabel.isHidden = false
         UIView.animate(withDuration: animationDuration) {
-            if participant.health < 30 {
+            if character.bloodMeter.currentBlood < 30 {
                 self.healthPercentageLabel.textColor = UIColor.red
-            } else if participant.health < 60 {
+            } else if character.bloodMeter.currentBlood < 60 {
                 self.healthPercentageLabel.textColor = UIColor.orange
             } else {
                 self.healthPercentageLabel.textColor = UIColor.white

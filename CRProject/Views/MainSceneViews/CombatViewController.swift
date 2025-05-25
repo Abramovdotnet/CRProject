@@ -19,12 +19,20 @@ class CombatViewController: UIViewController {
     private let backgroundImageView = UIImageView()
     private let overlayView = UIView()
     private var dustEffectView: UIHostingController<DustEmitterView>?
+    // Кнопки после завершения боя
+    private let postCombatStack = UIStackView()
+    private let leaveButton = UIButton(type: .system)
+    private let lootButton = UIButton(type: .system)
+    private let witnessWarningLabel = UILabel()
     
     // State
     private var player: Player? { GameStateService.shared.player }
-    private var combatState: CombatState? { CombatService.shared.currentCombatState }
     private var lastActionType: CombatActionType? = nil
     private var isCombatEnded: Bool = false
+    
+    // Callbacks для навигации
+    var onLeave: (() -> Void)? = nil
+    var onLoot: (() -> Void)? = nil
     
     init(mainViewModel: MainSceneViewModel, npc: NPC) {
         self.mainViewModel = mainViewModel
@@ -43,8 +51,46 @@ class CombatViewController: UIViewController {
         setupTopWidget()
         setupCombatUI()
         setupInitialCombatState()
+        setupActionButtons()
+        // --- Кнопки после боя ---
+        postCombatStack.axis = .horizontal
+        postCombatStack.spacing = 24
+        postCombatStack.distribution = .fillEqually
+        postCombatStack.translatesAutoresizingMaskIntoConstraints = false
+        postCombatStack.isHidden = true
+        view.addSubview(postCombatStack)
+        NSLayoutConstraint.activate([
+            postCombatStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            postCombatStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
+            postCombatStack.widthAnchor.constraint(equalToConstant: 320),
+            postCombatStack.heightAnchor.constraint(equalToConstant: 48)
+        ])
+        // Leave
+        leaveButton.setTitle("Leave", for: .normal)
+        leaveButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18)
+        leaveButton.setTitleColor(.white, for: .normal)
+        leaveButton.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+        leaveButton.layer.cornerRadius = 12
+        leaveButton.layer.shadowColor = UIColor.black.cgColor
+        leaveButton.layer.shadowOpacity = 0.7
+        leaveButton.layer.shadowRadius = 3
+        leaveButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+        leaveButton.addTarget(self, action: #selector(closeCombat), for: .touchUpInside)
+        postCombatStack.addArrangedSubview(leaveButton)
+        // Loot
+        lootButton.setTitle("Loot", for: .normal)
+        lootButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18)
+        lootButton.setTitleColor(.white, for: .normal)
+        lootButton.backgroundColor = UIColor.systemYellow.withAlphaComponent(0.8)
+        lootButton.layer.cornerRadius = 12
+        lootButton.layer.shadowColor = UIColor.black.cgColor
+        lootButton.layer.shadowOpacity = 0.7
+        lootButton.layer.shadowRadius = 3
+        lootButton.layer.shadowOffset = CGSize(width: 0, height: 2)
+        lootButton.addTarget(self, action: #selector(openLoot), for: .touchUpInside)
+        postCombatStack.addArrangedSubview(lootButton)
         finishButton.setTitle("Finish Combat", for: .normal)
-        finishButton.titleLabel?.font = UIFont(name: "Optima-Bold", size: 18) ?? UIFont.boldSystemFont(ofSize: 18)
+        finishButton.titleLabel?.font = UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18)
         finishButton.setTitleColor(.white, for: .normal)
         finishButton.backgroundColor = UIColor.systemRed.withAlphaComponent(0.8)
         finishButton.layer.cornerRadius = 12
@@ -81,136 +127,159 @@ class CombatViewController: UIViewController {
     }
     
     private func setupCombatUI() {
-        // Заголовок
-        titleLabel.text = "COMBAT"
-        titleLabel.font = UIFont(name: "Optima-Bold", size: 22) ?? UIFont.boldSystemFont(ofSize: 22)
-        titleLabel.textColor = .white
-        titleLabel.textAlignment = .center
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(titleLabel)
-        
-        // Иконка боя
-        iconImageView.image = UIImage(systemName: "cross.case.fill")
-        iconImageView.tintColor = .systemRed
-        iconImageView.contentMode = .scaleAspectFit
-        iconImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(iconImageView)
-        
+        // --- Предупреждение о свидетелях/атмосфере ---
+        witnessWarningLabel.font = UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18)
+        witnessWarningLabel.textColor = UIColor.systemRed
+        witnessWarningLabel.textAlignment = .center
+        witnessWarningLabel.numberOfLines = 2
+        witnessWarningLabel.layer.shadowColor = UIColor.black.cgColor
+        witnessWarningLabel.layer.shadowOpacity = 0.7
+        witnessWarningLabel.layer.shadowRadius = 3
+        witnessWarningLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
+        witnessWarningLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(witnessWarningLabel)
         // VS label
         vsLabel.text = "VS"
-        vsLabel.font = UIFont(name: "Optima-Bold", size: 20) ?? UIFont.boldSystemFont(ofSize: 20)
+        vsLabel.font = UIFont(name: "Optima-Regular", size: 40) ?? UIFont.systemFont(ofSize: 40)
         vsLabel.textColor = .systemRed
         vsLabel.textAlignment = .center
         vsLabel.translatesAutoresizingMaskIntoConstraints = false
+        vsLabel.layer.shadowColor = UIColor.black.cgColor
+        vsLabel.layer.shadowOpacity = 0.7
+        vsLabel.layer.shadowRadius = 3
+        vsLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
         view.addSubview(vsLabel)
-        
         // Участники боя
         playerView.translatesAutoresizingMaskIntoConstraints = false
         npcView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(playerView)
         view.addSubview(npcView)
-        
         // Стек кнопок действий
         actionsStack.axis = .horizontal
         actionsStack.spacing = 16
         actionsStack.distribution = .fillEqually
         actionsStack.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(actionsStack)
-        
         // Результат действия
-        resultLabel.font = UIFont(name: "Optima", size: 15) ?? UIFont.systemFont(ofSize: 15)
+        resultLabel.font = UIFont(name: "Optima-Regular", size: 15) ?? UIFont.systemFont(ofSize: 15)
         resultLabel.textColor = .white
         resultLabel.textAlignment = .center
         resultLabel.numberOfLines = 0
         resultLabel.translatesAutoresizingMaskIntoConstraints = false
+        resultLabel.layer.shadowColor = UIColor.black.cgColor
+        resultLabel.layer.shadowOpacity = 0.7
+        resultLabel.layer.shadowRadius = 3
+        resultLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
         view.addSubview(resultLabel)
-        
         // Layout
         NSLayoutConstraint.activate([
-            titleLabel.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 40),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            iconImageView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 4),
-            iconImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            iconImageView.widthAnchor.constraint(equalToConstant: 32),
-            iconImageView.heightAnchor.constraint(equalToConstant: 32),
-            
-            playerView.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 8),
+            witnessWarningLabel.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 16),
+            witnessWarningLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            witnessWarningLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            vsLabel.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 12),
+            vsLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            playerView.topAnchor.constraint(equalTo: vsLabel.bottomAnchor, constant: 8),
             playerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
             playerView.widthAnchor.constraint(equalToConstant: 120),
             playerView.heightAnchor.constraint(equalToConstant: 170),
-            
             npcView.centerYAnchor.constraint(equalTo: playerView.centerYAnchor),
             npcView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
             npcView.widthAnchor.constraint(equalToConstant: 120),
             npcView.heightAnchor.constraint(equalToConstant: 170),
-            
-            vsLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            vsLabel.centerYAnchor.constraint(equalTo: playerView.centerYAnchor),
-            
+            resultLabel.bottomAnchor.constraint(equalTo: actionsStack.topAnchor, constant: -12),
+            resultLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
+            resultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             actionsStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
             actionsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             actionsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
             actionsStack.heightAnchor.constraint(equalToConstant: 48),
-            
-            resultLabel.bottomAnchor.constraint(equalTo: actionsStack.topAnchor, constant: -16),
-            resultLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            resultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
         ])
     }
     
     private func setupInitialCombatState() {
         guard let player = player else { return }
-        // Создаём CombatParticipant для игрока и NPC
-        let playerParticipant = CombatParticipant(
-            id: String(player.id),
-            isPlayer: true,
-            health: Int(player.bloodMeter.currentBlood),
-            blood: Int(player.bloodMeter.currentBlood),
-            morale: 0, // Можно доработать если появится поле
-            name: player.name,
-            profession: player.profession,
-            items: player.items.map { $0.id },
-            statuses: [],
-            relations: [:]
-        )
-        let npcParticipant = CombatParticipant(
-            id: String(npc.id),
-            isPlayer: false,
-            health: Int(npc.bloodMeter.currentBlood),
-            blood: Int(npc.bloodMeter.currentBlood),
-            morale: 0, // Можно доработать если появится поле
-            name: npc.name,
-            profession: npc.profession,
-            items: npc.items.map { $0.id },
-            statuses: [],
-            relations: [:]
-        )
-        // Инициализируем бой
-        CombatService.shared.startCombat(with: [playerParticipant, npcParticipant], type: .duel, initiator: playerParticipant)
-        // Отображаем участников
-        playerView.configure(with: playerParticipant, isSelected: true, isDisabled: false)
-        npcView.configure(with: npcParticipant, isSelected: false, isDisabled: false)
-        // Кнопки действий
-        setupActionButtons()
+        CombatService.shared.startCombat(player: player, npc: npc)
+        playerView.configure(with: player, isSelected: true, isDisabled: false)
+        npcView.configure(with: npc, isSelected: false, isDisabled: false)
+        checkCombatEnd()
     }
     
     private func setupActionButtons() {
         actionsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        let actions: [(String, CombatActionType)] = [
-            ("Attack", .attack),
-            ("Bite", .bite),
-            ("Dominate", .dominate),
-            ("Escape", .escape),
-            ("Shadowstep", .shadowStep)
-        ]
-        for (title, type) in actions {
+        var actions: [CombatActionType] = [.attack, .feed, .drain]
+        if AbilitiesSystem.shared.hasDomination {
+            actions.insert(.dominate, at: 2)
+        }
+        let witnesses = GameStateService.shared.getAwakeNpcsCount()
+        let hasVampireAction = actions.contains(where: { $0 == .feed || $0 == .drain || $0 == .dominate })
+        if witnesses > 0 && hasVampireAction {
+            witnessWarningLabel.text = "⚠️ There are witnesses! Vampire actions will have consequences. (\(witnesses))"
+            witnessWarningLabel.textColor = UIColor.systemRed
+            witnessWarningLabel.isHidden = false
+        } else if hasVampireAction {
+            witnessWarningLabel.text = "🌑 No one is watching... The night is yours."
+            witnessWarningLabel.textColor = UIColor.systemGreen
+            witnessWarningLabel.isHidden = false
+        } else {
+            witnessWarningLabel.isHidden = true
+        }
+        for type in actions {
             let button = UIButton(type: .system)
-            button.setTitle(title, for: .normal)
-            button.titleLabel?.font = UIFont(name: "Optima-Bold", size: 16) ?? UIFont.boldSystemFont(ofSize: 16)
-            button.setTitleColor(.white, for: .normal)
-            button.backgroundColor = UIColor.darkGray.withAlphaComponent(0.7)
+            // Получаем шанс успеха
+            let chance = CombatService.shared.getBaseChance(for: type)
+            let chancePercent = Int(chance * 100)
+            // Атмосферные описания последствий
+            let consequenceDescription: String = {
+                switch type {
+                case .attack:
+                    return "Success: Wound your foe: -25 HP to enemy\nFail: You are struck back: -25 HP to you"
+                case .feed:
+                    return "Success: Sink your fangs: +25 HP to you, -25 HP to enemy\nFail: You are repelled: -25 HP to you"
+                case .drain:
+                    return "Success: Devour completely: Enemy dies, you absorb all their blood\nFail: You are wounded: -25 HP to you"
+                default:
+                    return type.consequenceDescription
+                }
+            }()
+            // Цвета для действий
+            let (titleColor, iconColor): (UIColor, UIColor) = {
+                switch type {
+                case .attack: return (.systemOrange, .systemOrange)
+                case .feed: return (.systemPink, .systemPink)
+                case .dominate: return (.systemBlue, .systemBlue)
+                case .drain: return (.systemRed, .systemRed)
+                default: return (.white, .white)
+                }
+            }()
+            // Составляем title с иконкой, шансом и последствиями
+            let icon = UIImage(systemName: type.icon)?.withRenderingMode(.alwaysTemplate)
+            button.setImage(icon, for: .normal)
+            button.tintColor = iconColor
+            button.imageView?.contentMode = .scaleAspectFit
+            // TODO: imageEdgeInsets deprecated in iOS 15+, оставить для совместимости
+            button.imageEdgeInsets = UIEdgeInsets(top: 0, left: -6, bottom: 0, right: 6)
+            let title = "\(type.displayName)  \(chancePercent)%\n\(consequenceDescription)"
+            let attrTitle = NSMutableAttributedString(string: title)
+            // Основной стиль (название действия)
+            attrTitle.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "Optima-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14), range: NSRange(location: 0, length: type.displayName.count))
+            attrTitle.addAttribute(NSAttributedString.Key.foregroundColor, value: titleColor, range: NSRange(location: 0, length: type.displayName.count))
+            // Шанс
+            let chanceRange = (title as NSString).range(of: "\(chancePercent)%")
+            attrTitle.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemYellow, range: chanceRange)
+            // Последствия (весь текст после процента)
+            let consRange = (title as NSString).range(of: consequenceDescription)
+            attrTitle.addAttribute(NSAttributedString.Key.font, value: UIFont(name: "Optima-Regular", size: 11) ?? UIFont.systemFont(ofSize: 11), range: consRange)
+            attrTitle.addAttribute(NSAttributedString.Key.foregroundColor, value: UIColor.systemRed, range: consRange)
+            button.setAttributedTitle(attrTitle, for: .normal)
+            button.titleLabel?.numberOfLines = 3
+            button.titleLabel?.textAlignment = .center
+            button.backgroundColor = UIColor.black.withAlphaComponent(0.6)
             button.layer.cornerRadius = 10
+            // Добавляем тень к тексту на кнопке
+            button.titleLabel?.layer.shadowColor = UIColor.black.cgColor
+            button.titleLabel?.layer.shadowOpacity = 0.7
+            button.titleLabel?.layer.shadowRadius = 3
+            button.titleLabel?.layer.shadowOffset = CGSize(width: 0, height: 2)
             button.addTarget(self, action: #selector(actionButtonTapped(_:)), for: .touchUpInside)
             button.tag = type.rawValue
             actionsStack.addArrangedSubview(button)
@@ -218,67 +287,105 @@ class CombatViewController: UIViewController {
     }
     
     @objc private func actionButtonTapped(_ sender: UIButton) {
-        guard let actionType = CombatActionType(rawValue: sender.tag), let player = player else { return }
+        guard let actionType = CombatActionType(rawValue: sender.tag) else { return }
         lastActionType = actionType
-        let action = CombatAction(
-            type: actionType,
-            initiatorId: String(player.id),
-            targetId: String(npc.id),
-            parameters: nil
-        )
+        let action = CombatAction(type: actionType, initiatorId: "", targetId: "", parameters: nil)
         CombatService.shared.performAction(action)
         updateUIAfterAction()
     }
     
+    // Маппинг последствий на текст, цвет и иконку для игрока
+    private func prettyCombatResultText(_ summary: String) -> (NSAttributedString, UIColor) {
+        // Примеры: "Success: damage_caused", "Fail: player_damaged"
+        let lower = summary.lowercased()
+        let isSuccess = lower.contains("success")
+        let isFail = lower.contains("fail")
+        let code: String = {
+            if let idx = lower.firstIndex(of: ":") {
+                return lower[lower.index(after: idx)...].trimmingCharacters(in: .whitespaces)
+            }
+            return lower
+        }()
+        var text = ""
+        var color = UIColor.white
+        var icon = ""
+        switch code {
+        case let s where s.contains("damage_caused"):
+            text = isSuccess ? "You hit the enemy!" : "Missed! Enemy strikes back!"
+            color = isSuccess ? UIColor.systemGreen : UIColor.systemRed
+            icon = isSuccess ? "🗡️" : "💢"
+        case let s where s.contains("player_damaged"):
+            text = isSuccess ? "You heal!" : "You are hurt!"
+            color = isSuccess ? UIColor.systemPink : UIColor.systemRed
+            icon = isSuccess ? "🩸" : "💢"
+        case let s where s.contains("target_bited"):
+            text = "You bite and heal!"
+            color = UIColor.systemPink
+            icon = "🩸"
+        case let s where s.contains("npc_dominated"):
+            text = "Enemy is dominated!"
+            color = UIColor.systemBlue
+            icon = "👁️"
+        case let s where s.contains("no_effect"):
+            text = "No effect."
+            color = UIColor.systemGray
+            icon = "—"
+        case let s where s.contains("target_drained"):
+            text = "You drain all blood!"
+            color = UIColor.systemRed
+            icon = "🩸"
+        default:
+            text = summary
+            color = UIColor.white
+            icon = ""
+        }
+        let pretty = NSMutableAttributedString(string: icon.isEmpty ? text : icon + " " + text)
+        pretty.addAttribute(.font, value: UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18), range: NSRange(location: 0, length: pretty.length))
+        pretty.addAttribute(.foregroundColor, value: color, range: NSRange(location: 0, length: pretty.length))
+        return (pretty, color)
+    }
+    
     private func updateUIAfterAction() {
-        guard let state = CombatService.shared.currentCombatState else { return }
-        // Обновляем результат
-        if let summary = state.result?.summary {
-            resultLabel.text = summary
-                .replacingOccurrences(of: "Успех", with: "Success")
-                .replacingOccurrences(of: "Провал", with: "Fail")
-                .replacingOccurrences(of: "Завершён", with: "Finished")
-                .replacingOccurrences(of: "Критический успех", with: "Critical Success")
-                .replacingOccurrences(of: "Критический провал", with: "Critical Fail")
+        if let summary = CombatService.shared.resultSummary {
+            let (pretty, _) = prettyCombatResultText(summary)
+            resultLabel.attributedText = pretty
         } else {
             resultLabel.text = ""
         }
-        // Получаем актуальные значения здоровья
-        var playerHealth = 0
-        var npcHealth = 0
-        for p in state.participants {
-            if p.isPlayer { playerHealth = p.health }
-            else { npcHealth = p.health }
+        if let player = player {
+            playerView.configure(with: player, isSelected: true, isDisabled: false)
         }
-        // Обновляем ячейки
-        if let playerP = state.participants.first(where: { $0.isPlayer }) {
-            playerView.configure(with: playerP, isSelected: true, isDisabled: false)
-        }
-        if let npcP = state.participants.first(where: { !$0.isPlayer }) {
-            npcView.configure(with: npcP, isSelected: false, isDisabled: false)
-        }
-        // Проверяем завершение боя
-        let isPlayerDead = playerHealth <= 0
-        let isNpcDead = npcHealth <= 0
-        let isEscape = (lastActionType == .escape || lastActionType == .shadowStep) && (state.result?.summary.contains("успех") ?? false)
-        if isPlayerDead || isNpcDead || isEscape {
+        npcView.configure(with: npc, isSelected: false, isDisabled: false)
+        checkCombatEnd()
+        setupActionButtons()
+    }
+    
+    private func checkCombatEnd() {
+        guard let player = player else { return }
+        let isPlayerDead = !player.isAlive
+        let isNpcDead = !npc.isAlive
+        if isPlayerDead || isNpcDead {
             isCombatEnded = true
             actionsStack.isUserInteractionEnabled = false
-            finishButton.isHidden = false
-            if isPlayerDead {
-                resultLabel.text = "Вы проиграли. Бой завершён."
-            } else if isNpcDead {
-                resultLabel.text = "Победа! Противник повержен."
-            } else if isEscape {
-                resultLabel.text = "Вы успешно покинули бой."
-            } else {
-                resultLabel.text = "Бой завершён."
-            }
+            actionsStack.isHidden = true
+            finishButton.isHidden = true
+            postCombatStack.isHidden = false
+            resultLabel.text = isPlayerDead ? "You died!" : "Enemy defeated!"
         }
     }
     
     @objc private func closeCombat() {
-        self.dismiss(animated: true, completion: nil)
+        if let onLeave = onLeave {
+            onLeave()
+        } else {
+            self.dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    @objc private func openLoot() {
+        if let onLoot = onLoot {
+            onLoot()
+        }
     }
     
     private func setupTopWidget() {

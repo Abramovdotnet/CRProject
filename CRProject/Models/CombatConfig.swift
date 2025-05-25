@@ -5,22 +5,13 @@ struct CombatConfig: Codable {
     var damageValues: [String: Int] // Тип действия -> урон
     var consequences: [String: [String: String]] // Тип действия -> (событие -> последствие)
     var allowedTypes: [CombatType]
-    // Новые поля для расширенного конфига
     var bloodModifiers: [String: Double]? // low/medium/high -> модификатор
-    var witnessChance: Double? // Шанс свидетеля
     var aftermath: AftermathConfig? // Последствия шума и расследования
-    var criticalChance: Double? // Шанс критического эффекта
-    var criticalEffects: [String: String]? // success/fail -> эффект
-    // --- Новые поля ---
-    var equipmentModifiers: [String: [String: Int]]? // "weapon"/"armor" -> имя -> бонус
-    var bite: [String: CodableValue]? // healPercent, allowedTargets
-    var publicBiteReveal: Bool?
-    var professionModifiers: [String: [String: CodableValue]]?
+    var bite: [String: CodableValue]? // healPercent
 }
 
 struct AftermathConfig: Codable {
     var noiseLevel: [String: Double]? // действие -> уровень шума
-    var investigationThreshold: Double? // порог для расследования
 }
 
 // Для поддержки значений типа Double/Int/String/Array

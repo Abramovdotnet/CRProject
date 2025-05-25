@@ -28,7 +28,7 @@ class FeedingService: GameService {
         return prey.bloodMeter.bloodPercentage > 0
     }
     
-    func feedOnCharacter(vampire: Player, prey: NPC, amount: Float, in sceneId: Int) throws {
+    func feedOnCharacter(vampire: Player, prey: NPC, amount: Float, in sceneId: Int, advanceTime: Bool = true) throws {
         guard canFeed(vampire: vampire, prey: prey) else {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
@@ -80,7 +80,10 @@ class FeedingService: GameService {
             
             setWitnessesIfExists(sceneId: sceneId)
             
-            gameTime.advanceTime()
+            
+            if advanceTime {
+                gameTime.advanceTime()
+            }
         }
     }
     
@@ -96,7 +99,7 @@ class FeedingService: GameService {
         }
     }
     
-    func emptyBlood(vampire: any Character, prey: NPC, in sceneId: Int) throws {
+    func emptyBlood(vampire: any Character, prey: NPC, in sceneId: Int, advanceTime: Bool = true) throws {
         guard canFeed(vampire: vampire, prey: prey) else {
             throw FeedingError.invalidFeedingTarget("Cannot feed on this character")
         }
@@ -125,7 +128,9 @@ class FeedingService: GameService {
             
             setWitnessesIfExists(sceneId: sceneId)
             
-            gameTime.advanceTime()
+            if advanceTime {
+                gameTime.advanceTime()
+            }
         }
     }
     

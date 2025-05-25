@@ -593,20 +593,21 @@ struct MainSceneView: View {
                             ZStack {
                                 Color.black.edgesIgnoringSafeArea(.all)
                                 if let npc = npcManager.selectedNPC {
-                                    CombatViewRepresentable(mainViewModel: viewModel, npc: npc)
+                                    CombatViewRepresentable(
+                                        mainViewModel: viewModel,
+                                        npc: npc,
+                                        onLeave: {
+                                            navigationPath.removeLast()
+                                        },
+                                        onLoot: {
+                                            navigationPath.append(NavigationDestination.loot)
+                                        }
+                                    )
                                 } else {
                                     Text("No NPC selected").foregroundColor(.white)
                                 }
                             }
                             .navigationBarHidden(true)
-                            .gesture(
-                                DragGesture()
-                                    .onEnded { gesture in
-                                        if gesture.translation.width > 100 {
-                                            safePopNavigation()
-                                        }
-                                    }
-                            )
                         }
                     }
                 }

@@ -123,6 +123,7 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func changeLocation(to locationId: Int) throws {
+        guard let player = player else { return }
         DebugLogService.shared.log("Changing location to ID: \(locationId)", category: "Location")
         
         movePlayerThroughHideouts(to: .none)
@@ -141,6 +142,7 @@ class GameStateService : ObservableObject, GameService{
             
             npcManager.selectedNPC = nil
             
+            player.currentLocationId = currentScene?.id ?? newLocation.id
             gameTime.advanceTime()
         } else {
             DebugLogService.shared.log("Cannot travel to locked location", category: "Location")
