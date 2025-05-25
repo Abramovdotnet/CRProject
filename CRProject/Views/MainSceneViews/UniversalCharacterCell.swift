@@ -23,6 +23,8 @@ class UniversalCharacterCell: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
+        self.isUserInteractionEnabled = true
+        self.subviews.forEach { $0.isUserInteractionEnabled = false }
     }
     
     required init?(coder: NSCoder) {
@@ -481,7 +483,7 @@ class UniversalCharacterCell: UIView {
         }
         avatarShadowContainer.layer.shadowOpacity = 0.8
         // --- Аватар ---
-        let newImage = UIImage(named: "playerAvatar") ?? UIImage(named: "defaultMalePlaceholder")
+        let newImage = UIImage(named: "player1") ?? UIImage(named: "defaultMalePlaceholder")
         if avatarImageView.image != newImage {
             UIView.transition(with: avatarImageView,
                              duration: animationDuration,

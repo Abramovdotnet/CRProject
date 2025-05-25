@@ -22,6 +22,10 @@ class CombatViewController: UIViewController {
     // Кнопки после завершения боя
     private let witnessWarningLabel = UILabel()
     private let centerWidgetsContainer = UIView()
+    // Overlay and widget references
+    private var widgetOverlayView: UIView?
+    private var playerWidgetVC: PlayerWidgetUIViewController?
+    private var npcWidgetVC: NPCWidgetUIViewController?
     
     // State
     private var player: Player? { GameStateService.shared.player }
@@ -50,6 +54,7 @@ class CombatViewController: UIViewController {
         setupCombatUI()
         setupInitialCombatState()
         setupActionButtons()
+        setupDoubleTapGestures()
     }
     
     override func viewDidLayoutSubviews() {
@@ -63,12 +68,10 @@ class CombatViewController: UIViewController {
             height: viewport.height + extraSpace
         )
         backgroundImageView.frame = expandedFrame
-        overlayView.frame = viewport
         dustEffectView?.view.frame = viewport
         view.sendSubviewToBack(backgroundImageView)
-        view.sendSubviewToBack(overlayView)
         if let dustView = dustEffectView?.view {
-            view.insertSubview(dustView, aboveSubview: overlayView)
+            view.insertSubview(dustView, aboveSubview: backgroundImageView)
         }
     }
     
@@ -110,6 +113,8 @@ class CombatViewController: UIViewController {
         NSLayoutConstraint.activate([
             centerWidgetsContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             centerWidgetsContainer.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            centerWidgetsContainer.widthAnchor.constraint(equalToConstant: 400),
+            centerWidgetsContainer.heightAnchor.constraint(equalToConstant: 200),
         ])
         // Добавляем карточки и VS внутрь контейнера
         universalPlayerCell.translatesAutoresizingMaskIntoConstraints = false
@@ -359,7 +364,6 @@ class CombatViewController: UIViewController {
         view.addSubview(backgroundImageView)
         overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         overlayView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(overlayView)
         let dustViewHostingController = UIHostingController(rootView: DustEmitterView())
         dustViewHostingController.view.backgroundColor = .clear
         dustViewHostingController.view.translatesAutoresizingMaskIntoConstraints = true
@@ -368,5 +372,131 @@ class CombatViewController: UIViewController {
         view.addSubview(dustViewHostingController.view)
         dustViewHostingController.didMove(toParent: self)
         self.dustEffectView = dustViewHostingController
+    }
+    
+    private func setupDoubleTapGestures() {
+        let playerDoubleTap = UITapGestureRecognizer(target: self, action: #selector(handlePlayerDoubleTap))
+        playerDoubleTap.numberOfTapsRequired = 2
+        universalPlayerCell.isUserInteractionEnabled = true
+        universalPlayerCell.addGestureRecognizer(playerDoubleTap)
+
+        let npcDoubleTap = UITapGestureRecognizer(target: self, action: #selector(handleNpcDoubleTap))
+        npcDoubleTap.numberOfTapsRequired = 2
+        universalNpcCell.isUserInteractionEnabled = true
+        universalNpcCell.addGestureRecognizer(npcDoubleTap)
+
+        // Обычный тап для теста
+        let playerTap = UITapGestureRecognizer(target: self, action: #selector(testPlayerTap))
+        playerTap.numberOfTapsRequired = 1
+        universalPlayerCell.addGestureRecognizer(playerTap)
+
+        let npcTap = UITapGestureRecognizer(target: self, action: #selector(testNpcTap))
+        npcTap.numberOfTapsRequired = 1
+        universalNpcCell.addGestureRecognizer(npcTap)
+    }
+
+    @objc private func handlePlayerDoubleTap() {
+        print("Double tap on player cell")
+        guard let player = player else { return }
+        showWidgetOverlay(type: .player(player))
+    }
+
+    @objc private func handleNpcDoubleTap() {
+        print("Double tap on npc cell")
+        showWidgetOverlay(type: .npc(npc))
+    }
+
+    @objc private func testPlayerTap() {
+        print("SINGLE tap on player cell")
+    }
+
+    @objc private func testNpcTap() {
+        print("SINGLE tap on npc cell")
+    }
+
+    private enum WidgetType {
+        case player(Player)
+        case npc(NPC)
+    }
+
+    private func showWidgetOverlay(type: WidgetType) {
+        // Prevent multiple overlays
+        if widgetOverlayView != nil { return }
+        // Create overlay
+        let overlay = UIView(frame: view.bounds)
+        overlay.backgroundColor = UIColor.black.withAlphaComponent(0.25)
+        overlay.alpha = 0.0
+        overlay.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        view.addSubview(overlay)
+        widgetOverlayView = overlay
+        // Tap to dismiss
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissWidgetOverlay))
+        overlay.addGestureRecognizer(tap)
+        // Create widget
+        let widgetVC: UIViewController
+        let widgetSize = CGSize(width: 180, height: 320)
+        switch type {
+        case .player(let player):
+            let vc = PlayerWidgetUIViewController(player: player)
+            playerWidgetVC = vc
+            widgetVC = vc
+        case .npc(let npc):
+            let vc = NPCWidgetUIViewController(
+                npc: npc,
+                isSelected: true,
+                isDisabled: false,
+                showCurrentActivity: true,
+                showResistance: false,
+                onTap: {},
+                onAction: { _ in }
+            )
+            npcWidgetVC = vc
+            widgetVC = vc
+        }
+        addChild(widgetVC)
+        widgetVC.view.translatesAutoresizingMaskIntoConstraints = false
+        widgetVC.view.alpha = 0.0
+        overlay.addSubview(widgetVC.view)
+        widgetVC.didMove(toParent: self)
+        // Center constraints
+        NSLayoutConstraint.activate([
+            widgetVC.view.centerXAnchor.constraint(equalTo: overlay.centerXAnchor),
+            widgetVC.view.centerYAnchor.constraint(equalTo: overlay.centerYAnchor),
+            widgetVC.view.widthAnchor.constraint(equalToConstant: widgetSize.width),
+            widgetVC.view.heightAnchor.constraint(equalToConstant: widgetSize.height)
+        ])
+        // Prevent tap-through
+        widgetVC.view.isUserInteractionEnabled = true
+        // Prevent dismiss when tapping on widget
+        let widgetTap = UITapGestureRecognizer(target: self, action: nil)
+        widgetVC.view.addGestureRecognizer(widgetTap)
+        // Animate in
+        UIView.animate(withDuration: 0.22, animations: {
+            overlay.alpha = 1.0
+        })
+        UIView.animate(withDuration: 0.22, delay: 0.05, options: [], animations: {
+            widgetVC.view.alpha = 1.0
+        }, completion: nil)
+    }
+
+    @objc private func dismissWidgetOverlay() {
+        guard let overlay = widgetOverlayView else { return }
+        // Animate out
+        UIView.animate(withDuration: 0.18, animations: {
+            overlay.alpha = 0.0
+        }, completion: { _ in
+            // Remove widget
+            self.playerWidgetVC?.willMove(toParent: nil)
+            self.playerWidgetVC?.view.removeFromSuperview()
+            self.playerWidgetVC?.removeFromParent()
+            self.playerWidgetVC = nil
+            self.npcWidgetVC?.willMove(toParent: nil)
+            self.npcWidgetVC?.view.removeFromSuperview()
+            self.npcWidgetVC?.removeFromParent()
+            self.npcWidgetVC = nil
+            // Remove overlay
+            overlay.removeFromSuperview()
+            self.widgetOverlayView = nil
+        })
     }
 } 
