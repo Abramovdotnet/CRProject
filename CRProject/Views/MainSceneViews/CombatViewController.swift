@@ -12,6 +12,7 @@ class CombatViewController: UIViewController {
     private let universalNpcCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 120, height: 170))
     private let vsLabel = UILabel()
     private let actionsStack = UIStackView()
+    private let combatRowStack = UIStackView()
     private let resultLabel = UILabel()
     private let finishButton = UIButton(type: .system)
     private let topWidgetContainerView = UIView()
@@ -142,6 +143,7 @@ class CombatViewController: UIViewController {
         witnessWarningLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
         witnessWarningLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(witnessWarningLabel)
+
         // VS label
         vsLabel.text = "VS"
         vsLabel.font = UIFont(name: "Optima-Regular", size: 40) ?? UIFont.systemFont(ofSize: 40)
@@ -152,19 +154,33 @@ class CombatViewController: UIViewController {
         vsLabel.layer.shadowOpacity = 0.7
         vsLabel.layer.shadowRadius = 3
         vsLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
-        view.addSubview(vsLabel)
-        // Участники боя
-        playerView.translatesAutoresizingMaskIntoConstraints = false
-        universalNpcCell.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(playerView)
-        view.addSubview(universalNpcCell)
-        // Стек кнопок действий
-        actionsStack.axis = .horizontal
-        actionsStack.spacing = 16
-        actionsStack.distribution = .fillEqually
+
+        // Actions stack (vertical, отдельно)
+        actionsStack.axis = .vertical
+        actionsStack.alignment = .leading
+        actionsStack.spacing = 12
         actionsStack.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(actionsStack)
-        // Результат действия
+
+        // Player and NPC views
+        playerView.translatesAutoresizingMaskIntoConstraints = false
+        universalNpcCell.translatesAutoresizingMaskIntoConstraints = false
+        playerView.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        playerView.heightAnchor.constraint(equalToConstant: 170).isActive = true
+        universalNpcCell.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        universalNpcCell.heightAnchor.constraint(equalToConstant: 170).isActive = true
+
+        // Combat row stack (horizontal, только центральные виджеты)
+        combatRowStack.axis = .horizontal
+        combatRowStack.alignment = .center
+        combatRowStack.spacing = 16
+        combatRowStack.translatesAutoresizingMaskIntoConstraints = false
+        combatRowStack.addArrangedSubview(playerView)
+        combatRowStack.addArrangedSubview(vsLabel)
+        combatRowStack.addArrangedSubview(universalNpcCell)
+        view.addSubview(combatRowStack)
+
+        // Combat log/result label
         resultLabel.font = UIFont(name: "Optima-Regular", size: 15) ?? UIFont.systemFont(ofSize: 15)
         resultLabel.textColor = .white
         resultLabel.textAlignment = .center
@@ -175,27 +191,22 @@ class CombatViewController: UIViewController {
         resultLabel.layer.shadowRadius = 3
         resultLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
         view.addSubview(resultLabel)
+
         // Layout
         NSLayoutConstraint.activate([
             witnessWarningLabel.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 16),
             witnessWarningLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             witnessWarningLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-            vsLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            vsLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            playerView.centerYAnchor.constraint(equalTo: vsLabel.centerYAnchor),
-            playerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 16),
-            playerView.widthAnchor.constraint(equalToConstant: 120),
-            playerView.heightAnchor.constraint(equalToConstant: 170),
-            universalNpcCell.centerYAnchor.constraint(equalTo: vsLabel.centerYAnchor),
-            universalNpcCell.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -16),
-            universalNpcCell.widthAnchor.constraint(equalToConstant: 120),
-            universalNpcCell.heightAnchor.constraint(equalToConstant: 170),
-            resultLabel.bottomAnchor.constraint(equalTo: actionsStack.topAnchor, constant: -12),
+
+            actionsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            actionsStack.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 24),
+
+            combatRowStack.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            combatRowStack.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 24),
+
+            resultLabel.topAnchor.constraint(equalTo: combatRowStack.bottomAnchor, constant: 24),
             resultLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             resultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-            actionsStack.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -32),
-            actionsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            actionsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24)
         ])
     }
     
@@ -230,27 +241,14 @@ class CombatViewController: UIViewController {
             // Получаем шанс успеха
             let chance = CombatService.shared.getBaseChance(for: type)
             let chancePercent = Int(chance * 100)
-            // Атмосферные описания последствий
-            let consequenceDescription: String = {
-                switch type {
-                case .attack:
-                    return "Success: Wound your foe: -25 HP to enemy\nFail: You are struck back: -25 HP to you"
-                case .feed:
-                    return "Success: Sink your fangs: +25 HP to you, -25 HP to enemy\nFail: You are repelled: -25 HP to you"
-                case .drain:
-                    return "Success: Devour completely: Enemy dies, you absorb all their blood\nFail: You are wounded: -25 HP to you"
-                case .dominate:
-                    return "Dominate (no damage)"
-                default:
-                    return type.consequenceDescription
-                }
-            }()
-            let button = ActionButtonView(type: type, chancePercent: chancePercent, consequenceDescription: consequenceDescription) { [weak self] in
+            let button = ActionButtonSmallView(type: type) { [weak self] in
                 self?.lastActionType = type
                 let action = CombatAction(type: type, initiatorId: "", targetId: "", parameters: nil)
                 CombatService.shared.performAction(action)
                 self?.updateUIAfterAction()
             }
+            // Добавляем шанс к названию только для боевых действий
+            button.setSubtitle("\(chancePercent)%")
             actionsStack.addArrangedSubview(button)
         }
     }

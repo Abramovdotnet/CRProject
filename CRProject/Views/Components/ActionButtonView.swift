@@ -117,6 +117,8 @@ class ActionButtonView: UIButton {
         // Ограничение максимальной и минимальной высоты кнопки
         heightAnchor.constraint(lessThanOrEqualToConstant: 145).isActive = true
         heightAnchor.constraint(greaterThanOrEqualToConstant: 80).isActive = true
+        // Фиксированная ширина для боевого экрана
+        widthAnchor.constraint(equalToConstant: 260).isActive = true
         contentEdgeInsets = UIEdgeInsets(top: 0, left: 14, bottom: 0, right: 14)
         // Тень к тексту
         actionTitleLabel.layer.shadowColor = UIColor.black.cgColor
