@@ -35,7 +35,7 @@ final class CombatService {
         switch action.type {
         case .attack:
             if isSuccess {
-                npc.bloodMeter.useBlood(Float(outgoingDamage))
+                action.target.bloodMeter.useBlood(Float(outgoingDamage))
                 resultSummary = "Success: damage_caused"
             } else {
                 player.bloodMeter.useBlood(Float(incomingDamage))
@@ -51,6 +51,14 @@ final class CombatService {
                 }
             } else {
                 player.bloodMeter.useBlood(Float(incomingDamage))
+                let awakeNpcsCount = GameStateService.shared.getAwakeNpcsCount()
+                
+                if awakeNpcsCount > 1 {
+                    let awarenessGainValue = FeedingService.shared.calculateFeedAwarenessGainValue(prey: npc)
+                    VampireNatureRevealService.shared.increaseAwareness(amount: awarenessGainValue)
+                } else {
+                    VampireNatureRevealService.shared.increaseAwareness(amount: 5)
+                }
                 resultSummary = "Fail: player_damaged"
             }
         case .drain:
@@ -72,10 +80,10 @@ final class CombatService {
             resultSummary = "Fail: no_effect"
         }
 
-        if !npc.isAlive {
-            npc.currentActivity = .casualty
-            npc.deathStatus = .unknown
-            npc.isSpecialBehaviorSet = false
+        if !action.target.isAlive {
+            action.target.currentActivity = .casualty
+            action.target.deathStatus = .unknown
+            action.target.isSpecialBehaviorSet = false
         }
         
         if !player.isAlive {

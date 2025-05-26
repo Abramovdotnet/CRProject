@@ -45,6 +45,6 @@ enum CombatActionType: Int {
 struct CombatAction {
     let type: CombatActionType
     let initiatorId: String
-    let targetId: String?
+    let target: NPC
     let parameters: [String: Any]?
 } 

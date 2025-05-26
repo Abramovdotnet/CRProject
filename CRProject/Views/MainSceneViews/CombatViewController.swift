@@ -3,7 +3,9 @@ import SwiftUI
 
 class CombatViewController: UIViewController {
     private let mainViewModel: MainSceneViewModel
+    private var npcManager: NPCInteractionManager = NPCInteractionManager.shared
     private var npc: NPC
+    private var npcAssistants: [NPC] = []
     
     // UI
     private let titleLabel = UILabel()
@@ -26,6 +28,8 @@ class CombatViewController: UIViewController {
     private var widgetOverlayView: UIView?
     private var playerWidgetVC: PlayerWidgetUIViewController?
     private var npcWidgetVC: NPCWidgetUIViewController?
+    // --- Assistants UI ---
+    private var assistantNpcCells: [UniversalCharacterCell] = []
     
     // State
     private var player: Player? { GameStateService.shared.player }
@@ -50,6 +54,7 @@ class CombatViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        loadNpcAssitants()
         setupBackgroundImage()
         setupTopWidget()
         setupCombatUI()
@@ -74,6 +79,12 @@ class CombatViewController: UIViewController {
         if let dustView = dustEffectView?.view {
             view.insertSubview(dustView, aboveSubview: backgroundImageView)
         }
+        // --- Layout assistants after all frames are set ---
+        layoutAssistantNPCs()
+    }
+    
+    private func loadNpcAssitants() {
+        npcAssistants = GameStateService.shared.getNPCAssistants(npc: self.npc)
     }
     
     private func setupCombatUI() {
@@ -124,10 +135,10 @@ class CombatViewController: UIViewController {
         centerWidgetsContainer.addSubview(universalPlayerCell)
         centerWidgetsContainer.addSubview(vsLabel)
         centerWidgetsContainer.addSubview(universalNpcCell)
-        let avatarOffset: CGFloat = -43
+
         NSLayoutConstraint.activate([
             // Player слева от центра
-            universalPlayerCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 43),
+            universalPlayerCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 21),
             universalPlayerCell.trailingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: -30),
             universalPlayerCell.widthAnchor.constraint(equalToConstant: 120),
             universalPlayerCell.heightAnchor.constraint(equalToConstant: 120),
@@ -136,7 +147,7 @@ class CombatViewController: UIViewController {
             vsLabel.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 15),
             
             // NPC справа от центра
-            universalNpcCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 43),
+            universalNpcCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 21),
             universalNpcCell.leadingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: 30),
             universalNpcCell.widthAnchor.constraint(equalToConstant: 120),
             universalNpcCell.heightAnchor.constraint(equalToConstant: 120)
@@ -168,10 +179,6 @@ class CombatViewController: UIViewController {
             resultLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             resultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
         ])
-
-        // ВРЕМЕННО: цветные фоны для диагностики размеров
-        universalPlayerCell.backgroundColor = UIColor.red.withAlphaComponent(0.3)
-        universalNpcCell.backgroundColor = UIColor.blue.withAlphaComponent(0.3)
     }
     
     private func setupInitialCombatState() {
@@ -179,31 +186,200 @@ class CombatViewController: UIViewController {
         CombatService.shared.startCombat(player: player, npc: npc)
         universalPlayerCell.configure(with: player, isDisabled: false)
         universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
+        // --- Assistants setup ---
+        setupAssistantNPCs()
         checkCombatEnd()
+    }
+    
+    private func setupAssistantNPCs() {
+        print("[DEBUG] removeFromSuperview for all old assistants")
+        for cell in assistantNpcCells { cell.removeFromSuperview() }
+        assistantNpcCells.removeAll()
+        // Получаем ассистентов, исключая текущего главного NPC
+        let assistants = npcAssistants
+        let cellSize: CGFloat = 70
+        for (i, assistant) in assistants.prefix(3).enumerated() {
+            let cell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: cellSize, height: cellSize))
+            print("[DEBUG] addSubview assistant cell: \(Unmanaged.passUnretained(cell).toOpaque()) npc: \(assistant.name) id: \(assistant.id)")
+            cell.configure(with: assistant, isSelected: false, isDisabled: false)
+            print("[DEBUG] configure assistant cell: \(Unmanaged.passUnretained(cell).toOpaque()) npc: \(assistant.name) id: \(assistant.id) isSelected: false")
+            cell.translatesAutoresizingMaskIntoConstraints = true
+            cell.clipsToBounds = false
+            let colors: [UIColor] = [.systemGreen, .systemBlue, .systemOrange]
+            // cell.backgroundColor = colors[i % colors.count].withAlphaComponent(0.2)
+            let tap = UITapGestureRecognizer(target: self, action: #selector(handleAssistantTap(_:)))
+            cell.addGestureRecognizer(tap)
+            cell.isUserInteractionEnabled = true
+            cell.tag = i
+            view.addSubview(cell)
+            assistantNpcCells.append(cell)
+        }
+        // После создания ассистентов логируем адреса
+        print("[DEBUG] universalNpcCell: \(Unmanaged.passUnretained(universalNpcCell).toOpaque())")
+        for (i, cell) in assistantNpcCells.enumerated() {
+            print("[DEBUG] assistantNpcCell[\(i)]: \(Unmanaged.passUnretained(cell).toOpaque())")
+        }
+    }
+    
+    @objc private func handleAssistantTap(_ sender: UITapGestureRecognizer) {
+        guard let tappedCell = sender.view as? UniversalCharacterCell,
+              let index = assistantNpcCells.firstIndex(of: tappedCell) else { return }
+        let assistants = npcAssistants
+        guard index < assistants.count else { return }
+        let selectedAssistant = assistants[index]
+        let oldNpc = self.npc
+        self.npc = selectedAssistant
+        self.npcManager.selectedNPC = selectedAssistant
+        // Удаляем выбранного ассистента из ассистентов
+        self.npcAssistants.remove(at: index)
+        // Добавляем предыдущего активного NPC в ассистенты, если его там нет
+        if !self.npcAssistants.contains(where: { $0.id == oldNpc.id }) {
+            self.npcAssistants.append(oldNpc)
+        }
+        setupAssistantNPCs()
+        universalNpcCell.configure(with: self.npc, isSelected: true, isDisabled: false)
+        let newAssistants = npcAssistants
+        for (i, cell) in assistantNpcCells.enumerated() {
+            if i < newAssistants.count {
+                cell.configure(with: newAssistants[i], isSelected: false, isDisabled: false)
+            }
+        }
+        setupActionButtons()
+        updateUIAfterAction()
+    }
+    
+    private func activateNPC(_ selectedNPC: NPC) {
+        // Сохраняем предыдущего NPC
+        let previousNPC = self.npc
+        
+        // Обновляем текущего NPC
+        self.npc = selectedNPC
+        self.npcManager.selectedNPC = selectedNPC
+        
+        // Получаем текущий список ассистентов для нового NPC (исключая его самого)
+        var newAssistants = GameStateService.shared.getNPCAssistants(npc: selectedNPC)
+            .filter { $0.id != selectedNPC.id }
+        
+        // Добавляем предыдущего NPC в ассистенты, если его еще нет
+        if !newAssistants.contains(where: { $0.id == previousNPC.id }) {
+            newAssistants.insert(previousNPC, at: 0)
+        }
+        
+        // Обновляем массив ассистентов
+        self.npcAssistants = newAssistants
+        
+        // Обновляем главную ячейку
+        universalNpcCell.configure(with: selectedNPC, isSelected: true, isDisabled: false)
+        
+        // Обновляем ячейки ассистентов
+        for (i, cell) in assistantNpcCells.enumerated() {
+            if i < npcAssistants.count {
+                cell.configure(with: npcAssistants[i], isSelected: false, isDisabled: false)
+            } else {
+                cell.isHidden = true
+            }
+        }
+        
+        // Обновляем layout
+        layoutAssistantNPCs()
+        
+        // Обновляем UI
+        setupActionButtons()
+        updateUIAfterAction()
+    }
+    
+    private func layoutAssistantNPCs() {
+        guard let npcSuperview = universalNpcCell.superview else { return }
+        npcSuperview.clipsToBounds = false
+        view.clipsToBounds = false
+        let cellSize: CGFloat = 70
+        let verticalSpacing: CGFloat = 1
+        // Получаем frame universalNpcCell относительно view
+        let npcCellFrame = npcSuperview.convert(universalNpcCell.frame, to: view)
+        let npcRightX = npcCellFrame.maxX
+        let npcCenterY = npcCellFrame.midY
+        let count = assistantNpcCells.count
+        let totalHeight = CGFloat(count) * cellSize + CGFloat(max(count - 1, 0)) * verticalSpacing
+        let stackCenterY = npcCenterY
+        for (i, cell) in assistantNpcCells.enumerated() {
+            cell.clipsToBounds = false
+            let x = npcRightX + 32
+            let y = stackCenterY - totalHeight/2 + CGFloat(i) * (cellSize + verticalSpacing)
+            cell.frame = CGRect(x: x, y: y, width: cellSize, height: cellSize)
+            cell.layer.zPosition = CGFloat(i)
+        }
     }
     
     private func setupActionButtons() {
         actionsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         if isCombatEnded {
-            let leaveButton = ActionButtonSmallView(title: "Leave", icon: "arrowshape.turn.up.left.fill", color: .white) { [weak self] in
-                self?.closeCombat()
-            }
-            actionsStack.addArrangedSubview(leaveButton)
             if npc.isAlive == false {
                 let lootButton = ActionButtonSmallView(title: "Loot", icon: "bag.fill", color: .systemYellow) { [weak self] in
                     self?.openLoot()
                 }
                 actionsStack.addArrangedSubview(lootButton)
             }
+            let leaveButton = ActionButtonSmallView(title: "Leave", icon: "arrowshape.turn.up.left.fill", color: .white) { [weak self] in
+                self?.closeCombat()
+            }
+            actionsStack.addArrangedSubview(leaveButton)
             return
         }
+        
         var actions: [(title: String, icon: String, color: UIColor, handler: () -> Void)] = [
-            ("Attack", "flame", .systemOrange, { [weak self] in guard let self = self else { return }; self.lastActionType = .attack; let action = CombatAction(type: .attack, initiatorId: "", targetId: self.npc.id.description, parameters: nil); CombatService.shared.performAction(action); self.updateUIAfterAction() }),
-            ("Bite", "mouth.fill", .systemPink, { [weak self] in guard let self = self else { return }; self.lastActionType = .feed; let action = CombatAction(type: .feed, initiatorId: "", targetId: self.npc.id.description, parameters: nil); CombatService.shared.performAction(action); self.updateUIAfterAction() }),
-            ("Drain", "drop.triangle.fill", .systemRed, { [weak self] in guard let self = self else { return }; self.lastActionType = .drain; let action = CombatAction(type: .drain, initiatorId: "", targetId: self.npc.id.description, parameters: nil); CombatService.shared.performAction(action); self.updateUIAfterAction() })
+            ("Attack", "flame", .systemOrange, { [weak self] in
+                guard let self = self else { return }
+                self.lastActionType = .attack
+                // Используем текущего NPC!
+                let action = CombatAction(
+                    type: .attack,
+                    initiatorId: "",
+                    target: self.npc,
+                    parameters: nil
+                )
+                CombatService.shared.performAction(action)
+                self.updateUIAfterAction()
+            }),
+            ("Bite", "mouth.fill", .systemPink, { [weak self] in
+                guard let self = self else { return }
+                self.lastActionType = .feed
+                let action = CombatAction(
+                    type: .feed,
+                    initiatorId: "",
+                    target: self.npc,
+                    parameters: nil
+                )
+                CombatService.shared.performAction(action)
+                self.updateUIAfterAction()
+            }),
+            ("Drain", "drop.triangle.fill", .systemRed, { [weak self] in
+                guard let self = self else { return }
+                self.lastActionType = .feed
+                let action = CombatAction(
+                    type: .feed,
+                    initiatorId: "",
+                    target: self.npc,
+                    parameters: nil
+                )
+                CombatService.shared.performAction(action)
+                self.updateUIAfterAction()
+            }),
         ]
+
         if AbilitiesSystem.shared.hasDomination {
-            actions.insert(("Dominate", "eye", .systemBlue, { [weak self] in guard let self = self else { return }; self.lastActionType = .dominate; let action = CombatAction(type: .dominate, initiatorId: "", targetId: self.npc.id.description, parameters: nil); CombatService.shared.performAction(action); self.updateUIAfterAction() }), at: 2)
+            actions.insert(
+                ("Dominate", "eye", .systemBlue, { [weak self] in
+                guard let self = self else { return }
+                self.lastActionType = .feed
+                let action = CombatAction(
+                    type: .feed,
+                    initiatorId: "",
+                    target: self.npc,
+                    parameters: nil
+                )
+                CombatService.shared.performAction(action)
+                self.updateUIAfterAction()
+                }), at: 2)
         }
         let witnesses = GameStateService.shared.getAwakeNpcsCount()
         let hasVampireAction = actions.contains(where: { $0.title == "Bite" || $0.title == "Drain" || $0.title == "Dominate" })
@@ -245,7 +421,7 @@ class CombatViewController: UIViewController {
         var icon = ""
         switch code {
         case let s where s.contains("damage_caused"):
-            text = isSuccess ? "You hit the enemy!" : "Missed! Enemy strikes back!"
+            text = isSuccess ? "You hit \(self.npc.name)" : "Missed! \(self.npc.name) strikes back!"
             color = isSuccess ? UIColor.systemGreen : UIColor.systemRed
             icon = isSuccess ? "🗡️" : "💢"
         case let s where s.contains("player_damaged"):
@@ -257,7 +433,7 @@ class CombatViewController: UIViewController {
             color = UIColor.systemPink
             icon = "🩸"
         case let s where s.contains("npc_dominated"):
-            text = "Enemy is dominated!"
+            text = "\(self.npc.name) is dominated!"
             color = UIColor.systemBlue
             icon = "👁️"
         case let s where s.contains("no_effect"):
@@ -265,7 +441,7 @@ class CombatViewController: UIViewController {
             color = UIColor.systemGray
             icon = "—"
         case let s where s.contains("target_drained"):
-            text = "You drain all blood!"
+            text = "You drain all \(self.npc.name) blood!"
             color = UIColor.systemRed
             icon = "🩸"
         default:
@@ -290,6 +466,8 @@ class CombatViewController: UIViewController {
             universalPlayerCell.configure(with: player, isDisabled: false)
         }
         universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
+        // --- Обновляем ассистентов ---
+        //setupAssistantNPCs()
         checkCombatEnd()
         setupActionButtons()
     }
@@ -298,13 +476,17 @@ class CombatViewController: UIViewController {
         guard let player = player else { return }
         let isPlayerDead = !player.isAlive
         let isNpcDead = !npc.isAlive
-        if isPlayerDead || isNpcDead {
+        let assistants = npcAssistants
+        let anyAssistantsAlive = assistants.contains(where: { $0.isAlive })
+        let allEnemiesDead = !anyAssistantsAlive && isNpcDead
+        if isPlayerDead || allEnemiesDead {
             isCombatEnded = true
             actionsStack.isUserInteractionEnabled = true
             actionsStack.isHidden = false
             finishButton.isHidden = true
             resultLabel.text = isPlayerDead ? "You died!" : "Enemy defeated!"
         }
+        // else: не переключаем автоматически на живого NPC, если выбран мертвый вручную
     }
     
     @objc private func closeCombat() {

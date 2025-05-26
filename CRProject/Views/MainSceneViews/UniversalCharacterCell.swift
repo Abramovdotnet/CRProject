@@ -229,6 +229,8 @@ class UniversalCharacterCell: UIView {
     func configure(with npc: NPC, isSelected: Bool, isDisabled: Bool) {
         self.currentNPC = npc
         let animationDuration: TimeInterval = 0.2
+        // --- DEBUG ---
+        print("[DEBUG] UniversalCharacterCell.configure: npc=\(npc.name), isSelected=\(isSelected), isDisabled=\(isDisabled)")
         UIView.animate(withDuration: animationDuration) {
             if isSelected {
                 self.cardBackground.layer.borderColor = UIColor.clear.cgColor
@@ -265,9 +267,14 @@ class UniversalCharacterCell: UIView {
         }
         CATransaction.begin()
         CATransaction.setAnimationDuration(animationDuration)
-        healthIndicator.opacity = isSelected ? 1.0 : 0.0
-        healthIndicator.shadowOpacity = isSelected ? 0.8 : 0.0
+        self.healthIndicator.opacity = isSelected ? 1.0 : 0.0
+        self.healthIndicator.shadowOpacity = isSelected ? 0.8 : 0.0
         CATransaction.commit()
+        // --- DEBUG ---
+        print("[DEBUG] healthIndicator.opacity after set: \(self.healthIndicator.opacity)")
+        self.healthIndicator.setNeedsDisplay()
+        self.healthIndicator.setNeedsLayout()
+        // --- Надёжно скрываем слой ---
         if !npc.isUnknown {
             let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
             let radius = healthIndicator.bounds.width / 2 - 2
@@ -419,7 +426,7 @@ class UniversalCharacterCell: UIView {
             }
         }
         UIView.animate(withDuration: animationDuration) {
-            self.cardBackground.alpha = npc.isAlive ? (isDisabled ? 0.5 : 1.0) : 0.4
+            self.cardBackground.alpha = npc.isAlive ? (isDisabled ? 0.8 : 1.0) : 0.8
         }
         guard !npc.isUnknown else {
             questIndicatorIcon.isHidden = true
@@ -467,9 +474,8 @@ class UniversalCharacterCell: UIView {
         UIView.animate(withDuration: animationDuration) {
             self.selectionGlowLayer.shadowOpacity = isSelected ? 0.7 : 0
         }
-        if isSelected {
-            healthIndicator.opacity = 1.0
-        }
+        // --- Надёжно скрываем слой selectionGlowLayer ---
+        self.selectionGlowLayer.isHidden = !isSelected
     }
 
     // MARK: - Новый метод для Player
@@ -568,6 +574,7 @@ class UniversalCharacterCell: UIView {
         UIView.animate(withDuration: animationDuration) {
             self.selectionGlowLayer.shadowOpacity = 0.7
         }
+
     }
 
     private func convertSwiftUIColorToUIColor(_ color: Color) -> UIColor {
@@ -625,22 +632,25 @@ class UniversalCharacterCell: UIView {
         let healthIndicatorY = avatarFrameLayout.midY - healthIndicatorSize/2
         healthIndicator.frame = CGRect(x: healthIndicatorX, y: healthIndicatorY, width: healthIndicatorSize, height: healthIndicatorSize)
         selectionGlowLayer.frame = avatarFrameLayout
-        if let npc = currentNPC {
-            healthIndicator.opacity = 1.0
-            if !npc.isUnknown {
-                let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
-                let radius = healthIndicator.bounds.width / 2 - 2
-                let startAngle = -CGFloat.pi / 2
-                let endAngle = startAngle + 2 * .pi * CGFloat(npc.bloodMeter.currentBlood / 100)
-                let path = UIBezierPath(arcCenter: center, radius: radius,
-                                        startAngle: startAngle, endAngle: endAngle,
-                                        clockwise: true)
-                healthIndicator.path = path.cgPath
-            }
+        if let npc = currentNPC, !npc.isUnknown {
+            let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
+            let radius = healthIndicator.bounds.width / 2 - 2
+            let startAngle = -CGFloat.pi / 2
+            let endAngle = startAngle + 2 * .pi * CGFloat(npc.bloodMeter.currentBlood / 100)
+            let path = UIBezierPath(arcCenter: center, radius: radius,
+                                    startAngle: startAngle, endAngle: endAngle,
+                                    clockwise: true)
+            healthIndicator.path = path.cgPath
         }
         // Ограничиваем видимую область круга
         self.clipsToBounds = true
         self.layer.cornerRadius = min(self.bounds.width, self.bounds.height) / 2
+        // DEBUG
+        print("[DEBUG] UniversalCharacterCell.layoutSubviews frame=\(self.frame)")
+        // --- Надёжно скрываем слой ---
+        self.healthIndicator.isHidden = self.healthIndicator.opacity == 0.0
+        // --- Надёжно скрываем слой selectionGlowLayer ---
+        self.selectionGlowLayer.isHidden = self.selectionGlowLayer.shadowOpacity == 0
     }
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {

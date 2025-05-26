@@ -1384,8 +1384,8 @@
             filePath = "CRProject/Views/MainSceneViews/CombatViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
+            startingLineNumber = "29"
+            endingLineNumber = "29"
             landmarkName = "CombatViewController"
             landmarkType = "3">
          </BreakpointContent>
@@ -1400,8 +1400,8 @@
             filePath = "CRProject/Views/MainSceneViews/CombatViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "152"
-            endingLineNumber = "152"
+            startingLineNumber = "159"
+            endingLineNumber = "159"
             landmarkName = "setupCombatUI()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1416,8 +1416,8 @@
             filePath = "CRProject/Views/MainSceneViews/CombatViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "162"
-            endingLineNumber = "162"
+            startingLineNumber = "169"
+            endingLineNumber = "169"
             landmarkName = "setupCombatUI()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1574,9 +1574,9 @@
             filePath = "CRProject/Views/MainSceneViews/CombatViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "192"
-            endingLineNumber = "192"
-            landmarkName = "setupCombatUI()"
+            startingLineNumber = "194"
+            endingLineNumber = "194"
+            landmarkName = "setupAssistantNPCs()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1606,8 +1606,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "369"
-            endingLineNumber = "369"
+            startingLineNumber = "375"
+            endingLineNumber = "375"
             landmarkName = "getNPCAssistants(npc:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1622,9 +1622,9 @@
             filePath = "CRProject/Views/MainSceneViews/CombatViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "192"
-            endingLineNumber = "192"
-            landmarkName = "setupCombatUI()"
+            startingLineNumber = "194"
+            endingLineNumber = "194"
+            landmarkName = "setupAssistantNPCs()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1638,10 +1638,8 @@
             filePath = "CRProject/Views/MainSceneViews/CombatViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "590"
-            endingLineNumber = "590"
-            landmarkName = "assistantCellTapped(_:)"
-            landmarkType = "7">
+            startingLineNumber = "690"
+            endingLineNumber = "690">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1654,9 +1652,57 @@
             filePath = "CRProject/Views/MainSceneViews/CombatViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "226"
-            endingLineNumber = "226"
-            landmarkName = "setupInitialCombatState()"
+            startingLineNumber = "228"
+            endingLineNumber = "228"
+            landmarkName = "handleAssistantTap(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "27CD210A-DA4A-497E-AE2D-C8C252D6BA02"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Views/MainSceneViews/CombatViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "330"
+            endingLineNumber = "330"
+            landmarkName = "setupActionButtons()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "79052A98-BE85-40DE-8AF0-2FA53F2A8E46"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/GameStateService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "366"
+            endingLineNumber = "366"
+            landmarkName = "getNPCAssistants(npc:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "A2EF577D-22E5-46C1-AF36-23B23C138E3E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/CombatService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
+            landmarkName = "performAction(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

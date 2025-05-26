@@ -40,21 +40,14 @@ class FeedingService: GameService {
             
             try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
             
-            var awarenessIncreaseValue: Float = 90.0;
+            var awarenessIncreaseValue = calculateFeedAwarenessGainValue(prey: prey)
             
             if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer || (AbilitiesSystem.shared.hasLionAmongSheep && prey.playerRelationship.state == .friend) {
-                awarenessIncreaseValue -= 86
                 vampire.bloodMeter.addBlood(10)
             }
-            
+ 
             if prey.currentActivity == .sleep {
-                awarenessIncreaseValue -= 88
-                
                 StatisticsService.shared.increasefeedingsOverSleepingVictims()
-            }
-            
-            if prey.currentActivity == .combat {
-                awarenessIncreaseValue -= 60
             }
             
             if vampire.desiredVictim.isDesiredVictim(npc: prey){
@@ -89,6 +82,20 @@ class FeedingService: GameService {
                 gameTime.advanceTime()
             }
         }
+    }
+    
+    func calculateFeedAwarenessGainValue(prey: NPC) -> Float {
+        var awarenessIncreaseValue: Float = 90.0;
+        
+        if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer || (AbilitiesSystem.shared.hasLionAmongSheep && prey.playerRelationship.state == .friend) {
+            awarenessIncreaseValue -= 86
+        }
+        
+        if prey.currentActivity == .sleep {
+            awarenessIncreaseValue -= 88
+        }
+
+        return awarenessIncreaseValue
     }
     
     func consumeFood(vampire: Player, food: Item) {
