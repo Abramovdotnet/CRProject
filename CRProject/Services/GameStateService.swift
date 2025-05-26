@@ -346,9 +346,26 @@ class GameStateService : ObservableObject, GameService{
     func getAwakeNpcsCount() -> Int {
         guard let scene = currentScene else { return 0 }
         
+        let npcs = getAwakeNpcs()
+        
+        return npcs.count
+    }
+    
+    func getAwakeNpcs() -> [NPC] {
+        guard let scene = currentScene else { return [] }
+        
         let npcs = scene.getNPCs()
             .filter( { $0.isAlive && !$0.isSpecialBehaviorSet && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer && $0.currentActivity != .sleep })
         
-        return npcs.count
+        return npcs
+    }
+    
+    func getNPCAssistants(npc: NPC) -> [NPC] {
+        guard let scene = currentScene else { return [] }
+        
+        let npcs = scene.getNPCs()
+        let assistanNpcs = npcs.filter( { $0.id != npc.id && $0.isAlive && ($0.isMilitary || $0.profession == npc.profession)})
+        
+        return assistanNpcs
     }
 }

@@ -3,13 +3,13 @@ import SwiftUI
 
 class CombatViewController: UIViewController {
     private let mainViewModel: MainSceneViewModel
-    private let npc: NPC
+    private var npc: NPC
     
     // UI
     private let titleLabel = UILabel()
     private let iconImageView = UIImageView()
-    private let universalPlayerCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 120, height: 170))
-    private let universalNpcCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 120, height: 170))
+    private let universalPlayerCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+    private let universalNpcCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
     private let vsLabel = UILabel()
     private let actionsStack = UIStackView()
     private let resultLabel = UILabel()
@@ -31,6 +31,7 @@ class CombatViewController: UIViewController {
     private var player: Player? { GameStateService.shared.player }
     private var lastActionType: CombatActionType? = nil
     private var isCombatEnded: Bool = false
+    private var didLoadAssistants = false
     
     // Callbacks для навигации
     var onLeave: (() -> Void)? = nil
@@ -129,7 +130,7 @@ class CombatViewController: UIViewController {
             universalPlayerCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 43),
             universalPlayerCell.trailingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: -30),
             universalPlayerCell.widthAnchor.constraint(equalToConstant: 120),
-            universalPlayerCell.heightAnchor.constraint(equalToConstant: 170),
+            universalPlayerCell.heightAnchor.constraint(equalToConstant: 120),
             
             vsLabel.centerXAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor),
             vsLabel.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 15),
@@ -138,7 +139,7 @@ class CombatViewController: UIViewController {
             universalNpcCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 43),
             universalNpcCell.leadingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: 30),
             universalNpcCell.widthAnchor.constraint(equalToConstant: 120),
-            universalNpcCell.heightAnchor.constraint(equalToConstant: 170)
+            universalNpcCell.heightAnchor.constraint(equalToConstant: 120)
         ])
 
         // Combat log/result label
@@ -167,6 +168,10 @@ class CombatViewController: UIViewController {
             resultLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             resultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
         ])
+
+        // ВРЕМЕННО: цветные фоны для диагностики размеров
+        universalPlayerCell.backgroundColor = UIColor.red.withAlphaComponent(0.3)
+        universalNpcCell.backgroundColor = UIColor.blue.withAlphaComponent(0.3)
     }
     
     private func setupInitialCombatState() {
@@ -193,12 +198,12 @@ class CombatViewController: UIViewController {
             return
         }
         var actions: [(title: String, icon: String, color: UIColor, handler: () -> Void)] = [
-            ("Attack", "flame", .systemOrange, { [weak self] in self?.lastActionType = .attack; let action = CombatAction(type: .attack, initiatorId: "", targetId: "", parameters: nil); CombatService.shared.performAction(action); self?.updateUIAfterAction() }),
-            ("Bite", "mouth.fill", .systemPink, { [weak self] in self?.lastActionType = .feed; let action = CombatAction(type: .feed, initiatorId: "", targetId: "", parameters: nil); CombatService.shared.performAction(action); self?.updateUIAfterAction() }),
-            ("Drain", "drop.triangle.fill", .systemRed, { [weak self] in self?.lastActionType = .drain; let action = CombatAction(type: .drain, initiatorId: "", targetId: "", parameters: nil); CombatService.shared.performAction(action); self?.updateUIAfterAction() })
+            ("Attack", "flame", .systemOrange, { [weak self] in guard let self = self else { return }; self.lastActionType = .attack; let action = CombatAction(type: .attack, initiatorId: "", targetId: self.npc.id.description, parameters: nil); CombatService.shared.performAction(action); self.updateUIAfterAction() }),
+            ("Bite", "mouth.fill", .systemPink, { [weak self] in guard let self = self else { return }; self.lastActionType = .feed; let action = CombatAction(type: .feed, initiatorId: "", targetId: self.npc.id.description, parameters: nil); CombatService.shared.performAction(action); self.updateUIAfterAction() }),
+            ("Drain", "drop.triangle.fill", .systemRed, { [weak self] in guard let self = self else { return }; self.lastActionType = .drain; let action = CombatAction(type: .drain, initiatorId: "", targetId: self.npc.id.description, parameters: nil); CombatService.shared.performAction(action); self.updateUIAfterAction() })
         ]
         if AbilitiesSystem.shared.hasDomination {
-            actions.insert(("Dominate", "eye", .systemBlue, { [weak self] in self?.lastActionType = .dominate; let action = CombatAction(type: .dominate, initiatorId: "", targetId: "", parameters: nil); CombatService.shared.performAction(action); self?.updateUIAfterAction() }), at: 2)
+            actions.insert(("Dominate", "eye", .systemBlue, { [weak self] in guard let self = self else { return }; self.lastActionType = .dominate; let action = CombatAction(type: .dominate, initiatorId: "", targetId: self.npc.id.description, parameters: nil); CombatService.shared.performAction(action); self.updateUIAfterAction() }), at: 2)
         }
         let witnesses = GameStateService.shared.getAwakeNpcsCount()
         let hasVampireAction = actions.contains(where: { $0.title == "Bite" || $0.title == "Drain" || $0.title == "Dominate" })
@@ -499,4 +504,4 @@ class CombatViewController: UIViewController {
             self.widgetOverlayView = nil
         })
     }
-} 
+}

@@ -638,5 +638,35 @@ class UniversalCharacterCell: UIView {
                 healthIndicator.path = path.cgPath
             }
         }
+        // Ограничиваем видимую область круга
+        self.clipsToBounds = true
+        self.layer.cornerRadius = min(self.bounds.width, self.bounds.height) / 2
+    }
+
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        // Проверка попадания в круглый аватар
+        let avatarFrame = avatarImageView.frame
+        let avatarCenter = CGPoint(x: avatarFrame.midX, y: avatarFrame.midY)
+        let avatarRadius = avatarFrame.width / 2
+        let dx = point.x - avatarCenter.x
+        let dy = point.y - avatarCenter.y
+        let distance = sqrt(dx*dx + dy*dy)
+        if distance <= avatarRadius {
+            return self
+        }
+        // Проверка попадания в проценты
+        if healthPercentageLabel.frame.contains(point) {
+            return self
+        }
+        // Проверка попадания в иконку профессии
+        if professionIcon.frame.contains(point) {
+            return self
+        }
+        // Проверка попадания в иконку активности
+        if activityIcon.frame.contains(point) {
+            return self
+        }
+        // Всё остальное — не кликабельно
+        return nil
     }
 } 

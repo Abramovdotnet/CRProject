@@ -22,7 +22,7 @@ class GameTimeService: GameService, ObservableObject {
     init(statisticsService: StatisticsService = DependencyManager.shared.resolve()) {
         self.statisticsService = statisticsService
         self.currentTime = Date()
-        self.currentHour = 22
+        self.currentHour = 7
         updateNightTimeStatus()
     }
     
