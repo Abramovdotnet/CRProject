@@ -140,8 +140,8 @@ class CombatViewController: UIViewController {
             // Player слева от центра
             universalPlayerCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 21),
             universalPlayerCell.trailingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: -30),
-            universalPlayerCell.widthAnchor.constraint(equalToConstant: 120),
-            universalPlayerCell.heightAnchor.constraint(equalToConstant: 120),
+            universalPlayerCell.widthAnchor.constraint(equalToConstant: 140),
+            universalPlayerCell.heightAnchor.constraint(equalToConstant: 140),
             
             vsLabel.centerXAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor),
             vsLabel.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 15),
@@ -149,8 +149,8 @@ class CombatViewController: UIViewController {
             // NPC справа от центра
             universalNpcCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 21),
             universalNpcCell.leadingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: 30),
-            universalNpcCell.widthAnchor.constraint(equalToConstant: 120),
-            universalNpcCell.heightAnchor.constraint(equalToConstant: 120)
+            universalNpcCell.widthAnchor.constraint(equalToConstant: 140),
+            universalNpcCell.heightAnchor.constraint(equalToConstant: 140)
         ])
 
         // Combat log/result label
@@ -197,7 +197,7 @@ class CombatViewController: UIViewController {
         assistantNpcCells.removeAll()
         // Получаем ассистентов, исключая текущего главного NPC
         let assistants = npcAssistants
-        let cellSize: CGFloat = 70
+        let cellSize: CGFloat = 140
         for (i, assistant) in assistants.prefix(3).enumerated() {
             let cell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: cellSize, height: cellSize))
             print("[DEBUG] addSubview assistant cell: \(Unmanaged.passUnretained(cell).toOpaque()) npc: \(assistant.name) id: \(assistant.id)")
@@ -292,8 +292,8 @@ class CombatViewController: UIViewController {
         guard let npcSuperview = universalNpcCell.superview else { return }
         npcSuperview.clipsToBounds = false
         view.clipsToBounds = false
-        let cellSize: CGFloat = 70
-        let verticalSpacing: CGFloat = 1
+        let cellSize: CGFloat = 140
+        let verticalSpacing: CGFloat = -110
         // Получаем frame universalNpcCell относительно view
         let npcCellFrame = npcSuperview.convert(universalNpcCell.frame, to: view)
         let npcRightX = npcCellFrame.maxX
@@ -400,6 +400,9 @@ class CombatViewController: UIViewController {
             let chancePercent = Int(chance * 100)
             let button = ActionButtonSmallView(title: title, icon: icon, color: color, onTap: handler)
             button.setSubtitle("\(chancePercent)%")
+            // --- Делаем кнопку неактивной, если NPC мертв ---
+            button.isEnabled = npc.isAlive
+            button.alpha = npc.isAlive ? 1.0 : 0.7
             actionsStack.addArrangedSubview(button)
         }
     }
