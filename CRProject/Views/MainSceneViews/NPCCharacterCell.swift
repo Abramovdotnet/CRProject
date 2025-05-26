@@ -3,7 +3,7 @@ import SwiftUI
 import CoreMotion
 import Combine
 
-class UniversalCharacterCell: UIView {
+class NPCCharacterCell: UICollectionViewCell {
     private let avatarImageView = UIImageView()
     private let avatarShadowContainer = UIView()
     private let professionIcon = UIImageView()
@@ -19,7 +19,7 @@ class UniversalCharacterCell: UIView {
     // Store reference to current NPC for debugging
     var currentNPC: NPC?
     
-    private let iconSize: CGFloat = 28 // Было 22, увеличиваем радиус иконок
+    private let iconSize: CGFloat = 28 // Было 22, увеличиваем до размера UniversalCharacterCell
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -40,23 +40,23 @@ class UniversalCharacterCell: UIView {
         cardBackground.layer.borderWidth = 0 // Remove border
         cardBackground.clipsToBounds = false // Ensure shadow isn't clipped by card background
         cardBackground.layer.masksToBounds = false // Explicitly set masksToBounds to false
-        addSubview(cardBackground)
+        contentView.addSubview(cardBackground)
         
-        // Avatar setup - increased size by 20%
-        let newAvatarSize: CGFloat = 104 // Было 84, увеличиваем радиус аватара
+        // Avatar setup - увеличиваем размер до 104 как в UniversalCharacterCell
+        let newAvatarSize: CGFloat = 104 // Было 84, увеличиваем до размера UniversalCharacterCell
         let newAvatarRadius: CGFloat = newAvatarSize / 2
         let avatarFrame = CGRect(x: (bounds.width - newAvatarSize) / 2, y: 8, width: newAvatarSize, height: newAvatarSize)
         
-        // Setup shadow container
+        // Setup shadow container - упрощаем тени
         avatarShadowContainer.frame = avatarFrame
         avatarShadowContainer.layer.cornerRadius = newAvatarRadius
         avatarShadowContainer.layer.shadowColor = UIColor.black.cgColor
-        avatarShadowContainer.layer.shadowRadius = 18 // Было 10, делаем больше
-        avatarShadowContainer.layer.shadowOpacity = 0.85 // Было 0.8, делаем чуть больше
-        avatarShadowContainer.layer.shadowOffset = CGSize(width: 0, height: 8) // Было (0,2), делаем ниже
-        avatarShadowContainer.backgroundColor = .clear // Ensure it doesn't obscure anything
-        avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: avatarShadowContainer.layer.cornerRadius).cgPath // Set shadow path
-        cardBackground.addSubview(avatarShadowContainer) // Add shadow view first
+        avatarShadowContainer.layer.shadowRadius = 18 // Было 10, увеличиваем до размера UniversalCharacterCell
+        avatarShadowContainer.layer.shadowOpacity = 0.85 // Было 0.8, увеличиваем до размера UniversalCharacterCell
+        avatarShadowContainer.layer.shadowOffset = CGSize(width: 0, height: 8) // Было (0,2), увеличиваем до размера UniversalCharacterCell
+        avatarShadowContainer.backgroundColor = .clear
+        avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: avatarShadowContainer.layer.cornerRadius).cgPath
+        cardBackground.addSubview(avatarShadowContainer)
 
         // Setup avatar image view
         avatarImageView.frame = avatarFrame
@@ -96,8 +96,8 @@ class UniversalCharacterCell: UIView {
         
         cardBackground.layer.addSublayer(healthIndicator)
         
-        // Health percentage теперь в отдельном круглом контейнере, как activityIcon
-        let healthIconSize: CGFloat = iconSize + 8 // Оставляем формулу, но iconSize теперь больше
+        // Health percentage теперь в отдельном круглом контейнере, как в UniversalCharacterCell
+        let healthIconSize: CGFloat = iconSize + 8 // Оставляем формулу, но iconSize теперь меньше
         healthPercentageIconView.frame = CGRect(x: 0, y: 0, width: healthIconSize, height: healthIconSize)
         healthPercentageIconView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
         healthPercentageIconView.layer.cornerRadius = healthIconSize / 2
@@ -111,7 +111,7 @@ class UniversalCharacterCell: UIView {
         healthPercentageIconView.isUserInteractionEnabled = false
         // Стилизация лейбла
         healthPercentageLabel.frame = healthPercentageIconView.bounds
-        healthPercentageLabel.font = UIFont(name: "Optima", size: 12) ?? UIFont.systemFont(ofSize: 10, weight: .regular)
+        healthPercentageLabel.font = UIFont(name: "Optima", size: 10) ?? UIFont.systemFont(ofSize: 10, weight: .regular)
         healthPercentageLabel.textColor = UIColor.white
         healthPercentageLabel.textAlignment = .center
         healthPercentageLabel.backgroundColor = UIColor.clear
@@ -124,6 +124,7 @@ class UniversalCharacterCell: UIView {
         cardBackground.addSubview(healthPercentageIconView)
         
         // Profession icon - positioned on the left edge of the avatar
+        let avatarRadius = avatarFrame.width / 2 // Adjusted based on new avatarFrame
         let profX = avatarFrame.minX - 10 // Closer to avatar (adjusted from -15)
         let profY = avatarFrame.maxY - iconSize - 8 // Maintained same vertical position
         
@@ -232,7 +233,7 @@ class UniversalCharacterCell: UIView {
         glowAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         desiredVictimIndicator.layer.add(glowAnimation, forKey: "glowAnimation")
     }
-
+    
     func configure(with npc: NPC, isSelected: Bool, isDisabled: Bool) {
         self.currentNPC = npc
         let animationDuration: TimeInterval = 0.2
@@ -269,13 +270,9 @@ class UniversalCharacterCell: UIView {
         CATransaction.setAnimationDuration(animationDuration)
         self.healthIndicator.opacity = isSelected ? 1.0 : 0.0
         self.healthIndicator.shadowOpacity = isSelected ? 0.8 : 0.0
-        if isSelected {
-            self.healthIndicator.shadowOpacity = 0.0
-        }
-        CATransaction.commit()
-        self.healthIndicator.setNeedsDisplay()
-        self.healthIndicator.setNeedsLayout()
-        if !npc.isUnknown {
+        
+        // Устанавливаем path только если NPC выбран и не неизвестен
+        if !npc.isUnknown && isSelected {
             let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
             let radius = healthIndicator.bounds.width / 2 - 2
             let startAngle = -CGFloat.pi / 2
@@ -283,11 +280,11 @@ class UniversalCharacterCell: UIView {
             let path = UIBezierPath(arcCenter: center, radius: radius,
                                    startAngle: startAngle, endAngle: endAngle,
                                    clockwise: true)
-            CATransaction.begin()
-            CATransaction.setAnimationDuration(animationDuration)
             healthIndicator.path = path.cgPath
-            CATransaction.commit()
         }
+        CATransaction.commit()
+        self.healthIndicator.setNeedsDisplay()
+        self.healthIndicator.setNeedsLayout()
         if !npc.isUnknown {
             let iconConfig = UIImage.SymbolConfiguration(pointSize: 12)
             let newProfessionImage = UIImage(systemName: npc.profession.icon, withConfiguration: iconConfig)
@@ -361,7 +358,7 @@ class UniversalCharacterCell: UIView {
             healthPercentageIconView.isHidden = false
             healthPercentageLabel.alpha = 1.0
             healthPercentageIconView.alpha = 1.0
-            // Цвета для вампира и не вампира
+            // Цвета для вампира и не вампира как в UniversalCharacterCell
             let isVampire = npc.isVampire
             let ringColorForHealthIndicator: UIColor = UIColor(red: 1, green: 0.2, blue: 0.2, alpha: 1) // Красный как у игрока
             let textColor: UIColor = ringColorForHealthIndicator // Используем тот же красный цвет что и для кольца
@@ -370,7 +367,7 @@ class UniversalCharacterCell: UIView {
             let strokeAttributes: [NSAttributedString.Key: Any] = [
                 .strokeColor: textColor,
                 .foregroundColor: textColor,
-                .strokeWidth: 0.0,
+                .strokeWidth: -2.0,
                 .font: healthPercentageLabel.font as Any
             ]
             let attributedText = NSAttributedString(string: healthText, attributes: strokeAttributes)
@@ -496,6 +493,10 @@ class UniversalCharacterCell: UIView {
         }
         // --- Надёжно скрываем слой selectionGlowLayer ---
         self.selectionGlowLayer.isHidden = !isSelected
+        
+        // Принудительно обновляем layout чтобы healthIndicator.bounds были правильными
+        self.setNeedsLayout()
+        self.layoutIfNeeded()
     }
 
     // MARK: - Новый метод для Player
@@ -583,8 +584,7 @@ class UniversalCharacterCell: UIView {
         healthPercentageIconView.isHidden = false
         healthPercentageLabel.alpha = 1.0
         healthPercentageIconView.alpha = 1.0
-        // Цвета для вампира и не вампира
-        let isVampire = player.isVampire
+        // Цвета для Player - всё красное как кольцо
         let ringColorForHealthIndicator: UIColor = UIColor(red: 1, green: 0.2, blue: 0.2, alpha: 1) // Красный как у игрока
         let textColor: UIColor = ringColorForHealthIndicator // Используем тот же красный цвет что и для кольца
         let glowColor: UIColor = ringColorForHealthIndicator // Свечение тоже красное
@@ -658,6 +658,7 @@ class UniversalCharacterCell: UIView {
         avatarShadowContainer.layer.cornerRadius = newAvatarRadiusLayout
         avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: avatarShadowContainer.layer.cornerRadius).cgPath
         
+        let avatarRadiusLayout = avatarFrameLayout.width / 2
         let profX = avatarFrameLayout.minX - 10
         let profY = avatarFrameLayout.maxY - iconSize - 8
         professionIcon.frame = CGRect(x: profX, y: profY, width: iconSize, height: iconSize)

@@ -364,7 +364,8 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return [] }
         
         let npcs = scene.getNPCs()
-        let assistanNpcs = npcs.filter( { $0.id != npc.id && $0.isAlive && ($0.isMilitary || $0.profession == npc.profession)})
+        //let assistanNpcs = npcs.filter( { $0.id != npc.id && $0.isAlive && ($0.isMilitary || $0.profession == npc.profession)})
+        let assistanNpcs = Array(npcs.prefix(5))
         
         for assistanNpc in assistanNpcs {
             if assistanNpc.isUnknown {

@@ -13,7 +13,8 @@ class CombatViewController: UIViewController {
     private let universalPlayerCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
     private let universalNpcCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
     private let vsLabel = UILabel()
-    private let actionsStack = UIStackView()
+    // Новый стек для кнопок действий
+    private let actionsButtonsStack = UIStackView()
     private let resultLabel = UILabel()
     private let finishButton = UIButton(type: .system)
     private let topWidgetContainerView = UIView()
@@ -30,6 +31,11 @@ class CombatViewController: UIViewController {
     private var npcWidgetVC: NPCWidgetUIViewController?
     // --- Assistants UI ---
     private var assistantNpcCells: [UniversalCharacterCell] = []
+    private let npcDeckContainer = UIView()
+    // --- Новый стек для игрока и кнопок ---
+    private let playerAndActionsStack = UIStackView()
+    // --- Новый стек для главного NPC ---
+    private let npcAndActionsStack = UIStackView()
     
     // State
     private var player: Player? { GameStateService.shared.player }
@@ -112,12 +118,52 @@ class CombatViewController: UIViewController {
         vsLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
       
 
-        // Actions stack (vertical, отдельно)
-        actionsStack.axis = .vertical
-        actionsStack.alignment = .leading
-        actionsStack.spacing = 12
-        actionsStack.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(actionsStack)
+        // --- Новый вертикальный стек для universalPlayerCell и actionsButtonsStack ---
+        playerAndActionsStack.axis = .vertical
+        playerAndActionsStack.alignment = .leading
+        playerAndActionsStack.spacing = 16
+        playerAndActionsStack.translatesAutoresizingMaskIntoConstraints = false
+        playerAndActionsStack.arrangedSubviews.forEach { playerAndActionsStack.removeArrangedSubview($0); $0.removeFromSuperview() }
+        universalPlayerCell.translatesAutoresizingMaskIntoConstraints = false
+        actionsButtonsStack.axis = .vertical
+        actionsButtonsStack.alignment = .leading
+        actionsButtonsStack.spacing = 12
+        actionsButtonsStack.translatesAutoresizingMaskIntoConstraints = false
+        actionsButtonsStack.arrangedSubviews.forEach { actionsButtonsStack.removeArrangedSubview($0); $0.removeFromSuperview() }
+        let actionsButtonsContainer = UIView()
+        actionsButtonsContainer.translatesAutoresizingMaskIntoConstraints = false
+        actionsButtonsContainer.addSubview(actionsButtonsStack)
+        NSLayoutConstraint.activate([
+            actionsButtonsStack.topAnchor.constraint(equalTo: actionsButtonsContainer.topAnchor, constant: 16),
+            actionsButtonsStack.leadingAnchor.constraint(equalTo: actionsButtonsContainer.leadingAnchor),
+            actionsButtonsStack.trailingAnchor.constraint(equalTo: actionsButtonsContainer.trailingAnchor),
+            actionsButtonsStack.bottomAnchor.constraint(equalTo: actionsButtonsContainer.bottomAnchor)
+        ])
+        playerAndActionsStack.addArrangedSubview(universalPlayerCell)
+        playerAndActionsStack.addArrangedSubview(actionsButtonsContainer)
+        view.addSubview(playerAndActionsStack)
+        NSLayoutConstraint.activate([
+            playerAndActionsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            playerAndActionsStack.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 16),
+            universalPlayerCell.widthAnchor.constraint(equalToConstant: 110),
+            universalPlayerCell.heightAnchor.constraint(equalToConstant: 110),
+        ])
+
+        // --- Новый вертикальный стек для universalNpcCell (главного NPC) ---
+        npcAndActionsStack.axis = .vertical
+        npcAndActionsStack.alignment = .trailing
+        npcAndActionsStack.spacing = 16
+        npcAndActionsStack.translatesAutoresizingMaskIntoConstraints = false
+        npcAndActionsStack.arrangedSubviews.forEach { npcAndActionsStack.removeArrangedSubview($0); $0.removeFromSuperview() }
+        universalNpcCell.translatesAutoresizingMaskIntoConstraints = false
+        npcAndActionsStack.addArrangedSubview(universalNpcCell)
+        view.addSubview(npcAndActionsStack)
+        NSLayoutConstraint.activate([
+            npcAndActionsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            npcAndActionsStack.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 16),
+            universalNpcCell.widthAnchor.constraint(equalToConstant: 110),
+            universalNpcCell.heightAnchor.constraint(equalToConstant: 110),
+        ])
 
         // --- Центрируем карточки и VS в отдельном контейнере ---
         centerWidgetsContainer.translatesAutoresizingMaskIntoConstraints = false
@@ -129,28 +175,19 @@ class CombatViewController: UIViewController {
             centerWidgetsContainer.heightAnchor.constraint(equalToConstant: 200),
         ])
         // Добавляем карточки и VS внутрь контейнера
-        universalPlayerCell.translatesAutoresizingMaskIntoConstraints = false
+        // universalPlayerCell больше не добавляем сюда
         vsLabel.translatesAutoresizingMaskIntoConstraints = false
-        universalNpcCell.translatesAutoresizingMaskIntoConstraints = false
-        centerWidgetsContainer.addSubview(universalPlayerCell)
+        npcDeckContainer.translatesAutoresizingMaskIntoConstraints = false
         centerWidgetsContainer.addSubview(vsLabel)
-        centerWidgetsContainer.addSubview(universalNpcCell)
-
+        centerWidgetsContainer.addSubview(npcDeckContainer)
         NSLayoutConstraint.activate([
-            // Player слева от центра
-            universalPlayerCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 21),
-            universalPlayerCell.trailingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: -30),
-            universalPlayerCell.widthAnchor.constraint(equalToConstant: 140),
-            universalPlayerCell.heightAnchor.constraint(equalToConstant: 140),
-            
             vsLabel.centerXAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor),
             vsLabel.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 15),
-            
-            // NPC справа от центра
-            universalNpcCell.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 21),
-            universalNpcCell.leadingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: 30),
-            universalNpcCell.widthAnchor.constraint(equalToConstant: 140),
-            universalNpcCell.heightAnchor.constraint(equalToConstant: 140)
+            // npcDeckContainer справа от центра
+            npcDeckContainer.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 21),
+            npcDeckContainer.leadingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: 30),
+            npcDeckContainer.widthAnchor.constraint(equalToConstant: 140),
+            npcDeckContainer.heightAnchor.constraint(equalToConstant: 200)
         ])
 
         // Combat log/result label
@@ -171,9 +208,6 @@ class CombatViewController: UIViewController {
             witnessWarningLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
             witnessWarningLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
 
-            actionsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            actionsStack.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-
             // --- Combat log ---
             resultLabel.topAnchor.constraint(equalTo: centerWidgetsContainer.bottomAnchor, constant: 40),
             resultLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
@@ -192,32 +226,24 @@ class CombatViewController: UIViewController {
     }
     
     private func setupAssistantNPCs() {
-        print("[DEBUG] removeFromSuperview for all old assistants")
-        for cell in assistantNpcCells { cell.removeFromSuperview() }
+        // Удаляем все старые карточки из npcDeckContainer
+        for view in npcDeckContainer.subviews { view.removeFromSuperview() }
         assistantNpcCells.removeAll()
-        // Получаем ассистентов, исключая текущего главного NPC
+        // universalNpcCell больше не добавляем сюда!
+        // Получаем ассистентов
         let assistants = npcAssistants
         let cellSize: CGFloat = 140
         for (i, assistant) in assistants.prefix(3).enumerated() {
             let cell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: cellSize, height: cellSize))
-            print("[DEBUG] addSubview assistant cell: \(Unmanaged.passUnretained(cell).toOpaque()) npc: \(assistant.name) id: \(assistant.id)")
             cell.configure(with: assistant, isSelected: false, isDisabled: false)
-            print("[DEBUG] configure assistant cell: \(Unmanaged.passUnretained(cell).toOpaque()) npc: \(assistant.name) id: \(assistant.id) isSelected: false")
             cell.translatesAutoresizingMaskIntoConstraints = true
             cell.clipsToBounds = false
-            let colors: [UIColor] = [.systemGreen, .systemBlue, .systemOrange]
-            // cell.backgroundColor = colors[i % colors.count].withAlphaComponent(0.2)
             let tap = UITapGestureRecognizer(target: self, action: #selector(handleAssistantTap(_:)))
             cell.addGestureRecognizer(tap)
             cell.isUserInteractionEnabled = true
             cell.tag = i
-            view.addSubview(cell)
+            npcDeckContainer.addSubview(cell)
             assistantNpcCells.append(cell)
-        }
-        // После создания ассистентов логируем адреса
-        print("[DEBUG] universalNpcCell: \(Unmanaged.passUnretained(universalNpcCell).toOpaque())")
-        for (i, cell) in assistantNpcCells.enumerated() {
-            print("[DEBUG] assistantNpcCell[\(i)]: \(Unmanaged.passUnretained(cell).toOpaque())")
         }
     }
     
@@ -289,40 +315,32 @@ class CombatViewController: UIViewController {
     }
     
     private func layoutAssistantNPCs() {
-        guard let npcSuperview = universalNpcCell.superview else { return }
-        npcSuperview.clipsToBounds = false
-        view.clipsToBounds = false
+        // Все карточки теперь внутри npcDeckContainer, вертикальная колода
         let cellSize: CGFloat = 140
-        let verticalSpacing: CGFloat = -110
-        // Получаем frame universalNpcCell относительно view
-        let npcCellFrame = npcSuperview.convert(universalNpcCell.frame, to: view)
-        let npcRightX = npcCellFrame.maxX
-        let npcCenterY = npcCellFrame.midY
-        let count = assistantNpcCells.count
-        let totalHeight = CGFloat(count) * cellSize + CGFloat(max(count - 1, 0)) * verticalSpacing
-        let stackCenterY = npcCenterY
-        for (i, cell) in assistantNpcCells.enumerated() {
+        let overlap: CGFloat = 40 // Насколько перекрываются карточки
+        // Сначала ассистенты, потом главный NPC
+        let allCells = assistantNpcCells + [universalNpcCell]
+        for (i, cell) in allCells.enumerated() {
             cell.clipsToBounds = false
-            let x = npcRightX + 32
-            let y = stackCenterY - totalHeight/2 + CGFloat(i) * (cellSize + verticalSpacing)
-            cell.frame = CGRect(x: x, y: y, width: cellSize, height: cellSize)
+            let y = CGFloat(i) * overlap
+            cell.frame = CGRect(x: 0, y: y, width: cellSize, height: cellSize)
             cell.layer.zPosition = CGFloat(i)
         }
     }
     
     private func setupActionButtons() {
-        actionsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        actionsButtonsStack.arrangedSubviews.forEach { $0.removeFromSuperview() }
         if isCombatEnded {
             if npc.isAlive == false {
                 let lootButton = ActionButtonSmallView(title: "Loot", icon: "bag.fill", color: .systemYellow) { [weak self] in
                     self?.openLoot()
                 }
-                actionsStack.addArrangedSubview(lootButton)
+                actionsButtonsStack.addArrangedSubview(lootButton)
             }
             let leaveButton = ActionButtonSmallView(title: "Leave", icon: "arrowshape.turn.up.left.fill", color: .white) { [weak self] in
                 self?.closeCombat()
             }
-            actionsStack.addArrangedSubview(leaveButton)
+            actionsButtonsStack.addArrangedSubview(leaveButton)
             return
         }
         
@@ -403,7 +421,7 @@ class CombatViewController: UIViewController {
             // --- Делаем кнопку неактивной, если NPC мертв ---
             button.isEnabled = npc.isAlive
             button.alpha = npc.isAlive ? 1.0 : 0.7
-            actionsStack.addArrangedSubview(button)
+            actionsButtonsStack.addArrangedSubview(button)
         }
     }
     
@@ -484,8 +502,8 @@ class CombatViewController: UIViewController {
         let allEnemiesDead = !anyAssistantsAlive && isNpcDead
         if isPlayerDead || allEnemiesDead {
             isCombatEnded = true
-            actionsStack.isUserInteractionEnabled = true
-            actionsStack.isHidden = false
+            actionsButtonsStack.isUserInteractionEnabled = true
+            actionsButtonsStack.isHidden = false
             finishButton.isHidden = true
             resultLabel.text = isPlayerDead ? "You died!" : "Enemy defeated!"
         }

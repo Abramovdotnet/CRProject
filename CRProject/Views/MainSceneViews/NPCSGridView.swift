@@ -26,7 +26,7 @@ class NPCSGridView: UIView {
         layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        cv.register(NPCCell.self, forCellWithReuseIdentifier: "NPCCell")
+        cv.register(NPCCharacterCell.self, forCellWithReuseIdentifier: "NPCCharacterCell")
         cv.backgroundColor = .clear
         cv.showsVerticalScrollIndicator = false
         cv.contentInsetAdjustmentBehavior = .always
@@ -161,7 +161,7 @@ class NPCSGridView: UIView {
             if let index = sortedNPCs.firstIndex(where: { $0.id == npc.id }) {
                 
                 // Find the cell and update it
-                if let cell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? NPCCell {
+                if let cell = self.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? NPCCharacterCell {
                     let isSelected = self.npcManager.selectedNPC?.id == npc.id
                     let isDisabled = self.checkIfDisabled(npc: npc)
                     
@@ -187,7 +187,7 @@ class NPCSGridView: UIView {
             
             // Explicitly update the cell for the selected NPC
             if let selectedNPCID = selectedNPCID,
-               let visibleCells = self.collectionView.visibleCells as? [NPCCell],
+               let visibleCells = self.collectionView.visibleCells as? [NPCCharacterCell],
                let selectedCell = visibleCells.first(where: { ($0.currentNPC?.id ?? -1) == selectedNPCID }) {
                 // Force layout immediately
                 selectedCell.layoutIfNeeded()
@@ -259,7 +259,7 @@ class NPCSGridView: UIView {
                 guard indexPath.item < sortedNPCs.count else { continue }
                 
                 let npc = sortedNPCs[indexPath.item]
-                if let cell = self.collectionView.cellForItem(at: indexPath) as? NPCCell {
+                if let cell = self.collectionView.cellForItem(at: indexPath) as? NPCCharacterCell {
                     let isSelected = NPCInteractionManager.shared.selectedNPC?.id == npc.id
                     let isDisabled = self.checkIfDisabled(npc: npc)
                     
@@ -319,7 +319,7 @@ extension NPCSGridView: UICollectionViewDataSource, UICollectionViewDelegateFlow
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "NPCCell", for: indexPath) as! NPCCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "NPCCharacterCell", for: indexPath) as! NPCCharacterCell
         let sortedNPCs = prepareNPCData()
         
         guard indexPath.item < sortedNPCs.count else {
