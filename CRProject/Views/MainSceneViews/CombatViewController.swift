@@ -42,6 +42,10 @@ class CombatViewController: UIViewController {
     private let playerAndActionsStack = UIStackView()
     // --- Новый стек для главного NPC ---
     private let npcAndActionsStack = UIStackView()
+    // --- Combat Stats Table ---
+    private let combatStatsContainer = UIView()
+    private let combatStatsImageView = UIImageView()
+    private let combatStatsTableView = UIView()
     
     // State
     private var player: Player? { GameStateService.shared.player }
@@ -154,16 +158,25 @@ class CombatViewController: UIViewController {
         // --- 2 СТОЛБЕЦ: Центральный контейнер (временно без ассета) ---
         combatLogContainer.translatesAutoresizingMaskIntoConstraints = false
         combatLogContainer.clipsToBounds = false
-        combatLogContainer.layer.cornerRadius = 8
+        combatLogContainer.layer.cornerRadius = 12
         combatLogContainer.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        combatLogContainer.layer.borderWidth = 2
+        combatLogContainer.layer.borderColor = UIColor.black.cgColor
         combatLogContainer.layer.shadowColor = UIColor.black.cgColor
         combatLogContainer.layer.shadowOpacity = 0.6
         combatLogContainer.layer.shadowRadius = 8
         combatLogContainer.layer.shadowOffset = CGSize(width: 0, height: 4)
         view.addSubview(combatLogContainer)
         
-        // Временно убираем ассет - используем простой фон
-        // combatLogImageView код закомментирован
+        // Фоновое изображение для combat log - отключено
+        // combatLogImageView.image = UIImage(named: "combatLog3")
+        // combatLogImageView.contentMode = .scaleToFill
+        // combatLogImageView.translatesAutoresizingMaskIntoConstraints = false
+        // combatLogImageView.layer.cornerRadius = 12
+        // combatLogImageView.layer.borderWidth = 2
+        // combatLogImageView.layer.borderColor = UIColor.black.cgColor
+        // combatLogImageView.clipsToBounds = true
+        // combatLogContainer.addSubview(combatLogImageView)
         
         // Предупреждение о свидетелях
         witnessWarningLabel.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
@@ -176,6 +189,9 @@ class CombatViewController: UIViewController {
         witnessWarningLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
         witnessWarningLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(witnessWarningLabel)
+
+        // Combat Stats Table
+        setupCombatStatsTable()
 
         // VS label убран
         
@@ -243,13 +259,24 @@ class CombatViewController: UIViewController {
             combatLogContainer.heightAnchor.constraint(equalToConstant: 150),
             combatLogContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
-            // Фон контейнера - временно убран
+            // Фоновое изображение combat log - отключено
+            // combatLogImageView.topAnchor.constraint(equalTo: combatLogContainer.topAnchor),
+            // combatLogImageView.leadingAnchor.constraint(equalTo: combatLogContainer.leadingAnchor),
+            // combatLogImageView.trailingAnchor.constraint(equalTo: combatLogContainer.trailingAnchor),
+            // combatLogImageView.bottomAnchor.constraint(equalTo: combatLogContainer.bottomAnchor),
             
             // Witness warning label - в верхней части центральной колонки
             witnessWarningLabel.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 16),
             witnessWarningLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             witnessWarningLabel.leadingAnchor.constraint(greaterThanOrEqualTo: playerAndActionsStack.trailingAnchor, constant: 16),
             witnessWarningLabel.trailingAnchor.constraint(lessThanOrEqualTo: npcAndActionsStack.leadingAnchor, constant: -16),
+            
+            // Combat Stats Table - между witness warning и combat log
+            combatStatsContainer.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 12),
+            combatStatsContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            combatStatsContainer.widthAnchor.constraint(equalToConstant: 320),
+            combatStatsContainer.heightAnchor.constraint(equalToConstant: 120),
+            combatStatsContainer.bottomAnchor.constraint(lessThanOrEqualTo: combatLogContainer.topAnchor, constant: -12),
             
             // Combat log scroll view constraints - заполняет весь контейнер
             combatLogScrollView.topAnchor.constraint(equalTo: combatLogContainer.topAnchor, constant: 8),
@@ -274,8 +301,8 @@ class CombatViewController: UIViewController {
             npcNameLabel.bottomAnchor.constraint(equalTo: npcAndActionsStack.topAnchor, constant: -8),
             npcNameLabel.centerXAnchor.constraint(equalTo: universalNpcCell.centerXAnchor),
             
-            // Контейнер ассистентов под NPC
-            npcDeckContainer.centerXAnchor.constraint(equalTo: universalNpcCell.centerXAnchor),
+            // Контейнер ассистентов под NPC - выравниваем по левому краю
+            npcDeckContainer.leadingAnchor.constraint(equalTo: universalNpcCell.leadingAnchor),
             npcDeckContainer.topAnchor.constraint(equalTo: universalNpcCell.bottomAnchor, constant: 4),
             npcDeckContainer.widthAnchor.constraint(equalToConstant: 125),
             npcDeckContainer.heightAnchor.constraint(equalToConstant: 300)
@@ -476,6 +503,9 @@ class CombatViewController: UIViewController {
         // Разблокируем действия
         enableAllActions()
         
+        // Показываем и обновляем таблицу характеристик с анимацией
+        showCombatStatsTableWithAnimation()
+        
         // Проверяем окончание боя
         checkCombatEnd()
         
@@ -605,8 +635,8 @@ class CombatViewController: UIViewController {
     
     private func layoutAssistantNPCs() {
         let cellSize: CGFloat = 55 // Уменьшаем размер с 65 до 55
-        let spacing: CGFloat = 12 // Увеличиваем вертикальное расстояние с 8 до 12
-        let columnSpacing: CGFloat = 15 // Увеличиваем горизонтальное расстояние с 10 до 15
+        let spacing: CGFloat = 8 // Уменьшаем вертикальное расстояние с 12 до 8
+        let columnSpacing: CGFloat = 0 // Убираем горизонтальное расстояние полностью для ширины 110px
         
         // Размещаем ассистентов в 2 вертикальные колонки (сначала правая, потом левая)
         for (i, cell) in assistantNpcCells.enumerated() {
@@ -850,7 +880,10 @@ class CombatViewController: UIViewController {
         // Ищем паттерн (-XX HP) в строке
         let pattern = "\\(-\\d+ HP\\)"
         if let range = summary.range(of: pattern, options: .regularExpression) {
-            return " " + String(summary[range])
+            let match = String(summary[range])
+            // Убираем скобки: "(−15 HP)" -> "−15 HP"
+            let withoutParentheses = String(match.dropFirst().dropLast())
+            return " " + withoutParentheses
         }
         return ""
     }
@@ -875,7 +908,10 @@ class CombatViewController: UIViewController {
         // Ищем паттерн (+XX HP) в строке
         let pattern = "\\(\\+\\d+ HP\\)"
         if let range = summary.range(of: pattern, options: .regularExpression) {
-            return " " + String(summary[range])
+            let match = String(summary[range])
+            // Убираем скобки: "(+10 HP)" -> "+10 HP"
+            let withoutParentheses = String(match.dropFirst().dropLast())
+            return " " + withoutParentheses
         }
         return ""
     }
@@ -897,11 +933,59 @@ class CombatViewController: UIViewController {
     }
     
     private func updateUIAfterAction() {
-        // Добавляем результат действия в лог с иконками
-        if let summary = CombatService.shared.resultSummary {
-            let result = prettyCombatResultText(summary)
-            addCombatLogMessageWithIcons(result.text, initiator: result.initiator, target: result.target, color: result.color)
+        // Получаем информацию о результате действия
+        guard let summary = CombatService.shared.resultSummary,
+              let actionType = lastActionType else {
+            return
         }
+        
+        let isSuccess = summary.lowercased().contains("success")
+        
+        // Показываем анимации боевых действий
+        if isSuccess {
+            // Анимация на цели (NPC)
+            showCombatAnimation(for: actionType, isSuccess: true, on: universalNpcCell, isPlayer: false)
+            
+            // Показываем урон/лечение если есть
+            let damageInfo = extractDamageInfo(from: summary)
+            let healInfo = extractHealInfo(from: summary)
+            
+            if !damageInfo.isEmpty {
+                showDamageAnimation(on: universalNpcCell, damage: damageInfo, isHealing: false)
+            }
+            if !healInfo.isEmpty {
+                showDamageAnimation(on: universalPlayerCell, damage: healInfo, isHealing: true)
+            }
+        } else {
+            // Анимация промаха/блока на NPC
+            showCombatAnimation(for: actionType, isSuccess: false, on: universalNpcCell, isPlayer: false)
+            
+            // Если игрок получил урон при неудаче - показываем анимацию атаки врага на игроке
+            if summary.lowercased().contains("player_damaged") {
+                // NPC атакует игрока в ответ
+                showCombatAnimation(for: .attack, isSuccess: true, on: universalPlayerCell, isPlayer: true)
+                
+                let damageInfo = extractDamageInfo(from: summary)
+                if !damageInfo.isEmpty {
+                    showDamageAnimation(on: universalPlayerCell, damage: damageInfo, isHealing: false)
+                }
+            }
+        }
+        
+        // Дополнительная проверка для групповых атак на игрока
+        if summary.contains("overwhelmed by") || summary.contains("all") && summary.contains("enemies attack") {
+            // Множественные атаки на игрока
+            showMultipleAttacksOnPlayer()
+            
+            let damageInfo = extractDamageInfo(from: summary)
+            if !damageInfo.isEmpty {
+                showDamageAnimation(on: universalPlayerCell, damage: damageInfo, isHealing: false)
+            }
+        }
+        
+        // Добавляем результат действия в лог с иконками
+        let result = prettyCombatResultText(summary)
+        addCombatLogMessageWithIcons(result.text, initiator: result.initiator, target: result.target, color: result.color)
         
         // Оптимизированное обновление игрока - только здоровье если изменилось
         if let player = player {
@@ -927,6 +1011,13 @@ class CombatViewController: UIViewController {
         
         // --- Обновляем ассистентов ---
         setupAssistantNPCs()
+        
+        // Обновляем таблицу характеристик
+        updateCombatStatsTable(animated: false)
+        
+        // Quality of life: автоматически переключаемся на другого живого NPC если текущий умер
+        autoSwitchTargetIfNeeded()
+        
         checkCombatEnd()
         setupActionButtons()
     }
@@ -935,6 +1026,44 @@ class CombatViewController: UIViewController {
         // Эта функция больше не обновляет witness warning label
         // Witness warning label обновляется только в setupActionButtons()
         // Здесь можно добавить другую логику обновления UI если нужно
+    }
+    
+    private func autoSwitchTargetIfNeeded() {
+        // Если текущий NPC мертв и бой не закончен, пытаемся переключиться на другого живого
+        guard !npc.isAlive && !isCombatEnded else { return }
+        
+        // Ищем живых ассистентов
+        let aliveAssistants = npcAssistants.filter { $0.isAlive }
+        
+        if let newTarget = aliveAssistants.first {
+            // Сохраняем предыдущего NPC
+            let previousNPC = self.npc
+            
+            // Переключаемся на нового живого NPC
+            self.npc = newTarget
+            self.npcManager.selectedNPC = newTarget
+            
+            // Удаляем нового главного NPC из ассистентов
+            if let index = npcAssistants.firstIndex(where: { $0.id == newTarget.id }) {
+                npcAssistants.remove(at: index)
+            }
+            
+            // Добавляем предыдущего мертвого NPC в ассистенты (для отображения)
+            npcAssistants.append(previousNPC)
+            
+            // Обновляем UI
+            universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
+            npcNameLabel.text = npc.name
+            
+            // Пересоздаем ассистентов
+            setupAssistantNPCs()
+            layoutAssistantNPCs()
+            
+            // Добавляем сообщение о смене цели
+            addCombatLogMessageWithIcons("⚔️ Target shifts to \(npc.name) as the battle rages on", initiator: player, target: npc, color: .systemOrange, isSystemMessage: true)
+            
+            print("Auto-switched target from \(previousNPC.name) (dead) to \(npc.name) (alive)")
+        }
     }
     
     private func getDifficultyColor(for chance: Double, enemyCount: Int) -> UIColor {
@@ -964,6 +1093,9 @@ class CombatViewController: UIViewController {
     }
     
     private func updateCombatStatusInLog() {
+        // Не добавляем статусные сообщения если бой закончен
+        guard !isCombatEnded else { return }
+        
         let status = CombatService.shared.getGroupCombatStatus()
         
         // Добавляем информацию о состоянии боя только если было действие (есть resultSummary)
@@ -1008,6 +1140,382 @@ class CombatViewController: UIViewController {
         }
     }
     
+    // MARK: - Combat Animations
+    
+    private func showCombatAnimation(for actionType: CombatActionType, isSuccess: Bool, on targetWidget: UIView, isPlayer: Bool = false) {
+        guard isSuccess else {
+            // Показываем анимацию промаха/блока
+            showMissAnimation(on: targetWidget)
+            return
+        }
+        
+        switch actionType {
+        case .attack:
+            showSwordAnimation(on: targetWidget, isPlayer: isPlayer)
+        case .feed:
+            showBiteAnimation(on: targetWidget, isPlayer: isPlayer)
+        case .drain:
+            showDrainAnimation(on: targetWidget, isPlayer: isPlayer)
+        case .dominate:
+            showDominateAnimation(on: targetWidget, isPlayer: isPlayer)
+        case .defend, .useItem, .escape, .ability, .shadowStep:
+            // Для этих действий пока не реализованы анимации
+            showMissAnimation(on: targetWidget)
+        }
+    }
+    
+    private func showSwordAnimation(on targetWidget: UIView, isPlayer: Bool) {
+        let swordLabel = UILabel()
+        swordLabel.text = "⚔️"
+        swordLabel.font = UIFont.systemFont(ofSize: 50)
+        swordLabel.textAlignment = .center
+        swordLabel.alpha = 0
+        swordLabel.transform = CGAffineTransform(scaleX: 0.2, y: 0.2).rotated(by: .pi / 2)
+        
+        targetWidget.superview?.addSubview(swordLabel)
+        swordLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            swordLabel.centerXAnchor.constraint(equalTo: targetWidget.centerXAnchor),
+            swordLabel.centerYAnchor.constraint(equalTo: targetWidget.centerYAnchor)
+        ])
+        
+        // АГРЕССИВНАЯ анимация "рубящего удара"
+        UIView.animate(withDuration: 0.15, delay: 0, options: [.curveEaseIn], animations: {
+            swordLabel.alpha = 1.0
+            swordLabel.transform = CGAffineTransform(scaleX: 1.5, y: 1.5).rotated(by: .pi / 4)
+        }, completion: { _ in
+            // МОЩНЫЙ удар с тряской
+            UIView.animate(withDuration: 0.1, animations: {
+                swordLabel.transform = CGAffineTransform(scaleX: 1.8, y: 1.8).rotated(by: -0.2)
+                targetWidget.transform = CGAffineTransform(translationX: isPlayer ? 15 : -15, y: 0).scaledBy(x: 0.9, y: 1.1)
+            }, completion: { _ in
+                // Отскок и тряска
+                UIView.animate(withDuration: 0.08, animations: {
+                    targetWidget.transform = CGAffineTransform(translationX: isPlayer ? -8 : 8, y: 3).scaledBy(x: 1.05, y: 0.95)
+                }, completion: { _ in
+                    UIView.animate(withDuration: 0.08, animations: {
+                        targetWidget.transform = CGAffineTransform(translationX: isPlayer ? 4 : -4, y: -2).scaledBy(x: 0.98, y: 1.02)
+                    }, completion: { _ in
+                        UIView.animate(withDuration: 0.3, animations: {
+                            swordLabel.alpha = 0
+                            swordLabel.transform = CGAffineTransform(scaleX: 0.3, y: 0.3).rotated(by: .pi)
+                            targetWidget.transform = CGAffineTransform.identity
+                        }, completion: { _ in
+                            swordLabel.removeFromSuperview()
+                        })
+                    })
+                })
+            })
+        })
+    }
+    
+    private func showBiteAnimation(on targetWidget: UIView, isPlayer: Bool) {
+        let biteLabel = UILabel()
+        biteLabel.text = "🦷"
+        biteLabel.font = UIFont.systemFont(ofSize: 45)
+        biteLabel.textAlignment = .center
+        biteLabel.alpha = 0
+        biteLabel.transform = CGAffineTransform(scaleX: 0.1, y: 0.1).rotated(by: .pi / 3)
+        
+        targetWidget.superview?.addSubview(biteLabel)
+        biteLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            biteLabel.centerXAnchor.constraint(equalTo: targetWidget.centerXAnchor),
+            biteLabel.centerYAnchor.constraint(equalTo: targetWidget.centerYAnchor)
+        ])
+        
+        // АГРЕССИВНАЯ анимация "хищного укуса"
+        UIView.animate(withDuration: 0.12, delay: 0, options: [.curveEaseIn], animations: {
+            biteLabel.alpha = 1.0
+            biteLabel.transform = CGAffineTransform(scaleX: 1.6, y: 1.6).rotated(by: 0)
+        }, completion: { _ in
+            // ЖЕСТОКОЕ сжатие челюстей с множественными ударами
+            UIView.animate(withDuration: 0.08, animations: {
+                biteLabel.transform = CGAffineTransform(scaleX: 1.2, y: 1.2).rotated(by: -0.3)
+                targetWidget.transform = CGAffineTransform(scaleX: 0.85, y: 1.15).rotated(by: 0.1)
+            }, completion: { _ in
+                UIView.animate(withDuration: 0.06, animations: {
+                    biteLabel.transform = CGAffineTransform(scaleX: 1.4, y: 1.4).rotated(by: 0.2)
+                    targetWidget.transform = CGAffineTransform(scaleX: 0.9, y: 1.1).rotated(by: -0.08)
+                }, completion: { _ in
+                    UIView.animate(withDuration: 0.06, animations: {
+                        biteLabel.transform = CGAffineTransform(scaleX: 1.1, y: 1.1).rotated(by: -0.15)
+                        targetWidget.transform = CGAffineTransform(scaleX: 0.88, y: 1.12).rotated(by: 0.05)
+                    }, completion: { _ in
+                        // Финальное "разрывание"
+                        UIView.animate(withDuration: 0.2, animations: {
+                            biteLabel.alpha = 0
+                            biteLabel.transform = CGAffineTransform(scaleX: 2.0, y: 0.3).rotated(by: .pi / 2)
+                            targetWidget.transform = CGAffineTransform.identity
+                        }, completion: { _ in
+                            biteLabel.removeFromSuperview()
+                        })
+                    })
+                })
+            })
+        })
+    }
+    
+    private func showDrainAnimation(on targetWidget: UIView, isPlayer: Bool) {
+        // Создаем множественные капли крови для более агрессивного эффекта
+        for i in 0..<5 {
+            let drainLabel = UILabel()
+            drainLabel.text = "🩸"
+            drainLabel.font = UIFont.systemFont(ofSize: 25 + CGFloat(i * 3))
+            drainLabel.textAlignment = .center
+            drainLabel.alpha = 0
+            drainLabel.transform = CGAffineTransform(scaleX: 0.2, y: 0.2).rotated(by: CGFloat.random(in: -0.5...0.5))
+            
+            targetWidget.superview?.addSubview(drainLabel)
+            drainLabel.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                drainLabel.centerXAnchor.constraint(equalTo: targetWidget.centerXAnchor, constant: CGFloat.random(in: -15...15)),
+                drainLabel.centerYAnchor.constraint(equalTo: targetWidget.centerYAnchor, constant: CGFloat.random(in: -15...15))
+            ])
+            
+            let delay = Double(i) * 0.05
+            
+            // АГРЕССИВНАЯ анимация "кровавого дрейна"
+            UIView.animate(withDuration: 0.15, delay: delay, options: [.curveEaseOut], animations: {
+                drainLabel.alpha = 1.0
+                drainLabel.transform = CGAffineTransform(scaleX: 1.3, y: 1.3).rotated(by: CGFloat.random(in: -0.3...0.3))
+            }, completion: { _ in
+                // Кровь "вырывается" из цели
+                UIView.animate(withDuration: 0.2, animations: {
+                    drainLabel.center = CGPoint(
+                        x: drainLabel.center.x + CGFloat.random(in: -40...40),
+                        y: drainLabel.center.y - CGFloat.random(in: 30...60)
+                    )
+                    drainLabel.transform = CGAffineTransform(scaleX: 1.8, y: 1.8).rotated(by: CGFloat.random(in: -1...1))
+                }, completion: { _ in
+                    // Кровь исчезает с эффектом "поглощения"
+                    UIView.animate(withDuration: 0.25, animations: {
+                        drainLabel.alpha = 0
+                        drainLabel.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+                        drainLabel.center = CGPoint(x: drainLabel.center.x, y: drainLabel.center.y - 20)
+                    }, completion: { _ in
+                        drainLabel.removeFromSuperview()
+                    })
+                })
+            })
+        }
+        
+        // Эффект на цель - более агрессивное "высушивание"
+        UIView.animate(withDuration: 0.3, delay: 0.1, animations: {
+            targetWidget.alpha = 0.4
+            targetWidget.transform = CGAffineTransform(scaleX: 0.85, y: 0.85).rotated(by: 0.1)
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.15, animations: {
+                targetWidget.transform = CGAffineTransform(scaleX: 0.9, y: 0.9).rotated(by: -0.05)
+            }, completion: { _ in
+                UIView.animate(withDuration: 0.4, animations: {
+                    targetWidget.alpha = 1.0
+                    targetWidget.transform = CGAffineTransform.identity
+                })
+            })
+        })
+    }
+    
+    private func showDominateAnimation(on targetWidget: UIView, isPlayer: Bool) {
+        let eyeLabel = UILabel()
+        eyeLabel.text = "👁️"
+        eyeLabel.font = UIFont.systemFont(ofSize: 50)
+        eyeLabel.textAlignment = .center
+        eyeLabel.alpha = 0
+        eyeLabel.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+        
+        targetWidget.superview?.addSubview(eyeLabel)
+        eyeLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            eyeLabel.centerXAnchor.constraint(equalTo: targetWidget.centerXAnchor),
+            eyeLabel.centerYAnchor.constraint(equalTo: targetWidget.centerYAnchor)
+        ])
+        
+        // АГРЕССИВНАЯ анимация "ментального подавления"
+        UIView.animate(withDuration: 0.2, delay: 0, options: [.curveEaseOut], animations: {
+            eyeLabel.alpha = 1.0
+            eyeLabel.transform = CGAffineTransform(scaleX: 1.8, y: 1.8)
+        }, completion: { _ in
+            // ИНТЕНСИВНАЯ пульсация с нарастающей силой
+            var pulseCount = 0
+            let maxPulses = 6
+            
+            func performPulse() {
+                guard pulseCount < maxPulses else {
+                    // Финальное "сокрушение воли"
+                    UIView.animate(withDuration: 0.15, animations: {
+                        eyeLabel.transform = CGAffineTransform(scaleX: 2.5, y: 2.5)
+                        targetWidget.alpha = 0.3
+                        targetWidget.transform = CGAffineTransform(scaleX: 0.7, y: 0.7).rotated(by: 0.2)
+                    }, completion: { _ in
+                        UIView.animate(withDuration: 0.1, animations: {
+                            targetWidget.transform = CGAffineTransform(scaleX: 0.75, y: 0.75).rotated(by: -0.15)
+                        }, completion: { _ in
+                            UIView.animate(withDuration: 0.1, animations: {
+                                targetWidget.transform = CGAffineTransform(scaleX: 0.8, y: 0.8).rotated(by: 0.1)
+                            }, completion: { _ in
+                                UIView.animate(withDuration: 0.3, animations: {
+                                    eyeLabel.alpha = 0
+                                    eyeLabel.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
+                                    targetWidget.alpha = 1.0
+                                    targetWidget.transform = CGAffineTransform.identity
+                                }, completion: { _ in
+                                    eyeLabel.removeFromSuperview()
+                                })
+                            })
+                        })
+                    })
+                    return
+                }
+                
+                let intensity = 1.8 + (CGFloat(pulseCount) * 0.15)
+                UIView.animate(withDuration: 0.08, animations: {
+                    eyeLabel.transform = CGAffineTransform(scaleX: intensity, y: intensity)
+                    targetWidget.transform = CGAffineTransform(scaleX: 0.95 - CGFloat(pulseCount) * 0.03, y: 0.95 - CGFloat(pulseCount) * 0.03)
+                }, completion: { _ in
+                    UIView.animate(withDuration: 0.08, animations: {
+                        eyeLabel.transform = CGAffineTransform(scaleX: intensity - 0.2, y: intensity - 0.2)
+                    }, completion: { _ in
+                        pulseCount += 1
+                        performPulse()
+                    })
+                })
+            }
+            
+            performPulse()
+        })
+    }
+    
+    private func showMissAnimation(on targetWidget: UIView) {
+        let missLabel = UILabel()
+        missLabel.text = "🛡️"
+        missLabel.font = UIFont.systemFont(ofSize: 40)
+        missLabel.textAlignment = .center
+        missLabel.alpha = 0
+        missLabel.transform = CGAffineTransform(scaleX: 0.2, y: 0.2).rotated(by: .pi / 4)
+        
+        targetWidget.superview?.addSubview(missLabel)
+        missLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            missLabel.centerXAnchor.constraint(equalTo: targetWidget.centerXAnchor),
+            missLabel.centerYAnchor.constraint(equalTo: targetWidget.centerYAnchor)
+        ])
+        
+        // АГРЕССИВНАЯ анимация "мощного блока"
+        UIView.animate(withDuration: 0.12, delay: 0, options: [.curveEaseOut], animations: {
+            missLabel.alpha = 1.0
+            missLabel.transform = CGAffineTransform(scaleX: 1.6, y: 1.6).rotated(by: 0)
+            targetWidget.transform = CGAffineTransform(translationX: 8, y: -8).scaledBy(x: 1.05, y: 0.95)
+        }, completion: { _ in
+            // Отскок от блока
+            UIView.animate(withDuration: 0.08, animations: {
+                missLabel.transform = CGAffineTransform(scaleX: 1.8, y: 1.8).rotated(by: -0.2)
+                targetWidget.transform = CGAffineTransform(translationX: -4, y: 4).scaledBy(x: 0.98, y: 1.02)
+            }, completion: { _ in
+                UIView.animate(withDuration: 0.08, animations: {
+                    targetWidget.transform = CGAffineTransform(translationX: 2, y: -2).scaledBy(x: 1.01, y: 0.99)
+                }, completion: { _ in
+                    UIView.animate(withDuration: 0.3, animations: {
+                        missLabel.alpha = 0
+                        missLabel.transform = CGAffineTransform(scaleX: 0.2, y: 0.2).rotated(by: .pi)
+                        targetWidget.transform = CGAffineTransform.identity
+                    }, completion: { _ in
+                        missLabel.removeFromSuperview()
+                    })
+                })
+            })
+        })
+    }
+    
+    private func showMultipleAttacksOnPlayer() {
+        // Показываем 3-5 мечей атакующих игрока одновременно
+        let attackCount = Int.random(in: 3...5)
+        
+        for i in 0..<attackCount {
+            let delay = Double(i) * 0.1
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                guard let self = self else { return }
+                
+                let swordLabel = UILabel()
+                swordLabel.text = "⚔️"
+                swordLabel.font = UIFont.systemFont(ofSize: 35 + CGFloat(i * 3))
+                swordLabel.textAlignment = .center
+                swordLabel.alpha = 0
+                swordLabel.transform = CGAffineTransform(scaleX: 0.1, y: 0.1).rotated(by: CGFloat.random(in: 0...(.pi * 2)))
+                
+                self.universalPlayerCell.superview?.addSubview(swordLabel)
+                swordLabel.translatesAutoresizingMaskIntoConstraints = false
+                NSLayoutConstraint.activate([
+                    swordLabel.centerXAnchor.constraint(equalTo: self.universalPlayerCell.centerXAnchor, constant: CGFloat.random(in: -40...40)),
+                    swordLabel.centerYAnchor.constraint(equalTo: self.universalPlayerCell.centerYAnchor, constant: CGFloat.random(in: -30...30))
+                ])
+                
+                // Быстрая атака
+                UIView.animate(withDuration: 0.15, animations: {
+                    swordLabel.alpha = 1.0
+                    swordLabel.transform = CGAffineTransform(scaleX: 1.3, y: 1.3).rotated(by: CGFloat.random(in: -0.5...0.5))
+                }, completion: { _ in
+                    UIView.animate(withDuration: 0.1, animations: {
+                        swordLabel.transform = CGAffineTransform(scaleX: 1.5, y: 1.5).rotated(by: CGFloat.random(in: -0.3...0.3))
+                        self.universalPlayerCell.transform = CGAffineTransform(
+                            translationX: CGFloat.random(in: -8...8),
+                            y: CGFloat.random(in: -8...8)
+                        ).scaledBy(x: 0.95, y: 1.05)
+                    }, completion: { _ in
+                        UIView.animate(withDuration: 0.25, animations: {
+                            swordLabel.alpha = 0
+                            swordLabel.transform = CGAffineTransform(scaleX: 0.2, y: 0.2)
+                            if i == attackCount - 1 {
+                                // Последняя атака - возвращаем игрока в нормальное состояние
+                                self.universalPlayerCell.transform = CGAffineTransform.identity
+                            }
+                        }, completion: { _ in
+                            swordLabel.removeFromSuperview()
+                        })
+                    })
+                })
+            }
+        }
+    }
+    
+    private func showDamageAnimation(on targetWidget: UIView, damage: String, isHealing: Bool = false) {
+        let damageLabel = UILabel()
+        damageLabel.text = damage
+        damageLabel.font = UIFont(name: "Optima-Regular", size: 18) ?? UIFont.boldSystemFont(ofSize: 18)
+        damageLabel.textColor = isHealing ? .systemGreen : .systemRed
+        damageLabel.textAlignment = .center
+        damageLabel.alpha = 0
+        damageLabel.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+        
+        // Добавляем тень для лучшей видимости
+        damageLabel.layer.shadowColor = UIColor.black.cgColor
+        damageLabel.layer.shadowOpacity = 0.8
+        damageLabel.layer.shadowRadius = 2
+        damageLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
+        
+        targetWidget.superview?.addSubview(damageLabel)
+        damageLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            damageLabel.centerXAnchor.constraint(equalTo: targetWidget.centerXAnchor),
+            damageLabel.centerYAnchor.constraint(equalTo: targetWidget.centerYAnchor, constant: 25)
+        ])
+        
+        // Анимация "всплывающего урона"
+        UIView.animate(withDuration: 0.3, delay: 0.2, options: [.curveEaseOut], animations: {
+            damageLabel.alpha = 1.0
+            damageLabel.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+            damageLabel.center = CGPoint(x: damageLabel.center.x, y: damageLabel.center.y - 40)
+        }, completion: { _ in
+            UIView.animate(withDuration: 0.5, animations: {
+                damageLabel.alpha = 0
+                damageLabel.center = CGPoint(x: damageLabel.center.x, y: damageLabel.center.y - 20)
+            }, completion: { _ in
+                damageLabel.removeFromSuperview()
+            })
+        })
+    }
+
     // MARK: - Combat Log Methods
     
     private func createCharacterIcon(for character: any Character, size: CGFloat = 30) -> UIImageView {
@@ -1037,6 +1545,9 @@ class CombatViewController: UIViewController {
     }
     
     private func addCombatLogMessageWithIcons(_ text: String, initiator: (any Character)? = nil, target: (any Character)? = nil, color: UIColor = .white, isSystemMessage: Bool = false) {
+        // Не добавляем сообщения если бой закончен
+        guard !isCombatEnded else { return }
+        
         let containerView = UIView()
         containerView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -1054,7 +1565,7 @@ class CombatViewController: UIViewController {
         
         // Добавляем текст сообщения
         let messageLabel = UILabel()
-        messageLabel.font = UIFont(name: "Optima-Regular", size: isSystemMessage ? 13 : 14) ?? UIFont.systemFont(ofSize: isSystemMessage ? 13 : 14)
+        messageLabel.font = UIFont(name: "Optima-Regular", size: 11) ?? UIFont.systemFont(ofSize: 11)
         messageLabel.textColor = color
         messageLabel.textAlignment = isSystemMessage ? .center : .left
         messageLabel.numberOfLines = 0
@@ -1118,8 +1629,11 @@ class CombatViewController: UIViewController {
     }
     
     private func addCombatLogMessage(_ text: String, color: UIColor = .white, isSystemMessage: Bool = false) {
+        // Не добавляем сообщения если бой закончен
+        guard !isCombatEnded else { return }
+        
         let messageLabel = UILabel()
-        messageLabel.font = UIFont(name: "Optima-Regular", size: isSystemMessage ? 13 : 14) ?? UIFont.systemFont(ofSize: isSystemMessage ? 13 : 14)
+        messageLabel.font = UIFont(name: "Optima-Regular", size: 11) ?? UIFont.systemFont(ofSize: 11)
         messageLabel.textColor = color
         messageLabel.textAlignment = isSystemMessage ? .center : .left
         messageLabel.numberOfLines = 0
@@ -1171,12 +1685,7 @@ class CombatViewController: UIViewController {
         let allEnemiesDead = !anyAssistantsAlive && isNpcDead
         
         if isPlayerDead || allEnemiesDead {
-            isCombatEnded = true
-            actionsButtonsStack.isUserInteractionEnabled = true
-            actionsButtonsStack.isHidden = false
-            finishButton.isHidden = true
-            
-            // Добавляем финальное сообщение в лог
+            // Добавляем финальное сообщение в лог ПЕРЕД установкой флага завершения
             if isPlayerDead {
                 addCombatLogMessage("💀 Your blood stains the cold earth...", color: .systemRed, isSystemMessage: true)
                 addCombatLogMessage("Death claims another soul", color: .systemRed, isSystemMessage: true)
@@ -1188,6 +1697,12 @@ class CombatViewController: UIViewController {
                     addCombatLogMessage("🏆 \(npc.name) draws final breath - victory is yours!", color: .systemGreen, isSystemMessage: true)
                 }
             }
+            
+            // Устанавливаем флаг завершения боя ПОСЛЕ добавления сообщений
+            isCombatEnded = true
+            actionsButtonsStack.isUserInteractionEnabled = true
+            actionsButtonsStack.isHidden = false
+            finishButton.isHidden = true
         }
         // else: не переключаем автоматически на живого NPC, если выбран мертвый вручную
     }
@@ -1388,6 +1903,336 @@ class CombatViewController: UIViewController {
             overlay.removeFromSuperview()
             self.widgetOverlayView = nil
         })
+    }
+    
+    // MARK: - Combat Stats Table
+    
+    private func setupCombatStatsTable() {
+        combatStatsContainer.translatesAutoresizingMaskIntoConstraints = false
+        combatStatsContainer.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        combatStatsContainer.layer.cornerRadius = 12
+        combatStatsContainer.layer.borderWidth = 2
+        combatStatsContainer.layer.borderColor = UIColor.black.cgColor
+        combatStatsContainer.layer.shadowColor = UIColor.black.cgColor
+        combatStatsContainer.layer.shadowOpacity = 0.6
+        combatStatsContainer.layer.shadowRadius = 8
+        combatStatsContainer.layer.shadowOffset = CGSize(width: 0, height: 4)
+        combatStatsContainer.clipsToBounds = false // Изменяем на false для отображения тени
+        combatStatsContainer.isHidden = true // Скрываем до начала боя
+        view.addSubview(combatStatsContainer)
+        
+        // Фоновое изображение для combat stats table - отключено
+        // combatStatsImageView.image = UIImage(named: "combatLog3")
+        // combatStatsImageView.contentMode = .scaleToFill
+        // combatStatsImageView.translatesAutoresizingMaskIntoConstraints = false
+        // combatStatsImageView.layer.cornerRadius = 12
+        // combatStatsImageView.layer.borderWidth = 2
+        // combatStatsImageView.layer.borderColor = UIColor.black.cgColor
+        // combatStatsImageView.clipsToBounds = true
+        // combatStatsContainer.addSubview(combatStatsImageView)
+        
+        combatStatsTableView.translatesAutoresizingMaskIntoConstraints = false
+        combatStatsTableView.clipsToBounds = true
+        combatStatsContainer.addSubview(combatStatsTableView)
+        
+        NSLayoutConstraint.activate([
+            // Фоновое изображение combat stats table - отключено
+            // combatStatsImageView.topAnchor.constraint(equalTo: combatStatsContainer.topAnchor),
+            // combatStatsImageView.leadingAnchor.constraint(equalTo: combatStatsContainer.leadingAnchor),
+            // combatStatsImageView.trailingAnchor.constraint(equalTo: combatStatsContainer.trailingAnchor),
+            // combatStatsImageView.bottomAnchor.constraint(equalTo: combatStatsContainer.bottomAnchor),
+            
+            combatStatsTableView.topAnchor.constraint(equalTo: combatStatsContainer.topAnchor, constant: 8),
+            combatStatsTableView.leadingAnchor.constraint(equalTo: combatStatsContainer.leadingAnchor, constant: 8),
+            combatStatsTableView.trailingAnchor.constraint(equalTo: combatStatsContainer.trailingAnchor, constant: -8),
+            combatStatsTableView.bottomAnchor.constraint(equalTo: combatStatsContainer.bottomAnchor, constant: -8)
+        ])
+    }
+    
+    private func updateCombatStatsTable(animated: Bool = true) {
+        // Очищаем предыдущее содержимое
+        combatStatsTableView.subviews.forEach { $0.removeFromSuperview() }
+        
+        guard let player = player else { return }
+        
+        // Получаем характеристики
+        let playerAttack = player.getAttackValue()
+        let playerDefense = player.getDefenseValue()
+        
+        let aliveEnemies = getAllAliveEnemies()
+        let totalEnemyAttack = aliveEnemies.reduce(0) { $0 + $1.getAttackValue() }
+        let totalEnemyDefense = aliveEnemies.reduce(0) { $0 + $1.getDefenseValue() }
+        
+        // Создаем заголовки колонок
+        let playerHeaderStack = createHeaderStack(title: "Player", iconName: "person.circle.fill", color: .systemBlue)
+        let enemiesHeaderStack = createHeaderStack(title: "Enemies", iconName: "person.3.fill", color: .systemRed)
+        
+        // Создаем строки характеристик
+        let attackRow = createStatsRow(
+            leftIcon: "sword.fill",
+            leftTitle: "Attack",
+            leftValue: animated ? "0" : "\(playerAttack)",
+            leftTag: 1001,
+            rightIcon: "sword.fill", 
+            rightTitle: "Attack",
+            rightValue: animated ? "0" : "\(totalEnemyAttack)",
+            rightTag: 1003
+        )
+        
+        let defenseRow = createStatsRow(
+            leftIcon: "shield.fill",
+            leftTitle: "Defense", 
+            leftValue: animated ? "0" : "\(playerDefense)",
+            leftTag: 1002,
+            rightIcon: "shield.fill",
+            rightTitle: "Defense",
+            rightValue: animated ? "0" : "\(totalEnemyDefense)",
+            rightTag: 1004
+        )
+        
+        // Разделитель
+        let separatorView = UIView()
+        separatorView.backgroundColor = UIColor.systemGray
+        separatorView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Итоговые значения
+        let totalDamageToEnemies = max(1, playerAttack - (aliveEnemies.first?.getDefenseValue() ?? 0))
+        let totalDamageToPlayer = max(1, totalEnemyAttack - playerDefense)
+        
+        let totalRow = createStatsRow(
+            leftIcon: "bolt.fill",
+            leftTitle: "Total Damage",
+            leftValue: animated ? "0" : "\(totalDamageToEnemies)",
+            leftTag: 1005,
+            rightIcon: "bolt.fill",
+            rightTitle: "Total Damage", 
+            rightValue: animated ? "0" : "\(totalDamageToPlayer)",
+            rightTag: 1006
+        )
+        
+        // Добавляем все элементы
+        combatStatsTableView.addSubview(playerHeaderStack)
+        combatStatsTableView.addSubview(enemiesHeaderStack)
+        combatStatsTableView.addSubview(attackRow)
+        combatStatsTableView.addSubview(defenseRow)
+        combatStatsTableView.addSubview(separatorView)
+        combatStatsTableView.addSubview(totalRow)
+        
+        // Constraints
+        NSLayoutConstraint.activate([
+            // Headers
+            playerHeaderStack.topAnchor.constraint(equalTo: combatStatsTableView.topAnchor),
+            playerHeaderStack.leadingAnchor.constraint(equalTo: combatStatsTableView.leadingAnchor),
+            playerHeaderStack.widthAnchor.constraint(equalTo: combatStatsTableView.widthAnchor, multiplier: 0.48),
+            
+            enemiesHeaderStack.topAnchor.constraint(equalTo: combatStatsTableView.topAnchor),
+            enemiesHeaderStack.trailingAnchor.constraint(equalTo: combatStatsTableView.trailingAnchor),
+            enemiesHeaderStack.widthAnchor.constraint(equalTo: combatStatsTableView.widthAnchor, multiplier: 0.48),
+            
+            // Attack row
+            attackRow.topAnchor.constraint(equalTo: playerHeaderStack.bottomAnchor, constant: 4),
+            attackRow.leadingAnchor.constraint(equalTo: combatStatsTableView.leadingAnchor),
+            attackRow.trailingAnchor.constraint(equalTo: combatStatsTableView.trailingAnchor),
+            attackRow.heightAnchor.constraint(equalToConstant: 20),
+            
+            // Defense row
+            defenseRow.topAnchor.constraint(equalTo: attackRow.bottomAnchor, constant: 2),
+            defenseRow.leadingAnchor.constraint(equalTo: combatStatsTableView.leadingAnchor),
+            defenseRow.trailingAnchor.constraint(equalTo: combatStatsTableView.trailingAnchor),
+            defenseRow.heightAnchor.constraint(equalToConstant: 20),
+            
+            // Separator
+            separatorView.topAnchor.constraint(equalTo: defenseRow.bottomAnchor, constant: 4),
+            separatorView.leadingAnchor.constraint(equalTo: combatStatsTableView.leadingAnchor, constant: 20),
+            separatorView.trailingAnchor.constraint(equalTo: combatStatsTableView.trailingAnchor, constant: -20),
+            separatorView.heightAnchor.constraint(equalToConstant: 1),
+            
+            // Total row
+            totalRow.topAnchor.constraint(equalTo: separatorView.bottomAnchor, constant: 4),
+            totalRow.leadingAnchor.constraint(equalTo: combatStatsTableView.leadingAnchor),
+            totalRow.trailingAnchor.constraint(equalTo: combatStatsTableView.trailingAnchor),
+            totalRow.heightAnchor.constraint(equalToConstant: 20)
+        ])
+    }
+    
+    private func createHeaderStack(title: String, iconName: String, color: UIColor) -> UIStackView {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.spacing = 6
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        
+        let iconView = UIImageView(image: UIImage(systemName: iconName))
+        iconView.tintColor = color
+        iconView.contentMode = .scaleAspectFit
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            iconView.widthAnchor.constraint(equalToConstant: 16),
+            iconView.heightAnchor.constraint(equalToConstant: 16)
+        ])
+        
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.font = UIFont(name: "Optima-Regular", size: 14) ?? UIFont.boldSystemFont(ofSize: 14)
+        titleLabel.textColor = color
+        titleLabel.textAlignment = .center
+        
+        stack.addArrangedSubview(iconView)
+        stack.addArrangedSubview(titleLabel)
+        
+        return stack
+    }
+    
+    private func createStatsRow(leftIcon: String, leftTitle: String, leftValue: String, leftTag: Int,
+                               rightIcon: String, rightTitle: String, rightValue: String, rightTag: Int) -> UIView {
+        let rowView = UIView()
+        rowView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Left side
+        let leftStack = createStatItem(icon: leftIcon, title: leftTitle, value: leftValue, tag: leftTag, color: .systemBlue)
+        
+        // Right side  
+        let rightStack = createStatItem(icon: rightIcon, title: rightTitle, value: rightValue, tag: rightTag, color: .systemRed)
+        
+        rowView.addSubview(leftStack)
+        rowView.addSubview(rightStack)
+        
+        NSLayoutConstraint.activate([
+            leftStack.leadingAnchor.constraint(equalTo: rowView.leadingAnchor),
+            leftStack.centerYAnchor.constraint(equalTo: rowView.centerYAnchor),
+            leftStack.widthAnchor.constraint(equalTo: rowView.widthAnchor, multiplier: 0.48),
+            
+            rightStack.trailingAnchor.constraint(equalTo: rowView.trailingAnchor),
+            rightStack.centerYAnchor.constraint(equalTo: rowView.centerYAnchor),
+            rightStack.widthAnchor.constraint(equalTo: rowView.widthAnchor, multiplier: 0.48)
+        ])
+        
+        return rowView
+    }
+    
+    private func createStatItem(icon: String, title: String, value: String, tag: Int, color: UIColor) -> UIStackView {
+        let stack = UIStackView()
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.spacing = 4
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        
+        let iconView = UIImageView(image: UIImage(systemName: icon))
+        iconView.tintColor = color
+        iconView.contentMode = .scaleAspectFit
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            iconView.widthAnchor.constraint(equalToConstant: 12),
+            iconView.heightAnchor.constraint(equalToConstant: 12)
+        ])
+        
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.font = UIFont(name: "Optima-Regular", size: 11) ?? UIFont.systemFont(ofSize: 11)
+        titleLabel.textColor = .white
+        
+        let valueLabel = UILabel()
+        valueLabel.text = value
+        valueLabel.font = UIFont(name: "Optima-Regular", size: 12) ?? UIFont.boldSystemFont(ofSize: 12)
+        valueLabel.textColor = color
+        valueLabel.tag = tag // Устанавливаем тег для анимации
+        
+        stack.addArrangedSubview(iconView)
+        stack.addArrangedSubview(titleLabel)
+        stack.addArrangedSubview(valueLabel)
+        
+        return stack
+    }
+    
+    private func getAllAliveEnemies() -> [NPC] {
+        var enemies = [npc].compactMap { $0 }
+        enemies.append(contentsOf: npcAssistants)
+        return enemies.filter { $0.isAlive }
+    }
+    
+    private func showCombatStatsTableWithAnimation() {
+        // Устанавливаем начальное состояние
+        combatStatsContainer.alpha = 0
+        combatStatsContainer.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+        combatStatsContainer.isHidden = false
+        
+        // Сначала обновляем содержимое с нулевыми значениями
+        updateCombatStatsTable(animated: true)
+        
+        // Анимация появления контейнера
+        UIView.animate(withDuration: 0.5, delay: 0.3, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5, options: [.curveEaseOut], animations: {
+            self.combatStatsContainer.alpha = 1.0
+            self.combatStatsContainer.transform = CGAffineTransform.identity
+        }, completion: { _ in
+            // После появления контейнера анимируем числа
+            self.animateStatsNumbers()
+        })
+    }
+    
+    private func animateStatsNumbers() {
+        guard let player = player else { return }
+        
+        // Получаем финальные значения
+        let playerAttack = player.getAttackValue()
+        let playerDefense = player.getDefenseValue()
+        
+        let aliveEnemies = getAllAliveEnemies()
+        let totalEnemyAttack = aliveEnemies.reduce(0) { $0 + $1.getAttackValue() }
+        let totalEnemyDefense = aliveEnemies.reduce(0) { $0 + $1.getDefenseValue() }
+        
+        let totalDamageToEnemies = max(1, playerAttack - (aliveEnemies.first?.getDefenseValue() ?? 0))
+        let totalDamageToPlayer = max(1, totalEnemyAttack - playerDefense)
+        
+        // Анимируем каждое число с задержкой
+        animateNumberLabel(tag: 1001, to: playerAttack, delay: 0.0)
+        animateNumberLabel(tag: 1002, to: playerDefense, delay: 0.1)
+        animateNumberLabel(tag: 1003, to: totalEnemyAttack, delay: 0.2)
+        animateNumberLabel(tag: 1004, to: totalEnemyDefense, delay: 0.3)
+        animateNumberLabel(tag: 1005, to: totalDamageToEnemies, delay: 0.5)
+        animateNumberLabel(tag: 1006, to: totalDamageToPlayer, delay: 0.6)
+    }
+    
+    private func animateNumberLabel(tag: Int, to finalValue: Int, delay: TimeInterval) {
+        guard let label = combatStatsTableView.viewWithTag(tag) as? UILabel else { return }
+        
+        let duration: TimeInterval = 1.0
+        let steps = 30
+        let stepDuration = duration / Double(steps)
+        
+        var currentStep = 0
+        
+        let timer = Timer.scheduledTimer(withTimeInterval: stepDuration, repeats: true) { timer in
+            currentStep += 1
+            let progress = Double(currentStep) / Double(steps)
+            
+            // Используем easeOut функцию для плавности
+            let easedProgress = 1.0 - pow(1.0 - progress, 3.0)
+            let currentValue = Int(Double(finalValue) * easedProgress)
+            
+            DispatchQueue.main.async {
+                label.text = "\(currentValue)"
+                
+                // Добавляем небольшой эффект масштабирования
+                if currentStep == steps {
+                    UIView.animate(withDuration: 0.2, animations: {
+                        label.transform = CGAffineTransform(scaleX: 1.2, y: 1.2)
+                    }, completion: { _ in
+                        UIView.animate(withDuration: 0.15, animations: {
+                            label.transform = CGAffineTransform.identity
+                        })
+                    })
+                }
+            }
+            
+            if currentStep >= steps {
+                timer.invalidate()
+            }
+        }
+        
+        // Запускаем таймер с задержкой
+        DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+            timer.fire()
+        }
     }
     
     deinit {

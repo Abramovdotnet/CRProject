@@ -292,4 +292,12 @@ class NPC: ObservableObject, Character, Codable {
         try container.encode(currentSceneX, forKey: .currentSceneX)
         try container.encode(currentSceneY, forKey: .currentSceneY)
     }
+    
+    func getAttackValue() -> Int {
+        return 15
+    }
+    
+    func getDefenseValue() -> Int {
+        return 0
+    }
 }

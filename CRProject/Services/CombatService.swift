@@ -27,8 +27,16 @@ final class CombatService {
     func performAction(_ action: CombatAction) {
         guard let player = player, let npc = npc else { return }
         history.append(action)
-        let outgoingDamage = 25
-        let incomingDamage = 15
+        
+        // Новая логика расчета урона
+        let playerAttack = player.getAttackValue()
+        let playerDefense = player.getDefenseValue()
+        let npcAttack = npc.getAttackValue()
+        let npcDefense = npc.getDefenseValue()
+        
+        let outgoingDamage = max(1, playerAttack - npcDefense) // Минимум 1 урон
+        let incomingDamage = max(1, npcAttack - playerDefense) // Минимум 1 урон
+        
         let baseChance: Double = getBaseChance(for: action.type)
         let roll = Double.random(in: 0...1)
         let isSuccess = roll < baseChance
@@ -121,7 +129,7 @@ final class CombatService {
     }
     
     func performGroupAction(_ action: CombatAction) {
-        guard let _ = player, let _ = npc else { return }
+        guard let player = player, let _ = npc else { return }
         
         combatRound += 1
         history.append(action)
@@ -129,13 +137,19 @@ final class CombatService {
         let aliveEnemies = getAllAliveEnemies()
         let enemyCount = aliveEnemies.count
         
-        // Базовые значения урона
-        let baseOutgoingDamage = 25
-        let baseIncomingDamage = 15
+        // Новая логика расчета урона
+        let playerAttack = player.getAttackValue()
+        let playerDefense = player.getDefenseValue()
+        let targetDefense = action.target.getDefenseValue()
         
-        // Модификаторы в зависимости от количества врагов
-        let difficultyMultiplier = calculateDifficultyMultiplier(enemyCount: enemyCount)
-        let modifiedIncomingDamage = Int(Float(baseIncomingDamage) * difficultyMultiplier)
+        // Урон игрока по цели
+        let outgoingDamage = max(1, playerAttack - targetDefense)
+        
+        // Урон от всех живых врагов по игроку
+        let totalEnemyAttack = aliveEnemies.reduce(0) { $0 + $1.getAttackValue() }
+        let baseIncomingDamage = max(1, totalEnemyAttack - playerDefense)
+        
+        // Модификаторы в зависимости от количества врагов (только для шансов, не для урона)
         let baseChance = getGroupCombatChance(for: action.type, enemyCount: enemyCount)
         
         let roll = Double.random(in: 0...1)
@@ -146,8 +160,8 @@ final class CombatService {
             handleGroupAttack(
                 target: action.target,
                 isSuccess: isSuccess,
-                outgoingDamage: baseOutgoingDamage,
-                incomingDamage: modifiedIncomingDamage,
+                outgoingDamage: outgoingDamage,
+                incomingDamage: baseIncomingDamage,
                 aliveEnemies: aliveEnemies
             )
             
@@ -155,8 +169,8 @@ final class CombatService {
             handleGroupFeed(
                 target: action.target,
                 isSuccess: isSuccess,
-                outgoingDamage: baseOutgoingDamage,
-                incomingDamage: modifiedIncomingDamage,
+                outgoingDamage: outgoingDamage,
+                incomingDamage: baseIncomingDamage,
                 aliveEnemies: aliveEnemies
             )
             
@@ -164,7 +178,7 @@ final class CombatService {
             handleGroupDrain(
                 target: action.target,
                 isSuccess: isSuccess,
-                incomingDamage: modifiedIncomingDamage,
+                incomingDamage: baseIncomingDamage,
                 aliveEnemies: aliveEnemies
             )
             
@@ -189,10 +203,7 @@ final class CombatService {
         return enemies.filter { $0.isAlive }
     }
     
-    private func calculateDifficultyMultiplier(enemyCount: Int) -> Float {
-        // Увеличиваем сложность в зависимости от количества врагов
-        return 1.0 + Float(enemyCount - 1) * 0.2 // +20% за каждого дополнительного врага
-    }
+
     
     func getGroupCombatChance(for type: CombatActionType, enemyCount: Int) -> Double {
         let baseChance = getBaseChance(for: type)
@@ -205,16 +216,13 @@ final class CombatService {
             target.bloodMeter.useBlood(Float(outgoingDamage))
             resultSummary = "Success: damage_caused (\(target.name)) (-\(outgoingDamage) HP)"
         } else {
-            // При неудаче игрок может получить урон от нескольких врагов
-            let attackingEnemies = min(aliveEnemies.count, 3) // Максимум 3 врага атакуют
-            let totalDamage = incomingDamage * attackingEnemies
+            // При неудаче игрок получает урон от всех живых врагов
+            player?.bloodMeter.useBlood(Float(incomingDamage))
             
-            player?.bloodMeter.useBlood(Float(totalDamage))
-            
-            if attackingEnemies > 1 {
-                resultSummary = "Fail: overwhelmed by \(attackingEnemies) enemies (-\(totalDamage) HP)"
+            if aliveEnemies.count > 1 {
+                resultSummary = "Fail: overwhelmed by \(aliveEnemies.count) enemies (-\(incomingDamage) HP)"
             } else {
-                resultSummary = "Fail: player_damaged (-\(totalDamage) HP)"
+                resultSummary = "Fail: player_damaged (-\(incomingDamage) HP)"
             }
         }
     }
@@ -236,17 +244,14 @@ final class CombatService {
                 resultSummary = "Fail: feed_error"
             }
         } else {
-            // При неудачном кормлении в группе - больше внимания и урона
-            let attackingEnemies = min(aliveEnemies.count, 2)
-            let totalDamage = incomingDamage * attackingEnemies
-            
-            player.bloodMeter.useBlood(Float(totalDamage))
+            // При неудачном кормлении игрок получает урон от всех врагов
+            player.bloodMeter.useBlood(Float(incomingDamage))
             
             // Увеличенное внимание из-за свидетелей
             let awarenessGain = aliveEnemies.count * 3
             VampireNatureRevealService.shared.increaseAwareness(amount: Float(awarenessGain))
             
-            resultSummary = "Fail: feeding interrupted by \(attackingEnemies) enemies (+\(awarenessGain) awareness)"
+            resultSummary = "Fail: feeding interrupted by \(aliveEnemies.count) enemies (-\(incomingDamage) HP, +\(awarenessGain) awareness)"
         }
     }
     
@@ -266,12 +271,9 @@ final class CombatService {
                 resultSummary = "Fail: drain_error"
             }
         } else {
-            // Дрейн - самое опасное действие в группе
-            let attackingEnemies = aliveEnemies.count
-            let totalDamage = incomingDamage * attackingEnemies
-            
-            player.bloodMeter.useBlood(Float(totalDamage))
-            resultSummary = "Fail: all \(attackingEnemies) enemies attack (-\(totalDamage) HP)"
+            // При неудачном дрейне игрок получает урон от всех врагов
+            player.bloodMeter.useBlood(Float(incomingDamage))
+            resultSummary = "Fail: all \(aliveEnemies.count) enemies attack (-\(incomingDamage) HP)"
         }
     }
     

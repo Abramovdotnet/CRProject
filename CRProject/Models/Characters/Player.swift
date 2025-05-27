@@ -159,4 +159,12 @@ class Player: ObservableObject, Character, Codable {
         // <<< Кодируем completedQuestInteractions
         try container.encode(completedQuestInteractions, forKey: .completedQuestInteractions)
     }
+    
+    func getAttackValue() -> Int {
+        return 25
+    }
+    
+    func getDefenseValue() -> Int {
+        return 0
+    }
 }
