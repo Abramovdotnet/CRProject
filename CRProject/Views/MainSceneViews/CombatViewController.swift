@@ -24,7 +24,12 @@ class CombatViewController: UIViewController {
     private var dustEffectView: UIHostingController<DustEmitterView>?
     // Кнопки после завершения боя
     private let witnessWarningLabel = UILabel()
+    private let combatLogImageView = UIImageView()
     private let centerWidgetsContainer = UIView()
+    private let combatLogContainer = UIView()
+    private let combatLogTextLabel = UILabel()
+    private let playerNameLabel = UILabel()
+    private let npcNameLabel = UILabel()
     // Overlay and widget references
     private var widgetOverlayView: UIView?
     private var playerWidgetVC: PlayerWidgetUIViewController?
@@ -94,42 +99,20 @@ class CombatViewController: UIViewController {
     }
     
     private func setupCombatUI() {
-        // --- Предупреждение о свидетелях/атмосфере ---
-        witnessWarningLabel.font = UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18)
-        witnessWarningLabel.textColor = UIColor.systemRed
-        witnessWarningLabel.textAlignment = .center
-        witnessWarningLabel.numberOfLines = 2
-        witnessWarningLabel.layer.shadowColor = UIColor.black.cgColor
-        witnessWarningLabel.layer.shadowOpacity = 0.7
-        witnessWarningLabel.layer.shadowRadius = 3
-        witnessWarningLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
-        witnessWarningLabel.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(witnessWarningLabel)
-
-        // VS label
-        vsLabel.text = "VS"
-        vsLabel.font = UIFont(name: "Optima-Regular", size: 40) ?? UIFont.systemFont(ofSize: 40)
-        vsLabel.textColor = .systemRed
-        vsLabel.textAlignment = .center
-        vsLabel.translatesAutoresizingMaskIntoConstraints = false
-        vsLabel.layer.shadowColor = UIColor.black.cgColor
-        vsLabel.layer.shadowOpacity = 0.7
-        vsLabel.layer.shadowRadius = 3
-        vsLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
-      
-
-        // --- Новый вертикальный стек для universalPlayerCell и actionsButtonsStack ---
+        // --- 1 СТОЛБЕЦ: Игрок и кнопки действий ---
         playerAndActionsStack.axis = .vertical
         playerAndActionsStack.alignment = .leading
         playerAndActionsStack.spacing = 16
         playerAndActionsStack.translatesAutoresizingMaskIntoConstraints = false
         playerAndActionsStack.arrangedSubviews.forEach { playerAndActionsStack.removeArrangedSubview($0); $0.removeFromSuperview() }
+        
         universalPlayerCell.translatesAutoresizingMaskIntoConstraints = false
         actionsButtonsStack.axis = .vertical
         actionsButtonsStack.alignment = .leading
         actionsButtonsStack.spacing = 12
         actionsButtonsStack.translatesAutoresizingMaskIntoConstraints = false
         actionsButtonsStack.arrangedSubviews.forEach { actionsButtonsStack.removeArrangedSubview($0); $0.removeFromSuperview() }
+        
         let actionsButtonsContainer = UIView()
         actionsButtonsContainer.translatesAutoresizingMaskIntoConstraints = false
         actionsButtonsContainer.addSubview(actionsButtonsStack)
@@ -139,84 +122,137 @@ class CombatViewController: UIViewController {
             actionsButtonsStack.trailingAnchor.constraint(equalTo: actionsButtonsContainer.trailingAnchor),
             actionsButtonsStack.bottomAnchor.constraint(equalTo: actionsButtonsContainer.bottomAnchor)
         ])
+        
         playerAndActionsStack.addArrangedSubview(universalPlayerCell)
         playerAndActionsStack.addArrangedSubview(actionsButtonsContainer)
         view.addSubview(playerAndActionsStack)
-        NSLayoutConstraint.activate([
-            playerAndActionsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
-            playerAndActionsStack.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 16),
-            universalPlayerCell.widthAnchor.constraint(equalToConstant: 110),
-            universalPlayerCell.heightAnchor.constraint(equalToConstant: 110),
-        ])
+        
+        // Лейбл имени игрока
+        playerNameLabel.font = UIFont(name: "Optima-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14)
+        playerNameLabel.textColor = .white
+        playerNameLabel.textAlignment = .center
+        playerNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        playerNameLabel.layer.shadowColor = UIColor.black.cgColor
+        playerNameLabel.layer.shadowOpacity = 0.7
+        playerNameLabel.layer.shadowRadius = 3
+        playerNameLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.addSubview(playerNameLabel)
 
-        // --- Новый вертикальный стек для universalNpcCell (главного NPC) ---
+        // --- 2 СТОЛБЕЦ: Центральный контейнер (временно без ассета) ---
+        combatLogContainer.translatesAutoresizingMaskIntoConstraints = false
+        combatLogContainer.clipsToBounds = false
+        combatLogContainer.layer.cornerRadius = 8
+        combatLogContainer.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        combatLogContainer.layer.shadowColor = UIColor.black.cgColor
+        combatLogContainer.layer.shadowOpacity = 0.6
+        combatLogContainer.layer.shadowRadius = 8
+        combatLogContainer.layer.shadowOffset = CGSize(width: 0, height: 4)
+        view.addSubview(combatLogContainer)
+        
+        // Временно убираем ассет - используем простой фон
+        // combatLogImageView код закомментирован
+        
+        // Предупреждение о свидетелях
+        witnessWarningLabel.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
+        witnessWarningLabel.textColor = UIColor.systemRed
+        witnessWarningLabel.textAlignment = .center
+        witnessWarningLabel.numberOfLines = 2
+        witnessWarningLabel.layer.shadowColor = UIColor.black.cgColor
+        witnessWarningLabel.layer.shadowOpacity = 0.7
+        witnessWarningLabel.layer.shadowRadius = 3
+        witnessWarningLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
+        witnessWarningLabel.translatesAutoresizingMaskIntoConstraints = false
+        combatLogContainer.addSubview(witnessWarningLabel)
+
+        // VS label убран
+        
+        // Combat log text
+        combatLogTextLabel.font = UIFont(name: "Optima-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14)
+        combatLogTextLabel.textColor = .white
+        combatLogTextLabel.textAlignment = .center
+        combatLogTextLabel.numberOfLines = 0
+        combatLogTextLabel.translatesAutoresizingMaskIntoConstraints = false
+        combatLogTextLabel.layer.shadowColor = UIColor.black.cgColor
+        combatLogTextLabel.layer.shadowOpacity = 0.7
+        combatLogTextLabel.layer.shadowRadius = 3
+        combatLogTextLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
+        combatLogContainer.addSubview(combatLogTextLabel)
+
+        // --- 3 СТОЛБЕЦ: NPC и ассистенты ---
         npcAndActionsStack.axis = .vertical
         npcAndActionsStack.alignment = .trailing
         npcAndActionsStack.spacing = 16
         npcAndActionsStack.translatesAutoresizingMaskIntoConstraints = false
         npcAndActionsStack.arrangedSubviews.forEach { npcAndActionsStack.removeArrangedSubview($0); $0.removeFromSuperview() }
+        
         universalNpcCell.translatesAutoresizingMaskIntoConstraints = false
         npcAndActionsStack.addArrangedSubview(universalNpcCell)
         view.addSubview(npcAndActionsStack)
-        NSLayoutConstraint.activate([
-            npcAndActionsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
-            npcAndActionsStack.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 16),
-            universalNpcCell.widthAnchor.constraint(equalToConstant: 110),
-            universalNpcCell.heightAnchor.constraint(equalToConstant: 110),
-        ])
-
-        // --- Центрируем VS и главного NPC ---
-        centerWidgetsContainer.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(centerWidgetsContainer)
-        NSLayoutConstraint.activate([
-            centerWidgetsContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            centerWidgetsContainer.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            centerWidgetsContainer.widthAnchor.constraint(equalToConstant: 300), // Уменьшаем ширину, так как ассистенты теперь справа
-            centerWidgetsContainer.heightAnchor.constraint(equalToConstant: 200),
-        ])
         
-        // Добавляем только VS в центральный контейнер
-        vsLabel.translatesAutoresizingMaskIntoConstraints = false
-        centerWidgetsContainer.addSubview(vsLabel)
-        NSLayoutConstraint.activate([
-            vsLabel.centerXAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor),
-            vsLabel.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor),
-        ])
+        // Лейбл имени NPC
+        npcNameLabel.font = UIFont(name: "Optima-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14)
+        npcNameLabel.textColor = .white
+        npcNameLabel.textAlignment = .center
+        npcNameLabel.translatesAutoresizingMaskIntoConstraints = false
+        npcNameLabel.layer.shadowColor = UIColor.black.cgColor
+        npcNameLabel.layer.shadowOpacity = 0.7
+        npcNameLabel.layer.shadowRadius = 3
+        npcNameLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
+        view.addSubview(npcNameLabel)
         
-        // --- Контейнер ассистентов под главным NPC ---
+        // Контейнер ассистентов
         npcDeckContainer.translatesAutoresizingMaskIntoConstraints = false
-        npcDeckContainer.clipsToBounds = false // Разрешаем содержимому выходить за границы
+        npcDeckContainer.clipsToBounds = false
         view.addSubview(npcDeckContainer)
-        NSLayoutConstraint.activate([
-            // Размещаем под главным NPC, выровненным по центру
-            npcDeckContainer.centerXAnchor.constraint(equalTo: universalNpcCell.centerXAnchor),
-            npcDeckContainer.topAnchor.constraint(equalTo: universalNpcCell.bottomAnchor, constant: 4),
-            npcDeckContainer.widthAnchor.constraint(equalToConstant: 125), // Ширина для 2 колонок (55+15+55)
-            npcDeckContainer.heightAnchor.constraint(equalToConstant: 400) // Высокая для вертикального стека
-        ])
 
-        // Combat log/result label
-        resultLabel.font = UIFont(name: "Optima-Regular", size: 15) ?? UIFont.systemFont(ofSize: 15)
-        resultLabel.textColor = .white
-        resultLabel.textAlignment = .center
-        resultLabel.numberOfLines = 0
-        resultLabel.translatesAutoresizingMaskIntoConstraints = false
-        resultLabel.layer.shadowColor = UIColor.black.cgColor
-        resultLabel.layer.shadowOpacity = 0.7
-        resultLabel.layer.shadowRadius = 3
-        resultLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
-        view.addSubview(resultLabel)
+        // Старый resultLabel теперь не нужен, используем combatLogTextLabel
+        resultLabel.removeFromSuperview()
 
         // Layout
         NSLayoutConstraint.activate([
-            witnessWarningLabel.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 16),
-            witnessWarningLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            witnessWarningLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
-
-            // --- Combat log ---
-            resultLabel.topAnchor.constraint(equalTo: centerWidgetsContainer.bottomAnchor, constant: 40),
-            resultLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 24),
-            resultLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            // 1 столбец - игрок и кнопки
+            playerAndActionsStack.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 16),
+            playerAndActionsStack.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 40),
+            universalPlayerCell.widthAnchor.constraint(equalToConstant: 110),
+            universalPlayerCell.heightAnchor.constraint(equalToConstant: 110),
+            
+            // Имя игрока над виджетом
+            playerNameLabel.bottomAnchor.constraint(equalTo: playerAndActionsStack.topAnchor, constant: -8),
+            playerNameLabel.centerXAnchor.constraint(equalTo: universalPlayerCell.centerXAnchor),
+            
+            // 2 столбец - центральный контейнер (ширина второго столбца - 10)
+            combatLogContainer.leadingAnchor.constraint(equalTo: playerAndActionsStack.trailingAnchor, constant: 21),
+            combatLogContainer.trailingAnchor.constraint(equalTo: npcAndActionsStack.leadingAnchor, constant: -21),
+            combatLogContainer.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 40),
+            combatLogContainer.heightAnchor.constraint(equalToConstant: 300),
+            
+            // Фон контейнера - временно убран
+            
+            // Элементы внутри контейнера
+            witnessWarningLabel.topAnchor.constraint(equalTo: combatLogContainer.topAnchor, constant: 24),
+            witnessWarningLabel.leadingAnchor.constraint(equalTo: combatLogContainer.leadingAnchor, constant: 16),
+            witnessWarningLabel.trailingAnchor.constraint(equalTo: combatLogContainer.trailingAnchor, constant: -16),
+            
+            combatLogTextLabel.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 40),
+            combatLogTextLabel.leadingAnchor.constraint(equalTo: combatLogContainer.leadingAnchor, constant: 16),
+            combatLogTextLabel.trailingAnchor.constraint(equalTo: combatLogContainer.trailingAnchor, constant: -16),
+            combatLogTextLabel.bottomAnchor.constraint(lessThanOrEqualTo: combatLogContainer.bottomAnchor, constant: -16),
+            
+            // 3 столбец - NPC и ассистенты
+            npcAndActionsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
+            npcAndActionsStack.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 40),
+            universalNpcCell.widthAnchor.constraint(equalToConstant: 110),
+            universalNpcCell.heightAnchor.constraint(equalToConstant: 110),
+            
+            // Имя NPC над виджетом
+            npcNameLabel.bottomAnchor.constraint(equalTo: npcAndActionsStack.topAnchor, constant: -8),
+            npcNameLabel.centerXAnchor.constraint(equalTo: universalNpcCell.centerXAnchor),
+            
+            // Контейнер ассистентов под NPC
+            npcDeckContainer.centerXAnchor.constraint(equalTo: universalNpcCell.centerXAnchor),
+            npcDeckContainer.topAnchor.constraint(equalTo: universalNpcCell.bottomAnchor, constant: 4),
+            npcDeckContainer.widthAnchor.constraint(equalToConstant: 125),
+            npcDeckContainer.heightAnchor.constraint(equalToConstant: 300)
         ])
     }
     
@@ -225,6 +261,11 @@ class CombatViewController: UIViewController {
         CombatService.shared.startCombat(player: player, npc: npc)
         universalPlayerCell.configure(with: player, isDisabled: false)
         universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
+        
+        // Устанавливаем имена
+        playerNameLabel.text = player.name
+        npcNameLabel.text = npc.name
+        
         // --- Assistants setup ---
         setupAssistantNPCs()
         checkCombatEnd()
@@ -282,6 +323,9 @@ class CombatViewController: UIViewController {
         
         // Обновляем главную ячейку
         universalNpcCell.configure(with: self.npc, isSelected: true, isDisabled: false)
+        
+        // Обновляем имя NPC
+        npcNameLabel.text = self.npc.name
         
         setupActionButtons()
         updateUIAfterAction()
@@ -418,7 +462,7 @@ class CombatViewController: UIViewController {
         let witnesses = GameStateService.shared.getAwakeNpcsCount()
         let hasVampireAction = actions.contains(where: { $0.title == "Bite" || $0.title == "Drain" || $0.title == "Dominate" })
         if witnesses > 0 && hasVampireAction {
-            witnessWarningLabel.text = "⚠️ There are witnesses! Vampire actions will have consequences. (\(witnesses))"
+            witnessWarningLabel.text = "⚠️ There are witnesses! Actions will have consequences. (\(witnesses))"
             witnessWarningLabel.textColor = UIColor.systemRed
             witnessWarningLabel.isHidden = false
         } else if hasVampireAction {
@@ -495,9 +539,9 @@ class CombatViewController: UIViewController {
     private func updateUIAfterAction() {
         if let summary = CombatService.shared.resultSummary {
             let (pretty, _) = prettyCombatResultText(summary)
-            resultLabel.attributedText = pretty
+            combatLogTextLabel.attributedText = pretty
         } else {
-            resultLabel.text = ""
+            combatLogTextLabel.text = ""
         }
         if let player = player {
             universalPlayerCell.configure(with: player, isDisabled: false)
@@ -521,7 +565,7 @@ class CombatViewController: UIViewController {
             actionsButtonsStack.isUserInteractionEnabled = true
             actionsButtonsStack.isHidden = false
             finishButton.isHidden = true
-            resultLabel.text = isPlayerDead ? "You died!" : "Enemy defeated!"
+            combatLogTextLabel.text = isPlayerDead ? "You died!" : "Enemy defeated!"
         }
         // else: не переключаем автоматически на живого NPC, если выбран мертвый вручную
     }
