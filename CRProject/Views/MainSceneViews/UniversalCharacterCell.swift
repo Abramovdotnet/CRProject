@@ -14,7 +14,6 @@ class UniversalCharacterCell: UIView {
     private let selectionGlowLayer = CALayer()
     private let cardBackground = UIView()
     private let questIndicatorIcon = UIImageView()
-    private let healthPercentageIconView = UIView()
     
     // Store reference to current NPC for debugging
     var currentNPC: NPC?
@@ -76,109 +75,64 @@ class UniversalCharacterCell: UIView {
         selectionGlowLayer.shadowOffset = .zero
         cardBackground.layer.insertSublayer(selectionGlowLayer, below: avatarImageView.layer)
         
-        // Health indicator - initially hidden, positioned on outer border with glow
-        // Create a slightly larger frame to position at the outer edge
-        let healthIndicatorSize = avatarFrame.width + 6 // Adjusted based on new avatarFrame
+        // Health indicator - убираем отображение, но оставляем слой для совместимости
+        let healthIndicatorSize = avatarFrame.width + 6
         let healthIndicatorX = avatarFrame.midX - healthIndicatorSize/2
         let healthIndicatorY = avatarFrame.midY - healthIndicatorSize/2
         healthIndicator.frame = CGRect(x: healthIndicatorX, y: healthIndicatorY, width: healthIndicatorSize, height: healthIndicatorSize)
-        healthIndicator.lineWidth = 3
-        healthIndicator.fillColor = UIColor.clear.cgColor
-        healthIndicator.strokeColor = UIColor(red: 1, green: 0.2, blue: 0.2, alpha: 1).cgColor
-        healthIndicator.lineCap = .round
-        healthIndicator.opacity = 0 // Hidden by default
-        
-        // Add glow effect to health indicator
-        healthIndicator.shadowColor = UIColor.red.cgColor
-        healthIndicator.shadowRadius = 4
-        healthIndicator.shadowOpacity = 0.8
-        healthIndicator.shadowOffset = CGSize.zero
-        
+        healthIndicator.opacity = 0 // Всегда скрыто
         cardBackground.layer.addSublayer(healthIndicator)
         
-        // Health percentage теперь в отдельном круглом контейнере, как activityIcon
-        let healthIconSize: CGFloat = iconSize + 8 // Оставляем формулу, но iconSize теперь больше
-        healthPercentageIconView.frame = CGRect(x: 0, y: 0, width: healthIconSize, height: healthIconSize)
-        healthPercentageIconView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
-        healthPercentageIconView.layer.cornerRadius = healthIconSize / 2
-        healthPercentageIconView.layer.borderWidth = 0
-        healthPercentageIconView.layer.borderColor = UIColor.clear.cgColor
-        healthPercentageIconView.layer.shadowColor = UIColor.white.cgColor
-        healthPercentageIconView.layer.shadowRadius = 6
-        healthPercentageIconView.layer.shadowOpacity = 0.9
-        healthPercentageIconView.layer.shadowOffset = CGSize.zero
-        healthPercentageIconView.clipsToBounds = false
-        healthPercentageIconView.isUserInteractionEnabled = false
+        // Health percentage теперь в центре нижней части (без кольца)
         // Стилизация лейбла
-        healthPercentageLabel.frame = healthPercentageIconView.bounds
-        healthPercentageLabel.font = UIFont(name: "Optima", size: 12) ?? UIFont.systemFont(ofSize: 10, weight: .regular)
+        healthPercentageLabel.font = UIFont(name: "Optima", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .bold)
         healthPercentageLabel.textColor = UIColor.white
         healthPercentageLabel.textAlignment = .center
-        healthPercentageLabel.backgroundColor = UIColor.clear
-        healthPercentageLabel.clipsToBounds = false
+        healthPercentageLabel.backgroundColor = UIColor.black.withAlphaComponent(0.7)
+        healthPercentageLabel.layer.cornerRadius = 8
+        healthPercentageLabel.clipsToBounds = true
         healthPercentageLabel.layer.shadowColor = UIColor.black.cgColor
-        healthPercentageLabel.layer.shadowRadius = 2
+        healthPercentageLabel.layer.shadowRadius = 3
         healthPercentageLabel.layer.shadowOpacity = 1
         healthPercentageLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
-        healthPercentageIconView.addSubview(healthPercentageLabel)
-        cardBackground.addSubview(healthPercentageIconView)
         
-        // Profession icon - positioned on the left edge of the avatar
-        let profX = avatarFrame.minX - 10 // Closer to avatar (adjusted from -15)
-        let profY = avatarFrame.maxY - iconSize - 8 // Maintained same vertical position
+        // Позиционируем процент здоровья в центре нижней части
+        let healthLabelWidth: CGFloat = 50
+        let healthLabelHeight: CGFloat = 20
+        healthPercentageLabel.frame = CGRect(
+            x: avatarFrame.midX - healthLabelWidth / 2,
+            y: avatarFrame.maxY - healthLabelHeight - 8,
+            width: healthLabelWidth,
+            height: healthLabelHeight
+        )
+        cardBackground.addSubview(healthPercentageLabel)
         
-        // Add circular background with stroke for profession icon
-        professionIcon.frame = CGRect(x: profX, y: profY, width: iconSize, height: iconSize)
+        // Profession icon - позиционируем в левом верхнем углу аватара
+        professionIcon.frame = CGRect(x: avatarFrame.minX + 4, y: avatarFrame.minY + 4, width: iconSize, height: iconSize)
         professionIcon.contentMode = .scaleAspectFit
-        professionIcon.backgroundColor = UIColor.clear
-        professionIcon.clipsToBounds = false // Allow glow effect to be visible
-        professionIcon.layer.shadowColor = UIColor.black.cgColor
-        professionIcon.layer.shadowRadius = 2
-        professionIcon.layer.shadowOpacity = 1
-        professionIcon.layer.shadowOffset = CGSize(width: 0, height: 1)
-        
-        // Add circular background and border
+        professionIcon.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+        professionIcon.clipsToBounds = true
         professionIcon.layer.cornerRadius = iconSize / 2
-        professionIcon.layer.borderWidth = 0.5
-        professionIcon.layer.borderColor = UIColor.white.withAlphaComponent(0.7).cgColor
-        professionIcon.layer.backgroundColor = UIColor.black.withAlphaComponent(0.7).cgColor
-        professionIcon.alpha = 1.0 // Ensure 100% opacity
-        
-        // Add glow effect to match color - slightly reduced
+        professionIcon.layer.borderWidth = 0 // Убираем белую обводку
         professionIcon.layer.shadowColor = UIColor.black.cgColor
-        professionIcon.layer.shadowRadius = 3 // Reduced from 4
-        professionIcon.layer.shadowOpacity = 0.6 // Reduced from 0.8
-        professionIcon.layer.shadowOffset = CGSize.zero
-        
+        professionIcon.layer.shadowRadius = 3
+        professionIcon.layer.shadowOpacity = 0.8
+        professionIcon.layer.shadowOffset = CGSize(width: 0, height: 1)
+        professionIcon.alpha = 1.0
         cardBackground.addSubview(professionIcon)
         
-        // Activity icon - positioned on the right edge of the avatar
-        let activityX = avatarFrame.maxX - iconSize + 10 // Closer to avatar (adjusted from +15)
-        let activityY = avatarFrame.maxY - iconSize - 8 // Maintained same vertical position
-        
-        // Add circular background with stroke for activity icon
-        activityIcon.frame = CGRect(x: activityX, y: activityY, width: iconSize, height: iconSize)
+        // Activity icon - позиционируем в правом верхнем углу аватара
+        activityIcon.frame = CGRect(x: avatarFrame.maxX - iconSize - 4, y: avatarFrame.minY + 4, width: iconSize, height: iconSize)
         activityIcon.contentMode = .scaleAspectFit
-        activityIcon.backgroundColor = UIColor.clear
-        activityIcon.clipsToBounds = false // Allow glow effect to be visible
-        activityIcon.layer.shadowColor = UIColor.black.cgColor
-        activityIcon.layer.shadowRadius = 2
-        activityIcon.layer.shadowOpacity = 1
-        activityIcon.layer.shadowOffset = CGSize(width: 0, height: 1)
-        
-        // Add circular background and border
+        activityIcon.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+        activityIcon.clipsToBounds = true
         activityIcon.layer.cornerRadius = iconSize / 2
-        activityIcon.layer.borderWidth = 0.5
-        activityIcon.layer.borderColor = UIColor.white.withAlphaComponent(0.7).cgColor
-        activityIcon.layer.backgroundColor = UIColor.black.withAlphaComponent(0.7).cgColor
-        activityIcon.alpha = 1.0 // Ensure 100% opacity
-        
-        // Add glow effect to match color - slightly reduced
+        activityIcon.layer.borderWidth = 0 // Убираем белую обводку
         activityIcon.layer.shadowColor = UIColor.black.cgColor
-        activityIcon.layer.shadowRadius = 3 // Reduced from 4
-        activityIcon.layer.shadowOpacity = 0.6 // Reduced from 0.8
-        activityIcon.layer.shadowOffset = CGSize.zero
-        
+        activityIcon.layer.shadowRadius = 3
+        activityIcon.layer.shadowOpacity = 0.8
+        activityIcon.layer.shadowOffset = CGSize(width: 0, height: 1)
+        activityIcon.alpha = 1.0
         cardBackground.addSubview(activityIcon)
         
         // Quest Indicator Icon
@@ -198,9 +152,9 @@ class UniversalCharacterCell: UIView {
         questIndicatorIcon.isHidden = true 
         cardBackground.addSubview(questIndicatorIcon)
         
-        // Desired victim indicator - positioned at top of avatar with red glow
-        let desiredX = avatarFrame.midX - iconSize/2 // Adjusted based on new avatarFrame
-        let desiredY = avatarFrame.minY - iconSize/2 - 4 // Adjusted based on new avatarFrame
+        // Desired victim indicator - positioned at bottom of avatar with red glow
+        let desiredX = avatarFrame.midX - iconSize/2
+        let desiredY = avatarFrame.maxY - iconSize/2 + 4 // Перемещаем к нижнему краю
         desiredVictimIndicator.frame = CGRect(x: desiredX, y: desiredY, width: iconSize, height: iconSize)
         desiredVictimIndicator.contentMode = .scaleAspectFit
         desiredVictimIndicator.layer.shadowColor = UIColor.red.cgColor // Red shadow
@@ -267,29 +221,12 @@ class UniversalCharacterCell: UIView {
         }
         CATransaction.begin()
         CATransaction.setAnimationDuration(animationDuration)
-        self.healthIndicator.opacity = isSelected ? 1.0 : 0.0
-        self.healthIndicator.shadowOpacity = isSelected ? 0.8 : 0.0
-        if isSelected {
-            self.healthIndicator.shadowOpacity = 0.0
-        }
+        self.healthIndicator.opacity = 0.0 // Всегда скрыто
         CATransaction.commit()
         self.healthIndicator.setNeedsDisplay()
         self.healthIndicator.setNeedsLayout()
         if !npc.isUnknown {
-            let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
-            let radius = healthIndicator.bounds.width / 2 - 2
-            let startAngle = -CGFloat.pi / 2
-            let endAngle = startAngle + 2 * .pi * CGFloat(npc.bloodMeter.currentBlood / 100)
-            let path = UIBezierPath(arcCenter: center, radius: radius,
-                                   startAngle: startAngle, endAngle: endAngle,
-                                   clockwise: true)
-            CATransaction.begin()
-            CATransaction.setAnimationDuration(animationDuration)
-            healthIndicator.path = path.cgPath
-            CATransaction.commit()
-        }
-        if !npc.isUnknown {
-            let iconConfig = UIImage.SymbolConfiguration(pointSize: 12)
+            let iconConfig = UIImage.SymbolConfiguration(pointSize: 10) // Уменьшаем размер символов
             let newProfessionImage = UIImage(systemName: npc.profession.icon, withConfiguration: iconConfig)
             let color = convertSwiftUIColorToUIColor(npc.profession.color)
             UIView.transition(with: professionIcon,
@@ -301,16 +238,8 @@ class UniversalCharacterCell: UIView {
                 self.professionIcon.contentMode = .center
             }, completion: nil)
             UIView.animate(withDuration: animationDuration) {
-                self.professionIcon.layer.borderColor = color.cgColor
                 self.professionIcon.alpha = 1.0
             }
-            CATransaction.begin()
-            CATransaction.setAnimationDuration(animationDuration)
-            professionIcon.layer.shadowColor = color.cgColor
-            professionIcon.layer.shadowRadius = 3
-            professionIcon.layer.shadowOpacity = 0.6
-            professionIcon.layer.shadowOffset = CGSize.zero
-            CATransaction.commit()
             professionIcon.isHidden = false
         } else {
             UIView.animate(withDuration: animationDuration) {
@@ -318,7 +247,7 @@ class UniversalCharacterCell: UIView {
             }
         }
         if !npc.isUnknown {
-            let iconConfig = UIImage.SymbolConfiguration(pointSize: 12)
+            let iconConfig = UIImage.SymbolConfiguration(pointSize: 10) // Уменьшаем размер символов
             let newActivityImage = UIImage(systemName: npc.currentActivity.icon, withConfiguration: iconConfig)
             let color = convertSwiftUIColorToUIColor(npc.currentActivity.color)
             UIView.transition(with: activityIcon,
@@ -330,16 +259,8 @@ class UniversalCharacterCell: UIView {
                 self.activityIcon.contentMode = .center
             }, completion: nil)
             UIView.animate(withDuration: animationDuration) {
-                self.activityIcon.layer.borderColor = color.cgColor
                 self.activityIcon.alpha = 1.0
             }
-            CATransaction.begin()
-            CATransaction.setAnimationDuration(animationDuration)
-            activityIcon.layer.shadowColor = color.cgColor
-            activityIcon.layer.shadowRadius = 3
-            activityIcon.layer.shadowOpacity = 0.6
-            activityIcon.layer.shadowOffset = CGSize.zero
-            CATransaction.commit()
             activityIcon.isHidden = false
         } else {
             UIView.animate(withDuration: animationDuration) {
@@ -348,48 +269,30 @@ class UniversalCharacterCell: UIView {
         }
         if !npc.isUnknown {
             let healthValue = Int(npc.bloodMeter.currentBlood)
-            let healthText = "\(healthValue)%"
-            if healthPercentageLabel.text != healthText {
-                UIView.transition(with: healthPercentageLabel,
-                                 duration: animationDuration,
-                                 options: .transitionCrossDissolve,
-                                 animations: {
-                    self.healthPercentageLabel.text = healthText
-                }, completion: nil)
+            
+            // Use animated health value change with color transition
+            if healthPercentageLabel.text != "\(healthValue)%" {
+                animateHealthValueChange(to: healthValue, duration: animationDuration * 2)
+            } else {
+                // If value hasn't changed, just update color
+                let healthColor = getHealthColor(for: Double(healthValue))
+                let strokeAttributes: [NSAttributedString.Key: Any] = [
+                    .strokeColor: healthColor,
+                    .foregroundColor: healthColor,
+                    .strokeWidth: -1.0,
+                    .font: healthPercentageLabel.font as Any
+                ]
+                let attributedText = NSAttributedString(string: "\(healthValue)%", attributes: strokeAttributes)
+                UIView.animate(withDuration: animationDuration) {
+                    self.healthPercentageLabel.attributedText = attributedText
+                }
             }
+            
             healthPercentageLabel.isHidden = false
-            healthPercentageIconView.isHidden = false
             healthPercentageLabel.alpha = 1.0
-            healthPercentageIconView.alpha = 1.0
-            // Цвета для вампира и не вампира
-            let isVampire = npc.isVampire
-            let ringColorForHealthIndicator: UIColor = UIColor(red: 1, green: 0.2, blue: 0.2, alpha: 1) // Красный как у игрока
-            let textColor: UIColor = ringColorForHealthIndicator // Используем тот же красный цвет что и для кольца
-            let glowColor: UIColor = ringColorForHealthIndicator // Свечение тоже красное
-            // Stroke для текста
-            let strokeAttributes: [NSAttributedString.Key: Any] = [
-                .strokeColor: textColor,
-                .foregroundColor: textColor,
-                .strokeWidth: 0.0,
-                .font: healthPercentageLabel.font as Any
-            ]
-            let attributedText = NSAttributedString(string: healthText, attributes: strokeAttributes)
-            UIView.animate(withDuration: animationDuration) {
-                self.healthPercentageLabel.attributedText = attributedText
-                self.healthPercentageIconView.layer.shadowColor = glowColor.cgColor
-                self.healthPercentageIconView.layer.borderColor = ringColorForHealthIndicator.cgColor
-                self.healthPercentageIconView.layer.borderWidth = 1
-            }
-            // Меняем цвет кольца на красный для всех
-            CATransaction.begin()
-            CATransaction.setAnimationDuration(animationDuration)
-            self.healthIndicator.strokeColor = ringColorForHealthIndicator.cgColor
-            self.healthIndicator.shadowColor = ringColorForHealthIndicator.cgColor
-            CATransaction.commit()
         } else {
             UIView.animate(withDuration: animationDuration) {
                 self.healthPercentageLabel.alpha = 0.0
-                self.healthPercentageIconView.alpha = 0.0
             }
         }
         if !npc.isUnknown, let player = GameStateService.shared.getPlayer(),
@@ -402,7 +305,6 @@ class UniversalCharacterCell: UIView {
                              duration: animationDuration,
                              options: .transitionCrossDissolve,
                              animations: {
-                let iconConfig = UIImage.SymbolConfiguration(pointSize: 12)
                 self.desiredVictimIndicator.image = UIImage(named: "sphere1")
                 self.desiredVictimIndicator.tintColor = UIColor.white
             }, completion: nil)
@@ -531,22 +433,14 @@ class UniversalCharacterCell: UIView {
         // --- Индикатор здоровья ---
         CATransaction.begin()
         CATransaction.setAnimationDuration(animationDuration)
-        healthIndicator.opacity = 1.0
-        healthIndicator.shadowOpacity = 0.8
-        // Кольцо здоровья
-        let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
-        let radius = healthIndicator.bounds.width / 2 - 2
-        let startAngle = -CGFloat.pi / 2
-        let endAngle = startAngle + 2 * .pi * CGFloat(player.bloodMeter.currentBlood / 100)
-        let path = UIBezierPath(arcCenter: center, radius: radius,
-                               startAngle: startAngle, endAngle: endAngle,
-                               clockwise: true)
-        healthIndicator.path = path.cgPath
+        healthIndicator.opacity = 0.0 // Всегда скрыто
         CATransaction.commit()
+        self.healthIndicator.setNeedsDisplay()
+        self.healthIndicator.setNeedsLayout()
         // --- Профессия скрыта ---
         professionIcon.isHidden = true
         // --- Активность: всегда "drop" красного цвета ---
-        let iconConfig = UIImage.SymbolConfiguration(pointSize: 12)
+        let iconConfig = UIImage.SymbolConfiguration(pointSize: 10) // Уменьшаем размер символов
         let dropImage = UIImage(systemName: "drop", withConfiguration: iconConfig)
         UIView.transition(with: activityIcon,
                          duration: animationDuration,
@@ -557,57 +451,32 @@ class UniversalCharacterCell: UIView {
             self.activityIcon.contentMode = .center
         }, completion: nil)
         UIView.animate(withDuration: animationDuration) {
-            self.activityIcon.layer.borderColor = UIColor.systemRed.cgColor
             self.activityIcon.alpha = 1.0
         }
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(animationDuration)
-        activityIcon.layer.shadowColor = UIColor.systemRed.cgColor
-        activityIcon.layer.shadowRadius = 3
-        activityIcon.layer.shadowOpacity = 0.6
-        activityIcon.layer.shadowOffset = CGSize.zero
-        CATransaction.commit()
         activityIcon.isHidden = false
         // --- Здоровье ---
         let healthValue = Int(player.bloodMeter.currentBlood)
-        let healthText = "\(healthValue)%"
-        if healthPercentageLabel.text != healthText {
-            UIView.transition(with: healthPercentageLabel,
-                             duration: animationDuration,
-                             options: .transitionCrossDissolve,
-                             animations: {
-                self.healthPercentageLabel.text = healthText
-            }, completion: nil)
+        
+        // Use animated health value change with color transition for player
+        if healthPercentageLabel.text != "\(healthValue)%" {
+            animateHealthValueChange(to: healthValue, duration: animationDuration * 2)
+        } else {
+            // If value hasn't changed, just update color
+            let healthColor = getHealthColor(for: Double(healthValue))
+            let strokeAttributes: [NSAttributedString.Key: Any] = [
+                .strokeColor: healthColor,
+                .foregroundColor: healthColor,
+                .strokeWidth: -1.0,
+                .font: healthPercentageLabel.font as Any
+            ]
+            let attributedText = NSAttributedString(string: "\(healthValue)%", attributes: strokeAttributes)
+            UIView.animate(withDuration: animationDuration) {
+                self.healthPercentageLabel.attributedText = attributedText
+            }
         }
+        
         healthPercentageLabel.isHidden = false
-        healthPercentageIconView.isHidden = false
         healthPercentageLabel.alpha = 1.0
-        healthPercentageIconView.alpha = 1.0
-        // Цвета для вампира и не вампира
-        let isVampire = player.isVampire
-        let ringColorForHealthIndicator: UIColor = UIColor(red: 1, green: 0.2, blue: 0.2, alpha: 1) // Красный как у игрока
-        let textColor: UIColor = ringColorForHealthIndicator // Используем тот же красный цвет что и для кольца
-        let glowColor: UIColor = ringColorForHealthIndicator // Свечение тоже красное
-        // Stroke для текста
-        let strokeAttributes: [NSAttributedString.Key: Any] = [
-            .strokeColor: textColor,
-            .foregroundColor: textColor,
-            .strokeWidth: -2.0,
-            .font: healthPercentageLabel.font as Any
-        ]
-        let attributedText = NSAttributedString(string: healthText, attributes: strokeAttributes)
-        UIView.animate(withDuration: animationDuration) {
-            self.healthPercentageLabel.attributedText = attributedText
-            self.healthPercentageIconView.layer.shadowColor = glowColor.cgColor
-            self.healthPercentageIconView.layer.borderColor = ringColorForHealthIndicator.cgColor
-            self.healthPercentageIconView.layer.borderWidth = 1
-        }
-        // Меняем цвет кольца на красный для всех
-        CATransaction.begin()
-        CATransaction.setAnimationDuration(animationDuration)
-        self.healthIndicator.strokeColor = ringColorForHealthIndicator.cgColor
-        self.healthIndicator.shadowColor = ringColorForHealthIndicator.cgColor
-        CATransaction.commit()
         // --- Индикаторы жертвы и квеста скрыты ---
         desiredVictimIndicator.isHidden = true
         questIndicatorIcon.isHidden = true
@@ -647,6 +516,82 @@ class UniversalCharacterCell: UIView {
         return UIColor.white
     }
 
+    private func getHealthColor(for healthPercentage: Double) -> UIColor {
+        // Interpolate between white and red based on health percentage
+        // 100% = white, 0% = red
+        let normalizedHealth = max(0.0, min(1.0, healthPercentage / 100.0))
+        
+        // White (1,1,1) to Red (1,0,0)
+        let red: CGFloat = 1.0
+        let green: CGFloat = normalizedHealth
+        let blue: CGFloat = normalizedHealth
+        
+        return UIColor(red: red, green: green, blue: blue, alpha: 1.0)
+    }
+    
+    private func animateHealthValueChange(to newValue: Int, duration: TimeInterval = 0.3) {
+        guard let currentText = healthPercentageLabel.text else {
+            // If we can't get current text, just set the new value directly
+            let healthText = "\(newValue)%"
+            healthPercentageLabel.text = healthText
+            let healthColor = getHealthColor(for: Double(newValue))
+            let strokeAttributes: [NSAttributedString.Key: Any] = [
+                .strokeColor: healthColor,
+                .foregroundColor: healthColor,
+                .strokeWidth: -1.0,
+                .font: healthPercentageLabel.font as Any
+            ]
+            healthPercentageLabel.attributedText = NSAttributedString(string: healthText, attributes: strokeAttributes)
+            return
+        }
+        
+        let currentValueString = currentText.replacingOccurrences(of: "%", with: "")
+        guard let currentValue = Int(currentValueString) else {
+            // If we can't parse current value, just set the new value directly
+            let healthText = "\(newValue)%"
+            healthPercentageLabel.text = healthText
+            let healthColor = getHealthColor(for: Double(newValue))
+            let strokeAttributes: [NSAttributedString.Key: Any] = [
+                .strokeColor: healthColor,
+                .foregroundColor: healthColor,
+                .strokeWidth: -1.0,
+                .font: healthPercentageLabel.font as Any
+            ]
+            healthPercentageLabel.attributedText = NSAttributedString(string: healthText, attributes: strokeAttributes)
+            return
+        }
+        
+        // Animate from current value to new value
+        let valueDifference = newValue - currentValue
+        let steps = max(1, abs(valueDifference))
+        let stepDuration = duration / Double(steps)
+        
+        for i in 1...steps {
+            let delay = stepDuration * Double(i - 1)
+            let intermediateValue = currentValue + (valueDifference * i / steps)
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
+                let healthText = "\(intermediateValue)%"
+                let healthColor = self.getHealthColor(for: Double(intermediateValue))
+                
+                let strokeAttributes: [NSAttributedString.Key: Any] = [
+                    .strokeColor: healthColor,
+                    .foregroundColor: healthColor,
+                    .strokeWidth: -1.0,
+                    .font: self.healthPercentageLabel.font as Any
+                ]
+                
+                UIView.transition(with: self.healthPercentageLabel,
+                                 duration: stepDuration * 0.8,
+                                 options: .transitionCrossDissolve,
+                                 animations: {
+                    self.healthPercentageLabel.text = healthText
+                    self.healthPercentageLabel.attributedText = NSAttributedString(string: healthText, attributes: strokeAttributes)
+                }, completion: nil)
+            }
+        }
+    }
+
     override func layoutSubviews() {
         super.layoutSubviews()
         cardBackground.frame = bounds
@@ -658,37 +603,29 @@ class UniversalCharacterCell: UIView {
         avatarShadowContainer.layer.cornerRadius = newAvatarRadiusLayout
         avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: avatarShadowContainer.layer.cornerRadius).cgPath
         
-        let profX = avatarFrameLayout.minX - 10
-        let profY = avatarFrameLayout.maxY - iconSize - 8
-        professionIcon.frame = CGRect(x: profX, y: profY, width: iconSize, height: iconSize)
+        // Позиционируем иконки в углах аватара
+        professionIcon.frame = CGRect(x: avatarFrameLayout.minX + 4, y: avatarFrameLayout.minY + 4, width: iconSize, height: iconSize)
         professionIcon.layer.cornerRadius = iconSize / 2
-        let activityX = avatarFrameLayout.maxX - iconSize + 10
-        let activityY = avatarFrameLayout.maxY - iconSize - 8
-        activityIcon.frame = CGRect(x: activityX, y: activityY, width: iconSize, height: iconSize)
+        activityIcon.frame = CGRect(x: avatarFrameLayout.maxX - iconSize - 4, y: avatarFrameLayout.minY + 4, width: iconSize, height: iconSize)
         activityIcon.layer.cornerRadius = iconSize / 2
+        
+        // Позиционируем процент здоровья в центре нижней части
+        let healthLabelWidth: CGFloat = 50
+        let healthLabelHeight: CGFloat = 20
+        healthPercentageLabel.frame = CGRect(
+            x: avatarFrameLayout.midX - healthLabelWidth / 2,
+            y: avatarFrameLayout.maxY - healthLabelHeight - 8,
+            width: healthLabelWidth,
+            height: healthLabelHeight
+        )
+        
         let healthIndicatorSize = avatarFrameLayout.width + 6
         let healthIndicatorX = avatarFrameLayout.midX - healthIndicatorSize/2
         let healthIndicatorY = avatarFrameLayout.midY - healthIndicatorSize/2
         healthIndicator.frame = CGRect(x: healthIndicatorX, y: healthIndicatorY, width: healthIndicatorSize, height: healthIndicatorSize)
         selectionGlowLayer.frame = avatarFrameLayout
-        if let npc = currentNPC, !npc.isUnknown {
-            let center = CGPoint(x: healthIndicator.bounds.midX, y: healthIndicator.bounds.midY)
-            let radius = healthIndicator.bounds.width / 2 - 2
-            let startAngle = -CGFloat.pi / 2
-            let endAngle = startAngle + 2 * .pi * CGFloat(npc.bloodMeter.currentBlood / 100)
-            let path = UIBezierPath(arcCenter: center, radius: radius,
-                                    startAngle: startAngle, endAngle: endAngle,
-                                    clockwise: true)
-            healthIndicator.path = path.cgPath
-        }
         self.healthIndicator.isHidden = self.healthIndicator.opacity == 0.0
         self.selectionGlowLayer.isHidden = self.selectionGlowLayer.shadowOpacity == 0
-        // Позиционируем healthPercentageIconView по центру нижней части аватара, поверх полосы здоровья
-        let healthIconSize: CGFloat = iconSize + 8
-        let healthIconX = avatarFrameLayout.midX - healthIconSize / 2
-        let healthIconY = avatarFrameLayout.maxY - healthIconSize / 2 - 2 // -2 чтобы чуть перекрывал полосу
-        healthPercentageIconView.frame = CGRect(x: healthIconX, y: healthIconY, width: healthIconSize, height: healthIconSize)
-        healthPercentageLabel.frame = healthPercentageIconView.bounds
     }
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
