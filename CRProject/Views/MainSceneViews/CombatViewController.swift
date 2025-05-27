@@ -10,8 +10,8 @@ class CombatViewController: UIViewController {
     // UI
     private let titleLabel = UILabel()
     private let iconImageView = UIImageView()
-    private let universalPlayerCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
-    private let universalNpcCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 100, height: 100))
+    private let universalPlayerCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 110, height: 110))
+    private let universalNpcCell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: 110, height: 110))
     private let vsLabel = UILabel()
     // Новый стек для кнопок действий
     private let actionsButtonsStack = UIStackView()
@@ -30,7 +30,7 @@ class CombatViewController: UIViewController {
     private var playerWidgetVC: PlayerWidgetUIViewController?
     private var npcWidgetVC: NPCWidgetUIViewController?
     // --- Assistants UI ---
-    private var assistantNpcCells: [UniversalCharacterCell] = []
+    private var assistantNpcCells: [UniversalCharacterCellSmall] = []
     private let npcDeckContainer = UIView()
     // --- Новый стек для игрока и кнопок ---
     private let playerAndActionsStack = UIStackView()
@@ -165,29 +165,34 @@ class CombatViewController: UIViewController {
             universalNpcCell.heightAnchor.constraint(equalToConstant: 110),
         ])
 
-        // --- Центрируем карточки и VS в отдельном контейнере ---
+        // --- Центрируем VS и главного NPC ---
         centerWidgetsContainer.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(centerWidgetsContainer)
         NSLayoutConstraint.activate([
             centerWidgetsContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             centerWidgetsContainer.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            centerWidgetsContainer.widthAnchor.constraint(equalToConstant: 400),
+            centerWidgetsContainer.widthAnchor.constraint(equalToConstant: 300), // Уменьшаем ширину, так как ассистенты теперь справа
             centerWidgetsContainer.heightAnchor.constraint(equalToConstant: 200),
         ])
-        // Добавляем карточки и VS внутрь контейнера
-        // universalPlayerCell больше не добавляем сюда
+        
+        // Добавляем только VS в центральный контейнер
         vsLabel.translatesAutoresizingMaskIntoConstraints = false
-        npcDeckContainer.translatesAutoresizingMaskIntoConstraints = false
         centerWidgetsContainer.addSubview(vsLabel)
-        centerWidgetsContainer.addSubview(npcDeckContainer)
         NSLayoutConstraint.activate([
             vsLabel.centerXAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor),
-            vsLabel.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 15),
-            // npcDeckContainer справа от центра
-            npcDeckContainer.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor, constant: 21),
-            npcDeckContainer.leadingAnchor.constraint(equalTo: centerWidgetsContainer.centerXAnchor, constant: 30),
-            npcDeckContainer.widthAnchor.constraint(equalToConstant: 140),
-            npcDeckContainer.heightAnchor.constraint(equalToConstant: 200)
+            vsLabel.centerYAnchor.constraint(equalTo: centerWidgetsContainer.centerYAnchor),
+        ])
+        
+        // --- Контейнер ассистентов под главным NPC ---
+        npcDeckContainer.translatesAutoresizingMaskIntoConstraints = false
+        npcDeckContainer.clipsToBounds = false // Разрешаем содержимому выходить за границы
+        view.addSubview(npcDeckContainer)
+        NSLayoutConstraint.activate([
+            // Размещаем под главным NPC, выровненным по центру
+            npcDeckContainer.centerXAnchor.constraint(equalTo: universalNpcCell.centerXAnchor),
+            npcDeckContainer.topAnchor.constraint(equalTo: universalNpcCell.bottomAnchor, constant: 4),
+            npcDeckContainer.widthAnchor.constraint(equalToConstant: 125), // Ширина для 2 колонок (55+15+55)
+            npcDeckContainer.heightAnchor.constraint(equalToConstant: 400) // Высокая для вертикального стека
         ])
 
         // Combat log/result label
@@ -229,47 +234,55 @@ class CombatViewController: UIViewController {
         // Удаляем все старые карточки из npcDeckContainer
         for view in npcDeckContainer.subviews { view.removeFromSuperview() }
         assistantNpcCells.removeAll()
-        // universalNpcCell больше не добавляем сюда!
-        // Получаем ассистентов
+        
+        // Получаем всех ассистентов без лимитов
         let assistants = npcAssistants
-        let cellSize: CGFloat = 140
-        for (i, assistant) in assistants.prefix(3).enumerated() {
-            let cell = UniversalCharacterCell(frame: CGRect(x: 0, y: 0, width: cellSize, height: cellSize))
+        let cellSize: CGFloat = 55 // Уменьшаем размер с 65 до 55
+        
+        // Создаем карточки для всех ассистентов
+        for (i, assistant) in assistants.enumerated() {
+            let cell = UniversalCharacterCellSmall(frame: CGRect(x: 0, y: 0, width: cellSize, height: cellSize))
             cell.configure(with: assistant, isSelected: false, isDisabled: false)
-            cell.translatesAutoresizingMaskIntoConstraints = true
+            cell.translatesAutoresizingMaskIntoConstraints = false
             cell.clipsToBounds = false
+            
             let tap = UITapGestureRecognizer(target: self, action: #selector(handleAssistantTap(_:)))
             cell.addGestureRecognizer(tap)
             cell.isUserInteractionEnabled = true
             cell.tag = i
+            
             npcDeckContainer.addSubview(cell)
             assistantNpcCells.append(cell)
         }
     }
     
     @objc private func handleAssistantTap(_ sender: UITapGestureRecognizer) {
-        guard let tappedCell = sender.view as? UniversalCharacterCell,
+        guard let tappedCell = sender.view as? UniversalCharacterCellSmall,
               let index = assistantNpcCells.firstIndex(of: tappedCell) else { return }
-        let assistants = npcAssistants
-        guard index < assistants.count else { return }
-        let selectedAssistant = assistants[index]
-        let oldNpc = self.npc
+        guard index < npcAssistants.count else { return }
+        
+        print("Assistant tap: index \(index), total assistants: \(npcAssistants.count)")
+        
+        let selectedAssistant = npcAssistants[index]
+        let oldMainNpc = self.npc
+        
+        // Выбранный ассистент становится главным NPC
         self.npc = selectedAssistant
         self.npcManager.selectedNPC = selectedAssistant
-        // Удаляем выбранного ассистента из ассистентов
+        
+        // Удаляем выбранного ассистента из коллекции
         self.npcAssistants.remove(at: index)
-        // Добавляем предыдущего активного NPC в ассистенты, если его там нет
-        if !self.npcAssistants.contains(where: { $0.id == oldNpc.id }) {
-            self.npcAssistants.append(oldNpc)
-        }
+        
+        // Добавляем предыдущего главного NPC в коллекцию ассистентов
+        self.npcAssistants.append(oldMainNpc)
+        
+        // Пересоздаем UI ассистентов с новой коллекцией
         setupAssistantNPCs()
+        layoutAssistantNPCs()
+        
+        // Обновляем главную ячейку
         universalNpcCell.configure(with: self.npc, isSelected: true, isDisabled: false)
-        let newAssistants = npcAssistants
-        for (i, cell) in assistantNpcCells.enumerated() {
-            if i < newAssistants.count {
-                cell.configure(with: newAssistants[i], isSelected: false, isDisabled: false)
-            }
-        }
+        
         setupActionButtons()
         updateUIAfterAction()
     }
@@ -315,16 +328,19 @@ class CombatViewController: UIViewController {
     }
     
     private func layoutAssistantNPCs() {
-        // Все карточки теперь внутри npcDeckContainer, вертикальная колода
-        let cellSize: CGFloat = 140
-        let overlap: CGFloat = 40 // Насколько перекрываются карточки
-        // Сначала ассистенты, потом главный NPC
-        let allCells = assistantNpcCells + [universalNpcCell]
-        for (i, cell) in allCells.enumerated() {
-            cell.clipsToBounds = false
-            let y = CGFloat(i) * overlap
-            cell.frame = CGRect(x: 0, y: y, width: cellSize, height: cellSize)
-            cell.layer.zPosition = CGFloat(i)
+        let cellSize: CGFloat = 55 // Уменьшаем размер с 65 до 55
+        let spacing: CGFloat = 12 // Увеличиваем вертикальное расстояние с 8 до 12
+        let columnSpacing: CGFloat = 15 // Увеличиваем горизонтальное расстояние с 10 до 15
+        
+        // Размещаем ассистентов в 2 вертикальные колонки (сначала правая, потом левая)
+        for (i, cell) in assistantNpcCells.enumerated() {
+            let column = 1 - (i % 2) // 1 для правой колонки, 0 для левой (инвертируем)
+            let row = i / 2 // Номер строки в колонке
+            
+            let x = CGFloat(column) * (cellSize + columnSpacing)
+            let y = CGFloat(row) * (cellSize + spacing)
+            
+            cell.frame = CGRect(x: x, y: y, width: cellSize, height: cellSize)
         }
     }
     

@@ -21,8 +21,8 @@ class NPCSGridView: UIView {
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 5
+        layout.minimumLineSpacing = 15  // Увеличиваем вертикальные отступы
+        layout.minimumInteritemSpacing = 2  // Уменьшаем горизонтальные отступы
         layout.sectionInset = UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10)
         
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -343,37 +343,8 @@ extension NPCSGridView: UICollectionViewDataSource, UICollectionViewDelegateFlow
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        // Calculate appropriate cell size based on collection view width
-        let width = collectionView.bounds.width
-        
-        // Determine number of items per row based on width
-        // For phones and small screens: typically 3 items per row
-        // For larger screens/iPads: 4-5 items per row
-        let itemsPerRow: CGFloat
-        
-        if width < 350 {
-            itemsPerRow = 2 // Very small screens
-        } else if width < 500 {
-            itemsPerRow = 3 // Standard iPhone portrait
-        } else if width < 800 {
-            itemsPerRow = 4 // Larger screens
-        } else {
-            itemsPerRow = 5 // iPads and landscape
-        }
-        
-        // Account for section insets and minimum spacing
-        let layout = collectionView.collectionViewLayout as! UICollectionViewFlowLayout
-        let insets = layout.sectionInset
-        let spacing = layout.minimumInteritemSpacing
-        
-        // Calculate available width
-        let availableWidth = width - insets.left - insets.right - spacing * (itemsPerRow - 1)
-        
-        // Calculate item width
-        let itemWidth = floor(availableWidth / itemsPerRow)
-        
-        // Use a fixed aspect ratio close to 1:1.1 for the cell (slightly taller than wide)
-        return CGSize(width: itemWidth, height: itemWidth * 1.1)
+        // Фиксированный размер 110x110 для всех ячеек NPCCharacterCell
+        return CGSize(width: 110, height: 110)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

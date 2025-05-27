@@ -3,7 +3,7 @@ import SwiftUI
 import CoreMotion
 import Combine
 
-class UniversalCharacterCell: UIView {
+class UniversalCharacterCellSmall: UIView {
     private let avatarImageView = UIImageView()
     private let avatarShadowContainer = UIView()
     private let professionIcon = UIImageView()
@@ -12,16 +12,13 @@ class UniversalCharacterCell: UIView {
     private let desiredVictimIndicator = UIImageView()
     private let healthPercentageLabel = UILabel()
     private let selectionGlowLayer = CALayer()
+    private let cardBackground = UIView()
     private let questIndicatorIcon = UIImageView()
-    
-    // Glow views для иконок
-    private let professionIconGlow = UIImageView()
-    private let activityIconGlow = UIImageView()
     
     // Store reference to current NPC for debugging
     var currentNPC: NPC?
     
-    private let iconSize: CGFloat = 28 // Было 22, увеличиваем радиус иконок
+    private let iconSize: CGFloat = 14 // Half of original 28
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -35,178 +32,153 @@ class UniversalCharacterCell: UIView {
     }
     
     private func setupViews() {
-        // Avatar setup - теперь занимает весь bounds (убираем cardBackground)
-        let newAvatarSize: CGFloat = bounds.width // Аватар занимает весь размер ячейки
-        let newAvatarRadius: CGFloat = 12 // Сохраняем радиус закругления
-        let avatarFrame = CGRect(x: 0, y: 0, width: newAvatarSize, height: newAvatarSize)
+        // Card background with transparent background and subtle border
+        cardBackground.frame = bounds // Use full bounds
+        cardBackground.backgroundColor = UIColor.clear
+        cardBackground.layer.cornerRadius = 6 // Half of original 12
+        cardBackground.layer.borderWidth = 0 // Remove border
+        cardBackground.clipsToBounds = false // Ensure shadow isn't clipped by card background
+        cardBackground.layer.masksToBounds = false // Explicitly set masksToBounds to false
+        addSubview(cardBackground)
+        
+        // Avatar setup - максимально заполняем рамку мини-виджета
+        let newAvatarSize: CGFloat = bounds.width - 2 // Минимальный отступ 1px с каждой стороны
+        let newAvatarRadius: CGFloat = 8 // Пропорционально меньший радиус для мини-виджета
+        let avatarFrame = CGRect(x: (bounds.width - newAvatarSize) / 2, y: 1, width: newAvatarSize, height: newAvatarSize)
         
         // Setup shadow container
         avatarShadowContainer.frame = avatarFrame
         avatarShadowContainer.layer.cornerRadius = newAvatarRadius
         avatarShadowContainer.layer.shadowColor = UIColor.black.cgColor
-        avatarShadowContainer.layer.shadowRadius = 18 // Было 10, делаем больше
-        avatarShadowContainer.layer.shadowOpacity = 0.85 // Было 0.8, делаем чуть больше
-        avatarShadowContainer.layer.shadowOffset = CGSize(width: 0, height: 8) // Было (0,2), делаем ниже
-        avatarShadowContainer.backgroundColor = .clear // Ensure it doesn't obscure anything
+        avatarShadowContainer.layer.shadowRadius = 9 // Half of original 18
+        avatarShadowContainer.layer.shadowOpacity = 0.85
+        avatarShadowContainer.layer.shadowOffset = CGSize(width: 0, height: 4) // Half of original (0,8)
+        avatarShadowContainer.backgroundColor = .clear
         avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: newAvatarRadius).cgPath // Квадратная форма с закругленными углами
-        addSubview(avatarShadowContainer) // Add shadow view first
+        cardBackground.addSubview(avatarShadowContainer)
 
         // Setup avatar image view
         avatarImageView.frame = avatarFrame
         avatarImageView.contentMode = .scaleAspectFill
-        avatarImageView.clipsToBounds = true // Keep clipping for rounded rectangle shape
+        avatarImageView.clipsToBounds = true
         avatarImageView.layer.cornerRadius = newAvatarRadius
-        avatarImageView.layer.borderWidth = 1 // Increased border width
-        avatarImageView.layer.borderColor = UIColor.black.cgColor // Added default black border color
-        addSubview(avatarImageView) // Add image view on top of shadow view
+        avatarImageView.layer.borderWidth = 0.5 // Half of original 1
+        avatarImageView.layer.borderColor = UIColor.black.cgColor
+        cardBackground.addSubview(avatarImageView)
         
         // Selection glow
         selectionGlowLayer.frame = avatarFrame
         selectionGlowLayer.cornerRadius = newAvatarRadius
         selectionGlowLayer.shadowColor = UIColor.red.cgColor
-        selectionGlowLayer.shadowRadius = 8
+        selectionGlowLayer.shadowRadius = 4 // Half of original 8
         selectionGlowLayer.shadowOpacity = 0 // Hidden by default
         selectionGlowLayer.shadowOffset = .zero
-        layer.insertSublayer(selectionGlowLayer, below: avatarImageView.layer)
+        cardBackground.layer.insertSublayer(selectionGlowLayer, below: avatarImageView.layer)
         
-        // Health indicator - красная полоса здоровья вокруг аватара
-        let healthIndicatorSize = avatarFrame.width + 6
+        // Health indicator - красная полоса здоровья вокруг аватара (тонкая версия для мини виджета)
+        let healthIndicatorSize = avatarFrame.width + 3 // Half of original +6
         let healthIndicatorX = avatarFrame.midX - healthIndicatorSize/2
         let healthIndicatorY = avatarFrame.midY - healthIndicatorSize/2
         healthIndicator.frame = CGRect(x: healthIndicatorX, y: healthIndicatorY, width: healthIndicatorSize, height: healthIndicatorSize)
-        healthIndicator.lineWidth = 3
+        healthIndicator.lineWidth = 2 // Тоньше чем в большом виджете (было 3)
         healthIndicator.fillColor = UIColor.clear.cgColor
         healthIndicator.strokeColor = UIColor(red: 1, green: 0.2, blue: 0.2, alpha: 1).cgColor
         healthIndicator.lineCap = .round
         healthIndicator.opacity = 0 // Скрыто по умолчанию, показывается при configure
         
-        // Добавляем эффект свечения для индикатора здоровья
+        // Добавляем эффект свечения для индикатора здоровья (уменьшенный)
         healthIndicator.shadowColor = UIColor.red.cgColor
-        healthIndicator.shadowRadius = 4
-        healthIndicator.shadowOpacity = 0.8
+        healthIndicator.shadowRadius = 2 // Меньше чем в большом виджете (было 4)
+        healthIndicator.shadowOpacity = 0.6 // Меньше чем в большом виджете (было 0.8)
         healthIndicator.shadowOffset = CGSize.zero
         
-        layer.addSublayer(healthIndicator)
+        cardBackground.layer.addSublayer(healthIndicator)
         
         // Health percentage теперь в центре нижней части (без кольца)
-        // Стилизация лейбла
-        healthPercentageLabel.font = UIFont(name: "Optima", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .bold)
+        // Стилизация лейбла - используем оригинальные размеры
+        healthPercentageLabel.font = UIFont(name: "Optima", size: 12) ?? UIFont.systemFont(ofSize: 12, weight: .bold) // Оригинальный размер
         healthPercentageLabel.textColor = UIColor.white
         healthPercentageLabel.textAlignment = .center
         healthPercentageLabel.backgroundColor = UIColor.black.withAlphaComponent(0.7)
-        healthPercentageLabel.layer.cornerRadius = 8
+        healthPercentageLabel.layer.cornerRadius = 8 // Оригинальный размер
         healthPercentageLabel.clipsToBounds = true
         healthPercentageLabel.layer.shadowColor = UIColor.black.cgColor
-        healthPercentageLabel.layer.shadowRadius = 3
+        healthPercentageLabel.layer.shadowRadius = 3 // Оригинальный размер
         healthPercentageLabel.layer.shadowOpacity = 1
-        healthPercentageLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
+        healthPercentageLabel.layer.shadowOffset = CGSize(width: 0, height: 1) // Оригинальный размер
         
-        // Позиционируем процент здоровья в центре нижней части
-        let healthLabelWidth: CGFloat = 50
-        let healthLabelHeight: CGFloat = 20
+        // Позиционируем процент здоровья в центре нижней части - используем оригинальные размеры
+        let healthLabelWidth: CGFloat = 50 // Оригинальный размер
+        let healthLabelHeight: CGFloat = 20 // Оригинальный размер
         healthPercentageLabel.frame = CGRect(
             x: avatarFrame.midX - healthLabelWidth / 2,
-            y: avatarFrame.maxY - healthLabelHeight - 8,
+            y: avatarFrame.maxY - healthLabelHeight - 8, // Оригинальный отступ
             width: healthLabelWidth,
             height: healthLabelHeight
         )
-        addSubview(healthPercentageLabel)
+        cardBackground.addSubview(healthPercentageLabel)
         
-        // Profession icon - позиционируем в левом верхнем углу аватара
-        professionIcon.frame = CGRect(x: avatarFrame.minX + 4, y: avatarFrame.minY + 4, width: iconSize, height: iconSize)
+        // Profession icon - скрываем в мини версии
+        professionIcon.frame = CGRect(x: avatarFrame.minX + 2, y: avatarFrame.minY + 2, width: iconSize, height: iconSize)
         professionIcon.contentMode = .scaleAspectFit
         professionIcon.backgroundColor = UIColor.black.withAlphaComponent(0.8)
         professionIcon.clipsToBounds = true
         professionIcon.layer.cornerRadius = iconSize / 2
-        professionIcon.layer.borderWidth = 0 // Убираем белую обводку
+        professionIcon.layer.borderWidth = 0
         professionIcon.layer.shadowColor = UIColor.black.cgColor
-        professionIcon.layer.shadowRadius = 3
+        professionIcon.layer.shadowRadius = 1.5
         professionIcon.layer.shadowOpacity = 0.8
-        professionIcon.layer.shadowOffset = CGSize(width: 0, height: 1)
-        professionIcon.alpha = 1.0
+        professionIcon.layer.shadowOffset = CGSize(width: 0, height: 0.5)
+        professionIcon.alpha = 0.0 // Скрываем
+        professionIcon.isHidden = true // Полностью скрываем
+        cardBackground.addSubview(professionIcon)
         
-        // Glow для profession icon - добавляем как subview к иконке
-        professionIconGlow.translatesAutoresizingMaskIntoConstraints = false
-        professionIconGlow.contentMode = .scaleAspectFill
-        professionIconGlow.alpha = 0.8
-        professionIconGlow.isUserInteractionEnabled = false
-        professionIcon.addSubview(professionIconGlow)
-        professionIcon.sendSubviewToBack(professionIconGlow)
-        
-        addSubview(professionIcon)
-        
-        // Activity icon - позиционируем в правом верхнем углу аватара
-        activityIcon.frame = CGRect(x: avatarFrame.maxX - iconSize - 4, y: avatarFrame.minY + 4, width: iconSize, height: iconSize)
+        // Activity icon - скрываем в мини версии
+        activityIcon.frame = CGRect(x: avatarFrame.maxX - iconSize - 2, y: avatarFrame.minY + 2, width: iconSize, height: iconSize)
         activityIcon.contentMode = .scaleAspectFit
         activityIcon.backgroundColor = UIColor.black.withAlphaComponent(0.8)
         activityIcon.clipsToBounds = true
         activityIcon.layer.cornerRadius = iconSize / 2
-        activityIcon.layer.borderWidth = 0 // Убираем белую обводку
+        activityIcon.layer.borderWidth = 0
         activityIcon.layer.shadowColor = UIColor.black.cgColor
-        activityIcon.layer.shadowRadius = 3
+        activityIcon.layer.shadowRadius = 1.5
         activityIcon.layer.shadowOpacity = 0.8
-        activityIcon.layer.shadowOffset = CGSize(width: 0, height: 1)
-        activityIcon.alpha = 1.0
-        
-        // Glow для activity icon - добавляем как subview к иконке
-        activityIconGlow.translatesAutoresizingMaskIntoConstraints = false
-        activityIconGlow.contentMode = .scaleAspectFill
-        activityIconGlow.alpha = 0.8
-        activityIconGlow.isUserInteractionEnabled = false
-        activityIcon.addSubview(activityIconGlow)
-        activityIcon.sendSubviewToBack(activityIconGlow)
-        
-        addSubview(activityIcon)
-        
-        // Настраиваем constraints для glow views
-        NSLayoutConstraint.activate([
-            // Profession icon glow constraints
-            professionIconGlow.centerXAnchor.constraint(equalTo: professionIcon.centerXAnchor),
-            professionIconGlow.centerYAnchor.constraint(equalTo: professionIcon.centerYAnchor),
-            professionIconGlow.widthAnchor.constraint(equalTo: professionIcon.widthAnchor, constant: 12),
-            professionIconGlow.heightAnchor.constraint(equalTo: professionIcon.heightAnchor, constant: 12),
-            
-            // Activity icon glow constraints
-            activityIconGlow.centerXAnchor.constraint(equalTo: activityIcon.centerXAnchor),
-            activityIconGlow.centerYAnchor.constraint(equalTo: activityIcon.centerYAnchor),
-            activityIconGlow.widthAnchor.constraint(equalTo: activityIcon.widthAnchor, constant: 12),
-            activityIconGlow.heightAnchor.constraint(equalTo: activityIcon.heightAnchor, constant: 12)
-        ])
+        activityIcon.layer.shadowOffset = CGSize(width: 0, height: 0.5)
+        activityIcon.alpha = 0.0 // Скрываем
+        activityIcon.isHidden = true // Полностью скрываем
+        cardBackground.addSubview(activityIcon)
         
         // Quest Indicator Icon
-        let questIconCenterX = avatarFrame.midX // Adjusted based on new avatarFrame
-        // Position calculation depends on healthIndicator frame, which is now updated
-        let questIconY = healthIndicator.frame.maxY - iconSize + 4
+        let questIconCenterX = avatarFrame.midX
+        let questIconY = healthIndicator.frame.maxY - iconSize + 2 // Half of original +4
 
         questIndicatorIcon.frame = CGRect(x: questIconCenterX - iconSize / 2, y: questIconY, width: iconSize, height: iconSize)
         questIndicatorIcon.contentMode = .scaleAspectFit
-        // questIndicatorIcon.backgroundColor = UIColor.black.withAlphaComponent(0.7) // Будет установлено в configure
         questIndicatorIcon.clipsToBounds = false 
         questIndicatorIcon.layer.cornerRadius = iconSize / 2
-        questIndicatorIcon.layer.borderWidth = 0.5
-        // questIndicatorIcon.layer.borderColor = UIColor.white.withAlphaComponent(0.7).cgColor // Будет установлено в configure
-        questIndicatorIcon.layer.shadowRadius = 6 // Увеличим радиус свечения
-        questIndicatorIcon.layer.shadowOpacity = 0 // По умолчанию свечение выключено
+        questIndicatorIcon.layer.borderWidth = 0.25 // Half of original 0.5
+        questIndicatorIcon.layer.shadowRadius = 3 // Half of original 6
+        questIndicatorIcon.layer.shadowOpacity = 0
         questIndicatorIcon.isHidden = true 
-        addSubview(questIndicatorIcon)
+        cardBackground.addSubview(questIndicatorIcon)
         
         // Desired victim indicator - positioned at bottom of avatar with red glow
         let desiredX = avatarFrame.midX - iconSize/2
-        let desiredY = avatarFrame.maxY - iconSize/2 + 4 // Перемещаем к нижнему краю
+        let desiredY = avatarFrame.maxY - iconSize/2 + 2 // Half of original +4
         desiredVictimIndicator.frame = CGRect(x: desiredX, y: desiredY, width: iconSize, height: iconSize)
         desiredVictimIndicator.contentMode = .scaleAspectFit
-        desiredVictimIndicator.layer.shadowColor = UIColor.red.cgColor // Red shadow
-        desiredVictimIndicator.layer.shadowRadius = 10 // Increased from 5 to 10
-        desiredVictimIndicator.layer.shadowOpacity = 1.0 // Increased from 0.8 to 1.0
+        desiredVictimIndicator.layer.shadowColor = UIColor.red.cgColor
+        desiredVictimIndicator.layer.shadowRadius = 5 // Half of original 10
+        desiredVictimIndicator.layer.shadowOpacity = 1.0
         desiredVictimIndicator.layer.shadowOffset = CGSize(width: 0, height: 0)
-        desiredVictimIndicator.backgroundColor = UIColor.black.withAlphaComponent(0.3) // More transparent background
+        desiredVictimIndicator.backgroundColor = UIColor.black.withAlphaComponent(0.3)
         desiredVictimIndicator.layer.cornerRadius = iconSize/2
-        desiredVictimIndicator.clipsToBounds = false // Allow glow to extend beyond bounds
-        addSubview(desiredVictimIndicator)
+        desiredVictimIndicator.clipsToBounds = false
+        cardBackground.addSubview(desiredVictimIndicator)
         
         // Add pulsating animation to victim indicator with more dramatic effect
         let pulseAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-        pulseAnimation.duration = 0.5 // Уменьшено с 0.8 до 0.5
+        pulseAnimation.duration = 0.5
         pulseAnimation.fromValue = 0.3
         pulseAnimation.toValue = 1.0
         pulseAnimation.autoreverses = true
@@ -216,9 +188,9 @@ class UniversalCharacterCell: UIView {
         
         // Add shadow radius animation for more dramatic glow effect
         let glowAnimation = CABasicAnimation(keyPath: "shadowRadius")
-        glowAnimation.duration = 0.5 // Уменьшено с 0.8 до 0.5
-        glowAnimation.fromValue = 6
-        glowAnimation.toValue = 12
+        glowAnimation.duration = 0.5
+        glowAnimation.fromValue = 3 // Half of original 6
+        glowAnimation.toValue = 6 // Half of original 12
         glowAnimation.autoreverses = true
         glowAnimation.repeatCount = Float.infinity
         glowAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
@@ -228,11 +200,19 @@ class UniversalCharacterCell: UIView {
     func configure(with npc: NPC, isSelected: Bool, isDisabled: Bool) {
         self.currentNPC = npc
         let animationDuration: TimeInterval = 0.2
-        // Убираем анимацию границ, так как cardBackground больше нет
+        UIView.animate(withDuration: animationDuration) {
+            if isSelected {
+                self.cardBackground.layer.borderColor = UIColor.clear.cgColor
+                self.cardBackground.layer.borderWidth = 0
+            } else {
+                self.cardBackground.layer.borderColor = UIColor.clear.cgColor
+                self.cardBackground.layer.borderWidth = 0
+            }
+        }
         if npc.isUnknown && isSelected {
             avatarShadowContainer.layer.shadowOpacity = 0.8
         } else {
-            avatarShadowContainer.layer.shadowOpacity = 0.8 // Тень всегда видна
+            avatarShadowContainer.layer.shadowOpacity = 0.8
         }
         let newImage = npc.isUnknown ?
             UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder") :
@@ -246,7 +226,7 @@ class UniversalCharacterCell: UIView {
             }, completion: nil)
         }
         UIView.animate(withDuration: animationDuration) {
-            self.avatarImageView.layer.borderWidth = 1
+            self.avatarImageView.layer.borderWidth = 0.5 // Half of original 1
             self.avatarImageView.layer.borderColor = UIColor.black.cgColor
         }
         CATransaction.begin()
@@ -257,71 +237,12 @@ class UniversalCharacterCell: UIView {
         CATransaction.commit()
         self.healthIndicator.setNeedsDisplay()
         self.healthIndicator.setNeedsLayout()
-        if !npc.isUnknown {
-            let iconConfig = UIImage.SymbolConfiguration(pointSize: 10) // Уменьшаем размер символов
-            let newProfessionImage = UIImage(systemName: npc.profession.icon, withConfiguration: iconConfig)
-            let color = convertSwiftUIColorToUIColor(npc.profession.color)
-            
-            // Устанавливаем glow изображение для profession icon
-            professionIconGlow.image = Self.makeRadialGlowImage(size: CGSize(width: iconSize + 12, height: iconSize + 12), color: color)
-            
-            UIView.transition(with: professionIcon,
-                             duration: animationDuration,
-                             options: .transitionCrossDissolve,
-                             animations: {
-                self.professionIcon.image = newProfessionImage
-                self.professionIcon.tintColor = color
-                self.professionIcon.contentMode = .center
-            }, completion: nil)
-            UIView.animate(withDuration: animationDuration) {
-                self.professionIcon.alpha = 1.0
-                self.professionIconGlow.alpha = 0.8
-            }
-            professionIcon.isHidden = false
-        } else {
-            UIView.animate(withDuration: animationDuration) {
-                self.professionIcon.alpha = 0.0
-                self.professionIconGlow.alpha = 0.0
-            }
-        }
-        if !npc.isUnknown {
-            let iconConfig = UIImage.SymbolConfiguration(pointSize: 10) // Уменьшаем размер символов
-            let newActivityImage = UIImage(systemName: npc.currentActivity.icon, withConfiguration: iconConfig)
-            let color = convertSwiftUIColorToUIColor(npc.currentActivity.color)
-            
-            // Устанавливаем glow изображение для activity icon
-            activityIconGlow.image = Self.makeRadialGlowImage(size: CGSize(width: iconSize + 12, height: iconSize + 12), color: color)
-            
-            // Добавляем цветное свечение для иконки активности
-            activityIcon.layer.shadowColor = color.cgColor
-            activityIcon.layer.shadowRadius = 4
-            activityIcon.layer.shadowOpacity = 0.6
-            activityIcon.layer.shadowOffset = .zero
-            
-            UIView.transition(with: activityIcon,
-                             duration: animationDuration,
-                             options: .transitionCrossDissolve,
-                             animations: {
-                self.activityIcon.image = newActivityImage
-                self.activityIcon.tintColor = color
-                self.activityIcon.contentMode = .center
-            }, completion: nil)
-            UIView.animate(withDuration: animationDuration) {
-                self.activityIcon.alpha = 1.0
-                self.activityIconGlow.alpha = 0.8
-            }
-            
-            // Убираем свечение рамки карточки, так как cardBackground больше нет
-            
-            activityIcon.isHidden = false
-        } else {
-            UIView.animate(withDuration: animationDuration) {
-                self.activityIcon.alpha = 0.0
-                self.activityIconGlow.alpha = 0.0
-            }
-            
-            // Убираем свечение для неизвестных NPC, так как cardBackground больше нет
-        }
+        // Profession icon всегда скрыт в мини версии
+        professionIcon.isHidden = true
+        professionIcon.alpha = 0.0
+        // Activity icon всегда скрыт в мини версии
+        activityIcon.isHidden = true
+        activityIcon.alpha = 0.0
         if !npc.isUnknown {
             let healthValue = Int(npc.bloodMeter.currentBlood)
             
@@ -367,11 +288,11 @@ class UniversalCharacterCell: UIView {
             CATransaction.setAnimationDuration(animationDuration)
             if isSelected {
                 desiredVictimIndicator.layer.shadowColor = UIColor.systemRed.cgColor
-                desiredVictimIndicator.layer.shadowRadius = 15
+                desiredVictimIndicator.layer.shadowRadius = 7.5 // Half of original 15
                 desiredVictimIndicator.layer.shadowOpacity = 1.0
             } else {
                 desiredVictimIndicator.layer.shadowColor = UIColor.systemRed.cgColor
-                desiredVictimIndicator.layer.shadowRadius = 12
+                desiredVictimIndicator.layer.shadowRadius = 6 // Half of original 12
                 desiredVictimIndicator.layer.shadowOpacity = 1.0
             }
             CATransaction.commit()
@@ -386,8 +307,8 @@ class UniversalCharacterCell: UIView {
                 desiredVictimIndicator.layer.add(pulseAnimation, forKey: "pulseAnimation")
                 let glowAnimation = CABasicAnimation(keyPath: "shadowRadius")
                 glowAnimation.duration = 0.5
-                glowAnimation.fromValue = isSelected ? 10 : 8
-                glowAnimation.toValue = isSelected ? 18 : 15
+                glowAnimation.fromValue = isSelected ? 5 : 4 // Half of original 10:8
+                glowAnimation.toValue = isSelected ? 9 : 7.5 // Half of original 18:15
                 glowAnimation.autoreverses = true
                 glowAnimation.repeatCount = Float.infinity
                 glowAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
@@ -402,9 +323,8 @@ class UniversalCharacterCell: UIView {
                 self.desiredVictimIndicator.layer.removeAnimation(forKey: "glowAnimation")
             }
         }
-        // Убираем анимацию прозрачности cardBackground, так как его больше нет
         UIView.animate(withDuration: animationDuration) {
-            self.alpha = npc.isAlive ? (isDisabled ? 0.8 : 1.0) : 0.8
+            self.cardBackground.alpha = npc.isAlive ? (isDisabled ? 0.8 : 1.0) : 0.8
         }
         guard !npc.isUnknown else {
             questIndicatorIcon.isHidden = true
@@ -460,12 +380,16 @@ class UniversalCharacterCell: UIView {
     func configure(with player: Player, isDisabled: Bool) {
         // Всегда ведём себя как isSelected = true
         let animationDuration: TimeInterval = 0.2
-        // --- Убираем glow и фон, так как cardBackground больше нет ---
+        // --- Glow и фон ---
+        UIView.animate(withDuration: animationDuration) {
+            self.cardBackground.layer.borderColor = UIColor.clear.cgColor
+            self.cardBackground.layer.borderWidth = 0
+        }
         // --- Яркая черная тень вокруг аватара ---
         self.avatarShadowContainer.layer.shadowColor = UIColor.black.cgColor
-        self.avatarShadowContainer.layer.shadowRadius = 18
+        self.avatarShadowContainer.layer.shadowRadius = 9 // Half of original 18
         self.avatarShadowContainer.layer.shadowOpacity = 0.85
-        self.avatarShadowContainer.layer.shadowOffset = CGSize(width: 0, height: 8)
+        self.avatarShadowContainer.layer.shadowOffset = CGSize(width: 0, height: 4) // Half of original (0,8)
         
         // --- Аватар ---
         avatarShadowContainer.layer.shadowOpacity = 0.8
@@ -479,7 +403,7 @@ class UniversalCharacterCell: UIView {
             }, completion: nil)
         }
         UIView.animate(withDuration: animationDuration) {
-            self.avatarImageView.layer.borderWidth = 1
+            self.avatarImageView.layer.borderWidth = 0.5 // Half of original 1
             self.avatarImageView.layer.borderColor = UIColor.black.cgColor
         }
         // --- Индикатор здоровья ---
@@ -491,37 +415,11 @@ class UniversalCharacterCell: UIView {
         CATransaction.commit()
         self.healthIndicator.setNeedsDisplay()
         self.healthIndicator.setNeedsLayout()
-        // --- Профессия скрыта ---
+        // --- Профессия и активность скрыты в мини версии ---
         professionIcon.isHidden = true
-        // --- Активность: всегда "drop" красного цвета ---
-        let iconConfig = UIImage.SymbolConfiguration(pointSize: 10) // Уменьшаем размер символов
-        let dropImage = UIImage(systemName: "drop", withConfiguration: iconConfig)
-        
-        // Устанавливаем glow изображение для activity icon
-        activityIconGlow.image = Self.makeRadialGlowImage(size: CGSize(width: iconSize + 12, height: iconSize + 12), color: UIColor.systemRed)
-        
-        // Добавляем красное свечение для иконки активности игрока
-        activityIcon.layer.shadowColor = UIColor.systemRed.cgColor
-        activityIcon.layer.shadowRadius = 4
-        activityIcon.layer.shadowOpacity = 0.6
-        activityIcon.layer.shadowOffset = .zero
-        
-        UIView.transition(with: activityIcon,
-                         duration: animationDuration,
-                         options: .transitionCrossDissolve,
-                         animations: {
-            self.activityIcon.image = dropImage
-            self.activityIcon.tintColor = UIColor.systemRed
-            self.activityIcon.contentMode = .center
-        }, completion: nil)
-        UIView.animate(withDuration: animationDuration) {
-            self.activityIcon.alpha = 1.0
-            self.activityIconGlow.alpha = 0.8
-        }
-        
-        // Убираем свечение рамки карточки для игрока, так как cardBackground больше нет
-        
-        activityIcon.isHidden = false
+        professionIcon.alpha = 0.0
+        activityIcon.isHidden = true
+        activityIcon.alpha = 0.0
         // --- Здоровье ---
         let healthValue = Int(player.bloodMeter.currentBlood)
         
@@ -550,7 +448,7 @@ class UniversalCharacterCell: UIView {
         questIndicatorIcon.isHidden = true
         // --- Анимация прозрачности карточки ---
         UIView.animate(withDuration: animationDuration) {
-            self.alpha = player.isAlive ? (isDisabled ? 0.5 : 1.0) : 0.4
+            self.cardBackground.alpha = player.isAlive ? (isDisabled ? 0.5 : 1.0) : 0.4
         }
         // --- Glow ---
         UIView.animate(withDuration: animationDuration) {
@@ -662,9 +560,10 @@ class UniversalCharacterCell: UIView {
 
     override func layoutSubviews() {
         super.layoutSubviews()
-        let newAvatarSizeLayout: CGFloat = bounds.width // Аватар занимает весь размер ячейки
-        let newAvatarRadiusLayout: CGFloat = 12 // Сохраняем радиус закругления
-        let avatarFrameLayout = CGRect(x: 0, y: 0, width: newAvatarSizeLayout, height: newAvatarSizeLayout)
+        cardBackground.frame = bounds
+        let newAvatarSizeLayout: CGFloat = bounds.width - 2 // Минимальный отступ 1px с каждой стороны
+        let newAvatarRadiusLayout: CGFloat = 8 // Пропорционально меньший радиус для мини-виджета
+        let avatarFrameLayout = CGRect(x: (bounds.width - newAvatarSizeLayout) / 2, y: 1, width: newAvatarSizeLayout, height: newAvatarSizeLayout)
         avatarImageView.frame = avatarFrameLayout
         avatarImageView.layer.cornerRadius = newAvatarRadiusLayout
         avatarShadowContainer.frame = avatarFrameLayout
@@ -672,23 +571,22 @@ class UniversalCharacterCell: UIView {
         avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: newAvatarRadiusLayout).cgPath
         
         // Позиционируем иконки в углах аватара
-        professionIcon.frame = CGRect(x: avatarFrameLayout.minX + 4, y: avatarFrameLayout.minY + 4, width: iconSize, height: iconSize)
+        professionIcon.frame = CGRect(x: avatarFrameLayout.minX + 2, y: avatarFrameLayout.minY + 2, width: iconSize, height: iconSize) // Half of original +4
         professionIcon.layer.cornerRadius = iconSize / 2
-        
-        activityIcon.frame = CGRect(x: avatarFrameLayout.maxX - iconSize - 4, y: avatarFrameLayout.minY + 4, width: iconSize, height: iconSize)
+        activityIcon.frame = CGRect(x: avatarFrameLayout.maxX - iconSize - 2, y: avatarFrameLayout.minY + 2, width: iconSize, height: iconSize) // Half of original -4, +4
         activityIcon.layer.cornerRadius = iconSize / 2
         
-        // Позиционируем процент здоровья в центре нижней части
-        let healthLabelWidth: CGFloat = 50
-        let healthLabelHeight: CGFloat = 20
+        // Позиционируем процент здоровья в центре нижней части - используем оригинальные размеры
+        let healthLabelWidth: CGFloat = 50 // Оригинальный размер
+        let healthLabelHeight: CGFloat = 20 // Оригинальный размер
         healthPercentageLabel.frame = CGRect(
             x: avatarFrameLayout.midX - healthLabelWidth / 2,
-            y: avatarFrameLayout.maxY - healthLabelHeight - 8,
+            y: avatarFrameLayout.maxY - healthLabelHeight - 8, // Оригинальный отступ
             width: healthLabelWidth,
             height: healthLabelHeight
         )
         
-        let healthIndicatorSize = avatarFrameLayout.width + 6
+        let healthIndicatorSize = avatarFrameLayout.width + 3 // Half of original +6
         let healthIndicatorX = avatarFrameLayout.midX - healthIndicatorSize/2
         let healthIndicatorY = avatarFrameLayout.midY - healthIndicatorSize/2
         healthIndicator.frame = CGRect(x: healthIndicatorX, y: healthIndicatorY, width: healthIndicatorSize, height: healthIndicatorSize)
@@ -721,19 +619,5 @@ class UniversalCharacterCell: UIView {
         }
         // Всё остальное — не кликабельно
         return nil
-    }
-    
-    // Генерация radial alpha glow для иконок
-    private static func makeRadialGlowImage(size: CGSize, color: UIColor) -> UIImage? {
-        let scale = UIScreen.main.scale
-        UIGraphicsBeginImageContextWithOptions(size, false, scale)
-        guard let ctx = UIGraphicsGetCurrentContext() else { return nil }
-        let colors = [color.withAlphaComponent(0.4).cgColor, color.withAlphaComponent(0.0).cgColor] as CFArray
-        let center = CGPoint(x: size.width/2, y: size.height/2)
-        let grad = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors, locations: [0,1])
-        ctx.drawRadialGradient(grad!, startCenter: center, startRadius: 0, endCenter: center, endRadius: size.width/2, options: .drawsAfterEndLocation)
-        let img = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return img?.withRenderingMode(.alwaysOriginal)
     }
 } 
