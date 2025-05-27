@@ -359,6 +359,16 @@ class GameStateService : ObservableObject, GameService{
         
         return npcs
     }
+
+    func getWitnessesCount() -> Int {
+        let awakeNpcs = getAwakeNpcs()
+
+        if awakeNpcs.count > 1 {
+            return awakeNpcs.count - 1
+        } else {
+            return 0
+        }
+    }
     
     func getNPCAssistants(npc: NPC) -> [NPC] {
         guard let scene = currentScene else { return [] }

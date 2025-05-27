@@ -27,7 +27,8 @@ class CombatViewController: UIViewController {
     private let combatLogImageView = UIImageView()
     private let centerWidgetsContainer = UIView()
     private let combatLogContainer = UIView()
-    private let combatLogTextLabel = UILabel()
+    private let combatLogScrollView = UIScrollView()
+    private let combatLogStackView = UIStackView()
     private let playerNameLabel = UILabel()
     private let npcNameLabel = UILabel()
     // Overlay and widget references
@@ -47,6 +48,7 @@ class CombatViewController: UIViewController {
     private var lastActionType: CombatActionType? = nil
     private var isCombatEnded: Bool = false
     private var didLoadAssistants = false
+    private var previousAliveEnemiesCount: Int = 0
     
     // Callbacks для навигации
     var onLeave: (() -> Void)? = nil
@@ -162,21 +164,25 @@ class CombatViewController: UIViewController {
         witnessWarningLabel.layer.shadowRadius = 3
         witnessWarningLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
         witnessWarningLabel.translatesAutoresizingMaskIntoConstraints = false
-        combatLogContainer.addSubview(witnessWarningLabel)
+        view.addSubview(witnessWarningLabel)
 
         // VS label убран
         
-        // Combat log text
-        combatLogTextLabel.font = UIFont(name: "Optima-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14)
-        combatLogTextLabel.textColor = .white
-        combatLogTextLabel.textAlignment = .center
-        combatLogTextLabel.numberOfLines = 0
-        combatLogTextLabel.translatesAutoresizingMaskIntoConstraints = false
-        combatLogTextLabel.layer.shadowColor = UIColor.black.cgColor
-        combatLogTextLabel.layer.shadowOpacity = 0.7
-        combatLogTextLabel.layer.shadowRadius = 3
-        combatLogTextLabel.layer.shadowOffset = CGSize(width: 0, height: 2)
-        combatLogContainer.addSubview(combatLogTextLabel)
+        // Combat log scroll view
+        combatLogScrollView.translatesAutoresizingMaskIntoConstraints = false
+        combatLogScrollView.showsVerticalScrollIndicator = true
+        combatLogScrollView.showsHorizontalScrollIndicator = false
+        combatLogScrollView.backgroundColor = .clear
+        combatLogScrollView.contentInsetAdjustmentBehavior = .never
+        combatLogContainer.addSubview(combatLogScrollView)
+        
+        // Combat log stack view для истории сообщений
+        combatLogStackView.axis = .vertical
+        combatLogStackView.alignment = .fill
+        combatLogStackView.distribution = .fill
+        combatLogStackView.spacing = 8
+        combatLogStackView.translatesAutoresizingMaskIntoConstraints = false
+        combatLogScrollView.addSubview(combatLogStackView)
 
         // --- 3 СТОЛБЕЦ: NPC и ассистенты ---
         npcAndActionsStack.axis = .vertical
@@ -220,23 +226,32 @@ class CombatViewController: UIViewController {
             playerNameLabel.bottomAnchor.constraint(equalTo: playerAndActionsStack.topAnchor, constant: -8),
             playerNameLabel.centerXAnchor.constraint(equalTo: universalPlayerCell.centerXAnchor),
             
-            // 2 столбец - центральный контейнер (ширина второго столбца - 10)
-            combatLogContainer.leadingAnchor.constraint(equalTo: playerAndActionsStack.trailingAnchor, constant: 21),
-            combatLogContainer.trailingAnchor.constraint(equalTo: npcAndActionsStack.leadingAnchor, constant: -21),
-            combatLogContainer.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 40),
-            combatLogContainer.heightAnchor.constraint(equalToConstant: 300),
+            // Combat log container - фиксированный размер внизу экрана
+            combatLogContainer.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            combatLogContainer.widthAnchor.constraint(equalToConstant: 350),
+            combatLogContainer.heightAnchor.constraint(equalToConstant: 150),
+            combatLogContainer.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             
             // Фон контейнера - временно убран
             
-            // Элементы внутри контейнера
-            witnessWarningLabel.topAnchor.constraint(equalTo: combatLogContainer.topAnchor, constant: 24),
-            witnessWarningLabel.leadingAnchor.constraint(equalTo: combatLogContainer.leadingAnchor, constant: 16),
-            witnessWarningLabel.trailingAnchor.constraint(equalTo: combatLogContainer.trailingAnchor, constant: -16),
+            // Witness warning label - в верхней части центральной колонки
+            witnessWarningLabel.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 16),
+            witnessWarningLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            witnessWarningLabel.leadingAnchor.constraint(greaterThanOrEqualTo: playerAndActionsStack.trailingAnchor, constant: 16),
+            witnessWarningLabel.trailingAnchor.constraint(lessThanOrEqualTo: npcAndActionsStack.leadingAnchor, constant: -16),
             
-            combatLogTextLabel.topAnchor.constraint(equalTo: witnessWarningLabel.bottomAnchor, constant: 40),
-            combatLogTextLabel.leadingAnchor.constraint(equalTo: combatLogContainer.leadingAnchor, constant: 16),
-            combatLogTextLabel.trailingAnchor.constraint(equalTo: combatLogContainer.trailingAnchor, constant: -16),
-            combatLogTextLabel.bottomAnchor.constraint(lessThanOrEqualTo: combatLogContainer.bottomAnchor, constant: -16),
+            // Combat log scroll view constraints - заполняет весь контейнер
+            combatLogScrollView.topAnchor.constraint(equalTo: combatLogContainer.topAnchor, constant: 8),
+            combatLogScrollView.leadingAnchor.constraint(equalTo: combatLogContainer.leadingAnchor, constant: 8),
+            combatLogScrollView.trailingAnchor.constraint(equalTo: combatLogContainer.trailingAnchor, constant: -8),
+            combatLogScrollView.bottomAnchor.constraint(equalTo: combatLogContainer.bottomAnchor, constant: -8),
+            
+            // Combat log stack view constraints
+            combatLogStackView.topAnchor.constraint(equalTo: combatLogScrollView.topAnchor),
+            combatLogStackView.leadingAnchor.constraint(equalTo: combatLogScrollView.leadingAnchor),
+            combatLogStackView.trailingAnchor.constraint(equalTo: combatLogScrollView.trailingAnchor),
+            combatLogStackView.bottomAnchor.constraint(equalTo: combatLogScrollView.bottomAnchor),
+            combatLogStackView.widthAnchor.constraint(equalTo: combatLogScrollView.widthAnchor),
             
             // 3 столбец - NPC и ассистенты
             npcAndActionsStack.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -16),
@@ -258,13 +273,26 @@ class CombatViewController: UIViewController {
     
     private func setupInitialCombatState() {
         guard let player = player else { return }
-        CombatService.shared.startCombat(player: player, npc: npc)
+        
+        // Используем новую групповую боевую систему
+        CombatService.shared.startGroupCombat(player: player, primaryNpc: npc, assistants: npcAssistants)
+        
         universalPlayerCell.configure(with: player, isDisabled: false)
         universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
         
         // Устанавливаем имена
         playerNameLabel.text = player.name
         npcNameLabel.text = npc.name
+        
+        // Обновляем информацию о групповом бое
+        updateGroupCombatInfo()
+        
+        // Инициализируем combat log
+        initializeCombatLog()
+        
+        // Устанавливаем начальное количество врагов
+        let status = CombatService.shared.getGroupCombatStatus()
+        previousAliveEnemiesCount = status.aliveEnemies
         
         // --- Assistants setup ---
         setupAssistantNPCs()
@@ -327,8 +355,23 @@ class CombatViewController: UIViewController {
         // Обновляем имя NPC
         npcNameLabel.text = self.npc.name
         
+        // Добавляем сообщение о смене цели в лог
+        addCombatLogMessage("🎯 Your gaze turns to \(self.npc.name)", color: .systemYellow, isSystemMessage: true)
+        
         setupActionButtons()
-        updateUIAfterAction()
+        
+        // Обновляем UI без добавления результата действия
+        if let player = player {
+            universalPlayerCell.configure(with: player, isDisabled: false)
+        }
+        universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
+        
+        // Обновляем информацию о групповом бое
+        updateGroupCombatInfo()
+        
+        // --- Обновляем ассистентов ---
+        setupAssistantNPCs()
+        checkCombatEnd()
     }
     
     private func activateNPC(_ selectedNPC: NPC) {
@@ -415,7 +458,7 @@ class CombatViewController: UIViewController {
                     target: self.npc,
                     parameters: nil
                 )
-                CombatService.shared.performAction(action)
+                CombatService.shared.performGroupAction(action)
                 self.updateUIAfterAction()
             }),
             ("Bite", "mouth.fill", .systemPink, { [weak self] in
@@ -427,19 +470,19 @@ class CombatViewController: UIViewController {
                     target: self.npc,
                     parameters: nil
                 )
-                CombatService.shared.performAction(action)
+                CombatService.shared.performGroupAction(action)
                 self.updateUIAfterAction()
             }),
             ("Drain", "drop.triangle.fill", .systemRed, { [weak self] in
                 guard let self = self else { return }
-                self.lastActionType = .feed
+                self.lastActionType = .drain
                 let action = CombatAction(
-                    type: .feed,
+                    type: .drain,
                     initiatorId: "",
                     target: self.npc,
                     parameters: nil
                 )
-                CombatService.shared.performAction(action)
+                CombatService.shared.performGroupAction(action)
                 self.updateUIAfterAction()
             }),
         ]
@@ -448,36 +491,56 @@ class CombatViewController: UIViewController {
             actions.insert(
                 ("Dominate", "eye", .systemBlue, { [weak self] in
                 guard let self = self else { return }
-                self.lastActionType = .feed
+                self.lastActionType = .dominate
                 let action = CombatAction(
-                    type: .feed,
+                    type: .dominate,
                     initiatorId: "",
                     target: self.npc,
                     parameters: nil
                 )
-                CombatService.shared.performAction(action)
+                CombatService.shared.performGroupAction(action)
                 self.updateUIAfterAction()
                 }), at: 2)
         }
-        let witnesses = GameStateService.shared.getAwakeNpcsCount()
+        // Witness warning label всегда показывается в центральной колонке
+        let witnesses = GameStateService.shared.getWitnessesCount()
         let hasVampireAction = actions.contains(where: { $0.title == "Bite" || $0.title == "Drain" || $0.title == "Dominate" })
+        
         if witnesses > 0 && hasVampireAction {
-            witnessWarningLabel.text = "⚠️ There are witnesses! Actions will have consequences. (\(witnesses))"
+            witnessWarningLabel.text = "⚠️ Prying eyes watch from shadows... (\(witnesses) souls)"
             witnessWarningLabel.textColor = UIColor.systemRed
-            witnessWarningLabel.isHidden = false
         } else if hasVampireAction {
-            witnessWarningLabel.text = "🌑 No one is watching... The night is yours."
+            witnessWarningLabel.text = "🌑 Darkness conceals your unholy hunger..."
             witnessWarningLabel.textColor = UIColor.systemGreen
-            witnessWarningLabel.isHidden = false
+        } else if witnesses > 0 {
+            witnessWarningLabel.text = "⚠️ \(witnesses) onlookers witness this bloodshed"
+            witnessWarningLabel.textColor = UIColor.systemYellow
         } else {
-            witnessWarningLabel.isHidden = true
+            witnessWarningLabel.text = "⚔️ Steel rings against steel"
+            witnessWarningLabel.textColor = UIColor.systemBlue
         }
+        witnessWarningLabel.isHidden = false
         for (title, icon, color, handler) in actions {
-            // Получаем шанс успеха
-            let chance = CombatService.shared.getBaseChance(for: CombatActionType(rawValue: actions.firstIndex(where: { $0.title == title }) ?? 0) ?? .attack)
+            // Получаем шанс успеха с учетом групповой механики
+            let actionType: CombatActionType = {
+                switch title {
+                case "Attack": return .attack
+                case "Bite": return .feed
+                case "Drain": return .drain
+                case "Dominate": return .dominate
+                default: return .attack
+                }
+            }()
+            
+            let status = CombatService.shared.getGroupCombatStatus()
+            let chance = CombatService.shared.getGroupCombatChance(for: actionType, enemyCount: status.aliveEnemies)
             let chancePercent = Int(chance * 100)
-            let button = ActionButtonSmallView(title: title, icon: icon, color: color, onTap: handler)
+            
+            // Цветовая индикация сложности боя
+            let difficultyColor = getDifficultyColor(for: chance, enemyCount: status.aliveEnemies)
+            let button = ActionButtonSmallView(title: title, icon: icon, color: difficultyColor, onTap: handler)
             button.setSubtitle("\(chancePercent)%")
+            
             // --- Делаем кнопку неактивной, если NPC мертв ---
             button.isEnabled = npc.isAlive
             button.alpha = npc.isAlive ? 1.0 : 0.7
@@ -487,70 +550,326 @@ class CombatViewController: UIViewController {
     
     // Маппинг последствий на текст, цвет и иконку для игрока
     private func prettyCombatResultText(_ summary: String) -> (NSAttributedString, UIColor) {
-        // Примеры: "Success: damage_caused", "Fail: player_damaged"
         let lower = summary.lowercased()
         let isSuccess = lower.contains("success")
-        let isFail = lower.contains("fail")
-        let code: String = {
-            if let idx = lower.firstIndex(of: ":") {
-                return lower[lower.index(after: idx)...].trimmingCharacters(in: .whitespaces)
-            }
-            return lower
-        }()
+        
         var text = ""
         var color = UIColor.white
         var icon = ""
-        switch code {
-        case let s where s.contains("damage_caused"):
-            text = isSuccess ? "You hit \(self.npc.name)" : "Missed! \(self.npc.name) strikes back!"
-            color = isSuccess ? UIColor.systemGreen : UIColor.systemRed
-            icon = isSuccess ? "🗡️" : "💢"
-        case let s where s.contains("player_damaged"):
-            text = isSuccess ? "You heal!" : "You are hurt!"
-            color = isSuccess ? UIColor.systemPink : UIColor.systemRed
-            icon = isSuccess ? "🩸" : "💢"
-        case let s where s.contains("target_bited"):
-            text = "You bite and heal!"
-            color = UIColor.systemPink
-            icon = "🩸"
-        case let s where s.contains("npc_dominated"):
-            text = "\(self.npc.name) is dominated!"
-            color = UIColor.systemBlue
-            icon = "👁️"
-        case let s where s.contains("no_effect"):
-            text = "No effect."
-            color = UIColor.systemGray
-            icon = "—"
-        case let s where s.contains("target_drained"):
-            text = "You drain all \(self.npc.name) blood!"
+        
+        // Обрабатываем новые групповые сообщения
+        if summary.contains("overwhelmed by") {
+            let parts = summary.components(separatedBy: " ")
+            if let enemyCountStr = parts.first(where: { $0.contains("enemies") })?.replacingOccurrences(of: "enemies", with: "").trimmingCharacters(in: .whitespaces),
+               let enemyCount = Int(enemyCountStr) {
+                text = "⚔️ Surrounded and beaten by \(enemyCount) foes!"
+            } else {
+                text = "⚔️ " + summary
+            }
             color = UIColor.systemRed
-            icon = "🩸"
-        default:
-            text = summary
-            color = UIColor.white
             icon = ""
+        } else if summary.contains("feeding interrupted by") {
+            text = "🗡️ " + summary.replacingOccurrences(of: "Fail: ", with: "").replacingOccurrences(of: "feeding interrupted by", with: "Blood feast interrupted by")
+            color = UIColor.systemOrange
+            icon = ""
+        } else if summary.contains("all") && summary.contains("enemies attack") {
+            text = "💀 " + summary.replacingOccurrences(of: "Fail: ", with: "").replacingOccurrences(of: "all", with: "All").replacingOccurrences(of: "enemies attack", with: "foes strike in unison")
+            color = UIColor.systemRed
+            icon = ""
+        } else if summary.contains("dominated (temporarily out of combat)") {
+            text = "👁️ " + summary.replacingOccurrences(of: "Success: ", with: "").replacingOccurrences(of: "dominated (temporarily out of combat)", with: "mind enslaved, cowering in terror")
+            color = UIColor.systemBlue
+            icon = ""
+        } else if summary.contains("fed on") {
+            text = "🩸 " + summary.replacingOccurrences(of: "Success: ", with: "").replacingOccurrences(of: "fed on", with: "Drained the life essence from")
+            color = UIColor.systemPink
+            icon = ""
+        } else if summary.contains("drained") && summary.contains("completely") {
+            text = "💀 " + summary.replacingOccurrences(of: "Success: ", with: "").replacingOccurrences(of: "drained", with: "Consumed the very soul of").replacingOccurrences(of: "completely", with: "- nothing remains")
+            color = UIColor.systemRed
+            icon = ""
+        } else {
+            // Обрабатываем стандартные сообщения
+            let code: String = {
+                if let idx = lower.firstIndex(of: ":") {
+                    return lower[lower.index(after: idx)...].trimmingCharacters(in: .whitespaces)
+                }
+                return lower
+            }()
+            
+            switch code {
+            case let s where s.contains("damage_caused"):
+                if isSuccess {
+                    // Извлекаем информацию об уроне из summary
+                    let damageInfo = extractDamageInfo(from: summary)
+                    let targetName = extractTargetName(from: summary) ?? self.npc.name
+                    text = "⚔️ Your blade finds flesh - \(targetName) bleeds\(damageInfo)"
+                    color = UIColor.systemGreen
+                } else {
+                    text = "🛡️ Your strike falters - \(self.npc.name) retaliates!"
+                    color = UIColor.systemRed
+                }
+            case let s where s.contains("player_damaged"):
+                if isSuccess {
+                    text = "🩸 Crimson vitality flows through you!"
+                    color = UIColor.systemPink
+                } else {
+                    let damageInfo = extractDamageInfo(from: summary)
+                    text = "🗡️ Steel bites deep into your flesh\(damageInfo)"
+                    color = UIColor.systemRed
+                }
+            case let s where s.contains("target_bited"):
+                let healInfo = extractHealInfo(from: summary)
+                text = "🩸 Fangs pierce flesh - warm blood sustains you\(healInfo)"
+                color = UIColor.systemPink
+            case let s where s.contains("npc_dominated"):
+                text = "👁️ \(self.npc.name)'s will crumbles before your gaze!"
+                color = UIColor.systemBlue
+            case let s where s.contains("no_effect"):
+                text = "— Your efforts prove futile."
+                color = UIColor.systemGray
+            case let s where s.contains("target_drained"):
+                text = "💀 \(self.npc.name)'s life essence flows into the void!"
+                color = UIColor.systemRed
+            default:
+                text = summary
+                color = UIColor.white
+            }
         }
-        let pretty = NSMutableAttributedString(string: icon.isEmpty ? text : icon + " " + text)
-        pretty.addAttribute(.font, value: UIFont(name: "Optima-Regular", size: 18) ?? UIFont.systemFont(ofSize: 18), range: NSRange(location: 0, length: pretty.length))
+        
+        let pretty = NSMutableAttributedString(string: text)
+        pretty.addAttribute(.font, value: UIFont(name: "Optima-Regular", size: 14) ?? UIFont.systemFont(ofSize: 14), range: NSRange(location: 0, length: pretty.length))
         pretty.addAttribute(.foregroundColor, value: color, range: NSRange(location: 0, length: pretty.length))
         return (pretty, color)
     }
     
+    // MARK: - Helper Methods for Damage Extraction
+    
+    private func extractDamageInfo(from summary: String) -> String {
+        // Ищем паттерн (-XX HP) в строке
+        let pattern = "\\(-\\d+ HP\\)"
+        if let range = summary.range(of: pattern, options: .regularExpression) {
+            return " " + String(summary[range])
+        }
+        return ""
+    }
+    
+    private func extractTargetName(from summary: String) -> String? {
+        // Ищем имя цели в скобках перед информацией об уроне
+        // Паттерн: (Name) (-XX HP)
+        let pattern = "\\(([^)]+)\\) \\(-\\d+ HP\\)"
+        if let range = summary.range(of: pattern, options: .regularExpression) {
+            let match = String(summary[range])
+            // Извлекаем имя из первых скобок
+            if let nameRange = match.range(of: "\\(([^)]+)\\)", options: .regularExpression) {
+                let nameMatch = String(match[nameRange])
+                // Убираем скобки
+                return String(nameMatch.dropFirst().dropLast())
+            }
+        }
+        return nil
+    }
+    
+    private func extractHealInfo(from summary: String) -> String {
+        // Ищем паттерн (+XX HP) в строке
+        let pattern = "\\(\\+\\d+ HP\\)"
+        if let range = summary.range(of: pattern, options: .regularExpression) {
+            return " " + String(summary[range])
+        }
+        return ""
+    }
+    
     private func updateUIAfterAction() {
+        // Добавляем результат действия в лог
         if let summary = CombatService.shared.resultSummary {
             let (pretty, _) = prettyCombatResultText(summary)
-            combatLogTextLabel.attributedText = pretty
-        } else {
-            combatLogTextLabel.text = ""
+            addCombatLogAttributedMessage(pretty)
         }
+        
+        // Обновляем UI персонажей
         if let player = player {
             universalPlayerCell.configure(with: player, isDisabled: false)
         }
         universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
+        
+        // Обновляем информацию о групповом бое
+        updateGroupCombatInfo()
+        
+        // Добавляем информацию о состоянии боя
+        updateCombatStatusInLog()
+        
         // --- Обновляем ассистентов ---
-        //setupAssistantNPCs()
+        setupAssistantNPCs()
         checkCombatEnd()
         setupActionButtons()
+    }
+    
+    private func updateGroupCombatInfo() {
+        // Эта функция больше не обновляет witness warning label
+        // Witness warning label обновляется только в setupActionButtons()
+        // Здесь можно добавить другую логику обновления UI если нужно
+    }
+    
+    private func getDifficultyColor(for chance: Double, enemyCount: Int) -> UIColor {
+        // Базовая цветовая схема в зависимости от шансов успеха
+        let baseColor: UIColor
+        if chance >= 0.7 {
+            baseColor = UIColor.systemGreen      // Высокие шансы - зеленый
+        } else if chance >= 0.5 {
+            baseColor = UIColor.systemYellow     // Средние шансы - желтый  
+        } else if chance >= 0.3 {
+            baseColor = UIColor.systemOrange     // Низкие шансы - оранжевый
+        } else {
+            baseColor = UIColor.systemRed        // Очень низкие шансы - красный
+        }
+        
+        // Дополнительная индикация для множественных врагов
+        if enemyCount >= 4 {
+            // При 4+ врагах делаем цвет более насыщенным/темным
+            return baseColor.withAlphaComponent(0.9)
+        } else if enemyCount >= 3 {
+            // При 3 врагах немного затемняем
+            return baseColor.withAlphaComponent(0.8)
+        } else {
+            // 1-2 врага - обычный цвет
+            return baseColor
+        }
+    }
+    
+    private func updateCombatStatusInLog() {
+        let status = CombatService.shared.getGroupCombatStatus()
+        
+        // Добавляем информацию о состоянии боя только если было действие (есть resultSummary)
+        guard CombatService.shared.resultSummary != nil else { return }
+        
+        // Проверяем, изменилось ли количество живых врагов
+        if status.aliveEnemies < previousAliveEnemiesCount {
+            let killedCount = previousAliveEnemiesCount - status.aliveEnemies
+            
+            if status.aliveEnemies > 1 {
+                let statusMessage = "💀 \(killedCount) \(killedCount > 1 ? "souls" : "soul") claimed, \(status.aliveEnemies) still draw breath"
+                addCombatLogMessage(statusMessage, color: .systemGray2, isSystemMessage: true)
+            } else if status.aliveEnemies == 1 {
+                let statusMessage = "💀 \(killedCount) \(killedCount > 1 ? "have" : "has") fallen, one foe remains"
+                addCombatLogMessage(statusMessage, color: .systemGray2, isSystemMessage: true)
+            }
+            
+            // Обновляем счетчик
+            previousAliveEnemiesCount = status.aliveEnemies
+        }
+    }
+    
+    private func getDifficultyLevel(for chance: Double, enemyCount: Int) -> String {
+        let baseLevel: String
+        if chance >= 0.7 {
+            baseLevel = "Easy"
+        } else if chance >= 0.5 {
+            baseLevel = "Medium"
+        } else if chance >= 0.3 {
+            baseLevel = "Hard"
+        } else {
+            baseLevel = "Extreme"
+        }
+        
+        // Добавляем модификатор для множественных врагов
+        if enemyCount >= 4 {
+            return "\(baseLevel) (Overwhelming)"
+        } else if enemyCount >= 3 {
+            return "\(baseLevel) (Outnumbered)"
+        } else {
+            return baseLevel
+        }
+    }
+    
+    // MARK: - Combat Log Methods
+    
+    private func initializeCombatLog() {
+        // Очищаем предыдущие сообщения
+        combatLogStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        
+        // Добавляем начальное сообщение
+        let status = CombatService.shared.getGroupCombatStatus()
+        let initialMessage: String
+        
+        if status.totalEnemies > 1 {
+            initialMessage = "⚔️ Battle erupts - \(status.totalEnemies) foes stand against you!"
+        } else {
+            initialMessage = "⚔️ Steel meets steel - \(npc.name) draws blade!"
+        }
+        
+        addCombatLogMessage(initialMessage, color: .systemBlue, isSystemMessage: true)
+        
+        // Показываем сложность боя если это групповой бой
+        if status.aliveEnemies > 1 {
+            let attackChance = CombatService.shared.getGroupCombatChance(for: .attack, enemyCount: status.aliveEnemies)
+            let difficultyLevel = getDifficultyLevel(for: attackChance, enemyCount: status.aliveEnemies)
+            let difficultyColor = getDifficultyColor(for: attackChance, enemyCount: status.aliveEnemies)
+            
+            addCombatLogMessage("The odds weigh heavy: \(difficultyLevel)", color: difficultyColor, isSystemMessage: true)
+        }
+    }
+    
+    private func addCombatLogMessage(_ text: String, color: UIColor = .white, isSystemMessage: Bool = false) {
+        let messageLabel = UILabel()
+        messageLabel.font = UIFont(name: "Optima-Regular", size: isSystemMessage ? 13 : 14) ?? UIFont.systemFont(ofSize: isSystemMessage ? 13 : 14)
+        messageLabel.textColor = color
+        messageLabel.textAlignment = isSystemMessage ? .center : .left
+        messageLabel.numberOfLines = 0
+        messageLabel.text = text
+        
+        // Добавляем тень для лучшей читаемости
+        messageLabel.layer.shadowColor = UIColor.black.cgColor
+        messageLabel.layer.shadowOpacity = 0.7
+        messageLabel.layer.shadowRadius = 2
+        messageLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
+        
+        // Добавляем отступы для системных сообщений
+        if isSystemMessage {
+            messageLabel.alpha = 0.8
+        }
+        
+        combatLogStackView.addArrangedSubview(messageLabel)
+        
+        // Автоматически прокручиваем вниз
+        DispatchQueue.main.async { [weak self] in
+            self?.scrollToBottom()
+        }
+    }
+    
+    private func addCombatLogAttributedMessage(_ attributedText: NSAttributedString) {
+        let messageLabel = UILabel()
+        messageLabel.attributedText = attributedText
+        messageLabel.textAlignment = .left
+        messageLabel.numberOfLines = 0
+        
+        // Добавляем тень для лучшей читаемости
+        messageLabel.layer.shadowColor = UIColor.black.cgColor
+        messageLabel.layer.shadowOpacity = 0.7
+        messageLabel.layer.shadowRadius = 2
+        messageLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
+        
+        combatLogStackView.addArrangedSubview(messageLabel)
+        
+        // Автоматически прокручиваем вниз
+        DispatchQueue.main.async { [weak self] in
+            self?.scrollToBottom()
+        }
+    }
+    
+    private func scrollToBottom() {
+        let contentHeight = combatLogStackView.frame.height
+        let scrollViewHeight = combatLogScrollView.frame.height
+        
+        if contentHeight > scrollViewHeight {
+            let bottomOffset = CGPoint(x: 0, y: contentHeight - scrollViewHeight)
+            combatLogScrollView.setContentOffset(bottomOffset, animated: true)
+        }
+    }
+    
+    private func addRoundSeparator() {
+        let status = CombatService.shared.getGroupCombatStatus()
+        let separatorText = "--- Round \(status.round) ---"
+        addCombatLogMessage(separatorText, color: .systemGray, isSystemMessage: true)
     }
     
     private func checkCombatEnd() {
@@ -560,12 +879,25 @@ class CombatViewController: UIViewController {
         let assistants = npcAssistants
         let anyAssistantsAlive = assistants.contains(where: { $0.isAlive })
         let allEnemiesDead = !anyAssistantsAlive && isNpcDead
+        
         if isPlayerDead || allEnemiesDead {
             isCombatEnded = true
             actionsButtonsStack.isUserInteractionEnabled = true
             actionsButtonsStack.isHidden = false
             finishButton.isHidden = true
-            combatLogTextLabel.text = isPlayerDead ? "You died!" : "Enemy defeated!"
+            
+            // Добавляем финальное сообщение в лог
+            if isPlayerDead {
+                addCombatLogMessage("💀 Your blood stains the cold earth...", color: .systemRed, isSystemMessage: true)
+                addCombatLogMessage("Death claims another soul", color: .systemRed, isSystemMessage: true)
+            } else {
+                let status = CombatService.shared.getGroupCombatStatus()
+                if status.totalEnemies > 1 {
+                    addCombatLogMessage("🏆 The battlefield falls silent - \(status.totalEnemies) foes lie broken!", color: .systemGreen, isSystemMessage: true)
+                } else {
+                    addCombatLogMessage("🏆 \(npc.name) draws final breath - victory is yours!", color: .systemGreen, isSystemMessage: true)
+                }
+            }
         }
         // else: не переключаем автоматически на живого NPC, если выбран мертвый вручную
     }
