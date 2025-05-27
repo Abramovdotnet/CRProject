@@ -374,15 +374,40 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return [] }
         
         let npcs = scene.getNPCs()
-        let assistanNpcs = npcs.filter( { $0.id != npc.id && $0.isAlive && ($0.isMilitary || $0.profession == npc.profession)})
-        //let assistanNpcs = Array(npcs.prefix(5))
+        let aliveNpcs = npcs.filter( { $0.id != npc.id && $0.isAlive && !$0.isSpecialBehaviorSet})
         
-        for assistanNpc in assistanNpcs {
-            if assistanNpc.isUnknown {
-                assistanNpc.isUnknown = false
+        var allies: [NPC] = []
+        
+        let protectorNpcs = aliveNpcs.filter( { $0.morality == .lawfulGood || $0.morality == .neutralGood || $0.morality == .chaoticGood })
+        allies.append(contentsOf: protectorNpcs)
+        
+        // Добавляем всех военных NPC (стража)
+        let militaryNpcs = aliveNpcs.filter( { $0.isMilitary })
+        for militaryNpc in militaryNpcs {
+            // Избегаем дубликатов
+            if !allies.contains(where: { $0.id == militaryNpc.id }) {
+                allies.append(militaryNpc)
             }
         }
         
-        return assistanNpcs
+        // Добавляем всех NPC из aliveNpcs, которые связаны с текущим NPC отношениями >= friend
+        for aliveNpc in aliveNpcs {
+            // Проверяем отношение этого NPC к целевому NPC
+            if let relationshipState = aliveNpc.getNPCRelationshipState(of: npc) {
+                if relationshipState == .friend || relationshipState == .ally {
+                    // Избегаем дубликатов
+                    if !allies.contains(where: { $0.id == aliveNpc.id }) {
+                        allies.append(aliveNpc)
+                    }
+                }
+            }
+            
+            // Делаем NPC видимыми (убираем unknown статус)
+            if aliveNpc.isUnknown {
+                aliveNpc.isUnknown = false
+            }
+        }
+        
+        return allies
     }
 }
