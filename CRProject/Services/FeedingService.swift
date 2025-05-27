@@ -40,7 +40,7 @@ class FeedingService: GameService {
             
             try bloodService.feed(vampire: vampire, prey: prey, amount: amount)
             
-            var awarenessIncreaseValue = calculateFeedAwarenessGainValue(prey: prey)
+            let awarenessIncreaseValue = calculateFeedAwarenessGainValue(prey: prey)
             
             if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer || (AbilitiesSystem.shared.hasLionAmongSheep && prey.playerRelationship.state == .friend) {
                 vampire.bloodMeter.addBlood(10)
@@ -76,7 +76,6 @@ class FeedingService: GameService {
             NPCInteractionManager.shared.playerInteracted(with: prey)
             
             setWitnessesIfExists(sceneId: sceneId, exceptId: prey.id)
-            
             
             if advanceTime {
                 gameTime.advanceTime()

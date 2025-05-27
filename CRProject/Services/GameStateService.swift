@@ -372,6 +372,7 @@ class GameStateService : ObservableObject, GameService{
     
     func getNPCAssistants(npc: NPC) -> [NPC] {
         guard let scene = currentScene else { return [] }
+        npc.decreasePlayerRelationship(with: 10)
         
         let npcs = scene.getNPCs()
         let aliveNpcs = npcs.filter( { $0.id != npc.id && $0.isAlive && !$0.isSpecialBehaviorSet})
@@ -408,6 +409,47 @@ class GameStateService : ObservableObject, GameService{
             }
         }
         
+        for ally in allies {
+            ally.decreasePlayerRelationship(with: 10)
+        }
+        
         return allies
+    }
+    
+    func callTheGuardsIfNeeded(engagedInFight: [NPC]) -> [NPC]? {
+        // Проверка наличия мертвых NPC в бою
+        guard engagedInFight.contains(where: { !$0.isAlive }) else { return nil }
+        
+        // Получаем первого свидетеля, не участвующего в бою
+        guard let witness = getAwakeNpcs().first(where: { witness in
+            !engagedInFight.contains { $0.id == witness.id }
+        }) else { return nil }
+        
+        // Показываем уведомление о свидетеле
+        UIKitPopUpManager.shared.show(
+            title: "Public kill",
+            description: "\(witness.name) saw the crime and called for guards",
+            icon: UIImage(systemName: "shield")
+        )
+        
+        witness.currentActivity = .fleeing
+        witness.isSpecialBehaviorSet = true
+        witness.specialBehaviorTime = 3
+        witness.decreasePlayerRelationship(with: 20)
+        
+        // Получаем доступных стражей
+        let availableGuards = NPCReader.getNPCs()
+            .filter { $0.isAlive && $0.isMilitary }
+            .prefix(2)
+        
+        for availableGuard in availableGuards {
+            if availableGuard.isUnknown {
+                availableGuard.isUnknown = false
+            }
+            
+            availableGuard.decreasePlayerRelationship(with: 20)
+        }
+        
+        return availableGuards.isEmpty ? nil : Array(availableGuards)
     }
 }

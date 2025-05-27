@@ -11,7 +11,7 @@ class UniversalCharacterCell: UIView {
     let healthIndicator = CAShapeLayer()
     private let desiredVictimIndicator = UIImageView()
     private let healthPercentageLabel = UILabel()
-    private let selectionGlowLayer = CALayer()
+
     private let questIndicatorIcon = UIImageView()
     
     // Glow views для иконок
@@ -35,31 +35,24 @@ class UniversalCharacterCell: UIView {
     }
     
     private func updateSelectionGlow(isSelected: Bool, animationDuration: TimeInterval) {
+        CATransaction.begin()
+        CATransaction.setAnimationDuration(animationDuration)
+        
         if isSelected {
-            // Светлое свечение для выбранного NPC
-            UIView.animate(withDuration: animationDuration) {
-                // Меняем тень ячейки на светлую
-                self.avatarShadowContainer.layer.shadowColor = UIColor.white.cgColor
-                self.avatarShadowContainer.layer.shadowRadius = 20 // Увеличиваем для более заметного эффекта
-                self.avatarShadowContainer.layer.shadowOpacity = 0.9
-                
-                // Также добавляем свечение к selectionGlowLayer
-                self.selectionGlowLayer.shadowOpacity = 0.8
-                self.selectionGlowLayer.shadowColor = UIColor.cyan.cgColor // Голубоватое свечение
-                self.selectionGlowLayer.shadowRadius = 4
-            }
-            selectionGlowLayer.isHidden = false
+            // Белое свечение от контейнера аватара (он не обрезается)
+            avatarShadowContainer.layer.shadowColor = UIColor.red.cgColor
+            avatarShadowContainer.layer.shadowRadius = 2
+            avatarShadowContainer.layer.shadowOpacity = 0.7
+            avatarShadowContainer.layer.shadowOffset = CGSize.zero
         } else {
-            // Возвращаем обычную темную тень
-            UIView.animate(withDuration: animationDuration) {
-                self.avatarShadowContainer.layer.shadowColor = UIColor.black.cgColor
-                self.avatarShadowContainer.layer.shadowRadius = 18
-                self.avatarShadowContainer.layer.shadowOpacity = 0.85
-                
-                self.selectionGlowLayer.shadowOpacity = 0
-            }
-            selectionGlowLayer.isHidden = true
+            // Возвращаем обычную черную тень
+            avatarShadowContainer.layer.shadowColor = UIColor.black.cgColor
+            avatarShadowContainer.layer.shadowRadius = 2
+            avatarShadowContainer.layer.shadowOpacity = 0.7
+            avatarShadowContainer.layer.shadowOffset = CGSize(width: 0, height: 8)
         }
+        
+        CATransaction.commit()
     }
     
     private func setupViews() {
@@ -72,8 +65,8 @@ class UniversalCharacterCell: UIView {
         avatarShadowContainer.frame = avatarFrame
         avatarShadowContainer.layer.cornerRadius = newAvatarRadius
         avatarShadowContainer.layer.shadowColor = UIColor.black.cgColor
-        avatarShadowContainer.layer.shadowRadius = 18 // Было 10, делаем больше
-        avatarShadowContainer.layer.shadowOpacity = 0.85 // Было 0.8, делаем чуть больше
+        avatarShadowContainer.layer.shadowRadius = 3 // Было 10, делаем больше
+        avatarShadowContainer.layer.shadowOpacity = 0.8 // Было 0.8, делаем чуть больше
         avatarShadowContainer.layer.shadowOffset = CGSize(width: 0, height: 8) // Было (0,2), делаем ниже
         avatarShadowContainer.backgroundColor = .clear // Ensure it doesn't obscure anything
         avatarShadowContainer.layer.shadowPath = UIBezierPath(roundedRect: avatarShadowContainer.bounds, cornerRadius: newAvatarRadius).cgPath // Квадратная форма с закругленными углами
@@ -82,20 +75,13 @@ class UniversalCharacterCell: UIView {
         // Setup avatar image view
         avatarImageView.frame = avatarFrame
         avatarImageView.contentMode = .scaleAspectFill
-        avatarImageView.clipsToBounds = true // Keep clipping for rounded rectangle shape
+        avatarImageView.clipsToBounds = true // Возвращаем clipping для правильного отображения изображения
         avatarImageView.layer.cornerRadius = newAvatarRadius
         avatarImageView.layer.borderWidth = 1 // Increased border width
         avatarImageView.layer.borderColor = UIColor.black.cgColor // Added default black border color
         addSubview(avatarImageView) // Add image view on top of shadow view
         
-        // Selection glow
-        selectionGlowLayer.frame = avatarFrame
-        selectionGlowLayer.cornerRadius = newAvatarRadius
-        selectionGlowLayer.shadowColor = UIColor.red.cgColor
-        selectionGlowLayer.shadowRadius = 8
-        selectionGlowLayer.shadowOpacity = 0 // Hidden by default
-        selectionGlowLayer.shadowOffset = .zero
-        layer.insertSublayer(selectionGlowLayer, below: avatarImageView.layer)
+
         
         // Health indicator - красная полоса здоровья вокруг аватара
         let healthIndicatorSize = avatarFrame.width + 6
@@ -490,14 +476,9 @@ class UniversalCharacterCell: UIView {
         // Всегда ведём себя как isSelected = true
         let animationDuration: TimeInterval = 0.2
         // --- Убираем glow и фон, так как cardBackground больше нет ---
-        // --- Яркая черная тень вокруг аватара ---
-        self.avatarShadowContainer.layer.shadowColor = UIColor.black.cgColor
-        self.avatarShadowContainer.layer.shadowRadius = 18
-        self.avatarShadowContainer.layer.shadowOpacity = 0.85
-        self.avatarShadowContainer.layer.shadowOffset = CGSize(width: 0, height: 8)
+        // Shadow настройки будут установлены в updateSelectionGlow
         
         // --- Аватар ---
-        avatarShadowContainer.layer.shadowOpacity = 0.8
         let newImage = UIImage(named: "player1") ?? UIImage(named: "defaultMalePlaceholder")
         if avatarImageView.image != newImage {
             UIView.transition(with: avatarImageView,
@@ -682,13 +663,11 @@ class UniversalCharacterCell: UIView {
         let healthIndicatorX = avatarFrameLayout.midX - healthIndicatorSize/2
         let healthIndicatorY = avatarFrameLayout.midY - healthIndicatorSize/2
         healthIndicator.frame = CGRect(x: healthIndicatorX, y: healthIndicatorY, width: healthIndicatorSize, height: healthIndicatorSize)
-        selectionGlowLayer.frame = avatarFrameLayout
-        selectionGlowLayer.cornerRadius = newAvatarRadiusLayout
+
         
         // Индикатор здоровья всегда скрыт
         
         self.healthIndicator.isHidden = self.healthIndicator.opacity == 0.0
-        self.selectionGlowLayer.isHidden = self.selectionGlowLayer.shadowOpacity == 0
     }
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {

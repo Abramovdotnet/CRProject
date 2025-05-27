@@ -64,14 +64,9 @@ class NPCCharacterCell: UICollectionViewCell {
             // Светлое свечение для выбранного NPC
             UIView.animate(withDuration: animationDuration) {
                 // Меняем тень ячейки на светлую
-                self.layer.shadowColor = UIColor.white.cgColor
-                self.layer.shadowRadius = 4 // Уменьшаем радиус для более деликатного эффекта
-                self.layer.shadowOpacity = 0.9
-                
-                // Также добавляем свечение к selectionGlowLayer
-                self.selectionGlowLayer.shadowOpacity = 0.8
-                self.selectionGlowLayer.shadowColor = UIColor.cyan.cgColor // Голубоватое свечение
-                self.selectionGlowLayer.shadowRadius = 4 // Уменьшаем радиус
+                self.layer.shadowColor = UIColor.red.cgColor
+                self.layer.shadowRadius = 3 // Уменьшаем радиус для более деликатного эффекта
+                self.layer.shadowOpacity = 0.8
             }
             selectionGlowLayer.isHidden = false
         } else {
@@ -80,8 +75,6 @@ class NPCCharacterCell: UICollectionViewCell {
                 self.layer.shadowColor = UIColor.black.cgColor
                 self.layer.shadowRadius = 6
                 self.layer.shadowOpacity = 0.8
-                
-                self.selectionGlowLayer.shadowOpacity = 0
             }
             selectionGlowLayer.isHidden = true
         }
