@@ -50,6 +50,11 @@ class CombatViewController: UIViewController {
     private var didLoadAssistants = false
     private var previousAliveEnemiesCount: Int = 0
     
+    // Player state tracking to avoid unnecessary redraws
+    // The player widget should only be redrawn when the player's health or alive state changes
+    private var lastPlayerHealth: Float = 0
+    private var lastPlayerAliveState: Bool = true
+    
     // Callbacks для навигации
     var onLeave: (() -> Void)? = nil
     var onLoot: (() -> Void)? = nil
@@ -277,6 +282,10 @@ class CombatViewController: UIViewController {
         // Используем новую групповую боевую систему
         CombatService.shared.startGroupCombat(player: player, primaryNpc: npc, assistants: npcAssistants)
         
+        // Инициализируем отслеживание состояния игрока
+        lastPlayerHealth = player.bloodMeter.currentBlood
+        lastPlayerAliveState = player.isAlive
+        
         universalPlayerCell.configure(with: player, isDisabled: false)
         universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
         
@@ -361,9 +370,7 @@ class CombatViewController: UIViewController {
         setupActionButtons()
         
         // Обновляем UI без добавления результата действия
-        if let player = player {
-            universalPlayerCell.configure(with: player, isDisabled: false)
-        }
+        // Игрок не изменился при смене цели, поэтому не перерисовываем его виджет
         universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
         
         // Обновляем информацию о групповом бое
@@ -411,7 +418,12 @@ class CombatViewController: UIViewController {
         
         // Обновляем UI
         setupActionButtons()
-        updateUIAfterAction()
+        // Не вызываем updateUIAfterAction() так как это смена цели, а не боевое действие
+        // Обновляем только NPC виджет и ассистентов
+        universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
+        updateGroupCombatInfo()
+        setupAssistantNPCs()
+        checkCombatEnd()
     }
     
     private func layoutAssistantNPCs() {
@@ -679,6 +691,22 @@ class CombatViewController: UIViewController {
         return ""
     }
     
+    private func hasPlayerStateChanged() -> Bool {
+        guard let player = player else { return false }
+        
+        let currentHealth = player.bloodMeter.currentBlood
+        let currentAliveState = player.isAlive
+        
+        let hasChanged = currentHealth != lastPlayerHealth || currentAliveState != lastPlayerAliveState
+        
+        if hasChanged {
+            lastPlayerHealth = currentHealth
+            lastPlayerAliveState = currentAliveState
+        }
+        
+        return hasChanged
+    }
+    
     private func updateUIAfterAction() {
         // Добавляем результат действия в лог
         if let summary = CombatService.shared.resultSummary {
@@ -686,10 +714,20 @@ class CombatViewController: UIViewController {
             addCombatLogAttributedMessage(pretty)
         }
         
-        // Обновляем UI персонажей
+        // Оптимизированное обновление игрока - только здоровье если изменилось
         if let player = player {
-            universalPlayerCell.configure(with: player, isDisabled: false)
+            let currentHealth = player.bloodMeter.currentBlood
+            let currentAliveState = player.isAlive
+            
+            if currentHealth != lastPlayerHealth || currentAliveState != lastPlayerAliveState {
+                // Используем оптимизированный метод обновления только здоровья
+                universalPlayerCell.updatePlayerHealth(player)
+                lastPlayerHealth = currentHealth
+                lastPlayerAliveState = currentAliveState
+            }
         }
+        
+        // NPC всегда обновляем полностью, так как может измениться цель
         universalNpcCell.configure(with: npc, isSelected: true, isDisabled: false)
         
         // Обновляем информацию о групповом бое

@@ -34,6 +34,34 @@ class UniversalCharacterCell: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    private func updateSelectionGlow(isSelected: Bool, animationDuration: TimeInterval) {
+        if isSelected {
+            // Светлое свечение для выбранного NPC
+            UIView.animate(withDuration: animationDuration) {
+                // Меняем тень ячейки на светлую
+                self.avatarShadowContainer.layer.shadowColor = UIColor.white.cgColor
+                self.avatarShadowContainer.layer.shadowRadius = 20 // Увеличиваем для более заметного эффекта
+                self.avatarShadowContainer.layer.shadowOpacity = 0.9
+                
+                // Также добавляем свечение к selectionGlowLayer
+                self.selectionGlowLayer.shadowOpacity = 0.8
+                self.selectionGlowLayer.shadowColor = UIColor.cyan.cgColor // Голубоватое свечение
+                self.selectionGlowLayer.shadowRadius = 4
+            }
+            selectionGlowLayer.isHidden = false
+        } else {
+            // Возвращаем обычную темную тень
+            UIView.animate(withDuration: animationDuration) {
+                self.avatarShadowContainer.layer.shadowColor = UIColor.black.cgColor
+                self.avatarShadowContainer.layer.shadowRadius = 18
+                self.avatarShadowContainer.layer.shadowOpacity = 0.85
+                
+                self.selectionGlowLayer.shadowOpacity = 0
+            }
+            selectionGlowLayer.isHidden = true
+        }
+    }
+    
     private func setupViews() {
         // Avatar setup - теперь занимает весь bounds (убираем cardBackground)
         let newAvatarSize: CGFloat = bounds.width // Аватар занимает весь размер ячейки
@@ -402,9 +430,13 @@ class UniversalCharacterCell: UIView {
                 self.desiredVictimIndicator.layer.removeAnimation(forKey: "glowAnimation")
             }
         }
-        // Убираем анимацию прозрачности cardBackground, так как его больше нет
+        // Устанавливаем прозрачность для мертвых NPC
         UIView.animate(withDuration: animationDuration) {
-            self.alpha = npc.isAlive ? (isDisabled ? 0.8 : 1.0) : 0.8
+            if !npc.isAlive {
+                self.alpha = 0.7 // Делаем весь виджет полупрозрачным для мертвых NPC
+            } else {
+                self.alpha = isDisabled ? 0.8 : 1.0 // Обычная логика для живых NPC
+            }
         }
         guard !npc.isUnknown else {
             questIndicatorIcon.isHidden = true
@@ -449,11 +481,8 @@ class UniversalCharacterCell: UIView {
             questIndicatorIcon.layer.removeAnimation(forKey: "questGlowAnimation")
             questIndicatorIcon.layer.shadowOpacity = 0
         }
-        UIView.animate(withDuration: animationDuration) {
-            self.selectionGlowLayer.shadowOpacity = isSelected ? 0.7 : 0
-        }
-        // --- Надёжно скрываем слой selectionGlowLayer ---
-        self.selectionGlowLayer.isHidden = !isSelected
+        // Обновляем свечение выбранного NPC
+        updateSelectionGlow(isSelected: isSelected, animationDuration: animationDuration)
     }
 
     // MARK: - Новый метод для Player
@@ -548,14 +577,16 @@ class UniversalCharacterCell: UIView {
         // --- Индикаторы жертвы и квеста скрыты ---
         desiredVictimIndicator.isHidden = true
         questIndicatorIcon.isHidden = true
-        // --- Анимация прозрачности карточки ---
+        // --- Анимация прозрачности для игрока ---
         UIView.animate(withDuration: animationDuration) {
-            self.alpha = player.isAlive ? (isDisabled ? 0.5 : 1.0) : 0.4
+            if !player.isAlive {
+                self.alpha = 0.7 // Делаем весь виджет полупрозрачным для мертвого игрока
+            } else {
+                self.alpha = isDisabled ? 0.8 : 1.0 // Обычная логика для живого игрока
+            }
         }
-        // --- Glow ---
-        UIView.animate(withDuration: animationDuration) {
-            self.selectionGlowLayer.shadowOpacity = 0.7
-        }
+        // --- Glow для игрока (всегда выбран) ---
+        updateSelectionGlow(isSelected: true, animationDuration: animationDuration)
     }
 
     private func convertSwiftUIColorToUIColor(_ color: Color) -> UIColor {
@@ -598,66 +629,25 @@ class UniversalCharacterCell: UIView {
     }
     
     private func animateHealthValueChange(to newValue: Int, duration: TimeInterval = 0.3) {
-        guard let currentText = healthPercentageLabel.text else {
-            // If we can't get current text, just set the new value directly
-            let healthText = "\(newValue)%"
-            healthPercentageLabel.text = healthText
-            let healthColor = getHealthColor(for: Double(newValue))
-            let strokeAttributes: [NSAttributedString.Key: Any] = [
-                .strokeColor: healthColor,
-                .foregroundColor: healthColor,
-                .strokeWidth: -1.0,
-                .font: healthPercentageLabel.font as Any
-            ]
-            healthPercentageLabel.attributedText = NSAttributedString(string: healthText, attributes: strokeAttributes)
-            return
-        }
+        // Упрощенная анимация - только цвет, без пошагового изменения значений
+        let healthText = "\(newValue)%"
+        let healthColor = getHealthColor(for: Double(newValue))
+        let strokeAttributes: [NSAttributedString.Key: Any] = [
+            .strokeColor: healthColor,
+            .foregroundColor: healthColor,
+            .strokeWidth: -1.0,
+            .font: healthPercentageLabel.font as Any
+        ]
         
-        let currentValueString = currentText.replacingOccurrences(of: "%", with: "")
-        guard let currentValue = Int(currentValueString) else {
-            // If we can't parse current value, just set the new value directly
-            let healthText = "\(newValue)%"
-            healthPercentageLabel.text = healthText
-            let healthColor = getHealthColor(for: Double(newValue))
-            let strokeAttributes: [NSAttributedString.Key: Any] = [
-                .strokeColor: healthColor,
-                .foregroundColor: healthColor,
-                .strokeWidth: -1.0,
-                .font: healthPercentageLabel.font as Any
-            ]
-            healthPercentageLabel.attributedText = NSAttributedString(string: healthText, attributes: strokeAttributes)
-            return
-        }
+        // Мгновенно меняем текст, анимируем только цвет
+        healthPercentageLabel.text = healthText
         
-        // Animate from current value to new value
-        let valueDifference = newValue - currentValue
-        let steps = max(1, abs(valueDifference))
-        let stepDuration = duration / Double(steps)
-        
-        for i in 1...steps {
-            let delay = stepDuration * Double(i - 1)
-            let intermediateValue = currentValue + (valueDifference * i / steps)
-            
-            DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
-                let healthText = "\(intermediateValue)%"
-                let healthColor = self.getHealthColor(for: Double(intermediateValue))
-                
-                let strokeAttributes: [NSAttributedString.Key: Any] = [
-                    .strokeColor: healthColor,
-                    .foregroundColor: healthColor,
-                    .strokeWidth: -1.0,
-                    .font: self.healthPercentageLabel.font as Any
-                ]
-                
-                UIView.transition(with: self.healthPercentageLabel,
-                                 duration: stepDuration * 0.8,
-                                 options: .transitionCrossDissolve,
-                                 animations: {
-                    self.healthPercentageLabel.text = healthText
-                    self.healthPercentageLabel.attributedText = NSAttributedString(string: healthText, attributes: strokeAttributes)
-                }, completion: nil)
-            }
-        }
+        UIView.transition(with: healthPercentageLabel,
+                         duration: duration,
+                         options: .transitionCrossDissolve,
+                         animations: {
+            self.healthPercentageLabel.attributedText = NSAttributedString(string: healthText, attributes: strokeAttributes)
+        }, completion: nil)
     }
 
     override func layoutSubviews() {
@@ -721,6 +711,44 @@ class UniversalCharacterCell: UIView {
         }
         // Всё остальное — не кликабельно
         return nil
+    }
+    
+    // MARK: - Optimized Health Update
+    
+    func updatePlayerHealth(_ player: Player, animationDuration: TimeInterval = 0.2) {
+        let healthValue = Int(player.bloodMeter.currentBlood)
+        
+        // Обновляем только здоровье без полной перерисовки
+        if healthPercentageLabel.text != "\(healthValue)%" {
+            animateHealthValueChange(to: healthValue, duration: animationDuration)
+        }
+        
+        // Обновляем прозрачность для мертвого игрока
+        UIView.animate(withDuration: animationDuration) {
+            if !player.isAlive {
+                self.alpha = 0.7
+            } else {
+                self.alpha = 1.0
+            }
+        }
+    }
+    
+    func updateNPCHealth(_ npc: NPC, animationDuration: TimeInterval = 0.2) {
+        let healthValue = Int(npc.bloodMeter.currentBlood)
+        
+        // Обновляем только здоровье без полной перерисовки
+        if healthPercentageLabel.text != "\(healthValue)%" {
+            animateHealthValueChange(to: healthValue, duration: animationDuration)
+        }
+        
+        // Обновляем прозрачность для мертвого NPC
+        UIView.animate(withDuration: animationDuration) {
+            if !npc.isAlive {
+                self.alpha = 0.7
+            } else {
+                self.alpha = 1.0
+            }
+        }
     }
     
     // Генерация radial alpha glow для иконок
