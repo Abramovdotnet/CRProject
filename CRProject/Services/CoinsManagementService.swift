@@ -30,7 +30,7 @@ class CoinsManagementService : GameService {
     }
     
     func updateWorldEconomy() {
-        let npcs = NPCReader.getNPCs()
+        let npcs = NPCReader.getNPCs().filter { $0.isAlive && !$0.isMob}
         
         for npc in npcs {
             if npc.coins.value < 200 {

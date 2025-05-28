@@ -121,6 +121,9 @@ class DesiredVictim: Codable, ObservableObject {
     /// - Parameter npc: The NPC to check
     /// - Returns: true if the NPC matches all set characteristics
     func isDesiredVictim(npc: NPC) -> Bool {
+        if npc.isMob {
+            return false
+        }
         // Check each characteristic that has been set
         if let desiredProfession = desiredProfession,
            npc.profession != desiredProfession {

@@ -64,6 +64,9 @@ class NPC: ObservableObject, Character, Codable {
     @Published var currentSceneX: Int = 0 // X координата текущей сцены NPC
     @Published var currentSceneY: Int = 0 // Y координата текущей сцены NPC
     
+    @Published var isMob: Bool = false
+    @Published var mobType: MobType = .none
+    
     init() {}
     
     init(name: String, sex: Sex, age: Int, profession: Profession, isVampire: Bool, id: Int) {
@@ -78,6 +81,21 @@ class NPC: ObservableObject, Character, Codable {
         workActivities = self.profession.primaryWorkActivities()
         leisureActivities = self.profession.primaryLeisureActivities()     
     }
+    
+    convenience init(mobType: MobType, id: Int) {
+            self.init(
+                name: mobType.rawValue,
+                sex: .male,
+                age: 0,
+                profession: .adventurer,
+                isVampire: false,
+                id: id
+            )
+            self.isMob = true
+            self.mobType = mobType
+            self.isUnknown = false
+            self.bloodMeter = BloodMeter(initialBlood: 100)
+        }
     
     func shareBlood(amount: Float, from donor: any Character) {
         if donor.isVampire {
@@ -181,6 +199,8 @@ class NPC: ObservableObject, Character, Codable {
         case deathStatus, hasInteractedWithPlayer, spentNightWithPlayer, providedAlibis
         case alliedWithNPCId, lastDreamStealDay
         case currentSceneX, currentSceneY
+        case isMob
+        case mobType
     }
 
     required init(from decoder: Decoder) throws {
@@ -211,6 +231,8 @@ class NPC: ObservableObject, Character, Codable {
         isCrimeWitness = try container.decode(Bool.self, forKey: .isCrimeWitness)
         homeLocationId = try container.decode(Int.self, forKey: .homeLocationId)
         currentLocationId = try container.decode(Int.self, forKey: .currentLocationId)
+        isMob = try container.decode(Bool.self, forKey: .isMob)
+        mobType = try container.decode(MobType.self, forKey: .mobType)
         
         if let spentNightValue = try? container.decode(Bool.self, forKey: .spentNightWithPlayer) {
             spentNightWithPlayer = spentNightValue
@@ -291,6 +313,9 @@ class NPC: ObservableObject, Character, Codable {
         
         try container.encode(currentSceneX, forKey: .currentSceneX)
         try container.encode(currentSceneY, forKey: .currentSceneY)
+        
+        try container.encode(isMob, forKey: .isMob)
+        try container.encode(mobType, forKey: .mobType)
     }
     
     func getAttackValue() -> Int {

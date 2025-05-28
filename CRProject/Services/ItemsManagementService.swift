@@ -108,7 +108,7 @@ class ItemsManagementService : GameService {
     }
     
     func distributeDailyItems() {
-        let activeNPCs = NPCReader.getNPCs().filter( { $0.isAlive && !$0.isSpecialBehaviorSet && $0.currentActivity != .sleep })
+        let activeNPCs = NPCReader.getNPCs().filter( { !$0.isMob && $0.isAlive && !$0.isSpecialBehaviorSet && $0.currentActivity != .sleep })
         let allItems = ItemReader.shared.getItems()
         
         for npc in activeNPCs {

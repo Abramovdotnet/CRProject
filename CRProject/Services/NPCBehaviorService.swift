@@ -36,7 +36,7 @@ class NPCBehaviorService: GameService {
     
     func updateNPCsActivities() {
         // Use lazy collections to avoid creating intermediate arrays
-        let residentNPCs = npcs.lazy.filter { $0.homeLocationId > 0}
+        let residentNPCs = npcs.lazy.filter { $0.homeLocationId > 0 && !$0.isMob}
         
         let npcsToHandle = residentNPCs
         

@@ -104,7 +104,7 @@ class GameStateService : ObservableObject, GameService{
     
     func whisperToRandomNpc() {
         if player?.hiddenAt != HidingCell.none {
-            guard let npcs = currentScene?.getNPCs().filter( { $0.currentActivity != .sleep && $0.currentActivity != .bathe && $0.currentActivity != .fleeing && $0.isSpecialBehaviorSet == false }) else { return }
+            guard let npcs = currentScene?.getNPCs().filter( { !$0.isMob && $0.currentActivity != .sleep && $0.currentActivity != .bathe && $0.currentActivity != .fleeing && $0.isSpecialBehaviorSet == false }) else { return }
             
             if npcs.count > 0 {
                 let victim = npcs.randomElement()!
@@ -133,6 +133,7 @@ class GameStateService : ObservableObject, GameService{
         DebugLogService.shared.log("Found new location: \(newLocation.name)", category: "Location")
         
         if !newLocation.isLocked {
+            removeMobsIfNeeded()
             // Update current scene
             currentScene = newLocation
             DebugLogService.shared.log("Current scene set to: \(currentScene?.name ?? "None")", category: "Location")
@@ -143,6 +144,9 @@ class GameStateService : ObservableObject, GameService{
             npcManager.selectedNPC = nil
             
             player.currentLocationId = currentScene?.id ?? newLocation.id
+            
+            spawnMobsIfNeeded()
+            
             gameTime.advanceTime()
         } else {
             DebugLogService.shared.log("Cannot travel to locked location", category: "Location")
@@ -263,9 +267,6 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return }
         guard let player = player else { return }
         
-        let activeNpcs = scene.getNPCs()
-            .filter( { $0.isAlive && !$0.isSpecialBehaviorSet && $0.currentActivity != .sleep})
-
         let currentPlayerBlood = player.bloodMeter.currentBlood
         
         if currentPlayerBlood <= 30 {
@@ -275,6 +276,8 @@ class GameStateService : ObservableObject, GameService{
         if currentPlayerBlood <= 10 {
             releasePlayerThirst()
         }
+        
+        spawnMobsIfNeeded()
     }
     
     func releasePlayerThirst() {
@@ -320,7 +323,7 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return false }
         let npcs = scene.getNPCs()
         if npcs.isEmpty { return true }
-        let awakeNpcs = npcs.filter { $0.currentActivity != .sleep && $0.isAlive }
+        let awakeNpcs = npcs.filter { !$0.isMob && $0.currentActivity != .sleep && $0.isAlive }
         if awakeNpcs.isEmpty { return true }
         // Если есть бодрствующие, все ли они не под чарами (isSpecialBehaviorSet == false)?
         let allAwakeAreNotSpecial = awakeNpcs.allSatisfy { $0.isSpecialBehaviorSet == true }
@@ -344,10 +347,7 @@ class GameStateService : ObservableObject, GameService{
     
     
     func getAwakeNpcsCount() -> Int {
-        guard let scene = currentScene else { return 0 }
-        
         let npcs = getAwakeNpcs()
-        
         return npcs.count
     }
     
@@ -355,7 +355,7 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return [] }
         
         let npcs = scene.getNPCs()
-            .filter( { $0.isAlive && !$0.isSpecialBehaviorSet && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer && $0.currentActivity != .sleep })
+            .filter( { !$0.isMob && $0.isAlive && !$0.isSpecialBehaviorSet && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer && $0.currentActivity != .sleep })
         
         return npcs
     }
@@ -374,7 +374,13 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return [] }
         npc.decreasePlayerRelationship(with: 10)
         
-        let npcs = scene.getNPCs()
+        var npcs = scene.getNPCs()
+        
+        if npc.isMob {
+            npcs = npcs.filter { $0.isMob }
+        } else {
+            npcs = npcs.filter { !$0.isMob }
+        }
         let aliveNpcs = npcs.filter( { $0.id != npc.id && $0.isAlive && !$0.isSpecialBehaviorSet})
         
         var allies: [NPC] = []
@@ -382,12 +388,15 @@ class GameStateService : ObservableObject, GameService{
         let protectorNpcs = aliveNpcs.filter( { $0.morality == .lawfulGood || $0.morality == .neutralGood || $0.morality == .chaoticGood })
         allies.append(contentsOf: protectorNpcs)
         
-        // Добавляем всех военных NPC (стража)
-        let militaryNpcs = aliveNpcs.filter( { $0.isMilitary })
-        for militaryNpc in militaryNpcs {
-            // Избегаем дубликатов
-            if !allies.contains(where: { $0.id == militaryNpc.id }) {
-                allies.append(militaryNpc)
+        
+        if !npc.isMob {
+            // Добавляем всех военных NPC (стража)
+            let militaryNpcs = aliveNpcs.filter( { $0.isMilitary })
+            for militaryNpc in militaryNpcs {
+                // Избегаем дубликатов
+                if !allies.contains(where: { $0.id == militaryNpc.id }) {
+                    allies.append(militaryNpc)
+                }
             }
         }
         
@@ -464,5 +473,69 @@ class GameStateService : ObservableObject, GameService{
             description: "You'we been jailed for \(StatisticsService.shared.timesArrested * 24) hours",
             icon: UIImage(systemName: NPCActivityType.jailed.icon)
         )
+    }
+    
+    func spawnMobsIfNeeded() {
+        guard let scene = currentScene else { return }
+        
+        let sceneType = scene.sceneType
+        var mobType = MobType.none
+        
+        if sceneType == .cave || sceneType == .forest || sceneType == .ruins {
+            let humanWeight: Double = 0.75
+            
+            let isNeedToSpawnHuman = Double.random(in: 0...1) > humanWeight
+            
+            if isNeedToSpawnHuman {
+                let assassinWeigth = 0.9
+                
+                let isNeedToSpawnAssassin = Double.random(in: 0...1) > assassinWeigth
+                
+                if isNeedToSpawnAssassin {
+                    mobType = .assassin
+                } else {
+                    mobType = .bandit
+                }
+            } else {
+                let weight = Double.random(in: 0...1)
+                
+                if weight > 0.9 {
+                    mobType = .puma
+                } else if weight > 0.7 {
+                    mobType = .bear
+                } else if weight > 0.5 {
+                    mobType = .wildBoar
+                } else {
+                    mobType = .wolf
+                }
+            }
+
+        } else if sceneType == .crypt || sceneType == .road || sceneType == .square {
+            let assassinWeigth = 0.9
+            
+            let isNeedToSpawnAssassin = Double.random(in: 0...1) > assassinWeigth
+            
+            if isNeedToSpawnAssassin {
+                mobType = .assassin
+            } else {
+                mobType = .bandit
+            }
+        }
+        
+        let wouldSpawn =  Double.random(in: 0...1) > (gameTime.isNightTime ? 0.3 : 0.8)
+        
+        if wouldSpawn && mobType != .none {
+            return MobManager.shared.spawnMobAtScene(ofType: mobType, at: scene.id)
+        }
+    }
+    
+    func removeMobsIfNeeded() {
+        guard let scene = currentScene else { return }
+        
+        let mobs = scene.getNPCs().filter({ $0.isMob })
+        
+        for mob in mobs {
+            scene.removeCharacter(id: mob.id)
+        }
     }
 }

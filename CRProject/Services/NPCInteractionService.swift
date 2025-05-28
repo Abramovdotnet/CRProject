@@ -42,7 +42,7 @@ class NPCInteractionService : GameService {
         let scenes = LocationReader.getLocations().filter { $0.sceneType != .town && $0.sceneType != .district }
 
         for scene in scenes {
-            let npcs = scene.getNPCs().filter { $0.currentActivity != .sleep}
+            let npcs = scene.getNPCs().filter { $0.currentActivity != .sleep && !$0.isMob }
             
             // Close / Open doors
             scene.closeOpenLock(isNight: gameTimeService.isNightTime)

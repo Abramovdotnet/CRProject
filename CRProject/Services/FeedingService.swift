@@ -64,7 +64,7 @@ class FeedingService: GameService {
             statisticsService.incrementFeedings()
             gameEventsBus.addDangerMessage(message: "Player consumed \(prey.name) blood.")
             
-            if !prey.isAlive {
+            if !prey.isAlive && !prey.isMob {
                 gameEventsBus.addWarningMessage("* I just killed \(prey.name)! Feel satisfied... *")
                 prey.currentActivity = .casualty
                 prey.deathStatus = .unknown
@@ -84,6 +84,10 @@ class FeedingService: GameService {
     }
     
     func calculateFeedAwarenessGainValue(prey: NPC) -> Float {
+        if prey.isMob {
+            return 0.0
+        }
+        
         var awarenessIncreaseValue: Float = 90.0;
         
         if prey.currentActivity == .seductedByPlayer || prey.currentActivity == .allyingPlayer || (AbilitiesSystem.shared.hasLionAmongSheep && prey.playerRelationship.state == .friend) {
@@ -119,15 +123,18 @@ class FeedingService: GameService {
         } else {
             try bloodService.emptyBlood(vampire: vampire, prey: prey)
             
-            let awarenessIncreaseValue: Float = 30;
+            let awarenessIncreaseValue: Float = prey.isMob ? 0.0 : 30;
             
-            if AbilitiesSystem.shared.hasSonOfDracula {
+            if AbilitiesSystem.shared.hasSonOfDracula && !prey.isMob {
                 vampire.bloodMeter.increaseMaxBlood(1)
             }
             
             // Increase awareness in the scene where feeding occurred
-            vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
-            statisticsService.incrementVictimsDrained()
+            
+            if !prey.isMob {
+                vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
+                statisticsService.incrementVictimsDrained()
+            }
             
             gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
             
@@ -148,7 +155,7 @@ class FeedingService: GameService {
         let scene = try? LocationReader.getRuntimeLocation(by: sceneId)
         
         let npcs = scene?.getNPCs()
-            .filter( { $0.id != exceptId && $0.isAlive && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer && $0.currentActivity != .sleep })
+            .filter( { !$0.isMob && $0.id != exceptId && $0.isAlive && $0.currentActivity != .allyingPlayer && $0.currentActivity != .seductedByPlayer && $0.currentActivity != .sleep })
         
         guard var npcs else { return }
         guard let player = GameStateService.shared.player else { return }
