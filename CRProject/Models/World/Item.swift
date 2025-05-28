@@ -56,6 +56,7 @@ enum ItemType : String, CaseIterable, Codable {
     case clothing = "clothing"
     case drink = "drink"
     case food = "food"
+    case animalLoot = "animalLoot"
     case artefact = "artefact"
     case picture = "picture"
     case kitchenStuff = "kitchen_stuff"
@@ -93,6 +94,8 @@ enum ItemType : String, CaseIterable, Codable {
             return "books.vertical.fill"
         case .resource:
             return "cube.fill"
+        case .animalLoot:
+            return "animal"
         }
     }
     
@@ -124,6 +127,8 @@ enum ItemType : String, CaseIterable, Codable {
             return Theme.textColor
         case .resource:
             return .indigo
+        case .animalLoot:
+            return .green
         }
     }
 }

@@ -1642,6 +1642,8 @@
         {"id": 2097, "type": "armor", "name": "Meteoric Vambraces", "cost": 1600},
         {"id": 2098, "type": "armor", "name": "Meteoric Gorget", "cost": 1400},
         {"id": 2099, "type": "armor", "name": "Meteoric Cuisses", "cost": 1800},
-        {"id": 2100, "type": "armor", "name": "Meteoric Tassets", "cost": 1500}
+        {"id": 2100, "type": "armor", "name": "Meteoric Tassets", "cost": 1500},
+        {"id": 2101, "type": "animalLoot", "name": "Bones", "cost": 10},
+        {"id": 2101, "type": "animalLoot", "name": "Fur", "cost": 70}
     ]
 } 
