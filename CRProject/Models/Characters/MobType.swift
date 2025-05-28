@@ -9,6 +9,7 @@ enum MobType: String, CaseIterable, Codable {
     case bandit      = "Bandit"
     case wolf        = "Wolf"
     case wildBoar    = "Wild Boar"
+    case marauder    = "Marauder"
     case bear        = "Bear"
     case none        = "None"
     case puma        = "Puma"
@@ -16,7 +17,7 @@ enum MobType: String, CaseIterable, Codable {
     
     var isHumanoid: Bool {
         switch self {
-        case .bandit, .assassin:
+        case .bandit, .assassin, .marauder:
             return true
         default: return false
         }

@@ -302,10 +302,22 @@ class UIKitPopUpManager {
     func showConfirmation(title: String, yesText: String, noText: String) async -> Bool {
         return await withCheckedContinuation { continuation in
             DispatchQueue.main.async {
-                guard let windowScene = UIApplication.shared.connectedScenes
+                // Try multiple approaches to find the right window
+                var targetWindow: UIWindow?
+                
+                // First try: Get the key window from connected scenes
+                if let windowScene = UIApplication.shared.connectedScenes
                     .compactMap({ $0 as? UIWindowScene })
-                    .first(where: { $0.activationState == .foregroundActive }),
-                    let window = windowScene.windows.first else {
+                    .first(where: { $0.activationState == .foregroundActive }) {
+                    targetWindow = windowScene.windows.first(where: { $0.isKeyWindow }) ?? windowScene.windows.first
+                }
+                
+                // Second try: Use the first available window
+                if targetWindow == nil {
+                    targetWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) ?? UIApplication.shared.windows.first
+                }
+                
+                guard let window = targetWindow else {
                     continuation.resume(returning: false)
                     return
                 }
@@ -329,25 +341,52 @@ class UIKitPopUpManager {
         }
         self.currentBanner = banner
 
-        // --- Альтернативный способ: добавление в rootViewController ---
-        guard let windowScene = UIApplication.shared.connectedScenes
-            .compactMap({ $0 as? UIWindowScene })
-            .first(where: { $0.activationState == .foregroundActive }),
-            let rootVC = windowScene.windows.first?.rootViewController else { return }
-
-        rootVC.view.addSubview(banner)
-        banner.translatesAutoresizingMaskIntoConstraints = true
-        let topInset = rootVC.view.safeAreaInsets.top
-        let rightInset = rootVC.view.safeAreaInsets.right
-        banner.frame = CGRect(
-            x: rootVC.view.bounds.width - 320 - 16 - rightInset,
-            y: 20 + topInset,
-            width: 320,
-            height: 80
-        )
-        banner.autoresizingMask = [.flexibleLeftMargin, .flexibleBottomMargin]
-        UIView.animate(withDuration: 0.25) {
-            banner.alpha = 1
+        // Try multiple approaches to find the right window/view to add the banner to
+        DispatchQueue.main.async {
+            // First try: Get the key window from connected scenes
+            if let windowScene = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .first(where: { $0.activationState == .foregroundActive }),
+               let window = windowScene.windows.first(where: { $0.isKeyWindow }) ?? windowScene.windows.first {
+                
+                banner.show(in: window, offsetY: 0)
+                return
+            }
+            
+            // Second try: Use the first available window
+            if let window = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) ?? UIApplication.shared.windows.first {
+                banner.show(in: window, offsetY: 0)
+                return
+            }
+            
+            // Third try: Add to root view controller
+            if let windowScene = UIApplication.shared.connectedScenes
+                .compactMap({ $0 as? UIWindowScene })
+                .first,
+               let rootVC = windowScene.windows.first?.rootViewController {
+                
+                rootVC.view.addSubview(banner)
+                banner.translatesAutoresizingMaskIntoConstraints = false
+                let topInset = rootVC.view.safeAreaInsets.top
+                let rightInset = rootVC.view.safeAreaInsets.right
+                
+                NSLayoutConstraint.activate([
+                    banner.topAnchor.constraint(equalTo: rootVC.view.safeAreaLayoutGuide.topAnchor, constant: 20),
+                    banner.trailingAnchor.constraint(equalTo: rootVC.view.trailingAnchor, constant: -16 - rightInset),
+                    banner.widthAnchor.constraint(equalToConstant: 320)
+                ])
+                
+                UIView.animate(withDuration: 0.25) {
+                    banner.alpha = 1
+                }
+                
+                // Auto dismiss after 3 seconds
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                    banner.dismiss()
+                    self.currentBanner = nil
+                    self.showNextIfNeeded()
+                }
+            }
         }
     }
     

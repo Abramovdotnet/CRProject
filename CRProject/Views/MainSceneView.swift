@@ -191,17 +191,14 @@ struct MainSceneView: View {
                                             }
                                         )
                                     }
-                                    // Показываем кнопку HidingCell только если можно спрятаться
-                                    if gameStateService.checkCouldHide() {
-                                        MainSceneActionButton(
-                                            icon: "eye.circle.fill",
-                                            color: Theme.textColor,
-                                            action: {
-                                                viewModel.getGameStateService().movePlayerToNearestHideout()
-                                                navigationPath.append(NavigationDestination.hidingCell)
-                                            }
-                                        )
-                                    }
+                                    MainSceneActionButton(
+                                        icon: "eye.circle.fill",
+                                        color: Theme.textColor,
+                                        action: {
+                                            viewModel.getGameStateService().movePlayerToNearestHideout()
+                                            navigationPath.append(NavigationDestination.hidingCell)
+                                        }
+                                    )
                                     // Hide
                                     if let player = GameStateService.shared.player, player.hiddenAt == .none && AbilitiesSystem.shared.hasInvisibility {
                                         ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
@@ -382,7 +379,7 @@ struct MainSceneView: View {
                                                 icon: "flame", // Иконка боя
                                                 color: Theme.bloodProgressColor,
                                                 action: {
-                                                    navigationPath.append(NavigationDestination.combat)
+                                                    GameStateService.shared.startBattle(npc: selectedNPC)
                                                 }
                                             )
                                         }
@@ -613,7 +610,7 @@ struct MainSceneView: View {
                 }
             }
             .onAppear {
-
+                // Подписываемся на уведомления для открытия диалога
                 NotificationCenter.default.addObserver(
                     forName: Notification.Name("openDialogueTrigger"),
                     object: nil,
@@ -625,7 +622,7 @@ struct MainSceneView: View {
                     }
 
                     guard let dialogueFilename = userInfo["specificDialogueFilename"] as? String else {
-                        DebugLogService.shared.log("Error: .openDialogueTrigger missing 'specificDialogueFilename' in userInfo: \\(userInfo)", category: "Error")
+                        DebugLogService.shared.log("Error: .openDialogueTrigger missing 'specificDialogueFilename' in userInfo: \(userInfo)", category: "Error")
                         return
                     }
 
@@ -633,7 +630,7 @@ struct MainSceneView: View {
                     let targetNPCId = userInfo["targetNPCId"] as? Int
                     let interactingNPCIdFromQuest = userInfo["interactingNPCId"] as? Int
                     
-                    DebugLogService.shared.log("Received .openDialogueTrigger: file='\\(dialogueFilename)', targetNPCId=\\(targetNPCId ?? -1), forceOpen=\\(forceOpen), interactingFromQuest=\\(interactingNPCIdFromQuest ?? -1)", category: "DialogueTrigger")
+                    DebugLogService.shared.log("Received .openDialogueTrigger: file='\(dialogueFilename)', targetNPCId=\(targetNPCId ?? -1), forceOpen=\(forceOpen), interactingFromQuest=\(interactingNPCIdFromQuest ?? -1)", category: "DialogueTrigger")
 
                     var npcForDialogue: NPC? = nil
 
@@ -641,7 +638,7 @@ struct MainSceneView: View {
                         if let npcId = targetNPCId {
                             npcForDialogue = NPCReader.getRuntimeNPC(by: npcId)
                             if npcForDialogue == nil {
-                                DebugLogService.shared.log("Warning: forceOpen dialogue trigger for targetNPCId \\(npcId) but NPC not found.", category: "DialogueTrigger")
+                                DebugLogService.shared.log("Warning: forceOpen dialogue trigger for targetNPCId \(npcId) but NPC not found.", category: "DialogueTrigger")
                             }
                         }
                     } else {
@@ -651,9 +648,9 @@ struct MainSceneView: View {
                             if currentInteractingNPC?.id == tid {
                                 npcForDialogue = currentInteractingNPC
                             } else {
-                                DebugLogService.shared.log("Info: .openDialogueTrigger for targetNPCId \\(tid) but current NPC is \\(currentInteractingNPC?.id ?? -1). Dialogue not opened.", category: "DialogueTrigger")
+                                DebugLogService.shared.log("Info: .openDialogueTrigger for targetNPCId \(tid) but current NPC is \(currentInteractingNPC?.id ?? -1). Dialogue not opened.", category: "DialogueTrigger")
                                 // if let targetNpcName = npcManager.getNPC(by: tid)?.name {
-                                //     PopUpState.shared.show(message: "Нужно поговорить с \\(targetNpcName).")
+                                //     PopUpState.shared.show(message: "Нужно поговорить с \(targetNpcName).")
                                 // }
                                 return 
                             }
@@ -661,7 +658,7 @@ struct MainSceneView: View {
                             if currentInteractingNPC?.id == qNPCId {
                                 npcForDialogue = currentInteractingNPC
                             } else {
-                                 DebugLogService.shared.log("Info: .openDialogueTrigger with interactingNPCIdFromQuest \\(qNPCId) but current NPC is \\(currentInteractingNPC?.id ?? -1). Dialogue not opened.", category: "DialogueTrigger")
+                                 DebugLogService.shared.log("Info: .openDialogueTrigger with interactingNPCIdFromQuest \(qNPCId) but current NPC is \(currentInteractingNPC?.id ?? -1). Dialogue not opened.", category: "DialogueTrigger")
                                  return
                             }
                         } else if currentInteractingNPC != nil {
@@ -685,9 +682,35 @@ struct MainSceneView: View {
                         navigationPath.append(NavigationDestination.dialogue)
                     }
                 }
+                
+                // Подписываемся на уведомления для возврата в главную сцену
+                NotificationCenter.default.addObserver(forName: Notification.Name("returnToMainScene"), object: nil, queue: .main) { _ in
+                    // Очищаем навигационный стек, возвращаясь в главную сцену
+                    navigationPath = NavigationPath()
+                }
+                
+                // Подписываемся на уведомления для запуска боя
+                NotificationCenter.default.addObserver(forName: Notification.Name("startBattle"), object: nil, queue: .main) { notification in
+                    guard let npc = notification.object as? NPC else {
+                        DebugLogService.shared.log("Error: startBattle notification - NPC object is missing.", category: "Error")
+                        return
+                    }
+                    
+                    // Открываем боевую сцену
+                    navigationPath.append(NavigationDestination.combat)
+                }
+                
+                if isPlayerHidden {
+                    DispatchQueue.main.async {
+                        navigationPath = NavigationPath()
+                        navigationPath.append(NavigationDestination.hidingCell)
+                    }
+                }
             }
             .onDisappear {
                 NotificationCenter.default.removeObserver(self, name: Notification.Name("openDialogueTrigger"), object: nil)
+                NotificationCenter.default.removeObserver(self, name: Notification.Name("returnToMainScene"), object: nil)
+                NotificationCenter.default.removeObserver(self, name: Notification.Name("startBattle"), object: nil)
             }
             .onChange(of: isPlayerHidden) { isPlayerHidden in
                 if isPlayerHidden {
@@ -697,6 +720,7 @@ struct MainSceneView: View {
                     }
                 }
             }
+            
         }
     }
     

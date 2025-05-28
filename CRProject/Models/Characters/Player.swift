@@ -36,6 +36,7 @@ class Player: ObservableObject, Character, Codable {
     var onCraftingProcess: Bool = false
     @Published var isArrested: Bool = false
     @Published var arrestTime: Int = 0
+    @Published var isWanted: Bool = false
 
     @Published var desiredVictim: DesiredVictim = DesiredVictim()
     
@@ -98,6 +99,7 @@ class Player: ObservableObject, Character, Codable {
         case id, index, name, sex, age, profession, bloodMeter, coins, isVampire, isAlive, isUnknown, isIntimidated, isBeasyByPlayerAction, intimidationDay, homeLocationId, currentLocationId, hiddenAt, items, desiredVictim, processedRelationshipDialogueNodes, isArrested, arrestTime
         case activeQuests
         case completedQuestInteractions
+        case isWanted
     }
 
     required init(from decoder: Decoder) throws {
@@ -128,6 +130,7 @@ class Player: ObservableObject, Character, Codable {
         activeQuests = try container.decodeIfPresent([String: PlayerQuestState].self, forKey: .activeQuests) ?? [:]
         // <<< Декодируем completedQuestInteractions
         completedQuestInteractions = try container.decodeIfPresent(Set<String>.self, forKey: .completedQuestInteractions) ?? []
+        isWanted = try container.decode(Bool.self, forKey: .isWanted)
     }
 
     func encode(to encoder: Encoder) throws {
@@ -158,6 +161,7 @@ class Player: ObservableObject, Character, Codable {
         try container.encode(activeQuests, forKey: .activeQuests)
         // <<< Кодируем completedQuestInteractions
         try container.encode(completedQuestInteractions, forKey: .completedQuestInteractions)
+        try container.encode(isWanted, forKey: .isWanted)
     }
     
     func getAttackValue() -> Int {

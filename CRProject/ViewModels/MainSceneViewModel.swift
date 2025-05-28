@@ -47,10 +47,10 @@ class MainSceneViewModel: ObservableObject {
         
         // Create and set player
         let initialPlayer = NPCGenerator.createPlayer()
-        initialPlayer.coins.add(1000)
+        initialPlayer.coins.add(100)
         gameStateService.setPlayer(initialPlayer)
      
-        ItemsManagementService.shared.giveItem(itemId: 181, to: initialPlayer)
+        /*ItemsManagementService.shared.giveItem(itemId: 181, to: initialPlayer)
         
         for _ in 0..<20 {
             ItemsManagementService.shared.giveItem(itemId: 1001, to: initialPlayer)
@@ -73,7 +73,7 @@ class MainSceneViewModel: ObservableObject {
             ItemsManagementService.shared.giveItem(itemId: 1018, to: initialPlayer)
             ItemsManagementService.shared.giveItem(itemId: 1019, to: initialPlayer)
             ItemsManagementService.shared.giveItem(itemId: 1020, to: initialPlayer)
-        }
+        }*/
         
         // Initialize playerCoinsValue
         self.playerCoinsValue = initialPlayer.coins.value
@@ -185,7 +185,7 @@ class MainSceneViewModel: ObservableObject {
         
         // Create initial scene using LocationReader
         do {
-            let initialScene = try LocationReader.getRuntimeLocation(by: 2)
+            let initialScene = try LocationReader.getRuntimeLocation(by: 221)
             try gameStateService.changeLocation(to: initialScene.id)
             
             // Set default awareness to 0

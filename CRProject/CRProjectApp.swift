@@ -35,6 +35,8 @@ struct CRProjectApp: App {
         WindowGroup {
             ZStack {
                 MainSceneView(viewModel: MainSceneViewModel())
+                PopUpOverlayView()
+                    .environmentObject(PopUpState.shared)
             }
         }
     }

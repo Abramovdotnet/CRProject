@@ -530,10 +530,18 @@ class NPCWidgetUIViewController: UIViewController {
                 self.npcAgeLabel.text = "Age \(self.npc.age)"
                 
                 // Show either resistance or relationship info
-                if self.showResistance {
+                if self.showResistance && !self.npc.isMob {
                     self.updateResistanceInfo()
-                                } else {
+                } else if !self.npc.isMob {
                     self.updateRelationshipInfo()
+                } else {
+                    // Hide both relationship and resistance for mobs
+                    self.relationshipLabel.alpha = 0
+                    self.relationshipValueLabel.alpha = 0
+                    self.relationshipProgressView.alpha = 0
+                    self.resistanceLabel.alpha = 0
+                    self.resistanceValueLabel.alpha = 0
+                    self.resistanceProgressView.alpha = 0
                 }
                 
                 // Update health information with smooth progress bar transition
@@ -626,10 +634,17 @@ class NPCWidgetUIViewController: UIViewController {
             self.professionIconImageView.alpha = showProfession ? 1 : 0
             self.professionLabel.alpha = showProfession ? 1 : 0
             
-            // Show activity based on setting and aliveness
-            let shouldShowActivity = self.showCurrentActivity && self.npc.isAlive
+            // Show activity based on setting, aliveness, and mob status
+            let shouldShowActivity = self.showCurrentActivity && self.npc.isAlive && !self.npc.isMob
             self.activityIconImageView.alpha = shouldShowActivity ? 1 : 0
             self.activityLabel.alpha = shouldShowActivity ? 1 : 0
+            
+            // Hide relationship info for mobs
+            if self.npc.isMob {
+                self.relationshipLabel.alpha = 0
+                self.relationshipValueLabel.alpha = 0
+                self.relationshipProgressView.alpha = 0
+            }
         }
     }
     
@@ -697,12 +712,22 @@ class NPCWidgetUIViewController: UIViewController {
     private func updateProfessionAndActivity() {
         // Animate UI updates
         UIView.animate(withDuration: 0.3) {
-            // Update profession
-            let professionIconName = self.npc.profession.icon
-            self.professionIconImageView.image = UIImage(systemName: professionIconName)
-            self.professionIconImageView.tintColor = self.convertSwiftUIColorToUIColor(self.npc.profession.color)
-            self.professionLabel.text = self.npc.profession.rawValue.capitalized
-            self.professionLabel.textColor = UIColor(Theme.textColor) // Always white text for better visibility
+            // Update profession or mob type
+            if self.npc.isMob {
+                // Show mob type instead of profession
+                let mobTypeIconName = "pawprint.fill" // Generic mob icon
+                self.professionIconImageView.image = UIImage(systemName: mobTypeIconName)
+                self.professionIconImageView.tintColor = UIColor.systemRed // Red color for mobs
+                self.professionLabel.text = self.npc.mobType.rawValue
+                self.professionLabel.textColor = UIColor(Theme.textColor)
+            } else {
+                // Show profession for regular NPCs
+                let professionIconName = self.npc.profession.icon
+                self.professionIconImageView.image = UIImage(systemName: professionIconName)
+                self.professionIconImageView.tintColor = self.convertSwiftUIColorToUIColor(self.npc.profession.color)
+                self.professionLabel.text = self.npc.profession.rawValue.capitalized
+                self.professionLabel.textColor = UIColor(Theme.textColor)
+            }
             
             // Ensure text truncates properly with ellipsis if too long
             self.professionLabel.lineBreakMode = .byTruncatingTail
@@ -713,8 +738,8 @@ class NPCWidgetUIViewController: UIViewController {
             self.professionIconImageView.alpha = showProfession ? 1.0 : 0.0
             self.professionLabel.alpha = showProfession ? 1.0 : 0.0
             
-            // Show/hide activity based on setting and aliveness
-            let shouldShowActivity = self.showCurrentActivity && self.npc.isAlive
+            // Show/hide activity based on setting, aliveness, and mob status (mobs don't show activity)
+            let shouldShowActivity = self.showCurrentActivity && self.npc.isAlive && !self.npc.isMob
             self.activityIconImageView.alpha = shouldShowActivity ? 1.0 : 0.0
             self.activityLabel.alpha = shouldShowActivity ? 1.0 : 0.0
             

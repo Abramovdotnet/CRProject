@@ -214,6 +214,7 @@ class GameStateService : ObservableObject, GameService{
                 player.arrestTime -= 1
             } else {
                 player.isArrested = false
+                player.isWanted = false
                 player.arrestTime = 0
             }
         }
@@ -239,7 +240,7 @@ class GameStateService : ObservableObject, GameService{
             player.hiddenAt = scene.sceneType.possibleHidingCells().randomElement() ?? .none
             
             gameEventsBus.addWarningMessage("You fleed from sun to nearby hiding spot")
-            UIKitPopUpManager.shared.show(title: "Dawn", description: "Sun rises. You fleed to nearby spot", icon: UIImage(systemName: "sun.max.fill"))
+            UIKitPopUpManager.shared.show(title: "Dawn", description: "Sun rises. You fled to nearby spot", icon: UIImage(systemName: "sun.max.fill"))
         }
     }
     
@@ -278,6 +279,22 @@ class GameStateService : ObservableObject, GameService{
         }
         
         spawnMobsIfNeeded()
+        if isAmbushAvailable() {
+            let mobs = scene.getNPCs().filter( { $0.isAlive && $0.isMob })
+            
+            if mobs.count > 0 {
+                guard let firstMob = mobs.first else { return }
+                
+                UIKitPopUpManager.shared.show(
+                    title: "Ambush",
+                    description: "You'we been ambushed by \(firstMob.name)!",
+                    icon: UIImage(systemName: NPCActivityType.combat.icon)
+                )
+                startBattle(npc: firstMob)
+            }
+        } else {
+            chasePlayerIfWanted()
+        }
     }
     
     func releasePlayerThirst() {
@@ -316,18 +333,6 @@ class GameStateService : ObservableObject, GameService{
     
     var isNightTime: Bool {
         return gameTime.isNightTime
-    }
-    
-    /// Проверяет, может ли игрок спрятаться на текущей сцене
-    func checkCouldHide() -> Bool {
-        guard let scene = currentScene else { return false }
-        let npcs = scene.getNPCs()
-        if npcs.isEmpty { return true }
-        let awakeNpcs = npcs.filter { !$0.isMob && $0.currentActivity != .sleep && $0.isAlive }
-        if awakeNpcs.isEmpty { return true }
-        // Если есть бодрствующие, все ли они не под чарами (isSpecialBehaviorSet == false)?
-        let allAwakeAreNotSpecial = awakeNpcs.allSatisfy { $0.isSpecialBehaviorSet == true }
-        return allAwakeAreNotSpecial
     }
     
     func isNeedToHide() -> Bool {
@@ -398,6 +403,14 @@ class GameStateService : ObservableObject, GameService{
                     allies.append(militaryNpc)
                 }
             }
+        } else {
+            let mobs = aliveNpcs.filter({ $0.isMob && $0.mobType == npc.mobType })
+            
+            if mobs.count > 0 {
+                for mob in mobs {
+                    allies.append(mob)
+                }
+            }
         }
         
         // Добавляем всех NPC из aliveNpcs, которые связаны с текущим NPC отношениями >= friend
@@ -441,6 +454,8 @@ class GameStateService : ObservableObject, GameService{
             icon: UIImage(systemName: "shield")
         )
         
+        player?.isWanted = true
+        
         witness.currentActivity = .fleeing
         witness.isSpecialBehaviorSet = true
         witness.specialBehaviorTime = 3
@@ -473,6 +488,60 @@ class GameStateService : ObservableObject, GameService{
             description: "You'we been jailed for \(StatisticsService.shared.timesArrested * 24) hours",
             icon: UIImage(systemName: NPCActivityType.jailed.icon)
         )
+    }
+    
+    func isAmbushAvailable() -> Bool {
+        guard let player = player else { return false }
+        
+        if player.hiddenAt == .none {
+            guard let scene = currentScene else { return false }
+            let npcs = scene.getNPCs().filter( { $0.isAlive && !$0.isSpecialBehaviorSet })
+            return npcs.allSatisfy( { $0.isMob } )
+        } else {
+            return false
+        }
+    }
+    
+    func startBattle(npc: NPC) {
+        // Сначала возвращаемся в главную сцену, если мы не в ней
+        DispatchQueue.main.async {
+            // Отправляем уведомление для возврата в главную сцену
+            //NotificationCenter.default.post(name: Notification.Name("returnToMainScene"), object: nil)
+            
+            // Небольшая задержка, чтобы навигация успела завершиться
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                // Устанавливаем выбранного NPC
+                NPCInteractionManager.shared.selectedNPC = npc
+                
+                // Отправляем уведомление для открытия боевой сцены
+                NotificationCenter.default.post(name: Notification.Name("startBattle"), object: npc)
+            }
+        }
+    }
+    
+    // MARK: - Usage Example
+    // Пример использования:
+    // if let someNPC = scene.getNPCs().first {
+    //     GameStateService.shared.startBattle(npc: someNPC)
+    // }
+    // Этот метод автоматически вернет игрока в главную сцену (если он не в ней)
+    // и откроет боевую сцену с указанным NPC
+    
+    func chasePlayerIfWanted() {
+        guard let player = player else { return }
+        
+        if player.isWanted && player.hiddenAt == .none && !player.isArrested {
+            let militaryNpcs = getAwakeNpcs().filter( { $0.isMilitary })
+            
+            if militaryNpcs.count > 0 {
+                UIKitPopUpManager.shared.show(
+                    title: "Chased",
+                    description: "You'we been chased for your crimes by \(militaryNpcs.first!.name)!",
+                    icon: UIImage(systemName: NPCActivityType.combat.icon)
+                )
+                startBattle(npc: militaryNpcs.first!)
+            }
+        }
     }
     
     func spawnMobsIfNeeded() {
@@ -510,22 +579,30 @@ class GameStateService : ObservableObject, GameService{
                 }
             }
 
-        } else if sceneType == .crypt || sceneType == .road || sceneType == .square {
+        } else if sceneType == .crypt || sceneType == .road || sceneType == .square || sceneType == .cemetery {
             let assassinWeigth = 0.9
+            let marauderWeight = 0.7
             
-            let isNeedToSpawnAssassin = Double.random(in: 0...1) > assassinWeigth
+            let npcWeight = Double.random(in: 0...1)
+            let isNeedToSpawnAssassin = npcWeight >= assassinWeigth
+            let isNeedToSpawnMarauder = npcWeight >= marauderWeight && npcWeight < assassinWeigth
             
             if isNeedToSpawnAssassin {
                 mobType = .assassin
+            } else if isNeedToSpawnMarauder  {
+                mobType = .marauder
             } else {
                 mobType = .bandit
             }
         }
+        let wouldSpawn = Int.random(in: 1...10) > 9
         
-        let wouldSpawn =  Double.random(in: 0...1) > (gameTime.isNightTime ? 0.3 : 0.8)
-        
-        if wouldSpawn && mobType != .none {
-            return MobManager.shared.spawnMobAtScene(ofType: mobType, at: scene.id)
+        if wouldSpawn {
+            let isDayPhaseMet = Double.random(in: 0...1) > (gameTime.isNightTime ? 0.3 : 0.8)
+            
+            if isDayPhaseMet && mobType != .none {
+                return MobManager.shared.spawnMobAtScene(ofType: mobType, at: scene.id)
+            }
         }
     }
     

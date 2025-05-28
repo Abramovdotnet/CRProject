@@ -36,14 +36,14 @@ class MobManager {
     
     private func giveLoot(type: MobType, to mob: NPC) {
         if type.isHumanoid {
-            let randomLootCount = Int.random(in: 0...5)
+            let randomLootCount = Int.random(in: 0...3)
             for _ in 0..<randomLootCount {
-                if let randomItem = allItems.filter({ $0.type != .artefact && $0.type != .animalLoot }) .randomElement() {
+                if let randomItem = allItems.filter({ $0.cost < 300 && $0.type != .artefact && $0.type != .animalLoot }) .randomElement() {
                     mob.items.append(Item.createUnique(randomItem))
                 }
             }
             
-            mob.coins.value = Int.random(in: 3..<1500)
+            mob.coins.value = Int.random(in: 3..<200)
         } else {
             if let fur = allItems.filter({ $0.type == .animalLoot && $0.name.lowercased().contains("fur") }) .first {
                 mob.items.append(Item.createUnique(fur))

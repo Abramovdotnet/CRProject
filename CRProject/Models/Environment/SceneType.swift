@@ -135,7 +135,7 @@ enum SceneType: String, CaseIterable, Codable {
         case .docks:
             return [.ship_hold, .fishing_net_storage]
         case .road:
-            return [.none]
+            return [.hollow_tree, .secret_passage]
             
             // Natural/Wilderness
         case .forest:
