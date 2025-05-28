@@ -874,8 +874,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "462"
             endingLineNumber = "462"
-            landmarkName = "create(text:type:nextNodeId:failureNode:successActions:failureActions:)"
-            landmarkType = "7">
+            landmarkName = "DialogueOption"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -890,8 +890,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "465"
             endingLineNumber = "465"
-            landmarkName = "create(text:type:nextNodeId:failureNode:successActions:failureActions:)"
-            landmarkType = "7">
+            landmarkName = "DialogueOption"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -1018,7 +1018,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "427"
             endingLineNumber = "427"
-            landmarkName = "executeModifyPlayerInventoryAction(_:player:)"
+            landmarkName = "executeTriggerGameEventAction(_:player:npc:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1034,7 +1034,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "428"
             endingLineNumber = "428"
-            landmarkName = "executeModifyPlayerInventoryAction(_:player:)"
+            landmarkName = "executeTriggerGameEventAction(_:player:npc:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1674,7 +1674,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "330"
             endingLineNumber = "330"
-            landmarkName = "disableAllActions()"
+            landmarkName = "setupInitialCombatState()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

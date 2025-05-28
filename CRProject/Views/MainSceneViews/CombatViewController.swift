@@ -764,6 +764,14 @@ class CombatViewController: UIViewController {
                 self.updateUIAfterAction()
                 }), at: 2)
         }
+        // Проверяем наличие военных NPC для кнопки Surrender
+        let hasMilitaryNPCs = checkForMilitaryNPCs()
+        if hasMilitaryNPCs {
+            actions.append(("Surrender", "flag.fill", .systemGray, { [weak self] in
+                self?.handleSurrenderAction()
+            }))
+        }
+        
         // Witness warning label всегда показывается в центральной колонке
         let witnesses = GameStateService.shared.getWitnessesCount()
         let hasVampireAction = actions.contains(where: { $0.title == "Bite" || $0.title == "Drain" || $0.title == "Dominate" })
@@ -781,6 +789,7 @@ class CombatViewController: UIViewController {
             witnessWarningLabel.text = "⚔️ Steel rings against steel"
             witnessWarningLabel.textColor = UIColor.systemBlue
         }
+        
         witnessWarningLabel.isHidden = false
         for (title, icon, _, handler) in actions {
             // Получаем шанс успеха с учетом групповой механики
@@ -2467,9 +2476,69 @@ class CombatViewController: UIViewController {
         }
     }
     
+    // MARK: - Test Confirmation Dialog
+    
+    private func testConfirmationDialog() {
+        Task {
+            let result = await UIKitPopUpManager.shared.showConfirmation(
+                title: "Surrender to guards?",
+                yesText: "Yes",
+                noText: "Keep fighting"
+            )
+            
+            if result {
+                addCombatLogMessage("🏳️ Test surrender - you would be jailed!", color: .systemGray, isSystemMessage: true)
+            } else {
+                addCombatLogMessage("⚔️ Test surrender - you chose to keep fighting!", color: .systemBlue, isSystemMessage: true)
+            }
+        }
+    }
+    
     deinit {
         print("CombatViewController deinit")
         npcAppearanceTimer?.invalidate()
         npcAppearanceTimer = nil
+    }
+    
+    // MARK: - Surrender Functionality
+    
+    private func checkForMilitaryNPCs() -> Bool {
+        // Проверяем главного NPC
+        if npc.isMilitary {
+            return true
+        }
+        
+        // Проверяем всех ассистентов
+        return npcAssistants.contains { $0.isMilitary }
+    }
+    
+    private func handleSurrenderAction() {
+        Task {
+            let result = await UIKitPopUpManager.shared.showConfirmation(
+                title: "Surrender to guards?",
+                yesText: "Yes",
+                noText: "Keep fighting"
+            )
+            
+            if result {
+                // Добавляем сообщение в лог
+                addCombatLogMessage("🏳️ You surrender to the authorities...", color: .systemGray, isSystemMessage: true)
+                
+                // Завершаем бой
+                isCombatEnded = true
+                setupActionButtons()
+                
+                // Сначала закрываем боевую сцену, потом отправляем в тюрьму
+                if let onLeave = self.onLeave {
+                        onLeave()
+                    } else {
+                        self.dismiss(animated: true, completion: nil)
+                    }
+                    
+                    // После закрытия боевой сцены отправляем игрока в тюрьму
+                    GameStateService.shared.jailPlayer()
+            }
+            // Если выбрал "Keep fighting" - ничего не делаем, диалог просто закроется
+        }
     }
 }

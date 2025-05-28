@@ -616,7 +616,7 @@ class QuestJournalViewController: UIViewController, UITableViewDataSource, UITab
     }
     
     private func clearDetailView() {
-        questTitleLabel.text = "Нет выбранного квеста"
+        questTitleLabel.text = "No active quests"
         questDescriptionView.text = ""
         currentObjectiveLabel.text = ""
         questStagesTextView.text = "" // Очищаем поле с этапами

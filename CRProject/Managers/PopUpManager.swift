@@ -20,6 +20,145 @@ class PopUpManager: ObservableObject {
     }
 }
 
+// MARK: - Confirmation Dialog
+
+class ConfirmationDialogView: UIView {
+    private let titleLabel = UILabel()
+    private var yesButton = ActionButtonSmallView()
+    private var noButton = ActionButtonSmallView()
+    private let overlayView = UIView()
+    
+    var onResult: ((Bool) -> Void)?
+    
+    init(title: String, yesText: String, noText: String) {
+        super.init(frame: .zero)
+        setupUI(title: title, yesText: yesText, noText: noText)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    private func setupUI(title: String, yesText: String, noText: String) {
+        // Overlay для затемнения фона
+        overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.6)
+        overlayView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Основной контейнер диалога
+        let dialogContainer = UIView()
+        dialogContainer.backgroundColor = UIColor(red: 0.1, green: 0.1, blue: 0.1, alpha: 0.95)
+        dialogContainer.layer.cornerRadius = 16
+        dialogContainer.layer.borderWidth = 2
+        dialogContainer.layer.borderColor = UIColor.black.cgColor
+        dialogContainer.layer.shadowColor = UIColor.black.cgColor
+        dialogContainer.layer.shadowOpacity = 0.8
+        dialogContainer.layer.shadowRadius = 12
+        dialogContainer.layer.shadowOffset = CGSize(width: 0, height: 4)
+        dialogContainer.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Заголовок
+        titleLabel.text = title
+        titleLabel.textColor = .white
+        titleLabel.font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16, weight: .semibold)
+        titleLabel.textAlignment = .center
+        titleLabel.numberOfLines = 2
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Добавляем тень к тексту
+        titleLabel.layer.shadowColor = UIColor.black.cgColor
+        titleLabel.layer.shadowOpacity = 0.7
+        titleLabel.layer.shadowRadius = 2
+        titleLabel.layer.shadowOffset = CGSize(width: 0, height: 1)
+        
+        // Кнопки
+        yesButton = ActionButtonSmallView(title: yesText, icon: "checkmark.circle.fill", color: .systemGreen) { [weak self] in
+            self?.handleResult(true)
+        }
+        
+        noButton = ActionButtonSmallView(title: noText, icon: "xmark.circle.fill", color: .systemRed) { [weak self] in
+            self?.handleResult(false)
+        }
+        
+        // Стек для кнопок
+        let buttonStack = UIStackView(arrangedSubviews: [yesButton, noButton])
+        buttonStack.axis = .horizontal
+        buttonStack.spacing = 16
+        buttonStack.distribution = .fillEqually
+        buttonStack.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Добавляем элементы
+        addSubview(overlayView)
+        addSubview(dialogContainer)
+        dialogContainer.addSubview(titleLabel)
+        dialogContainer.addSubview(buttonStack)
+        
+        // Constraints
+        NSLayoutConstraint.activate([
+            // Overlay на весь экран
+            overlayView.topAnchor.constraint(equalTo: topAnchor),
+            overlayView.leadingAnchor.constraint(equalTo: leadingAnchor),
+            overlayView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            overlayView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            // Диалог по центру
+            dialogContainer.centerXAnchor.constraint(equalTo: centerXAnchor),
+            dialogContainer.centerYAnchor.constraint(equalTo: centerYAnchor),
+            dialogContainer.widthAnchor.constraint(equalToConstant: 350),
+            dialogContainer.heightAnchor.constraint(equalToConstant: 120),
+            
+            // Заголовок
+            titleLabel.topAnchor.constraint(equalTo: dialogContainer.topAnchor, constant: 16),
+            titleLabel.leadingAnchor.constraint(equalTo: dialogContainer.leadingAnchor, constant: 16),
+            titleLabel.trailingAnchor.constraint(equalTo: dialogContainer.trailingAnchor, constant: -16),
+            
+            // Кнопки
+            buttonStack.topAnchor.constraint(equalTo: titleLabel.bottomAnchor, constant: 16),
+            buttonStack.leadingAnchor.constraint(equalTo: dialogContainer.leadingAnchor, constant: 20),
+            buttonStack.trailingAnchor.constraint(equalTo: dialogContainer.trailingAnchor, constant: -20),
+            buttonStack.bottomAnchor.constraint(equalTo: dialogContainer.bottomAnchor, constant: -16)
+        ])
+        
+        // Начальное состояние для анимации
+        alpha = 0
+        dialogContainer.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+    }
+    
+    private func handleResult(_ result: Bool) {
+        onResult?(result)
+        dismiss()
+    }
+    
+    func show(in window: UIWindow) {
+        window.addSubview(self)
+        translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            topAnchor.constraint(equalTo: window.topAnchor),
+            leadingAnchor.constraint(equalTo: window.leadingAnchor),
+            trailingAnchor.constraint(equalTo: window.trailingAnchor),
+            bottomAnchor.constraint(equalTo: window.bottomAnchor)
+        ])
+        
+        // Анимация появления
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.5, options: [.curveEaseOut], animations: {
+            self.alpha = 1
+            if let dialogContainer = self.subviews.last {
+                dialogContainer.transform = CGAffineTransform.identity
+            }
+        }, completion: nil)
+    }
+    
+    private func dismiss() {
+        UIView.animate(withDuration: 0.25, animations: {
+            self.alpha = 0
+            if let dialogContainer = self.subviews.last {
+                dialogContainer.transform = CGAffineTransform(scaleX: 0.8, y: 0.8)
+            }
+        }) { _ in
+            self.removeFromSuperview()
+        }
+    }
+}
+
 class PopUpBannerView: UIView {
     private let iconImageView = UIImageView()
     private let titleLabel = UILabel()
@@ -154,6 +293,28 @@ class UIKitPopUpManager {
                 self.queue.append((title, description, icon))
             } else {
                 self.showBanner(title: title, description: description, icon: icon)
+            }
+        }
+    }
+    
+    // MARK: - Confirmation Dialog
+    
+    func showConfirmation(title: String, yesText: String, noText: String) async -> Bool {
+        return await withCheckedContinuation { continuation in
+            DispatchQueue.main.async {
+                guard let windowScene = UIApplication.shared.connectedScenes
+                    .compactMap({ $0 as? UIWindowScene })
+                    .first(where: { $0.activationState == .foregroundActive }),
+                    let window = windowScene.windows.first else {
+                    continuation.resume(returning: false)
+                    return
+                }
+                
+                let dialog = ConfirmationDialogView(title: title, yesText: yesText, noText: noText)
+                dialog.onResult = { result in
+                    continuation.resume(returning: result)
+                }
+                dialog.show(in: window)
             }
         }
     }

@@ -452,4 +452,17 @@ class GameStateService : ObservableObject, GameService{
         
         return availableGuards.isEmpty ? nil : Array(availableGuards)
     }
+    
+    func jailPlayer() {
+        guard let player = GameStateService.shared.player else { return }
+        guard let jailLocation = LocationReader.getLocations().first(where: { $0.sceneType == .dungeon }) else { return }
+        try? GameStateService.shared.changeLocation(to: jailLocation.id)
+        player.arrestPlayer()
+        
+        UIKitPopUpManager.shared.show(
+            title: "Arrest",
+            description: "You'we been jailed for \(StatisticsService.shared.timesArrested * 24) hours",
+            icon: UIImage(systemName: NPCActivityType.jailed.icon)
+        )
+    }
 }

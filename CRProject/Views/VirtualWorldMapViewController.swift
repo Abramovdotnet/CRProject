@@ -101,9 +101,6 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         setupCurrentLocationInfoView()
         currentLocationInfoView.alpha = 0 // Скрываем инфо о локации перед анимацией
         updateVisibleMarkersAndLines()
-        if let scene = allScenes.first(where: { $0.id == currentSceneId }) {
-            centerOnScene(scene, animated: false)
-        }
         updateCurrentLocationInfo()
         setupTopWidget()
         view.bringSubviewToFront(topWidgetContainerView)
@@ -116,11 +113,29 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         super.viewDidAppear(animated)
         if !didAnimateContentAppearance {
             didAnimateContentAppearance = true
-            print("[DEBUG] scrollView.alpha before animation: \(self.scrollView.alpha), currentLocationInfoView.alpha: \(self.currentLocationInfoView.alpha)")
+            
+            // Устанавливаем зум по умолчанию после того, как scrollView полностью настроен
+            scrollView.zoomScale = 0.8
+            
+            // Центрируем на текущей сцене после полной настройки
+            if let currentScene = allScenes.first(where: { $0.id == currentSceneId }) {
+                centerOnScene(currentScene, animated: false)
+            } else {
+                // Если текущая сцена не найдена, центрируем на первой доступной
+                if let firstScene = allScenes.first {
+                    centerOnScene(firstScene, animated: false)
+                }
+            }
+            
             UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseOut, animations: {
                 self.scrollView.alpha = 1.0
                 self.currentLocationInfoView.alpha = 1.0
-            }, completion: nil)
+            }, completion: { _ in
+                // Дополнительное центрирование после анимации для гарантии
+                if let currentScene = self.allScenes.first(where: { $0.id == self.currentSceneId }) {
+                    self.centerOnScene(currentScene, animated: true)
+                }
+            })
         }
     }
     
@@ -205,12 +220,16 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         scrollView.contentSize = contentSize
         scrollView.bouncesZoom = false
         view.addSubview(scrollView)
+        
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+        
+        // Принудительно обновляем layout
+        view.layoutIfNeeded()
     }
     
     private func setupContentView() {
@@ -421,7 +440,27 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     marker.layer.shadowOffset = CGSize(width: 0, height: 3)
                     // --- конец тени ---
                     marker.tag = scene.id
-                    marker.addTarget(self, action: #selector(markerTapped(_:)), for: .touchUpInside)
+                    
+                    // --- НОВАЯ ЛОГИКА: обновляем доступность для клика существующих маркеров ---
+                    let isConnected = currentScene?.connections.contains { $0.connectedSceneId == scene.id } ?? false
+                    let isClickable = (isConnected && !scene.isLocked) || scene.id == currentSceneId
+                    
+                    marker.isUserInteractionEnabled = isClickable
+                    
+                    // --- Анимация мерцания для текущей локации при обновлении ---
+                    if scene.id == currentSceneId {
+                        marker.layer.removeAllAnimations()
+                        marker.alpha = 1.0
+                        UIView.animate(withDuration: 1.0, delay: 0, options: [.autoreverse, .repeat, .allowUserInteraction], animations: {
+                            marker.alpha = 0.7
+                        }, completion: nil)
+                    } else {
+                        marker.layer.removeAllAnimations()
+                        // Устанавливаем прозрачность в зависимости от доступности
+                        marker.alpha = isClickable ? 1.0 : 0.6
+                    }
+                    // --- конец анимации ---
+                    
                     // --- Добавляем иконку замка, если нужно ---
                     if lockedNeighborIds.contains(scene.id) {
                         let lockSize: CGFloat = 22
@@ -462,20 +501,12 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                         marker.addSubview(compassImageView)
                     }
                     // --- конец компаса ---
+                    
+                    // Добавляем target action для нового маркера
+                    marker.addTarget(self, action: #selector(markerTapped(_:)), for: .touchUpInside)
+                    
                     contentView.addSubview(marker)
                     markerViews[scene.id] = marker
-                    // --- Анимация мерцания для текущей локации ---
-                    if scene.id == currentSceneId {
-                        marker.layer.removeAllAnimations()
-                        marker.alpha = 1.0
-                        UIView.animate(withDuration: 1.0, delay: 0, options: [.autoreverse, .repeat, .allowUserInteraction], animations: {
-                            marker.alpha = 0.7
-                        }, completion: nil)
-                    } else {
-                        marker.layer.removeAllAnimations()
-                        marker.alpha = 1.0
-                    }
-                    // --- конец анимации ---
                 } else {
                     let marker = markerViews[scene.id]!
                     // --- Обновляю цвет обводки при обновлении ---
@@ -543,6 +574,13 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                         marker.subviews.filter { $0.tag == compassTag }.forEach { $0.removeFromSuperview() }
                     }
                     // --- конец обновления компаса ---
+                    
+                    // --- НОВАЯ ЛОГИКА: обновляем доступность для клика существующих маркеров ---
+                    let isConnected = currentScene?.connections.contains { $0.connectedSceneId == scene.id } ?? false
+                    let isClickable = (isConnected && !scene.isLocked) || scene.id == currentSceneId
+                    
+                    marker.isUserInteractionEnabled = isClickable
+                    
                     // --- Анимация мерцания для текущей локации при обновлении ---
                     if scene.id == currentSceneId {
                         marker.layer.removeAllAnimations()
@@ -552,7 +590,8 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                         }, completion: nil)
                     } else {
                         marker.layer.removeAllAnimations()
-                        marker.alpha = 1.0
+                        // Устанавливаем прозрачность в зависимости от доступности
+                        marker.alpha = isClickable ? 1.0 : 0.6
                     }
                     // --- конец анимации ---
                 }
@@ -604,10 +643,29 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
             // Можно добавить всплывающее сообщение или анимацию, если нужно
             return
         }
-        if let scene = allScenes.first(where: { $0.id == sceneId }) {
-            try? GameStateService.shared.changeLocation(to: sceneId)
-            currentSceneChanged(to: sceneId)
+        
+        // --- НОВАЯ ЛОГИКА: проверяем доступность перемещения ---
+        guard let targetScene = allScenes.first(where: { $0.id == sceneId }) else { return }
+        guard let currentScene = allScenes.first(where: { $0.id == currentSceneId }) else { return }
+        
+        // Проверяем, есть ли связь между текущей и целевой локацией
+        let isConnected = currentScene.connections.contains { $0.connectedSceneId == sceneId }
+        
+        if !isConnected {
+            // Показываем сообщение о недоступности
+            let alert = UIAlertController(
+                title: "Cannot Travel",
+                message: "You cannot travel directly to \(targetScene.name). You can only move to connected locations.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
         }
+        
+        // Если все проверки пройдены, перемещаемся
+        try? GameStateService.shared.changeLocation(to: sceneId)
+        currentSceneChanged(to: sceneId)
     }
     
     private func currentSceneChanged(to sceneId: Int) {
@@ -624,23 +682,35 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     
     // Новая функция центрирования на сцене
     private func centerOnScene(_ scene: Scene, animated: Bool) {
+        // Убеждаемся, что scrollView готов
+        guard scrollView.bounds.size.width > 0 && scrollView.bounds.size.height > 0 else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.centerOnScene(scene, animated: animated)
+            }
+            return
+        }
+        
         // 1. Координаты центра маркера в contentView
         let markerCenter = CGPoint(
             x: (CGFloat(scene.x) * coordinateScale - minMapX) + padding + markerSize.width / 2,
             y: (CGFloat(scene.y) * coordinateScale - minMapY) + padding + markerSize.height / 2
         )
+        
         // 2. Размеры видимой области (scrollView.bounds)
         let visibleSize = scrollView.bounds.size
+        
         // 3. Вычисляем offset так, чтобы markerCenter оказался по центру экрана
         var offset = CGPoint(
             x: markerCenter.x * scrollView.zoomScale - visibleSize.width / 2,
             y: markerCenter.y * scrollView.zoomScale - visibleSize.height / 2
         )
+        
         // 4. Ограничиваем offset, чтобы не выйти за пределы contentSize
         let maxOffsetX = scrollView.contentSize.width - visibleSize.width
         let maxOffsetY = scrollView.contentSize.height - visibleSize.height
         offset.x = max(0, min(offset.x, maxOffsetX))
         offset.y = max(0, min(offset.y, maxOffsetY))
+        
         // 5. Применяем offset
         scrollView.setContentOffset(offset, animated: animated)
     }
