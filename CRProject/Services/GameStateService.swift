@@ -205,7 +205,7 @@ class GameStateService : ObservableObject, GameService{
         guard let scene = currentScene else { return }
         
         
-        if !scene.isIndoor && !gameTime.isNightTime && (!AbilitiesSystem.shared.hasDayWalker || (AbilitiesSystem.shared.hasDayWalker &&  (player?.bloodMeter.currentBlood)! <= 70.0)) {
+        if !scene.isIndoor && !gameTime.isNightTime && (!AbilitiesSystem.shared.hasDayWalker || (AbilitiesSystem.shared.hasDayWalker &&  (player.bloodMeter.currentBlood) <= 70.0)) {
             endGame()
         }
         
@@ -222,11 +222,10 @@ class GameStateService : ObservableObject, GameService{
         if AbilitiesSystem.shared.hasInsight {
             let unknownNpcs = scene.getNPCs().filter { $0.isUnknown }
             for npc in unknownNpcs {
-                InvestigationService.shared.investigate(inspector: player!, investigationObject: npc)
+                InvestigationService.shared.investigate(inspector: player, investigationObject: npc)
             }
         }
         
-        guard let player = player else { return }
         if player.isArrested {
             if player.arrestTime > 0 {
                 player.arrestTime -= 1

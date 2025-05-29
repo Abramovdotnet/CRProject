@@ -9,7 +9,7 @@ import Combine
 
 class BloodManagementService: GameService {
     private let gameEventsBus: GameEventsBusService
-    
+    static let shared = BloodManagementService()
     init(gameEventsBus: GameEventsBusService = DependencyManager.shared.resolve()) {
         self.gameEventsBus = gameEventsBus
     }
