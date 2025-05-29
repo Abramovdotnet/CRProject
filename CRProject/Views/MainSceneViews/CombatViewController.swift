@@ -1950,8 +1950,7 @@ class CombatViewController: UIViewController {
     
     @objc private func closeCombat() {
         if let onLeave = onLeave {
-            GameTimeService.shared.advanceTime()
-            onLeave()
+            GameStateService.shared.endCombat()
         } else {
             self.dismiss(animated: true, completion: nil)
         }

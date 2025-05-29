@@ -379,7 +379,7 @@ struct MainSceneView: View {
                                                 icon: "flame", // Иконка боя
                                                 color: Theme.bloodProgressColor,
                                                 action: {
-                                                    GameStateService.shared.startBattle(npc: selectedNPC)
+                                                    GameStateService.shared.startCombat(npc: selectedNPC)
                                                 }
                                             )
                                         }

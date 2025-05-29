@@ -11,13 +11,7 @@ final class CombatService {
     private(set) var history: [CombatAction] = []
     private(set) var resultSummary: String?
     
-    func startCombat(player: Player, npc: NPC) {
-        prepareNpc(npc: npc)
-        self.player = player
-        self.npc = npc
-        self.history = []
-        self.resultSummary = nil
-    }
+    @Published var isCombatActive: Bool = false
     
     func prepareNpc(npc: NPC) {
         npc.currentActivity = .combat

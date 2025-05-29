@@ -693,7 +693,7 @@ class HidingCellViewController: UIViewController {
     }
 
     private func updateDangerStatus(animated: Bool) {
-        let count = GameStateService.shared.getAwakeNpcsCount()
+        let count = GameStateService.shared.getAwakeNpcsCount() + GameStateService.shared.getAwakeMobsCount()
         let (icon, color, text) = dangerStatusInfo(for: count)
         let font = UIFont(name: "Optima-Regular", size: 16) ?? UIFont.systemFont(ofSize: 16)
         let newText = text

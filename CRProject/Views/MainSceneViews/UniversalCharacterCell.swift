@@ -248,9 +248,9 @@ class UniversalCharacterCell: UIView {
         } else {
             avatarShadowContainer.layer.shadowOpacity = 0.8 // Тень всегда видна
         }
-        let newImage = npc.isUnknown ?
+        let newImage = npc.isUnknown && !npc.isMob ?
             UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder") :
-            UIImage(named: "npc\(npc.id)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")
+            UIImage(named: "npc\(npc.isMob ? npc.mobType.name : npc.id.description)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")
         if avatarImageView.image != newImage {
             UIView.transition(with: avatarImageView,
                              duration: animationDuration,

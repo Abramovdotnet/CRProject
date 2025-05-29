@@ -276,9 +276,9 @@ class NPCCharacterCell: UICollectionViewCell {
         
         // Убираем анимацию границ, так как cardBackground больше нет
         // Оптимизация: обновляем аватар только если изображение изменилось
-        let newImage = npc.isUnknown ?
+        let newImage = npc.isUnknown && !npc.isMob ?
             UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder") :
-            UIImage(named: "npc\(npc.id)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")
+            UIImage(named: "npc\(npc.isMob ? npc.mobType.name : npc.id.description)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")
         if avatarImageView.image != newImage {
             UIView.transition(with: avatarImageView,
                              duration: animationDuration,

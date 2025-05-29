@@ -564,10 +564,10 @@ class NPCWidgetUIViewController: UIViewController {
         
         // Set NPC image with crossfade
         UIView.transition(with: npcImageView, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            if self.npc.isUnknown {
+            if self.npc.isUnknown && !self.npc.isMob {
                 self.npcImageView.image = UIImage(named: self.npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")
             } else {
-                self.npcImageView.image = UIImage(named: "npc\(self.npc.id.description)") ?? UIImage(named: self.npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")
+                self.npcImageView.image = UIImage(named: "npc\(self.npc.isMob ? self.npc.mobType.name : self.npc.id.description)") ?? UIImage(named: self.npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder")
             }
         }, completion: nil)
         

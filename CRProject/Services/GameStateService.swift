@@ -82,10 +82,26 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func movePlayerThroughHideouts(to: HidingCell) {
+        guard let scene = currentScene else { return }
         player?.hiddenAt = to
         
         if player?.hiddenAt != nil {
             npcManager.selectedNPC = nil
+            
+            if isAmbushAvailable() {
+                let mobs = scene.getNPCs().filter( { $0.isAlive && $0.isMob })
+                
+                if mobs.count > 0 {
+                    guard let firstMob = mobs.first else { return }
+                    
+                    UIKitPopUpManager.shared.show(
+                        title: "Encounter",
+                        description: "\(firstMob.name) charges into you!",
+                        icon: UIImage(systemName: NPCActivityType.combat.icon)
+                    )
+                    startCombat(npc: firstMob)
+                }
+            }
         }
     }
     
@@ -290,7 +306,7 @@ class GameStateService : ObservableObject, GameService{
                     description: "You'we been ambushed by \(firstMob.name)!",
                     icon: UIImage(systemName: NPCActivityType.combat.icon)
                 )
-                startBattle(npc: firstMob)
+                startCombat(npc: firstMob)
             }
         } else {
             chasePlayerIfWanted()
@@ -354,6 +370,17 @@ class GameStateService : ObservableObject, GameService{
     func getAwakeNpcsCount() -> Int {
         let npcs = getAwakeNpcs()
         return npcs.count
+    }
+    
+    func getAwakeMobsCount() -> Int {
+        let mobs = getAwakeMobs()
+        return mobs.count
+    }
+    
+    func getAwakeMobs() -> [NPC] {
+        guard let scene = currentScene else { return [] }
+        
+        return scene.getNPCs().filter( {$0.isMob && $0.isAlive && !$0.isSpecialBehaviorSet })
     }
     
     func getAwakeNpcs() -> [NPC] {
@@ -491,6 +518,7 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func isAmbushAvailable() -> Bool {
+        guard !CombatService.shared.isCombatActive else { return false }
         guard let player = player else { return false }
         
         if player.hiddenAt == .none {
@@ -502,20 +530,24 @@ class GameStateService : ObservableObject, GameService{
         }
     }
     
-    func startBattle(npc: NPC) {
-        // Сначала возвращаемся в главную сцену, если мы не в ней
+    func startCombat(npc: NPC) {
+        CombatService.shared.isCombatActive = true
+        DispatchQueue.main.async {
+            // Устанавливаем выбранного NPC
+            NPCInteractionManager.shared.selectedNPC = npc
+            
+            // Отправляем уведомление для открытия боевой сцены
+            NotificationCenter.default.post(name: Notification.Name("startBattle"), object: npc)
+        }
+    }
+    
+    func endCombat() {
+        CombatService.shared.isCombatActive = false
+        gameTime.advanceTime()
+        
         DispatchQueue.main.async {
             // Отправляем уведомление для возврата в главную сцену
-            //NotificationCenter.default.post(name: Notification.Name("returnToMainScene"), object: nil)
-            
-            // Небольшая задержка, чтобы навигация успела завершиться
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                // Устанавливаем выбранного NPC
-                NPCInteractionManager.shared.selectedNPC = npc
-                
-                // Отправляем уведомление для открытия боевой сцены
-                NotificationCenter.default.post(name: Notification.Name("startBattle"), object: npc)
-            }
+            NotificationCenter.default.post(name: Notification.Name("returnToMainScene"), object: nil)
         }
     }
     
@@ -528,6 +560,7 @@ class GameStateService : ObservableObject, GameService{
     // и откроет боевую сцену с указанным NPC
     
     func chasePlayerIfWanted() {
+        guard !CombatService.shared.isCombatActive else { return }
         guard let player = player else { return }
         
         if player.isWanted && player.hiddenAt == .none && !player.isArrested {
@@ -539,7 +572,7 @@ class GameStateService : ObservableObject, GameService{
                     description: "You'we been chased for your crimes by \(militaryNpcs.first!.name)!",
                     icon: UIImage(systemName: NPCActivityType.combat.icon)
                 )
-                startBattle(npc: militaryNpcs.first!)
+                startCombat(npc: militaryNpcs.first!)
             }
         }
     }
