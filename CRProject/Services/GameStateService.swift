@@ -193,11 +193,13 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func handleTimeAdvanced() {
+        guard let player = player else { return }
+
         NPCBehaviorService.shared.updateNPCsActivities()
         advanceWorldState()
         
         // Reduce player blood pool
-        player?.bloodMeter.useBlood(AbilitiesSystem.shared.hasLordOfBlood ? 1 : 2)
+        BloodManagementService.shared.reduceBloodIfNeeded(player: player)
         
         // Reset selection if npc left location
         guard let scene = currentScene else { return }

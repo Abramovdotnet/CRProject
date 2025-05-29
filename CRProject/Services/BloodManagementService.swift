@@ -60,6 +60,10 @@ class BloodManagementService: GameService {
     func getBloodPercentage(of character: any Character) -> Float {
         return character.bloodMeter.bloodPercentage
     }
+
+    func reduceBloodIfNeeded(player: Player) {
+        player.bloodMeter.useBlood(AbilitiesSystem.shared.hasLordOfBlood ? 0.25 : 0.5)
+    }
 }
 
 enum BloodError: Error {
