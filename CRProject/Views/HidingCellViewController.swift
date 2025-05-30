@@ -2,8 +2,8 @@ import UIKit
 import SwiftUI
 
 class TimeBarView: UIView {
-    private let hoursRange = 6
-    private let fadeWidth: CGFloat = 40
+    private let hoursRange = 5
+    private let fadeWidth: CGFloat = 30
     private let markerHeight: CGFloat = 16
     private let markerWidth: CGFloat = 3
     private let barHeight: CGFloat = 20
@@ -383,9 +383,11 @@ class HidingCellViewController: UIViewController {
     private let dangerLabel = UILabel()
     private let dangerStackView = UIStackView()
     private var advanceTimeButton: ActionButtonSmallView!
+    private var nightButton: ActionButtonSmallView!
     private var leaveButton: ActionButtonSmallView!
     private var didAppearOnce = false
     private let buttonSize: CGFloat = 40
+    private var isTimeAnimating = false
 
     init(mainViewModel: MainSceneViewModel) {
         self.mainViewModel = mainViewModel
@@ -411,6 +413,7 @@ class HidingCellViewController: UIViewController {
         // Отключаем свайп-назад
         navigationController?.interactivePopGestureRecognizer?.isEnabled = false
         updateLeaveButtonVisibility(animated: false)
+        updateNightButtonVisibility() // Установить начальную видимость Night кнопки
         dangerStatusView.alpha = 0
         updateDangerStatus(animated: false)
     }
@@ -508,7 +511,7 @@ class HidingCellViewController: UIViewController {
         NSLayoutConstraint.activate([
             timeBarView.topAnchor.constraint(equalTo: cellTitleLabel.bottomAnchor, constant: 8),
             timeBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            timeBarView.widthAnchor.constraint(equalToConstant: 600),
+            timeBarView.widthAnchor.constraint(equalToConstant: 450),
             timeBarView.heightAnchor.constraint(equalToConstant: 105)
         ])
         timeBarView.currentHour = GameTimeService.shared.currentHour
@@ -606,6 +609,14 @@ class HidingCellViewController: UIViewController {
         })
         advanceTimeButton.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(advanceTimeButton)
+        
+        // Night Button
+        nightButton = ActionButtonSmallView(title: "Night", icon: "moon.fill", color: .systemBlue, onTap: { [weak self] in
+            self?.nightTapped()
+        })
+        nightButton.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(nightButton)
+        
         // Leave Button
         leaveButton = ActionButtonSmallView(title: "Leave", icon: "arrow.uturn.left", color: .white, onTap: { [weak self] in
             self?.leaveTapped()
@@ -639,7 +650,7 @@ class HidingCellViewController: UIViewController {
 
             timeBarView.topAnchor.constraint(equalTo: cellTitleLabel.bottomAnchor, constant: 8),
             timeBarView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            timeBarView.widthAnchor.constraint(equalToConstant: 600),
+            timeBarView.widthAnchor.constraint(equalToConstant: 450),
             timeBarView.heightAnchor.constraint(equalToConstant: 105),
 
             dangerStatusView.topAnchor.constraint(equalTo: timeBarView.bottomAnchor, constant: 18),
@@ -649,6 +660,8 @@ class HidingCellViewController: UIViewController {
 
             advanceTimeButton.topAnchor.constraint(equalTo: cellTitleLabel.centerYAnchor),
             advanceTimeButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 18),
+            nightButton.topAnchor.constraint(equalTo: advanceTimeButton.bottomAnchor, constant: 10),
+            nightButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 18),
             leaveButton.topAnchor.constraint(equalTo: cellTitleLabel.centerYAnchor),
             leaveButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -18)
         ])
@@ -658,6 +671,10 @@ class HidingCellViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(updateTimeBar), name: .timeAdvanced, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(handleTimeOrStateChanged), name: .timeAdvanced, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateDangerStatusNotification), name: .timeAdvanced, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTimeAnimationStarted), name: .timeAnimationStarted, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTimeAnimationFinished), name: .timeAnimationFinished, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateNightButtonVisibility), name: .nightAppears, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateNightButtonVisibility), name: .dayAppears, object: nil)
     }
 
     @objc private func updateTimeBar() {
@@ -666,11 +683,12 @@ class HidingCellViewController: UIViewController {
 
     @objc private func handleTimeOrStateChanged() {
         updateLeaveButtonVisibility(animated: true)
+        updateNightButtonVisibility()
     }
 
     private func updateLeaveButtonVisibility(animated: Bool) {
-        let shouldShow = GameStateService.shared.couldLeaveHideout()
-        let targetAlpha: CGFloat = shouldShow ? 1.0 : 0.0
+        let shouldShow = GameStateService.shared.couldLeaveHideout() && !isTimeAnimating
+        let targetAlpha: CGFloat = shouldShow ? 1.0 : (isTimeAnimating ? 0.5 : 0.0)
         if animated {
             UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseInOut], animations: {
                 self.leaveButton.alpha = targetAlpha
@@ -684,6 +702,11 @@ class HidingCellViewController: UIViewController {
     @objc private func advanceTimeTapped() {
         VibrationService.shared.lightTap()
         GameTimeService.shared.advanceTime()
+    }
+
+    @objc private func nightTapped() {
+        VibrationService.shared.lightTap()
+        GameTimeService.shared.advanceTimeUntilHour(20)
     }
 
     @objc private func leaveTapped() {
@@ -769,6 +792,53 @@ class HidingCellViewController: UIViewController {
 
     @objc private func updateDangerStatusNotification() {
         updateDangerStatus(animated: true)
+    }
+
+    @objc private func handleTimeAnimationStarted() {
+        isTimeAnimating = true
+        updateButtonStates()
+    }
+
+    @objc private func handleTimeAnimationFinished() {
+        isTimeAnimating = false
+        updateButtonStates()
+    }
+    
+    private func updateButtonStates() {
+        guard advanceTimeButton != nil,
+              nightButton != nil,
+              leaveButton != nil else {
+            return // Кнопки еще не созданы
+        }
+        
+        let shouldEnable = !isTimeAnimating
+        advanceTimeButton.isEnabled = shouldEnable
+        nightButton.isEnabled = shouldEnable
+        leaveButton.isEnabled = shouldEnable && GameStateService.shared.couldLeaveHideout()
+        
+        let alpha: CGFloat = shouldEnable ? 1.0 : 0.5
+        UIView.animate(withDuration: 0.2) {
+            self.advanceTimeButton.alpha = alpha
+            // Night button visibility is managed separately in updateNightButtonVisibility
+            if shouldEnable {
+                self.updateLeaveButtonVisibility(animated: false)
+                self.updateNightButtonVisibility()
+            } else {
+                self.leaveButton.alpha = alpha
+                self.nightButton.alpha = alpha
+            }
+        }
+    }
+
+    @objc private func updateNightButtonVisibility() {
+        let shouldShow = !GameTimeService.shared.isNightTime && !isTimeAnimating
+        let targetAlpha: CGFloat = shouldShow ? 1.0 : 0.0
+        
+        UIView.animate(withDuration: 0.35, delay: 0, options: [.curveEaseInOut], animations: {
+            self.nightButton.alpha = targetAlpha
+        }, completion: nil)
+        
+        nightButton.isUserInteractionEnabled = shouldShow
     }
 }
 

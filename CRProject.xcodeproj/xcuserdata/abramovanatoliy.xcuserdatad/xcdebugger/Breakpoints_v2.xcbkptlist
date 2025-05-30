@@ -1816,8 +1816,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "636"
-            endingLineNumber = "636"
+            startingLineNumber = "646"
+            endingLineNumber = "646"
             landmarkName = "spawnMobsIfNeeded()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1851,6 +1851,22 @@
             startingLineNumber = "729"
             endingLineNumber = "729"
             landmarkName = "setupActionButtons()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "C8AEB9D2-D20B-4746-BDF9-A02703916E2E"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "CRProject/Services/GameStateService.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "298"
+            endingLineNumber = "298"
+            landmarkName = "advanceWorldState(advanceSafe:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

@@ -87,7 +87,7 @@ class NPC: ObservableObject, Character, Codable {
                 name: mobType.rawValue,
                 sex: .male,
                 age: 0,
-                profession: .adventurer,
+                profession: .noProfession,
                 isVampire: false,
                 id: id
             )
@@ -319,7 +319,7 @@ class NPC: ObservableObject, Character, Codable {
     }
     
     func getAttackValue() -> Int {
-        return 15
+        return mobType.baseAttackValue
     }
     
     func getDefenseValue() -> Int {

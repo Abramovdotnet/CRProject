@@ -67,6 +67,11 @@ class FeedingService: GameService {
                 StatisticsService.shared.increasefeedingsOverDesiredVictims()
                 
                 gameEventsBus.addDangerMessage(message: "Player consumed DESIRED victims blood.")
+                UIKitPopUpManager.shared.show(
+                    title: "Satisfaction",
+                    description: "Desired victim blood consumed",
+                    icon: UIImage(systemName: "drop.fill")
+                )
             }
             
             if !prey.isMob {
@@ -146,8 +151,9 @@ class FeedingService: GameService {
             
             if !prey.isMob {
                 vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
-                statisticsService.incrementVictimsDrained()
             }
+            
+            statisticsService.incrementVictimsDrained()
             
             gameEventsBus.addDangerMessage(message: "Player drained \(prey.isUnknown ? "victim" : prey.name) empty.")
             

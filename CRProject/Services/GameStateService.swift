@@ -89,7 +89,7 @@ class GameStateService : ObservableObject, GameService{
             npcManager.selectedNPC = nil
             
             if isAmbushAvailable() {
-                let mobs = scene.getNPCs().filter( { $0.isAlive && $0.isMob })
+                let mobs = scene.getNPCs().filter( { $0.isAlive && $0.isMob && $0.mobType.isAggressive})
                 
                 if mobs.count > 0 {
                     guard let firstMob = mobs.first else { return }
@@ -297,7 +297,7 @@ class GameStateService : ObservableObject, GameService{
         
         spawnMobsIfNeeded()
         if isAmbushAvailable() {
-            let mobs = scene.getNPCs().filter( { $0.isAlive && $0.isMob })
+            let mobs = scene.getNPCs().filter( { $0.isAlive && $0.isMob && $0.mobType.isAggressive })
             
             if mobs.count > 0 {
                 guard let firstMob = mobs.first else { return }
@@ -604,12 +604,22 @@ class GameStateService : ObservableObject, GameService{
                 
                 if weight > 0.9 {
                     mobType = .puma
-                } else if weight > 0.7 {
+                } else if weight > 0.85 {
                     mobType = .bear
-                } else if weight > 0.5 {
+                } else if weight > 0.8 {
                     mobType = .wildBoar
-                } else {
+                } else if weight > 0.75 {
+                    mobType = .whiteWolf
+                } else if weight > 0.7 {
+                    mobType = .lynx
+                } else if weight > 0.65 {
                     mobType = .wolf
+                } else if weight > 0.6 {
+                    mobType = .elk
+                } else if weight > 0.3 {
+                    mobType = .deer
+                } else {
+                    mobType = .roe
                 }
             }
 

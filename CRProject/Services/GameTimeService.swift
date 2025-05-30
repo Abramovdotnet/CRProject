@@ -6,6 +6,8 @@ extension Notification.Name {
     static let safeTimeAdvanced = Notification.Name("safeTimeAdvanced")
     static let nightAppears = Notification.Name("nightAppears")
     static let dayAppears = Notification.Name("dayAppears")
+    static let timeAnimationStarted = Notification.Name("timeAnimationStarted")
+    static let timeAnimationFinished = Notification.Name("timeAnimationFinished")
 }
 
 class GameTimeService: GameService, ObservableObject {
@@ -62,6 +64,46 @@ class GameTimeService: GameService, ObservableObject {
         currentTime = Calendar.current.date(byAdding: .hour, value: hours, to: currentTime) ?? currentTime
         updateNightTimeStatus()
         NotificationCenter.default.post(name: .safeTimeAdvanced, object: nil)
+    }
+    
+    func advanceTimeUntilHour(_ targetHour: Int) {
+        let hoursToAdvance = calculateHoursToTarget(targetHour)
+        if hoursToAdvance > 0 {
+            NotificationCenter.default.post(name: .timeAnimationStarted, object: nil)
+            advanceTimeWithDelay(hoursRemaining: hoursToAdvance)
+        }
+    }
+    
+    private func calculateHoursToTarget(_ targetHour: Int) -> Int {
+        let normalizedTarget = (targetHour + 24) % 24
+        let normalizedCurrent = (currentHour + 24) % 24
+        
+        if normalizedTarget <= normalizedCurrent {
+            // Target is tomorrow
+            return (24 - normalizedCurrent) + normalizedTarget
+        } else {
+            // Target is today
+            return normalizedTarget - normalizedCurrent
+        }
+    }
+    
+    private func advanceTimeWithDelay(hoursRemaining: Int) {
+        guard hoursRemaining > 0 else { 
+            NotificationCenter.default.post(name: .timeAnimationFinished, object: nil)
+            return 
+        }
+        
+        advanceTime()
+        
+        if hoursRemaining > 1 {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.advanceTimeWithDelay(hoursRemaining: hoursRemaining - 1)
+            }
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                NotificationCenter.default.post(name: .timeAnimationFinished, object: nil)
+            }
+        }
     }
     
     private func updateNightTimeStatus() {

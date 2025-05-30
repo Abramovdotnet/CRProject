@@ -922,7 +922,7 @@ enum NPCInteraction : String, CaseIterable, Codable {
             // Drunk Fight
             if currentNPC.currentActivity == .drink || currentNPC.currentActivity == .gamble && (!currentNPC.isMilitary && !otherNPC.isMilitary) ||
                 (currentNPC.isMilitary && otherNPC.isMilitary){
-                let wouldFight = Int.random(in: 0...100) > 95
+                let wouldFight = Int.random(in: 0...100) > 98
                 
                 if wouldFight {
                     availableInteractions.append(Int.random(in: 0...1) > 0 ? .drunkFight : .gambleFight)
