@@ -164,7 +164,7 @@ class CombatViewController: UIViewController {
         combatLogContainer.clipsToBounds = false
         combatLogContainer.layer.cornerRadius = 12
         combatLogContainer.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        combatLogContainer.layer.borderWidth = 2
+        combatLogContainer.layer.borderWidth = 0.5
         combatLogContainer.layer.borderColor = UIColor.black.cgColor
         combatLogContainer.layer.shadowColor = UIColor.black.cgColor
         combatLogContainer.layer.shadowOpacity = 0.8
@@ -603,9 +603,6 @@ class CombatViewController: UIViewController {
         // Обновляем имя NPC
         npcNameLabel.text = self.npc.name
         
-        // Добавляем сообщение о смене цели в лог с иконками
-        addCombatLogMessageWithIcons("⚔️ Your gaze turns to \(self.npc.name)", initiator: player, target: self.npc, color: .systemYellow, isSystemMessage: true)
-        
         setupActionButtons()
         
         // Обновляем UI без добавления результата действия
@@ -783,17 +780,14 @@ class CombatViewController: UIViewController {
         let hasVampireAction = actions.contains(where: { $0.title == "Bite" || $0.title == "Drain" || $0.title == "Dominate" })
         
         if witnesses > 0 && hasVampireAction {
-            witnessWarningLabel.text = "⚠️ Prying eyes watch from shadows... (\(witnesses) souls)"
+            witnessWarningLabel.text = "⚠️ There are witnesses... (\(witnesses))"
             witnessWarningLabel.textColor = UIColor.systemRed
         } else if hasVampireAction {
-            witnessWarningLabel.text = "🌑 Darkness conceals your unholy hunger..."
+            witnessWarningLabel.text = "🌑 The night is yours..."
             witnessWarningLabel.textColor = UIColor.systemGreen
         } else if witnesses > 0 {
             witnessWarningLabel.text = "⚠️ \(witnesses) onlookers witness this bloodshed"
             witnessWarningLabel.textColor = UIColor.systemYellow
-        } else {
-            witnessWarningLabel.text = "⚔️ Steel rings against steel"
-            witnessWarningLabel.textColor = UIColor.systemBlue
         }
         
         witnessWarningLabel.isHidden = false
@@ -1225,7 +1219,7 @@ class CombatViewController: UIViewController {
                 })
                 
                 // Добавляем индивидуальное сообщение о присоединении стражника
-                self.addCombatLogMessageWithIcons("⚔️ \(guardNPC.name) joins the fight!", initiator: guardNPC, color: .systemOrange, isSystemMessage: true)
+                self.addCombatLogMessageWithIcons("⚔️ \(guardNPC.name) ready for fight!", initiator: guardNPC, color: .systemOrange, isSystemMessage: true)
             })
         })
         
@@ -1269,9 +1263,6 @@ class CombatViewController: UIViewController {
             // Пересоздаем ассистентов
             setupAssistantNPCs()
             layoutAssistantNPCs()
-            
-            // Добавляем сообщение о смене цели
-            addCombatLogMessageWithIcons("⚔️ Target shifts to \(npc.name) as the battle rages on", initiator: player, target: npc, color: .systemOrange, isSystemMessage: true)
             
             print("Auto-switched target from \(previousNPC.name) (dead) to \(npc.name) (alive)")
         }
@@ -1784,7 +1775,7 @@ class CombatViewController: UIViewController {
             iconView.image = UIImage(named: "player1") ?? UIImage(named: "player_avatar") ?? UIImage(systemName: "person.circle.fill")
             iconView.tintColor = .systemBlue
         } else if let npc = character as? NPC {
-            iconView.image = UIImage(named: "npc\(npc.id)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder") ?? UIImage(systemName: "person.circle")
+            iconView.image = UIImage(named: "npc\(npc.isMob ? npc.mobType.name : npc.id.description)") ?? UIImage(named: npc.sex == .male ? "defaultMalePlaceholder" : "defaultFemalePlaceholder") ?? UIImage(systemName: "person.circle")
             iconView.tintColor = .systemRed
         }
         
@@ -1860,7 +1851,7 @@ class CombatViewController: UIViewController {
         if status.totalEnemies > 1 {
             initialMessage = "⚔️ Battle erupts - \(status.totalEnemies) foes stand against you!"
         } else {
-            initialMessage = "⚔️ Steel meets steel - \(npc.name) draws blade!"
+            initialMessage = "⚔️ \(npc.name) ready for attack!"
         }
         
         addCombatLogMessage(initialMessage, color: .systemBlue, isSystemMessage: true)
@@ -2157,7 +2148,7 @@ class CombatViewController: UIViewController {
         combatStatsContainer.translatesAutoresizingMaskIntoConstraints = false
         combatStatsContainer.backgroundColor = UIColor.black.withAlphaComponent(0.5)
         combatStatsContainer.layer.cornerRadius = 12
-        combatStatsContainer.layer.borderWidth = 2
+        combatStatsContainer.layer.borderWidth = 0.5
         combatStatsContainer.layer.borderColor = UIColor.black.cgColor
         combatStatsContainer.layer.shadowColor = UIColor.black.cgColor
         combatStatsContainer.layer.shadowOpacity = 0.8

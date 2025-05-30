@@ -1624,8 +1624,8 @@
             filePath = "CRProject/Views/MainSceneViews/CombatViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "690"
-            endingLineNumber = "690"
+            startingLineNumber = "687"
+            endingLineNumber = "687"
             landmarkName = "setupActionButtons()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1848,8 +1848,8 @@
             filePath = "CRProject/Views/MainSceneViews/CombatViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "729"
-            endingLineNumber = "729"
+            startingLineNumber = "726"
+            endingLineNumber = "726"
             landmarkName = "setupActionButtons()"
             landmarkType = "7">
          </BreakpointContent>

@@ -40,7 +40,7 @@ class UniversalCharacterCell: UIView {
         
         if isSelected {
             // Белое свечение от контейнера аватара (он не обрезается)
-            avatarShadowContainer.layer.shadowColor = UIColor.red.cgColor
+            avatarShadowContainer.layer.shadowColor = UIColor.black.cgColor
             avatarShadowContainer.layer.shadowRadius = 2
             avatarShadowContainer.layer.shadowOpacity = 0.7
             avatarShadowContainer.layer.shadowOffset = CGSize.zero
