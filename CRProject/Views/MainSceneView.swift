@@ -495,7 +495,7 @@ struct MainSceneView: View {
                                 Color.black.edgesIgnoringSafeArea(.all)
                                 
                                 if let npc = npcManager.selectedNPC {
-                                    TradeView(player: gameStateService.player!, npc: npc, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+                                    TradeViewControllerWrapper(player: gameStateService.player!, npc: npc, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
                                 }
                             }
                             .navigationBarHidden(true)

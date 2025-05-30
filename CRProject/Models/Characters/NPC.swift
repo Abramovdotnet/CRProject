@@ -319,7 +319,7 @@ class NPC: ObservableObject, Character, Codable {
     }
     
     func getAttackValue() -> Int {
-        return mobType.baseAttackValue
+        return mobType == .none ? 15 : mobType.baseAttackValue
     }
     
     func getDefenseValue() -> Int {
