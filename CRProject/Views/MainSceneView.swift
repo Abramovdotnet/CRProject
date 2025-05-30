@@ -431,10 +431,15 @@ struct MainSceneView: View {
                                 Color.black.edgesIgnoringSafeArea(.all)
                                 
                                 if let dialogueViewModel = activeDialogueViewModel {
-                                    DialogueView(
+                                    DialogueViewControllerWrapper(
                                         viewModel: dialogueViewModel, 
                                         mainViewModel: viewModel,
-                                        isSkipable: !dialogueViewModel.isSpecificDialogueSet
+                                        isSkipable: !dialogueViewModel.isSpecificDialogueSet,
+                                        onDismiss: {
+                                            DebugLogService.shared.log("🚪 MainSceneView: onDismiss called - clearing activeDialogueViewModel and popping navigation", category: "MainScene")
+                                            activeDialogueViewModel = nil
+                                            safePopNavigation()
+                                        }
                                     )
                                         .onDisappear {
                                             activeDialogueViewModel = nil

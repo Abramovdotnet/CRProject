@@ -105,6 +105,7 @@ class DialogueViewModel: ObservableObject {
         DebugLogService.shared.log("Selected option leading to node: \(option.nextNodeId)", category: "DialogueVM")
         
         if option.nextNodeId == "end" {
+            DebugLogService.shared.log("🚪 DialogueVM: END node detected - setting shouldDismiss = true", category: "DialogueVM")
             executeActions(option.successActions)
             shouldDismiss = true
             if let activeQuests = player?.activeQuests {
@@ -112,6 +113,7 @@ class DialogueViewModel: ObservableObject {
                     questService.completeStage(questId: questId, interactorNPC: self.currentNPC)
                 }
             }
+            DebugLogService.shared.log("🚪 DialogueVM: shouldDismiss is now: \(shouldDismiss)", category: "DialogueVM")
             return
         }
         
@@ -131,6 +133,7 @@ class DialogueViewModel: ObservableObject {
             if let (newText, newOptions) = dialogueProcessor.processNode(option.nextNodeId, npc: currentNPC) {
                 updateDialogue(text: newText, options: newOptions)
             } else {
+                DebugLogService.shared.log("🚪 DialogueVM: processNode returned nil - setting shouldDismiss = true", category: "DialogueVM")
                 shouldDismiss = true
             }
         }

@@ -527,6 +527,11 @@ class DialogueProcessor {
         let successChance = calculatePersuasionSuccessChance(for: npc)
         let roll = Int.random(in: 1...100)
         
+        print("🎲 PERSUASION CHECK:")
+        print("🎲 Success chance: \(successChance)%")
+        print("🎲 Roll: \(roll)")
+        print("🎲 Result: \(roll <= successChance ? "SUCCESS" : "FAILURE")")
+        
         return roll <= successChance
     }
     
@@ -540,9 +545,17 @@ class DialogueProcessor {
         baseChance += relationshipEffect
         
         // Influence of UnholyTongue ability
-        if AbilitiesSystem.shared.hasUnholyTongue {
+        let hasUnholyTongue = AbilitiesSystem.shared.hasUnholyTongue
+        if hasUnholyTongue {
             baseChance += 20 // UnholyTongue increases success chance by 20%
         }
+        
+        print("🎲 PERSUASION CALCULATION:")
+        print("🎲 Base chance: 50%")
+        print("🎲 Relationship (\(npc.playerRelationship.value)): +\(relationshipEffect)%")
+        print("🎲 UnholyTongue: \(hasUnholyTongue ? "+20%" : "not unlocked")")
+        print("🎲 Bribes count: \(StatisticsService.shared.bribes)")
+        print("🎲 Final chance: \(max(0, min(100, baseChance)))%")
         
         // Player skills (Placeholder - needs actual skill system integration)
         // Example: if player.skills.persuasion > npc.resistance.persuasion { baseChance += 15 }
