@@ -190,15 +190,16 @@ struct MainSceneView: View {
                                                 navigationPath.append(NavigationDestination.navigation)
                                             }
                                         )
+                                        
+                                        MainSceneActionButton(
+                                            icon: "eye.circle.fill",
+                                            color: Theme.textColor,
+                                            action: {
+                                                viewModel.getGameStateService().movePlayerToNearestHideout()
+                                                navigationPath.append(NavigationDestination.hidingCell)
+                                            }
+                                        )
                                     }
-                                    MainSceneActionButton(
-                                        icon: "eye.circle.fill",
-                                        color: Theme.textColor,
-                                        action: {
-                                            viewModel.getGameStateService().movePlayerToNearestHideout()
-                                            navigationPath.append(NavigationDestination.hidingCell)
-                                        }
-                                    )
                                     // Hide
                                     if let player = GameStateService.shared.player, player.hiddenAt == .none && AbilitiesSystem.shared.hasInvisibility {
                                         ForEach(viewModel.getAvailableHideouts(), id: \.self) { hideout in
@@ -377,7 +378,7 @@ struct MainSceneView: View {
                                                 )
                                             }
                                         }
-                                        if let selectedNPC = npcManager.selectedNPC, selectedNPC.isAlive {
+                                        if let selectedNPC = npcManager.selectedNPC, selectedNPC.isAlive && !isPlayerArrested {
                                             MainSceneActionButton(
                                                 icon: "flame", // Иконка боя
                                                 color: Theme.bloodProgressColor,

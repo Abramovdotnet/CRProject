@@ -779,15 +779,12 @@ class CombatViewController: UIViewController {
         let witnesses = GameStateService.shared.getWitnessesCount()
         let hasVampireAction = actions.contains(where: { $0.title == "Bite" || $0.title == "Drain" || $0.title == "Dominate" })
         
-        if witnesses > 0 && hasVampireAction {
+        if witnesses > 0 {
             witnessWarningLabel.text = "⚠️ There are witnesses... (\(witnesses))"
             witnessWarningLabel.textColor = UIColor.systemRed
-        } else if hasVampireAction {
+        } else {
             witnessWarningLabel.text = "🌑 The night is yours..."
             witnessWarningLabel.textColor = UIColor.systemGreen
-        } else if witnesses > 0 {
-            witnessWarningLabel.text = "⚠️ \(witnesses) onlookers witness this bloodshed"
-            witnessWarningLabel.textColor = UIColor.systemYellow
         }
         
         witnessWarningLabel.isHidden = false

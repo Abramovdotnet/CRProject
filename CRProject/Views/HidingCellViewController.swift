@@ -611,7 +611,7 @@ class HidingCellViewController: UIViewController {
         view.addSubview(advanceTimeButton)
         
         // Night Button
-        nightButton = ActionButtonSmallView(title: "Night", icon: "moon.fill", color: .systemBlue, onTap: { [weak self] in
+        nightButton = ActionButtonSmallView(title: "Night", icon: "moon.fill", color: .white, onTap: { [weak self] in
             self?.nightTapped()
         })
         nightButton.translatesAutoresizingMaskIntoConstraints = false

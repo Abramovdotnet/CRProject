@@ -469,6 +469,7 @@ class GameStateService : ObservableObject, GameService{
     }
     
     func callTheGuardsIfNeeded(engagedInFight: [NPC]) -> [NPC]? {
+        guard engagedInFight.allSatisfy( { !$0.isMob } ) else { return nil }
         // Проверка наличия мертвых NPC в бою
         guard engagedInFight.contains(where: { !$0.isAlive }) else { return nil }
         
