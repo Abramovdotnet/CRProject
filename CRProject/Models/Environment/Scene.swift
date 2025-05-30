@@ -144,6 +144,8 @@ class Scene: SceneProtocol, Codable, ObservableObject, Identifiable {
                                  sceneType != .cave &&
                                  sceneType != .docks &&
                                  sceneType != .ruins &&
+                                 sceneType != .crypt &&
+                                 sceneType != .military &&
                                  sceneType != .dungeon)
         
         if isLockableBuilding {

@@ -722,32 +722,38 @@ class CombatViewController: UIViewController {
                 )
                 CombatService.shared.performGroupAction(action)
                 self.updateUIAfterAction()
-            }),
-            ("Bite", "mouth.fill", .systemPink, { [weak self] in
-                guard let self = self else { return }
-                self.lastActionType = .feed
-                let action = CombatAction(
-                    type: .feed,
-                    initiatorId: "",
-                    target: self.npc,
-                    parameters: nil
-                )
-                CombatService.shared.performGroupAction(action)
-                self.updateUIAfterAction()
-            }),
-            ("Drain", "drop.triangle.fill", .systemRed, { [weak self] in
-                guard let self = self else { return }
-                self.lastActionType = .drain
-                let action = CombatAction(
-                    type: .drain,
-                    initiatorId: "",
-                    target: self.npc,
-                    parameters: nil
-                )
-                CombatService.shared.performGroupAction(action)
-                self.updateUIAfterAction()
-            }),
+            })
         ]
+        
+        if FeedingService.shared.canFeed() {
+            actions.insert(
+                ("Bite", "mouth.fill", .systemPink, { [weak self] in
+                    guard let self = self else { return }
+                    self.lastActionType = .feed
+                    let action = CombatAction(
+                        type: .feed,
+                        initiatorId: "",
+                        target: self.npc,
+                        parameters: nil
+                    )
+                    CombatService.shared.performGroupAction(action)
+                    self.updateUIAfterAction()
+                }), at: 1)
+            
+            actions.insert(
+                ("Drain", "drop.triangle.fill", .systemRed, { [weak self] in
+                    guard let self = self else { return }
+                    self.lastActionType = .drain
+                    let action = CombatAction(
+                        type: .drain,
+                        initiatorId: "",
+                        target: self.npc,
+                        parameters: nil
+                    )
+                    CombatService.shared.performGroupAction(action)
+                    self.updateUIAfterAction()
+                }), at: 2)
+        }
 
         if AbilitiesSystem.shared.hasDomination {
             actions.insert(
@@ -762,7 +768,7 @@ class CombatViewController: UIViewController {
                 )
                 CombatService.shared.performGroupAction(action)
                 self.updateUIAfterAction()
-                }), at: 2)
+                }), at: 3)
         }
         // Проверяем наличие военных NPC для кнопки Surrender
         let hasMilitaryNPCs = checkForMilitaryNPCs()

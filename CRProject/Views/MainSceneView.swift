@@ -354,7 +354,10 @@ struct MainSceneView: View {
                                                 }
                                             )
                                             
-                                            if !selectedNPC.isVampire && selectedNPC.currentActivity != .jailed && !isPlayerArrested {
+                                            if !selectedNPC.isVampire
+                                                && selectedNPC.currentActivity != .jailed
+                                                && !isPlayerArrested
+                                                && FeedingService.shared.canFeed() {
                                                 // Feed
                                                 MainSceneActionButton(
                                                     icon: "drop.halffull",

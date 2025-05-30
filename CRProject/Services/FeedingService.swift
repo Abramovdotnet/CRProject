@@ -24,8 +24,18 @@ class FeedingService: GameService {
     
     func canFeed(vampire: any Character, prey: any Character) -> Bool {
         guard vampire.isVampire else { return false }
+        guard vampire.bloodMeter.currentBlood < 90 else { return false }
         guard !prey.isVampire else { return false }
         return prey.bloodMeter.bloodPercentage > 0
+    }
+    
+    func canFeed(player: Player) -> Bool {
+        return player.bloodMeter.currentBlood < 90
+    }
+    
+    func canFeed() -> Bool {
+        guard let player = GameStateService.shared.player else { return false }
+        return canFeed(player: player)
     }
     
     func feedOnCharacter(vampire: Player, prey: NPC, amount: Float, in sceneId: Int, advanceTime: Bool = true) throws {
@@ -59,8 +69,11 @@ class FeedingService: GameService {
                 gameEventsBus.addDangerMessage(message: "Player consumed DESIRED victims blood.")
             }
             
-            // Increase awareness in the scene where feeding occurred
-            vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
+            if !prey.isMob {
+                // Increase awareness in the scene where feeding occurred
+                vampireNatureRevealService.increaseAwareness(amount: awarenessIncreaseValue)
+            }
+            
             statisticsService.incrementFeedings()
             gameEventsBus.addDangerMessage(message: "Player consumed \(prey.name) blood.")
             
