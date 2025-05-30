@@ -103,6 +103,27 @@ class NPCWidgetUIViewController: UIViewController {
     private let unknownIcon = UILabel()
     private let desiredVictimView = UIView()
     
+    // Glow views для иконок (добавляем как в NPCCharacterCell)
+    private let professionIconGlow = UIImageView()
+    private let activityIconGlow = UIImageView()
+    
+    // Static cache for glow images to avoid regenerating them
+    private static var glowImageCache: [String: UIImage] = [:]
+    private static let cacheQueue = DispatchQueue(label: "glowImageCache", qos: .utility)
+    
+    // Static cache for icon configurations
+    private static let iconConfig = UIImage.SymbolConfiguration(pointSize: 12) // Увеличиваем размер символов
+    
+    // Method to clear cache if needed (for memory management)
+    static func clearGlowImageCache() {
+        cacheQueue.async {
+            glowImageCache.removeAll()
+        }
+    }
+    
+    // Размер иконок как в NPCCharacterCell
+    private let iconSize: CGFloat = 28
+    
     // MARK: - Initializers
     init(npc: NPC, isSelected: Bool, isDisabled: Bool, showCurrentActivity: Bool, showResistance: Bool, onTap: @escaping () -> Void, onAction: @escaping (NPCAction) -> Void) {
         self.npc = npc
@@ -286,6 +307,14 @@ class NPCWidgetUIViewController: UIViewController {
         // Setup profession and activity section
         professionIconImageView.translatesAutoresizingMaskIntoConstraints = false
         professionIconImageView.contentMode = .scaleAspectFit
+        professionIconImageView.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+        professionIconImageView.clipsToBounds = true
+        professionIconImageView.layer.cornerRadius = iconSize / 2
+        professionIconImageView.layer.borderWidth = 0
+        professionIconImageView.layer.shadowColor = UIColor.black.cgColor
+        professionIconImageView.layer.shadowRadius = 2
+        professionIconImageView.layer.shadowOpacity = 0.5
+        professionIconImageView.layer.shadowOffset = CGSize(width: 0, height: 1)
         professionIconImageView.tintColor = convertSwiftUIColorToUIColor(npc.profession.color)
         containerView.addSubview(professionIconImageView)
         
@@ -299,6 +328,14 @@ class NPCWidgetUIViewController: UIViewController {
         
         activityIconImageView.translatesAutoresizingMaskIntoConstraints = false
         activityIconImageView.contentMode = .scaleAspectFit
+        activityIconImageView.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+        activityIconImageView.clipsToBounds = true
+        activityIconImageView.layer.cornerRadius = iconSize / 2
+        activityIconImageView.layer.borderWidth = 0
+        activityIconImageView.layer.shadowColor = UIColor.black.cgColor
+        activityIconImageView.layer.shadowRadius = 2
+        activityIconImageView.layer.shadowOpacity = 0.5
+        activityIconImageView.layer.shadowOffset = CGSize(width: 0, height: 1)
         containerView.addSubview(activityIconImageView)
         
         activityLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -308,6 +345,24 @@ class NPCWidgetUIViewController: UIViewController {
         activityLabel.lineBreakMode = .byTruncatingTail
         activityLabel.textAlignment = .left
         containerView.addSubview(activityLabel)
+        
+        // Setup glow views как в NPCCharacterCell
+        professionIconGlow.contentMode = .scaleAspectFill
+        professionIconGlow.alpha = 0.8
+        professionIconGlow.isUserInteractionEnabled = false
+        professionIconImageView.addSubview(professionIconGlow)
+        professionIconImageView.sendSubviewToBack(professionIconGlow)
+        
+        activityIconGlow.contentMode = .scaleAspectFill
+        activityIconGlow.alpha = 0.8
+        activityIconGlow.isUserInteractionEnabled = false
+        activityIconImageView.addSubview(activityIconGlow)
+        activityIconImageView.sendSubviewToBack(activityIconGlow)
+        
+        // Устанавливаем размеры glow views напрямую (без constraints)
+        let glowSize = iconSize + 12
+        professionIconGlow.frame = CGRect(x: -6, y: -6, width: glowSize, height: glowSize)
+        activityIconGlow.frame = CGRect(x: -6, y: -6, width: glowSize, height: glowSize)
         
         // Setup constraints
         NSLayoutConstraint.activate([
@@ -391,8 +446,8 @@ class NPCWidgetUIViewController: UIViewController {
             // Profession row - icon left, text right
             professionIconImageView.topAnchor.constraint(equalTo: healthProgressView.bottomAnchor, constant: 12),
             professionIconImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            professionIconImageView.widthAnchor.constraint(equalToConstant: 20),
-            professionIconImageView.heightAnchor.constraint(equalToConstant: 20),
+            professionIconImageView.widthAnchor.constraint(equalToConstant: iconSize),
+            professionIconImageView.heightAnchor.constraint(equalToConstant: iconSize),
             
             professionLabel.centerYAnchor.constraint(equalTo: professionIconImageView.centerYAnchor),
             professionLabel.leadingAnchor.constraint(equalTo: professionIconImageView.trailingAnchor, constant: 8),
@@ -401,8 +456,8 @@ class NPCWidgetUIViewController: UIViewController {
             // Activity in the same row, but right-aligned
             activityIconImageView.centerYAnchor.constraint(equalTo: professionIconImageView.centerYAnchor),
             activityIconImageView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            activityIconImageView.widthAnchor.constraint(equalToConstant: 20),
-            activityIconImageView.heightAnchor.constraint(equalToConstant: 20),
+            activityIconImageView.widthAnchor.constraint(equalToConstant: iconSize),
+            activityIconImageView.heightAnchor.constraint(equalToConstant: iconSize),
             
             activityLabel.centerYAnchor.constraint(equalTo: activityIconImageView.centerYAnchor),
             activityLabel.trailingAnchor.constraint(equalTo: activityIconImageView.leadingAnchor, constant: -8),
@@ -716,17 +771,35 @@ class NPCWidgetUIViewController: UIViewController {
             if self.npc.isMob {
                 // Show mob type instead of profession
                 let mobTypeIconName = "pawprint.fill" // Generic mob icon
-                self.professionIconImageView.image = UIImage(systemName: mobTypeIconName)
-                self.professionIconImageView.tintColor = UIColor.systemRed // Red color for mobs
+                let mobColor = UIColor.systemRed
+                self.professionIconImageView.image = UIImage(systemName: mobTypeIconName, withConfiguration: Self.iconConfig)
+                self.professionIconImageView.tintColor = mobColor
+                self.professionIconImageView.contentMode = .center
                 self.professionLabel.text = self.npc.mobType.rawValue
                 self.professionLabel.textColor = UIColor(Theme.textColor)
+                
+                // Устанавливаем glow изображение для profession icon
+                Self.getCachedGlowImage(size: CGSize(width: self.iconSize + 12, height: self.iconSize + 12), color: mobColor) { [weak self] glowImage in
+                    DispatchQueue.main.async {
+                        self?.professionIconGlow.image = glowImage
+                    }
+                }
             } else {
                 // Show profession for regular NPCs
                 let professionIconName = self.npc.profession.icon
-                self.professionIconImageView.image = UIImage(systemName: professionIconName)
-                self.professionIconImageView.tintColor = self.convertSwiftUIColorToUIColor(self.npc.profession.color)
+                let professionColor = self.convertSwiftUIColorToUIColor(self.npc.profession.color)
+                self.professionIconImageView.image = UIImage(systemName: professionIconName, withConfiguration: Self.iconConfig)
+                self.professionIconImageView.tintColor = professionColor
+                self.professionIconImageView.contentMode = .center
                 self.professionLabel.text = self.npc.profession.rawValue.capitalized
                 self.professionLabel.textColor = UIColor(Theme.textColor)
+                
+                // Устанавливаем glow изображение для profession icon
+                Self.getCachedGlowImage(size: CGSize(width: self.iconSize + 12, height: self.iconSize + 12), color: professionColor) { [weak self] glowImage in
+                    DispatchQueue.main.async {
+                        self?.professionIconGlow.image = glowImage
+                    }
+                }
             }
             
             // Ensure text truncates properly with ellipsis if too long
@@ -737,17 +810,36 @@ class NPCWidgetUIViewController: UIViewController {
             let showProfession = self.npc.isAlive
             self.professionIconImageView.alpha = showProfession ? 1.0 : 0.0
             self.professionLabel.alpha = showProfession ? 1.0 : 0.0
+            self.professionIconGlow.alpha = showProfession ? 0.8 : 0.0
             
             // Show/hide activity based on setting, aliveness, and mob status (mobs don't show activity)
             let shouldShowActivity = self.showCurrentActivity && self.npc.isAlive && !self.npc.isMob
             self.activityIconImageView.alpha = shouldShowActivity ? 1.0 : 0.0
             self.activityLabel.alpha = shouldShowActivity ? 1.0 : 0.0
+            self.activityIconGlow.alpha = shouldShowActivity ? 0.8 : 0.0
             
             if shouldShowActivity {
                 let activityIconName = self.npc.isAlive ? self.npc.currentActivity.icon : "xmark.circle.fill"
-                self.activityIconImageView.image = UIImage(systemName: activityIconName)
-                self.activityIconImageView.tintColor = self.npc.isAlive ? 
+                let activityColor = self.npc.isAlive ? 
                     self.convertSwiftUIColorToUIColor(self.npc.currentActivity.color) : UIColor(Theme.bloodProgressColor)
+                
+                self.activityIconImageView.image = UIImage(systemName: activityIconName, withConfiguration: Self.iconConfig)
+                self.activityIconImageView.tintColor = activityColor
+                self.activityIconImageView.contentMode = .center
+                
+                // Добавляем цветное свечение для иконки активности
+                self.activityIconImageView.layer.shadowColor = activityColor.cgColor
+                self.activityIconImageView.layer.shadowRadius = 4
+                self.activityIconImageView.layer.shadowOpacity = 0.6
+                self.activityIconImageView.layer.shadowOffset = .zero
+                
+                // Устанавливаем glow изображение для activity icon
+                Self.getCachedGlowImage(size: CGSize(width: self.iconSize + 12, height: self.iconSize + 12), color: activityColor) { [weak self] glowImage in
+                    DispatchQueue.main.async {
+                        self?.activityIconGlow.image = glowImage
+                    }
+                }
+                
                 self.activityLabel.text = self.npc.isAlive ? self.npc.currentActivity.description.capitalized : "Dead"
                 self.activityLabel.textColor = UIColor(Theme.textColor) // Always white text for activity too
             }
@@ -863,5 +955,61 @@ class NPCWidgetUIViewController: UIViewController {
         // Cancel all subscriptions
         cancellables.forEach { $0.cancel() }
         cancellables.removeAll()
+    }
+    
+    // MARK: - Glow Image Generation (скопировано из NPCCharacterCell)
+    
+    // Кэшированная генерация radial alpha glow для иконок
+    private static func getCachedGlowImage(size: CGSize, color: UIColor, completion: @escaping (UIImage?) -> Void) {
+        // Создаем уникальный ключ на основе размера и компонентов цвета
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        let cacheKey = String(format: "%.0fx%.0f_%.3f_%.3f_%.3f_%.3f", size.width, size.height, red, green, blue, alpha)
+        
+        // Проверяем кэш в основном потоке
+        if let cachedImage = glowImageCache[cacheKey] {
+            completion(cachedImage)
+            return
+        }
+        
+        // Генерируем изображение в фоновом потоке
+        cacheQueue.async {
+            let glowImage = makeRadialGlowImage(size: size, color: color)
+            
+            // Сохраняем в кэш
+            if let image = glowImage {
+                glowImageCache[cacheKey] = image
+            }
+            
+            // Возвращаем результат
+            completion(glowImage)
+        }
+    }
+    
+    // Оптимизированная генерация radial alpha glow для иконок
+    private static func makeRadialGlowImage(size: CGSize, color: UIColor) -> UIImage? {
+        let scale = UIScreen.main.scale
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        guard let ctx = UIGraphicsGetCurrentContext() else { return nil }
+        
+        // Оптимизация: используем более эффективный способ создания градиента
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let colors = [color.withAlphaComponent(0.4).cgColor, color.withAlphaComponent(0.0).cgColor] as CFArray
+        let locations: [CGFloat] = [0.0, 1.0]
+        
+        guard let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: locations) else {
+            UIGraphicsEndImageContext()
+            return nil
+        }
+        
+        let center = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
+        let radius = size.width * 0.5
+        
+        ctx.drawRadialGradient(gradient, startCenter: center, startRadius: 0, endCenter: center, endRadius: radius, options: .drawsAfterEndLocation)
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image?.withRenderingMode(.alwaysOriginal)
     }
 }

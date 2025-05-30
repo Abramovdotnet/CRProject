@@ -84,6 +84,40 @@ class NPCCharacterCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        
+        // Сбрасываем состояние выделения при переиспользовании ячейки
+        layer.shadowColor = UIColor.black.cgColor
+        layer.shadowRadius = 6
+        layer.shadowOpacity = 0.8
+        selectionGlowLayer.isHidden = true
+        
+        // Сбрасываем кэшированные значения
+        currentNPC = nil
+        currentProfessionIcon = nil
+        currentProfessionColor = nil
+        currentActivityIcon = nil
+        currentActivityColor = nil
+        
+        // Сбрасываем анимации
+        layer.removeAllAnimations()
+        healthIndicator.removeAllAnimations()
+        desiredVictimIndicator.layer.removeAllAnimations()
+        questIndicatorIcon.layer.removeAllAnimations()
+        
+        // Скрываем все элементы по умолчанию
+        healthIndicator.opacity = 0
+        desiredVictimIndicator.isHidden = true
+        questIndicatorIcon.isHidden = true
+        professionIcon.isHidden = false
+        activityIcon.isHidden = false
+        healthPercentageLabel.isHidden = false
+        
+        // Сбрасываем прозрачность
+        alpha = 1.0
+    }
+    
     private func setupViews() {
         // Avatar setup - теперь занимает весь bounds (убираем cardBackground)
         let newAvatarSize: CGFloat = bounds.width // Аватар занимает весь размер ячейки

@@ -493,7 +493,8 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     
                     // --- НОВАЯ ЛОГИКА: обновляем доступность для клика существующих маркеров ---
                     let isConnected = currentScene?.connections.contains { $0.connectedSceneId == scene.id } ?? false
-                    let isClickable = (isConnected && !scene.isLocked) || scene.id == currentSceneId
+                    let isAccessible = mainViewModel.isLocationAccessible(scene)
+                    let isClickable = ((isConnected && !scene.isLocked) || scene.id == currentSceneId) && isAccessible
                     
                     marker.isUserInteractionEnabled = isClickable
                     
@@ -627,7 +628,8 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                     
                     // --- НОВАЯ ЛОГИКА: обновляем доступность для клика существующих маркеров ---
                     let isConnected = currentScene?.connections.contains { $0.connectedSceneId == scene.id } ?? false
-                    let isClickable = (isConnected && !scene.isLocked) || scene.id == currentSceneId
+                    let isAccessible = mainViewModel.isLocationAccessible(scene)
+                    let isClickable = ((isConnected && !scene.isLocked) || scene.id == currentSceneId) && isAccessible
                     
                     marker.isUserInteractionEnabled = isClickable
                     
@@ -675,7 +677,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
                 line.move(to: CGPoint(x: start.x + markerSize.width/2, y: start.y + markerSize.height/2))
                 line.addLine(to: CGPoint(x: end.x + markerSize.width/2, y: end.y + markerSize.height/2))
                 // Только для connections текущей сцены и если target доступен — зелёная линия
-                if scene.id == currentSceneId && !target.isLocked {
+                if scene.id == currentSceneId && !target.isLocked && mainViewModel.isLocationAccessible(target) {
                     greenPath.append(line)
                 } else {
                     grayPath.append(line)
@@ -701,11 +703,26 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         // Проверяем, есть ли связь между текущей и целевой локацией
         let isConnected = currentScene.connections.contains { $0.connectedSceneId == sceneId }
         
+        // Добавляем проверку через mainViewModel.isLocationAccessible() для более полной проверки
+        let isAccessible = mainViewModel.isLocationAccessible(targetScene)
+        
         if !isConnected {
             // Показываем сообщение о недоступности
             let alert = UIAlertController(
                 title: "Cannot Travel",
                 message: "You cannot travel directly to \(targetScene.name). You can only move to connected locations.",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "OK", style: .default))
+            present(alert, animated: true)
+            return
+        }
+        
+        if !isAccessible {
+            // Показываем сообщение о недоступности через игровую логику
+            let alert = UIAlertController(
+                title: "Location Inaccessible",
+                message: "You cannot access \(targetScene.name) at this time. Complete required quests or meet other conditions first.",
                 preferredStyle: .alert
             )
             alert.addAction(UIAlertAction(title: "OK", style: .default))
