@@ -366,6 +366,6 @@ struct TradeView: View {
             hasSuccess: false,
             isSuccess: nil
         )
-        GameTimeService.shared.advanceTime()
+        GameTimeService.shared.advanceMinutes(minutes: 10)
     }
 } 

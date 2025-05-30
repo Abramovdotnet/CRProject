@@ -56,6 +56,14 @@ class GameStateService : ObservableObject, GameService{
         
         // Subscribe to time advancement notifications
         NotificationCenter.default
+            .publisher(for: .minutesAdvanced)
+            .sink { [weak self] _ in
+                self?.handleMinutesAdvanced()
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to time advancement notifications
+        NotificationCenter.default
             .publisher(for: .safeTimeAdvanced)
             .sink { [weak self] _ in
                 self?.handleSafeTimeAdvanced()
@@ -163,7 +171,7 @@ class GameStateService : ObservableObject, GameService{
             
             spawnMobsIfNeeded()
             
-            gameTime.advanceTime()
+            gameTime.advanceMinutes(minutes: 20)
         } else {
             DebugLogService.shared.log("Cannot travel to locked location", category: "Location")
             gameEventsBus.addDangerMessage(message: "*I cannot move to this location*")
@@ -233,6 +241,47 @@ class GameStateService : ObservableObject, GameService{
                 player.isArrested = false
                 player.isWanted = false
                 player.arrestTime = 0
+            }
+        }
+
+        // Update quest indicators for NPCs in the current scene
+        let questService = QuestService.shared
+        for npc in scene.getNPCs() { // Assuming scene.getNPCs() returns an array of NPC objects
+            // Предполагаем, что свойства в NPC теперь Bool
+            npc.hasNewQuests = questService.hasAvailableNewQuests(for: npc.id)
+            npc.questStageUpdateAvaiting = questService.isNPCAwaitingPlayerActionInActiveQuests(for: npc.id)
+            npc.isImportantNpc = questService.isImportantNpc(npcId: npc.id)
+            // Если свойства Int, то:
+            // npc.hasNewQuests = questService.hasAvailableNewQuests(for: npc.id) ? 1 : 0
+            // npc.questStageUpdateAvaiting = questService.isNPCAwaitingPlayerActionInActiveQuests(for: npc.id) ? 1 : 0
+        }
+    }
+    
+    
+    func handleMinutesAdvanced() {
+        guard let player = player else { return }
+
+        NPCBehaviorService.shared.updateNPCsActivities()
+        advanceWorldState()
+        
+        // Reset selection if npc left location
+        guard let scene = currentScene else { return }
+        
+        
+        if !scene.isIndoor && !gameTime.isNightTime && (!AbilitiesSystem.shared.hasDayWalker || (AbilitiesSystem.shared.hasDayWalker &&  (player.bloodMeter.currentBlood) <= 70.0)) {
+            endGame()
+        }
+        
+        if npcManager.selectedNPC != nil {
+            if !scene.hasCharacter(with: npcManager.selectedNPC!.id) {
+                npcManager.selectedNPC = nil
+            }
+        }
+        
+        if AbilitiesSystem.shared.hasInsight {
+            let unknownNpcs = scene.getNPCs().filter { $0.isUnknown }
+            for npc in unknownNpcs {
+                InvestigationService.shared.investigate(inspector: player, investigationObject: npc)
             }
         }
 
@@ -547,7 +596,7 @@ class GameStateService : ObservableObject, GameService{
     
     func endCombat() {
         CombatService.shared.isCombatActive = false
-        gameTime.advanceTime()
+        gameTime.advanceMinutes(minutes: 10)
         
         DispatchQueue.main.async {
             // Отправляем уведомление для возврата в главную сцену

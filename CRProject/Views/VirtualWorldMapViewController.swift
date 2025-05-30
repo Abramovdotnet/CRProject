@@ -1,5 +1,6 @@
 import UIKit
 import SwiftUI // <<< Added for UIHostingController
+import Combine // <<< Added for observing scene changes
 // Добавляю импорт для ActionButtonSmallView
 
 // --- ВСПОМОГАТЕЛЬНЫЙ КЛАСС ДЛЯ ЦВЕТА ---
@@ -77,6 +78,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     private let topWidgetContainerView = UIView()
     private var topWidgetViewController: TopWidgetUIViewController?
     private var dustEffectView: UIHostingController<DustEmitterView>? // Для эффекта пыли
+    private var cancellables = Set<AnyCancellable>() // Для подписок Combine
     
     init(mainViewModel: MainSceneViewModel) {
         self.mainViewModel = mainViewModel
@@ -107,6 +109,9 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         // --- Добавляю кнопку обратной навигации ---
         setupBackButton()
         // --- конец кнопки ---
+        
+        // Подписываемся на изменения текущей сцены для автоматической смены фона
+        setupSceneObserver()
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -164,8 +169,11 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func setupBackgroundImage() {
+        let imageName = "location\(currentSceneId ?? 0)"
+        let backgroundImage = UIImage(named: imageName) ?? UIImage(named: "MainSceneBackground")!
+        
         backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
-        backgroundImageView.image = UIImage(named: "mapBackground")
+        backgroundImageView.image = backgroundImage
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.clipsToBounds = false
         view.addSubview(backgroundImageView)
@@ -175,6 +183,48 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
             backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
+    }
+    
+    private func updateBackgroundImage(for sceneId: Int, animated: Bool = true) {
+        let imageName = "location\(sceneId)"
+        let newImage = UIImage(named: imageName) ?? UIImage(named: "MainSceneBackground")!
+        
+        // Если изображение уже установлено, не меняем
+        if backgroundImageView.image == newImage {
+            return
+        }
+        
+        if animated {
+            // Создаем временный ImageView для плавного перехода
+            let tempImageView = UIImageView()
+            tempImageView.translatesAutoresizingMaskIntoConstraints = false
+            tempImageView.image = newImage
+            tempImageView.contentMode = .scaleAspectFill
+            tempImageView.clipsToBounds = false
+            tempImageView.alpha = 0.0
+            
+            view.insertSubview(tempImageView, aboveSubview: backgroundImageView)
+            NSLayoutConstraint.activate([
+                tempImageView.topAnchor.constraint(equalTo: view.topAnchor),
+                tempImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+                tempImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+                tempImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            ])
+            
+            // Анимируем кроссфейд
+            UIView.animate(withDuration: 0.8, delay: 0, options: .curveEaseInOut, animations: {
+                tempImageView.alpha = 1.0
+                self.backgroundImageView.alpha = 0.0
+            }, completion: { _ in
+                // Заменяем основное изображение и убираем временное
+                self.backgroundImageView.image = newImage
+                self.backgroundImageView.alpha = 1.0
+                tempImageView.removeFromSuperview()
+            })
+        } else {
+            // Мгновенная смена без анимации
+            backgroundImageView.image = newImage
+        }
     }
     
     private func setupDustEffect() {
@@ -669,6 +719,9 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     }
     
     private func currentSceneChanged(to sceneId: Int) {
+        // Обновляем фоновое изображение с анимацией
+        updateBackgroundImage(for: sceneId, animated: true)
+        
         // Обновить выделение
         for (id, marker) in markerViews {
             marker.layer.borderColor = (id == sceneId) ? UIColor.yellow.cgColor : UIColor.black.cgColor
@@ -748,4 +801,18 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         view.bringSubviewToFront(leaveButton)
     }
     // --- конец кнопки ---
+    
+    private func setupSceneObserver() {
+        // Наблюдаем за изменениями текущей сцены через mainViewModel
+        mainViewModel.$currentScene
+            .compactMap { $0?.id }
+            .removeDuplicates()
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newSceneId in
+                self?.updateBackgroundImage(for: newSceneId, animated: true)
+                self?.updateVisibleMarkersAndLines()
+                self?.updateCurrentLocationInfo()
+            }
+            .store(in: &cancellables)
+    }
 } 

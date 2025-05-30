@@ -96,7 +96,7 @@ class FeedingService: GameService {
             setWitnessesIfExists(sceneId: sceneId, exceptId: prey.id)
             
             if advanceTime {
-                gameTime.advanceTime()
+                gameTime.advanceMinutes(minutes: 10)
             }
         }
     }
@@ -165,7 +165,7 @@ class FeedingService: GameService {
             setWitnessesIfExists(sceneId: sceneId)
             
             if advanceTime {
-                gameTime.advanceTime()
+                gameTime.advanceMinutes(minutes: 10)
             }
         }
     }

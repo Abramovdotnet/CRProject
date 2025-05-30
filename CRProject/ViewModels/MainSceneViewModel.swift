@@ -12,6 +12,7 @@ class MainSceneViewModel: ObservableObject {
     @Published var playerBloodPercentage: Float = 100
     @Published var currentDay: Int = 1
     @Published var currentHour: Int = 0
+    @Published var currentMinute: Int = 0
     @Published var isNight: Bool = false
     @Published var isGameEnd: Bool = false
     @Published var sceneSplit: Int = 0
@@ -170,6 +171,15 @@ class MainSceneViewModel: ObservableObject {
             .sink { [weak self] hour in
                 withAnimation(.easeInOut(duration: 0.3)) {
                     self?.currentHour = hour
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to minute changes
+        gameTime.$currentMinute
+            .sink { [weak self] minute in
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    self?.currentMinute = minute
                 }
             }
             .store(in: &cancellables)

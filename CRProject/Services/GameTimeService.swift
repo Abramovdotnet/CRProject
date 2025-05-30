@@ -3,6 +3,7 @@ import Combine
 
 extension Notification.Name {
     static let timeAdvanced = Notification.Name("timeAdvanced")
+    static let minutesAdvanced = Notification.Name("minutesAdvanced")
     static let safeTimeAdvanced = Notification.Name("safeTimeAdvanced")
     static let nightAppears = Notification.Name("nightAppears")
     static let dayAppears = Notification.Name("dayAppears")
@@ -13,6 +14,7 @@ extension Notification.Name {
 class GameTimeService: GameService, ObservableObject {
     @Published private(set) var currentDay: Int = 0
     @Published private(set) var currentHour: Int = 0
+    @Published private(set) var currentMinute: Int = 0
     @Published private(set) var currentTime: Date
     @Published private(set) var isNightTime: Bool = false
     @Published private(set) var dayPhase: DayPhase = .earlyMorning
@@ -49,6 +51,17 @@ class GameTimeService: GameService, ObservableObject {
     func advanceHours(hours: Int) {
         for _ in 0..<hours {
             advanceTime()
+        }
+    }
+    
+    func advanceMinutes(minutes: Int) {
+        if currentMinute + minutes >= 60 {
+            advanceTime()
+            currentMinute = (currentMinute + minutes) - 60
+        } else {
+            currentMinute += minutes
+            
+            NotificationCenter.default.post(name: .minutesAdvanced, object: nil)
         }
     }
     

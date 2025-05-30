@@ -386,7 +386,7 @@ class TopWidgetUIViewController: UIViewController {
         
         // Остальные текстовые элементы с фиксированной шириной
         timeLabel.setContentHuggingPriority(.required, for: .horizontal)
-        timeLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true  // Уменьшаем с 48 до 40
+        timeLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true  // Увеличиваем с 40 до 50 для отображения минут
         
         dayLabel.setContentHuggingPriority(.required, for: .horizontal)
         dayLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true  // Уменьшаем с 55 до 45
@@ -461,7 +461,13 @@ class TopWidgetUIViewController: UIViewController {
         
         viewModel.$currentHour
             .sink { [weak self] hour in
-                self?.animateTextChange(for: self?.timeLabel, to: " \(hour):00")
+                self?.animateTextChange(for: self?.timeLabel, to: " \(hour):\(String(format: "%02d", self?.viewModel.currentMinute ?? 0))")
+            }
+            .store(in: &cancellables)
+        
+        viewModel.$currentMinute
+            .sink { [weak self] minute in
+                self?.animateTextChange(for: self?.timeLabel, to: " \(self?.viewModel.currentHour ?? 0):\(String(format: "%02d", minute))")
             }
             .store(in: &cancellables)
         
@@ -532,7 +538,7 @@ class TopWidgetUIViewController: UIViewController {
     
     private func updateUI() {
         updateDayNightUI(isNight: viewModel.isNight)
-        timeLabel.text = " \(viewModel.currentHour):00"
+        timeLabel.text = " \(viewModel.currentHour):\(String(format: "%02d", viewModel.currentMinute))"
         dayLabel.text = "Day \(viewModel.currentDay)"
         updateSceneUI(scene: viewModel.currentScene)
         peopleCountLabel.text = "\(viewModel.npcs.count)"

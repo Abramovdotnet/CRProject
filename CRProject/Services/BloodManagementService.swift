@@ -62,7 +62,7 @@ class BloodManagementService: GameService {
     }
 
     func reduceBloodIfNeeded(player: Player) {
-        player.bloodMeter.useBlood(AbilitiesSystem.shared.hasLordOfBlood ? 0.25 : 0.5)
+        player.bloodMeter.useBlood(AbilitiesSystem.shared.hasLordOfBlood ? 5 : 1.0)
     }
 }
 

@@ -270,8 +270,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "277"
-            endingLineNumber = "277"
+            startingLineNumber = "326"
+            endingLineNumber = "326"
             landmarkName = "handleSafeTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
@@ -334,8 +334,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "246"
-            endingLineNumber = "246"
+            startingLineNumber = "254"
+            endingLineNumber = "254"
             landmarkName = "handleTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
@@ -366,8 +366,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "137"
-            endingLineNumber = "137"
+            startingLineNumber = "145"
+            endingLineNumber = "145"
             landmarkName = "whisperToRandomNpc()"
             landmarkType = "7">
          </BreakpointContent>
@@ -462,8 +462,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "143"
-            endingLineNumber = "143"
+            startingLineNumber = "151"
+            endingLineNumber = "151"
             landmarkName = "changeLocation(to:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -478,8 +478,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "193"
-            endingLineNumber = "193"
+            startingLineNumber = "201"
+            endingLineNumber = "201"
             landmarkName = "updateRelatedLocations(for:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -826,8 +826,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "228"
-            endingLineNumber = "228"
+            startingLineNumber = "236"
+            endingLineNumber = "236"
             landmarkName = "handleTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1192,8 +1192,8 @@
             filePath = "CRProject/Views/VirtualWorldMapViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "382"
-            endingLineNumber = "382"
+            startingLineNumber = "385"
+            endingLineNumber = "385"
             landmarkName = "updateVisibleMarkersAndLines()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1208,8 +1208,8 @@
             filePath = "CRProject/Views/VirtualWorldMapViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "384"
-            endingLineNumber = "384"
+            startingLineNumber = "387"
+            endingLineNumber = "387"
             landmarkName = "updateVisibleMarkersAndLines()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1224,8 +1224,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "251"
-            endingLineNumber = "251"
+            startingLineNumber = "300"
+            endingLineNumber = "300"
             landmarkName = "GameStateService"
             landmarkType = "3">
          </BreakpointContent>
@@ -1272,8 +1272,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "254"
-            endingLineNumber = "254"
+            startingLineNumber = "303"
+            endingLineNumber = "303"
             landmarkName = "forcePlayerToFindHideout()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1288,8 +1288,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "196"
-            endingLineNumber = "196"
+            startingLineNumber = "204"
+            endingLineNumber = "204"
             landmarkName = "handleTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1304,8 +1304,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "77"
-            endingLineNumber = "77"
+            startingLineNumber = "85"
+            endingLineNumber = "85"
             landmarkName = "setPlayer(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1320,8 +1320,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
+            startingLineNumber = "94"
+            endingLineNumber = "94"
             landmarkName = "movePlayerThroughHideouts(to:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1336,8 +1336,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "216"
-            endingLineNumber = "216"
+            startingLineNumber = "224"
+            endingLineNumber = "224"
             landmarkName = "handleTimeAdvanced()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1352,8 +1352,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "359"
-            endingLineNumber = "359"
+            startingLineNumber = "408"
+            endingLineNumber = "408"
             landmarkName = "isNeedToHide()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1560,8 +1560,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "400"
-            endingLineNumber = "400"
+            startingLineNumber = "449"
+            endingLineNumber = "449"
             landmarkName = "getWitnessesCount()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1576,8 +1576,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "410"
-            endingLineNumber = "410"
+            startingLineNumber = "459"
+            endingLineNumber = "459"
             landmarkName = "getNPCAssistants(npc:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1656,8 +1656,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "399"
-            endingLineNumber = "399"
+            startingLineNumber = "448"
+            endingLineNumber = "448"
             landmarkName = "getWitnessesCount()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1688,8 +1688,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "537"
-            endingLineNumber = "537"
+            startingLineNumber = "586"
+            endingLineNumber = "586"
             landmarkName = "startCombat(npc:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1720,8 +1720,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "356"
-            endingLineNumber = "356"
+            startingLineNumber = "405"
+            endingLineNumber = "405"
             landmarkName = "GameStateService"
             landmarkType = "3">
          </BreakpointContent>
@@ -1752,8 +1752,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "475"
-            endingLineNumber = "475"
+            startingLineNumber = "524"
+            endingLineNumber = "524"
             landmarkName = "callTheGuardsIfNeeded(engagedInFight:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1800,8 +1800,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "649"
-            endingLineNumber = "649"
+            startingLineNumber = "698"
+            endingLineNumber = "698"
             landmarkName = "spawnMobsIfNeeded()"
             landmarkType = "7">
          </BreakpointContent>
@@ -1848,8 +1848,8 @@
             filePath = "CRProject/Services/GameStateService.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "299"
-            endingLineNumber = "299"
+            startingLineNumber = "348"
+            endingLineNumber = "348"
             landmarkName = "advanceWorldState(advanceSafe:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -1868,36 +1868,6 @@
             endingLineNumber = "1238"
             landmarkName = "autoSwitchTargetIfNeeded()"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "A07D1657-3FD1-4929-A0C9-94F410124381 - e3a56f02ac5dedf6"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "CRProject.CombatViewController.autoSwitchTargetIfNeeded() -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/Views/MainSceneViews/CombatViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1238"
-                  endingLineNumber = "1238">
-               </Location>
-               <Location
-                  uuid = "A07D1657-3FD1-4929-A0C9-94F410124381 - f27f78a2ad2ff41b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (CRProject.NPC) -&gt; Swift.Bool in CRProject.CombatViewController.autoSwitchTargetIfNeeded() -&gt; ()"
-                  moduleName = "CRProject.debug.dylib"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/abramovanatoliy/Documents/CRProject/CRProject/Views/MainSceneViews/CombatViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "1238"
-                  endingLineNumber = "1238">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
