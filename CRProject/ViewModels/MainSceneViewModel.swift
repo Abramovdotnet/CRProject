@@ -51,9 +51,9 @@ class MainSceneViewModel: ObservableObject {
         initialPlayer.coins.add(100)
         gameStateService.setPlayer(initialPlayer)
      
-        /*ItemsManagementService.shared.giveItem(itemId: 181, to: initialPlayer)
+        ItemsManagementService.shared.giveItem(itemId: 181, to: initialPlayer)
         
-        for _ in 0..<20 {
+        for _ in 0..<3 {
             ItemsManagementService.shared.giveItem(itemId: 1001, to: initialPlayer)
             ItemsManagementService.shared.giveItem(itemId: 1002, to: initialPlayer)
             ItemsManagementService.shared.giveItem(itemId: 1003, to: initialPlayer)
@@ -74,7 +74,9 @@ class MainSceneViewModel: ObservableObject {
             ItemsManagementService.shared.giveItem(itemId: 1018, to: initialPlayer)
             ItemsManagementService.shared.giveItem(itemId: 1019, to: initialPlayer)
             ItemsManagementService.shared.giveItem(itemId: 1020, to: initialPlayer)
-        }*/
+              ItemsManagementService.shared.giveItem(itemId: 165, to: initialPlayer)
+                ItemsManagementService.shared.giveItem(itemId: 258, to: initialPlayer)
+        }
         
         // Initialize playerCoinsValue
         self.playerCoinsValue = initialPlayer.coins.value

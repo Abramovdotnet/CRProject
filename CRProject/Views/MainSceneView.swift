@@ -512,7 +512,14 @@ struct MainSceneView: View {
                             ZStack {
                                 Color.black.edgesIgnoringSafeArea(.all)
                                 
-                                CharacterInventoryView(character: gameStateService.player!, scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+                                CharacterInventoryViewControllerWrapper(
+                                    character: gameStateService.player!, 
+                                    scene: GameStateService.shared.currentScene!, 
+                                    mainViewModel: viewModel,
+                                    onDismiss: {
+                                        safePopNavigation()
+                                    }
+                                )
                             }
                             .navigationBarHidden(true)
                             .gesture(
