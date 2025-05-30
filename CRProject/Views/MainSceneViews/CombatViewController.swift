@@ -726,7 +726,7 @@ class CombatViewController: UIViewController {
         ]
         
         if FeedingService.shared.canFeed() {
-            actions.insert(
+            actions.append(
                 ("Bite", "mouth.fill", .systemPink, { [weak self] in
                     guard let self = self else { return }
                     self.lastActionType = .feed
@@ -738,9 +738,9 @@ class CombatViewController: UIViewController {
                     )
                     CombatService.shared.performGroupAction(action)
                     self.updateUIAfterAction()
-                }), at: 1)
+                }))
             
-            actions.insert(
+            actions.append(
                 ("Drain", "drop.triangle.fill", .systemRed, { [weak self] in
                     guard let self = self else { return }
                     self.lastActionType = .drain
@@ -752,11 +752,11 @@ class CombatViewController: UIViewController {
                     )
                     CombatService.shared.performGroupAction(action)
                     self.updateUIAfterAction()
-                }), at: 2)
+                }))
         }
 
         if AbilitiesSystem.shared.hasDomination {
-            actions.insert(
+            actions.append(
                 ("Dominate", "eye", .systemBlue, { [weak self] in
                 guard let self = self else { return }
                 self.lastActionType = .dominate
@@ -768,7 +768,7 @@ class CombatViewController: UIViewController {
                 )
                 CombatService.shared.performGroupAction(action)
                 self.updateUIAfterAction()
-                }), at: 3)
+                }))
         }
         // Проверяем наличие военных NPC для кнопки Surrender
         let hasMilitaryNPCs = checkForMilitaryNPCs()

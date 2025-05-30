@@ -165,6 +165,7 @@ class PopUpBannerView: UIView {
     private let descriptionLabel = UILabel()
     private let closeButton = UIButton(type: .system)
     var onClose: (() -> Void)?
+    private var autoCloseTimer: Timer?
     
     init(title: String, description: String, icon: UIImage? = nil) {
         super.init(frame: .zero)
@@ -177,6 +178,52 @@ class PopUpBannerView: UIView {
         layer.shadowOffset = CGSize(width: 0, height: 4)
         layer.shadowRadius = 12
         alpha = 0
+        
+        // Запускаем таймер автоматического закрытия через 4 секунды
+        startAutoCloseTimer()
+    }
+    
+    private func startAutoCloseTimer() {
+        autoCloseTimer?.invalidate()
+        autoCloseTimer = Timer.scheduledTimer(withTimeInterval: 4.0, repeats: false) { [weak self] _ in
+            self?.autoClose()
+        }
+    }
+    
+    private func autoClose() {
+        autoCloseTimer?.invalidate()
+        autoCloseTimer = nil
+        
+        // Принудительно выполняем автоматическое закрытие в главном потоке
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.onClose?()
+            self.forceAnimatedDismiss()
+        }
+    }
+    
+    private func forceAnimatedDismiss() {
+        // Принудительная анимация закрытия независимо от контекста
+        autoCloseTimer?.invalidate()
+        autoCloseTimer = nil
+        
+        // Сначала проверяем, что view еще в иерархии
+        guard self.superview != nil else {
+            self.removeFromSuperview()
+            return
+        }
+        
+        // Принудительно активируем слой для анимации
+        self.layer.removeAllAnimations()
+        
+        UIView.animate(withDuration: 0.5, delay: 0, options: [.curveEaseInOut, .allowUserInteraction, .beginFromCurrentState], animations: {
+            self.alpha = 0
+        }) { [weak self] completed in
+            // Гарантируем удаление из иерархии независимо от результата анимации
+            DispatchQueue.main.async {
+                self?.removeFromSuperview()
+            }
+        }
     }
     
     private func setupUI(title: String, description: String, icon: UIImage?) {
@@ -257,21 +304,26 @@ class PopUpBannerView: UIView {
             widthAnchor.constraint(equalToConstant: 320)
         ])
         window.layoutIfNeeded()
-        UIView.animate(withDuration: 0.25) {
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.3, options: [.curveEaseOut], animations: {
             self.alpha = 1
-        }
+        })
     }
     
     @objc private func closeTapped() {
+        // Отменяем автоматический таймер при ручном закрытии
+        autoCloseTimer?.invalidate()
+        autoCloseTimer = nil
         onClose?()
         dismiss()
     }
     
     func dismiss() {
-        UIView.animate(withDuration: 0.25, animations: {
-            self.alpha = 0
-        }) { _ in
-            self.removeFromSuperview()
+        autoCloseTimer?.invalidate()
+        autoCloseTimer = nil
+        
+        // Используем ту же надежную логику что и для автоматического закрытия
+        DispatchQueue.main.async { [weak self] in
+            self?.forceAnimatedDismiss()
         }
     }
     
@@ -333,10 +385,9 @@ class UIKitPopUpManager {
     
     private func showBanner(title: String, description: String, icon: UIImage?) {
         let banner = PopUpBannerView(title: title, description: description, icon: icon)
-        banner.onClose = { [weak self, weak banner] in
-            guard let self = self, let banner = banner else { return }
+        banner.onClose = { [weak self] in
+            guard let self = self else { return }
             self.currentBanner = nil
-            banner.dismiss()
             self.showNextIfNeeded()
         }
         self.currentBanner = banner
@@ -376,16 +427,12 @@ class UIKitPopUpManager {
                     banner.widthAnchor.constraint(equalToConstant: 320)
                 ])
                 
-                UIView.animate(withDuration: 0.25) {
-                    banner.alpha = 1
-                }
+                rootVC.view.layoutIfNeeded()
                 
-                // Auto dismiss after 3 seconds
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
-                    banner.dismiss()
-                    self.currentBanner = nil
-                    self.showNextIfNeeded()
-                }
+                // Используем ту же анимацию что и в методе show
+                UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.8, initialSpringVelocity: 0.3, options: [.curveEaseOut], animations: {
+                    banner.alpha = 1
+                })
             }
         }
     }

@@ -295,7 +295,9 @@ class GameStateService : ObservableObject, GameService{
             releasePlayerThirst()
         }
         
+        removeNoAgressiveMobsIfNeeded()
         spawnMobsIfNeeded()
+        
         if isAmbushAvailable() {
             let mobs = scene.getNPCs().filter( { $0.isAlive && $0.isMob && $0.mobType.isAggressive })
             
@@ -657,6 +659,18 @@ class GameStateService : ObservableObject, GameService{
         
         for mob in mobs {
             scene.removeCharacter(id: mob.id)
+        }
+    }
+    
+    func removeNoAgressiveMobsIfNeeded() {
+        guard let scene = currentScene else { return }
+        
+        let mobs = scene.getNPCs().filter({ $0.isMob && !$0.mobType.isAggressive })
+        
+        for mob in mobs {
+            if Int.random(in: 0...1) == 1 {
+                scene.removeCharacter(id: mob.id)
+            }
         }
     }
 }
