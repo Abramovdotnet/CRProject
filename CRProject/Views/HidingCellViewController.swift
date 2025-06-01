@@ -23,6 +23,9 @@ class TimeBarView: UIView {
     private var appearDuration: CFTimeInterval = 0.5
     private var appearDisplayLink: CADisplayLink?
     private var cachedIconXs: [CGFloat] = []
+    
+    // Add flag to prevent icon animations during Night cycles
+    private var isLongTimeAnimation = false
 
     enum IconType { case sun, moon }
     struct IconAnim {
@@ -40,10 +43,27 @@ class TimeBarView: UIView {
     ]
     private var iconAnimDisplayLink: CADisplayLink?
     private let iconAnimDuration: CFTimeInterval = 0.35
+    
+    // Hour text animation system
+    struct HourTextAnim {
+        var isCurrent: Bool
+        var targetIsCurrent: Bool
+        var animating: Bool
+        var animStart: CFTimeInterval
+        var fontSize: CGFloat
+        var targetFontSize: CGFloat
+        var colorAlpha: CGFloat
+        var targetColorAlpha: CGFloat
+    }
+    private var hourTextAnims: [Int: HourTextAnim] = [:]
+    private var hourTextAnimDisplayLink: CADisplayLink?
+    private let hourTextAnimDuration: CFTimeInterval = 0.25
+    private var previousCurrentHour: Int? = nil // Track which hour was previously current
 
     var currentHour: Int = 0 {
         didSet {
             animateToHour(currentHour)
+            // Always update icon types, but animation is controlled inside updateIconTypes
             updateIconTypes(animated: true)
         }
     }
@@ -53,8 +73,30 @@ class TimeBarView: UIView {
         backgroundColor = .clear
         virtualHour = Double(currentHour)
         updateIconTypes(animated: false)
+        
+        // Subscribe to time animation notifications
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTimeAnimationStarted), name: .timeAnimationStarted, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleTimeAnimationFinished), name: .timeAnimationFinished, object: nil)
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+    
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+        hourTextAnimDisplayLink?.invalidate()
+        iconAnimDisplayLink?.invalidate()
+        displayLink?.invalidate()
+        appearDisplayLink?.invalidate()
+    }
+
+    @objc private func handleTimeAnimationStarted() {
+        isLongTimeAnimation = true
+    }
+    
+    @objc private func handleTimeAnimationFinished() {
+        isLongTimeAnimation = false
+        // Update icon types after long animation finishes
+        updateIconTypes(animated: true)
+    }
 
     private func animateToHour(_ hour: Int) {
         displayLink?.invalidate()
@@ -113,11 +155,19 @@ class TimeBarView: UIView {
             if iconAnims[i].type != newType {
                 iconAnims[i].targetType = newType
                 iconAnims[i].targetAlpha = 1
-                iconAnims[i].animating = true
-                iconAnims[i].animStart = CACurrentMediaTime()
-                iconAnimDisplayLink?.invalidate()
-                iconAnimDisplayLink = CADisplayLink(target: self, selector: #selector(handleIconAnimStep))
-                iconAnimDisplayLink?.add(to: .main, forMode: .common)
+                // Only animate if not in long time animation
+                if animated && !isLongTimeAnimation {
+                    iconAnims[i].animating = true
+                    iconAnims[i].animStart = CACurrentMediaTime()
+                    iconAnimDisplayLink?.invalidate()
+                    iconAnimDisplayLink = CADisplayLink(target: self, selector: #selector(handleIconAnimStep))
+                    iconAnimDisplayLink?.add(to: .main, forMode: .common)
+                } else {
+                    // Immediately update without animation
+                    iconAnims[i].type = newType
+                    iconAnims[i].alpha = 1
+                    iconAnims[i].animating = false
+                }
             } else if !animated {
                 iconAnims[i].type = newType
                 iconAnims[i].alpha = 1
@@ -126,8 +176,86 @@ class TimeBarView: UIView {
                 iconAnims[i].animating = false
             }
         }
+        
+        // Update hour text animations
+        updateHourTextAnimations(animated: animated)
     }
-
+    
+    private func updateHourTextAnimations(animated: Bool) {
+        let center = Int(floor(virtualHour))
+        // Calculate the target hour one step ahead based on animation progress
+        let animationProgress = virtualHour - floor(virtualHour)
+        let anticipatedCurrentHour = animationProgress > 0.5 ? Int(round(virtualHour)) + 1 : Int(round(virtualHour))
+        let currentHourValue = (anticipatedCurrentHour + 24) % 24
+        let hours = (center - hoursRange ... center + hoursRange).map { ($0 + 24) % 24 }
+        
+        for hour in hours {
+            let isCurrent = hour == currentHourValue
+            let normalizedHour = (hour + 24) % 24
+            
+            if hourTextAnims[normalizedHour] == nil {
+                hourTextAnims[normalizedHour] = HourTextAnim(
+                    isCurrent: isCurrent,
+                    targetIsCurrent: isCurrent,
+                    animating: false,
+                    animStart: 0,
+                    fontSize: isCurrent ? 15 : 11,
+                    targetFontSize: isCurrent ? 15 : 11,
+                    colorAlpha: isCurrent ? 1.0 : 0.95,
+                    targetColorAlpha: isCurrent ? 1.0 : 0.95
+                )
+            }
+        }
+        
+        // Handle animation when anticipated current hour changes
+        if let prevHour = previousCurrentHour, prevHour != currentHourValue {
+            let prevNormalizedHour = (prevHour + 24) % 24
+            let currentNormalizedHour = (currentHourValue + 24) % 24
+            
+            // Animate the previous current hour (make it smaller and less prominent)
+            if hourTextAnims[prevNormalizedHour] != nil {
+                hourTextAnims[prevNormalizedHour]!.targetIsCurrent = false
+                hourTextAnims[prevNormalizedHour]!.targetFontSize = 11
+                hourTextAnims[prevNormalizedHour]!.targetColorAlpha = 0.95
+                
+                if animated && !isLongTimeAnimation {
+                    hourTextAnims[prevNormalizedHour]!.animating = true
+                    hourTextAnims[prevNormalizedHour]!.animStart = CACurrentMediaTime()
+                    hourTextAnimDisplayLink?.invalidate()
+                    hourTextAnimDisplayLink = CADisplayLink(target: self, selector: #selector(handleHourTextAnimStep))
+                    hourTextAnimDisplayLink?.add(to: .main, forMode: .common)
+                } else {
+                    hourTextAnims[prevNormalizedHour]!.isCurrent = false
+                    hourTextAnims[prevNormalizedHour]!.fontSize = 11
+                    hourTextAnims[prevNormalizedHour]!.colorAlpha = 0.95
+                    hourTextAnims[prevNormalizedHour]!.animating = false
+                }
+            }
+            
+            // Animate the new current hour (make it larger and more prominent)
+            if hourTextAnims[currentNormalizedHour] != nil {
+                hourTextAnims[currentNormalizedHour]!.targetIsCurrent = true
+                hourTextAnims[currentNormalizedHour]!.targetFontSize = 15
+                hourTextAnims[currentNormalizedHour]!.targetColorAlpha = 1.0
+                
+                if animated && !isLongTimeAnimation {
+                    hourTextAnims[currentNormalizedHour]!.animating = true
+                    hourTextAnims[currentNormalizedHour]!.animStart = CACurrentMediaTime()
+                    hourTextAnimDisplayLink?.invalidate()
+                    hourTextAnimDisplayLink = CADisplayLink(target: self, selector: #selector(handleHourTextAnimStep))
+                    hourTextAnimDisplayLink?.add(to: .main, forMode: .common)
+                } else {
+                    hourTextAnims[currentNormalizedHour]!.isCurrent = true
+                    hourTextAnims[currentNormalizedHour]!.fontSize = 15
+                    hourTextAnims[currentNormalizedHour]!.colorAlpha = 1.0
+                    hourTextAnims[currentNormalizedHour]!.animating = false
+                }
+            }
+        }
+        
+        previousCurrentHour = currentHourValue
+    }
+    
     @objc private func handleIconAnimStep() {
         var anyAnimating = false
         for i in 0..<iconAnims.count {
@@ -152,6 +280,39 @@ class TimeBarView: UIView {
         }
     }
 
+    @objc private func handleHourTextAnimStep() {
+        var anyAnimating = false
+        for (hour, _) in hourTextAnims {
+            if hourTextAnims[hour]!.animating {
+                let elapsed = CACurrentMediaTime() - hourTextAnims[hour]!.animStart
+                let progress = min(1, elapsed / hourTextAnimDuration)
+                let eased = 0.5 - 0.5 * cos(.pi * progress)
+                
+                let startFontSize = hourTextAnims[hour]!.isCurrent ? 15.0 : 11.0
+                let endFontSize = hourTextAnims[hour]!.targetFontSize
+                hourTextAnims[hour]!.fontSize = startFontSize + (endFontSize - startFontSize) * CGFloat(eased)
+                
+                let startColorAlpha = hourTextAnims[hour]!.isCurrent ? 1.0 : 0.95
+                let endColorAlpha = hourTextAnims[hour]!.targetColorAlpha
+                hourTextAnims[hour]!.colorAlpha = startColorAlpha + (endColorAlpha - startColorAlpha) * CGFloat(eased)
+                
+                if progress >= 1 {
+                    hourTextAnims[hour]!.isCurrent = hourTextAnims[hour]!.targetIsCurrent
+                    hourTextAnims[hour]!.fontSize = hourTextAnims[hour]!.targetFontSize
+                    hourTextAnims[hour]!.colorAlpha = hourTextAnims[hour]!.targetColorAlpha
+                    hourTextAnims[hour]!.animating = false
+                } else {
+                    anyAnimating = true
+                }
+            }
+        }
+        setNeedsDisplay()
+        if !anyAnimating {
+            hourTextAnimDisplayLink?.invalidate()
+            hourTextAnimDisplayLink = nil
+        }
+    }
+
     override func draw(_ rect: CGRect) {
         guard let ctx = UIGraphicsGetCurrentContext() else { return }
         let totalWidth = rect.width
@@ -171,7 +332,6 @@ class TimeBarView: UIView {
         ctx.restoreGState()
         // --- Часы ---
         var currentPulse: CGFloat = 1.0
-        var currentHourX: CGFloat? = nil
         for (idx, hour) in hours.enumerated() {
             let x = centerX + CGFloat(idx - hoursRange) * hourWidth - CGFloat(offset)
             hourXs.append(x)
@@ -181,8 +341,6 @@ class TimeBarView: UIView {
             }
             let isCurrent = hour == Int(round(virtualHour))
             let isNight = ((hour % 24 + 24) % 24) >= 20 || ((hour % 24 + 24) % 24) < 6
-            let isDawn = ((hour % 24 + 24) % 24) == 6
-            let isDusk = ((hour % 24 + 24) % 24) == 20
             let barColor: UIColor = isNight ? UIColor.systemIndigo : UIColor.systemYellow
             var opacity: CGFloat = 1.0
             if idx == 0 {
@@ -200,12 +358,6 @@ class TimeBarView: UIView {
             // --- Glow для текущего часа (пульсация) ---
             if isCurrent {
                 currentPulse = 0.7 + 0.3 * CGFloat(sin(CACurrentMediaTime()*2))
-                currentHourX = x
-                ctx.saveGState()
-                ctx.setShadow(offset: .zero, blur: 22, color: UIColor.systemYellow.withAlphaComponent(0.7 * barAlpha * currentPulse).cgColor)
-                ctx.setFillColor(UIColor.systemYellow.withAlphaComponent(0.7 * barAlpha * currentPulse).cgColor)
-                ctx.fillEllipse(in: CGRect(x: x-15, y: barY-20, width: 30, height: 30))
-                ctx.restoreGState()
             }
             // --- Тень под маркерами ---
             ctx.saveGState()
@@ -215,9 +367,23 @@ class TimeBarView: UIView {
             ctx.restoreGState()
             // --- Glow/тень под цифрами ---
             let hourStr = "\(((hour % 24 + 24) % 24))"
+            let normalizedHour = (hour + 24) % 24
+            
+            // Get animated values for this hour
+            let hourAnim = hourTextAnims[normalizedHour]
+            let animatedFontSize = hourAnim?.fontSize ?? (isCurrent ? 15 : 11)
+            let animatedColorAlpha = hourAnim?.colorAlpha ?? (isCurrent ? 1.0 : 0.95)
+            
+            // Create font with animated size
+            let animatedFont = UIFont.systemFont(ofSize: animatedFontSize, weight: isCurrent ? .bold : .regular)
+            
+            // Determine text color (yellow for current, white for others)
+            let baseTextColor: UIColor = isCurrent ? UIColor.systemYellow : UIColor.white
+            let finalTextColor = baseTextColor.withAlphaComponent(animatedColorAlpha * opacity)
+            
             let attr: [NSAttributedString.Key: Any] = [
-                .font: isCurrent ? fontCurrent : font,
-                .foregroundColor: textColor.withAlphaComponent((isCurrent ? 1 : 0.95) * barAlpha)
+                .font: animatedFont,
+                .foregroundColor: finalTextColor.withAlphaComponent(finalTextColor.cgColor.alpha * barAlpha)
             ]
             let size = hourStr.size(withAttributes: attr)
             ctx.saveGState()
@@ -242,89 +408,6 @@ class TimeBarView: UIView {
             }
             ctx.setFillColor(barColor.withAlphaComponent(((isCurrent ? 1 : 0.5) * barAlpha * opacity)).cgColor)
             ctx.fill(CGRect(x: x-1, y: barY-7, width: 2, height: 14))
-            // --- Подписи Night/Dawn/Day/Dusk с тенью и капсулой ---
-            let isCurrentLabel = isCurrent && ((isDawn && hour % 24 == 6) || (isDusk && hour % 24 == 20) || (hour % 24 == 0) || (hour % 24 == 12))
-            if isDawn {
-                let dawnAttr: [NSAttributedString.Key: Any] = [
-                    .font: UIFont.italicSystemFont(ofSize: 12),
-                    .foregroundColor: UIColor.yellow.withAlphaComponent(1.0)
-                ]
-                let dawnStr = "Dawn"
-                let dawnSize = dawnStr.size(withAttributes: dawnAttr)
-                if !isCurrentLabel {
-                    let capsuleRect = CGRect(x: x-dawnSize.width/2-8, y: barY+18, width: dawnSize.width+16, height: dawnSize.height)
-                    ctx.saveGState()
-                    ctx.setFillColor(UIColor.black.withAlphaComponent(0.18).cgColor)
-                    let capsulePath = UIBezierPath(roundedRect: capsuleRect, cornerRadius: dawnSize.height/2)
-                    ctx.addPath(capsulePath.cgPath)
-                    ctx.fillPath()
-                    ctx.restoreGState()
-                }
-                ctx.saveGState()
-                ctx.setShadow(offset: .zero, blur: 2, color: UIColor.black.withAlphaComponent(0.5).cgColor)
-                dawnStr.draw(at: CGPoint(x: x-dawnSize.width/2, y: barY+18), withAttributes: dawnAttr)
-                ctx.restoreGState()
-            } else if isDusk {
-                let duskAttr: [NSAttributedString.Key: Any] = [
-                    .font: UIFont.italicSystemFont(ofSize: 12),
-                    .foregroundColor: UIColor.systemIndigo.withAlphaComponent(1.0)
-                ]
-                let duskStr = "Dusk"
-                let duskSize = duskStr.size(withAttributes: duskAttr)
-                if !isCurrentLabel {
-                    let capsuleRect = CGRect(x: x-duskSize.width/2-8, y: barY+18, width: duskSize.width+16, height: duskSize.height)
-                    ctx.saveGState()
-                    ctx.setFillColor(UIColor.black.withAlphaComponent(0.18).cgColor)
-                    let capsulePath = UIBezierPath(roundedRect: capsuleRect, cornerRadius: duskSize.height/2)
-                    ctx.addPath(capsulePath.cgPath)
-                    ctx.fillPath()
-                    ctx.restoreGState()
-                }
-                ctx.saveGState()
-                ctx.setShadow(offset: .zero, blur: 2, color: UIColor.black.withAlphaComponent(0.5).cgColor)
-                duskStr.draw(at: CGPoint(x: x-duskSize.width/2, y: barY+18), withAttributes: duskAttr)
-                ctx.restoreGState()
-            } else if isNight && hour % 24 == 0 {
-                let nightAttr: [NSAttributedString.Key: Any] = [
-                    .font: UIFont.italicSystemFont(ofSize: 12),
-                    .foregroundColor: UIColor.systemTeal.withAlphaComponent(1.0)
-                ]
-                let nightStr = "Night"
-                let nightSize = nightStr.size(withAttributes: nightAttr)
-                if !isCurrentLabel {
-                    let capsuleRect = CGRect(x: x-nightSize.width/2-8, y: barY+18, width: nightSize.width+16, height: nightSize.height)
-                    ctx.saveGState()
-                    ctx.setFillColor(UIColor.black.withAlphaComponent(0.18).cgColor)
-                    let capsulePath = UIBezierPath(roundedRect: capsuleRect, cornerRadius: nightSize.height/2)
-                    ctx.addPath(capsulePath.cgPath)
-                    ctx.fillPath()
-                    ctx.restoreGState()
-                }
-                ctx.saveGState()
-                ctx.setShadow(offset: .zero, blur: 2, color: UIColor.black.withAlphaComponent(0.5).cgColor)
-                nightStr.draw(at: CGPoint(x: x-nightSize.width/2, y: barY+18), withAttributes: nightAttr)
-                ctx.restoreGState()
-            } else if !isNight && hour % 24 == 12 {
-                let dayAttr: [NSAttributedString.Key: Any] = [
-                    .font: UIFont.italicSystemFont(ofSize: 12),
-                    .foregroundColor: UIColor.systemYellow.withAlphaComponent(1.0)
-                ]
-                let dayStr = "Day"
-                let daySize = dayStr.size(withAttributes: dayAttr)
-                if !isCurrentLabel {
-                    let capsuleRect = CGRect(x: x-daySize.width/2-8, y: barY+18, width: daySize.width+16, height: daySize.height)
-                    ctx.saveGState()
-                    ctx.setFillColor(UIColor.black.withAlphaComponent(0.18).cgColor)
-                    let capsulePath = UIBezierPath(roundedRect: capsuleRect, cornerRadius: daySize.height/2)
-                    ctx.addPath(capsulePath.cgPath)
-                    ctx.fillPath()
-                    ctx.restoreGState()
-                }
-                ctx.saveGState()
-                ctx.setShadow(offset: .zero, blur: 2, color: UIColor.black.withAlphaComponent(0.5).cgColor)
-                dayStr.draw(at: CGPoint(x: x-daySize.width/2, y: barY+18), withAttributes: dayAttr)
-                ctx.restoreGState()
-            }
         }
         // Кешируем x-координаты для иконок только если не идёт анимация
         let isAnimating = displayLink != nil
@@ -348,8 +431,10 @@ class TimeBarView: UIView {
             }
         }
         // --- Клык-указатель ---
-        let fangX = currentHourX ?? hourXs[hoursRange]
+        // The cursor should remain static at the center while the scale moves underneath
+        let fangX = centerX
         let fangY = barY+8
+        
         ctx.saveGState()
         ctx.setShadow(offset: .zero, blur: 8, color: UIColor.systemYellow.withAlphaComponent(0.7 * barAlpha * currentPulse).cgColor)
         ctx.setFillColor(UIColor.systemYellow.withAlphaComponent(0.85 * barAlpha * currentPulse).cgColor)
