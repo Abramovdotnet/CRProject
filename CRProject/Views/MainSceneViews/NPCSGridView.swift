@@ -11,7 +11,7 @@ class NPCSGridView: UIView {
             collectionView.reloadData()
         }
     }
-    private let npcManager: NPCInteractionManager
+    let npcManager: NPCInteractionManager
     private let gameStateService: GameStateService
     private let onAction: (NPCAction) -> Void
     
@@ -150,7 +150,7 @@ class NPCSGridView: UIView {
         )
     }
     
-    private func updateNPCCell(for npc: NPC) {
+    func updateNPCCell(for npc: NPC) {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             
@@ -205,7 +205,7 @@ class NPCSGridView: UIView {
         refreshVisibleCells()
     }
     
-    private func prepareNPCData() -> [NPC] {
+    func prepareNPCData() -> [NPC] {
         let sortedNPCs = npcs.sorted { $0.lastPlayerInteractionDate > $1.lastPlayerInteractionDate }
         return Array(sortedNPCs.prefix(100))
     }

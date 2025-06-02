@@ -23,6 +23,10 @@ class MainSceneViewModel: ObservableObject {
     @Published var playerCoinsValue: Int = 0
     @Published var isShowingVampireGazeView = false
     
+    // UI state tracking
+    @Published var shouldUpdateButtons = false
+    @Published var shouldUpdateNPCsList = false
+    
     private var cancellables = Set<AnyCancellable>()
     let gameStateService: GameStateService
     private let vampireNatureRevealService: VampireNatureRevealService
@@ -192,6 +196,30 @@ class MainSceneViewModel: ObservableObject {
                 withAnimation(.easeInOut(duration: 0.3)) {
                     self?.isNight = isNight
                 }
+                // Trigger UI updates
+                self?.shouldUpdateButtons.toggle()
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to NPC manager changes
+        npcManager.$selectedNPC
+            .sink { [weak self] _ in
+                self?.shouldUpdateButtons.toggle()
+            }
+            .store(in: &cancellables)
+        
+        // Subscribe to player state changes
+        initialPlayer.$isArrested
+            .sink { [weak self] _ in
+                self?.shouldUpdateButtons.toggle()
+            }
+            .store(in: &cancellables)
+        
+        // Monitor player hiding state changes using a timer (since hiddenAt is not @Published)
+        Timer.publish(every: 1.0, on: .main, in: .common)
+            .autoconnect()
+            .sink { [weak self] _ in
+                self?.checkPlayerStateChanges()
             }
             .store(in: &cancellables)
         
@@ -211,6 +239,20 @@ class MainSceneViewModel: ObservableObject {
                 self?.endGame()
             }
             .store(in: &cancellables)
+    }
+    
+    // MARK: - Player State Monitoring
+    
+    private var lastPlayerHiddenState: HidingCell = .none
+    
+    private func checkPlayerStateChanges() {
+        guard let player = gameStateService.player else { return }
+        
+        // Check if hiding state changed
+        if player.hiddenAt != lastPlayerHiddenState {
+            lastPlayerHiddenState = player.hiddenAt
+            shouldUpdateButtons.toggle()
+        }
     }
     
     func navigateToParent() {
@@ -551,19 +593,26 @@ class MainSceneViewModel: ObservableObject {
     // MARK: - NPC Interaction Handling (Moved from MainSceneView)
     // Consider moving handleNPCAction here if appropriate
     func handleNPCAction(_ action: NPCAction) {
+        print("MainSceneViewModel.handleNPCAction called with: \(action)")
+        
         switch action {
         case .startConversation(let npc):
+            print("Starting conversation with: \(npc.name)")
             // Просто обрабатываем событие для NPCManager
             npcManager.startConversation(with: npc)
         case .startIntimidation(let npc):
+            print("Starting intimidation with: \(npc.name)")
             showVampireGaze(npc: npc)
         case .feed(let npc):
+            print("Feeding on: \(npc.name)")
             feedOnCharacter(npc)
             npcManager.playerInteracted(with: npc)
         case .drain(let npc):
+            print("Draining: \(npc.name)")
             emptyBloodFromCharacter(npc)
             npcManager.playerInteracted(with: npc)
         case .investigate(let npc):
+            print("Investigating: \(npc.name)")
             investigateNPC(npc)
             npcManager.select(with: npc)
         }
@@ -579,6 +628,107 @@ class MainSceneViewModel: ObservableObject {
         guard let player = GameStateService.shared.player else { return nil }
         // Создаем DialogueViewModel
         return DialogueViewModel(npc: npc, player: player)
+    }
+    
+    // MARK: - Button Visibility Methods
+    
+    func isAdvanceTimeButtonVisible() -> Bool {
+        return true // Always visible
+    }
+    
+    func isBlacksmithButtonVisible() -> Bool {
+        return currentScene?.sceneType == .blacksmith
+    }
+    
+    func isQuestJournalButtonVisible() -> Bool {
+        return true // Always visible
+    }
+    
+    func isNavigationButtonVisible() -> Bool {
+        return !isPlayerArrested()
+    }
+    
+    func isHidingCellButtonVisible() -> Bool {
+        return !isPlayerArrested()
+    }
+    
+    func isInvisibilityButtonVisible() -> Bool {
+        guard let player = GameStateService.shared.player else { return false }
+        return player.hiddenAt == .none && AbilitiesSystem.shared.hasInvisibility
+    }
+    
+    func isReappearButtonVisible() -> Bool {
+        guard let player = GameStateService.shared.player else { return false }
+        return player.hiddenAt != .none && AbilitiesSystem.shared.hasInvisibility
+    }
+    
+    func isWhisperButtonVisible() -> Bool {
+        guard let player = GameStateService.shared.player else { return false }
+        return player.hiddenAt != .none && AbilitiesSystem.shared.hasInvisibility && AbilitiesSystem.shared.hasWhisper
+    }
+    
+    func isInventoryButtonVisible() -> Bool {
+        return !isPlayerArrested()
+    }
+    
+    func isAbilitiesButtonVisible() -> Bool {
+        return true // Always visible
+    }
+    
+    // Right side buttons
+    func isLootButtonVisible() -> Bool {
+        guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return false }
+        return selectedNPC.currentActivity != .jailed && !isPlayerArrested() && !selectedNPC.isAlive
+    }
+    
+    func isConversationButtonVisible() -> Bool {
+        guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return false }
+        return !selectedNPC.isUnknown && selectedNPC.isAlive && 
+               selectedNPC.currentActivity != .sleep && 
+               selectedNPC.currentActivity != .fleeing && 
+               selectedNPC.currentActivity != .bathe
+    }
+    
+    func isTradeButtonVisible() -> Bool {
+        guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return false }
+        return selectedNPC.isTradeAvailable() && 
+               selectedNPC.currentActivity != .jailed && 
+               !isPlayerArrested() &&
+               selectedNPC.currentActivity != .sleep && 
+               selectedNPC.currentActivity != .fleeing && 
+               selectedNPC.currentActivity != .bathe
+    }
+    
+    func isIntimidationButtonVisible() -> Bool {
+        guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return false }
+        return !selectedNPC.isUnknown && selectedNPC.isAlive
+    }
+    
+    func isFeedButtonVisible() -> Bool {
+        guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return false }
+        return !selectedNPC.isVampire && 
+               selectedNPC.currentActivity != .jailed && 
+               !isPlayerArrested() && 
+               FeedingService.shared.canFeed()
+    }
+    
+    func isDrainButtonVisible() -> Bool {
+        guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return false }
+        return !selectedNPC.isVampire && 
+               selectedNPC.currentActivity != .jailed && 
+               !isPlayerArrested() && 
+               FeedingService.shared.canFeed()
+    }
+    
+    func isCombatButtonVisible() -> Bool {
+        guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return false }
+        return selectedNPC.isAlive && !isPlayerArrested()
+    }
+    
+    // Helper methods
+    private func isPlayerArrested() -> Bool {
+        guard let player = GameStateService.shared.player else { return false }
+        return player.isArrested
     }
 }
 

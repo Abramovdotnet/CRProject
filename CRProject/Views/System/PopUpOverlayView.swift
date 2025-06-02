@@ -19,7 +19,12 @@ struct PopUpData: Identifiable, Equatable {
 
 class PopUpState: ObservableObject {
     static let shared = PopUpState()
-    @Published var stack: [PopUpData] = []
+    @Published var stack: [PopUpData] = [] {
+        didSet {
+            // Notify UIKit overlay
+            NotificationCenter.default.post(name: NSNotification.Name("PopUpStateChanged"), object: nil)
+        }
+    }
     
     func show(title: String, details: String? = nil, image: PopUpImage? = nil, onClose: (() -> Void)? = nil) {
         let data = PopUpData(title: title, details: details, image: image, onClose: onClose)
