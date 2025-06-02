@@ -137,10 +137,6 @@ class StatisticsService: GameService, ObservableObject {
         if !AbilitiesSystem.shared.hasWhisper && AbilitiesSystem.shared.canUnlock(Ability.whisper) {
             AbilitiesSystem.shared.unlockAbility(Ability.whisper)
         }
-        
-        if !AbilitiesSystem.shared.hasDarkness && AbilitiesSystem.shared.canUnlock(Ability.darkness) {
-            AbilitiesSystem.shared.unlockAbility(Ability.darkness)
-        }
     }
 
     func increasefeedingsOverDesiredVictims() {
@@ -179,10 +175,6 @@ class StatisticsService: GameService, ObservableObject {
         
         if !AbilitiesSystem.shared.hasLordOfBlood && AbilitiesSystem.shared.canUnlock(Ability.lordOfBlood) {
             AbilitiesSystem.shared.unlockAbility(Ability.lordOfBlood)
-        }
-        
-        if !AbilitiesSystem.shared.hasDarkness && AbilitiesSystem.shared.canUnlock(Ability.darkness) {
-            AbilitiesSystem.shared.unlockAbility(Ability.darkness)
         }
         
         if !AbilitiesSystem.shared.hasUndeadCasanova && AbilitiesSystem.shared.canUnlock(Ability.undeadCasanova) {
@@ -269,10 +261,6 @@ class StatisticsService: GameService, ObservableObject {
             AbilitiesSystem.shared.unlockAbility(Ability.masquerade)
         }
         
-        if !AbilitiesSystem.shared.hasDarkness && AbilitiesSystem.shared.canUnlock(Ability.darkness) {
-            AbilitiesSystem.shared.unlockAbility(Ability.darkness)
-        }
-        
         if !AbilitiesSystem.shared.hasMemoryErasure && AbilitiesSystem.shared.canUnlock(Ability.memoryErasure) {
             AbilitiesSystem.shared.unlockAbility(Ability.memoryErasure)
         }
@@ -320,10 +308,6 @@ class StatisticsService: GameService, ObservableObject {
     
     func increaseDisappearances() {
         disappearances += 1
-        
-        if !AbilitiesSystem.shared.hasGhost && AbilitiesSystem.shared.canUnlock(Ability.ghost) {
-            AbilitiesSystem.shared.unlockAbility(Ability.ghost)
-        }
     }
     
     func increaseTimesArrested() {

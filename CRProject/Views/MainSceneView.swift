@@ -551,7 +551,13 @@ struct MainSceneView: View {
                             ZStack {
                                 Color.black.edgesIgnoringSafeArea(.all)
                                 
-                                AbilitiesView(scene: GameStateService.shared.currentScene!, mainViewModel: viewModel)
+                                AbilitiesViewControllerWrapper(
+                                    scene: GameStateService.shared.currentScene!,
+                                    mainViewModel: viewModel,
+                                    onDismiss: {
+                                        safePopNavigation()
+                                    }
+                                )
                             }
                             .navigationBarHidden(true)
                             .gesture(

@@ -129,7 +129,7 @@ struct AbilitiesView: View {
             // Scrollable content with hidden scrollbar
             ScrollView(.vertical, showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 16) {
-                    abilitiesSectionView(title: "Vampiric Powers", abilities: [.seduction, .domination, .whisper, .enthralling, .command, .invisibility, .dayWalker, .lordOfBlood, .darkness, .memoryErasure, .sonOfDracula, .ghost, .insight, .dreamstealer, .kingSalamon])
+                    abilitiesSectionView(title: "Vampiric Powers", abilities: [.seduction, .domination, .whisper, .enthralling, .command, .invisibility, .dayWalker, .lordOfBlood, .memoryErasure, .sonOfDracula, .insight, .dreamstealer, .kingSalamon])
                     
                     abilitiesSectionView(title: "Crafting Skills", abilities: [.smithingNovice, .smithingApprentice, .smithingExpert, .smithingMaster, .alchemyNovice, .alchemyApprentice, .alchemyExpert, .alchemyMaster])
                     
@@ -311,17 +311,12 @@ struct AbilitiesView: View {
                 subrequirementRow(label: "Successful bribes", current: statisticsService.bribes, required: 10)
                 subrequirementRow(label: "Barters completed", current: statisticsService.bartersCompleted, required: 20)
                 
-            case .darkness:
-                subrequirementRow(label: "Desired victims", current: statisticsService.feedingsOverDesiredVictims, required: 15)
-                subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 21)
-                subrequirementRow(label: "Sleeping victims", current: statisticsService.feedingsOverSleepingVictims, required: 30)
-                
             case .memoryErasure:
                 subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 40)
                 subrequirementRow(label: "Dominate victims", current: statisticsService.peopleDominated, required: 20)
                 
             case .oldFriend:
-                subrequirementRow(label: "Friendships created", current: statisticsService.friendshipsCreated, required: 10)
+                subrequirementRow(label: "Friendships created", current: statisticsService.friendshipsCreated, required: 5)
                 
             case .undeadCasanova:
                 subrequirementRow(label: "Friendships created", current: statisticsService.friendshipsCreated, required: 15)
@@ -331,9 +326,6 @@ struct AbilitiesView: View {
             case .sonOfDracula:
                 subrequirementRow(label: "Days survived", current: statisticsService.daysSurvived, required: 100)
                 subrequirementRow(label: "Drain victims", current: statisticsService.victimsDrained, required: 50)
-                
-            case .ghost:
-                subrequirementRow(label: "Disappearances", current: statisticsService.disappearances, required: 30)
                 
             case .insight:
                 subrequirementRow(label: "Investigations", current: statisticsService.investigations, required: 100)
@@ -349,7 +341,7 @@ struct AbilitiesView: View {
                 subrequirementRow(label: "Dominate victims", current: statisticsService.peopleDominated, required: 10)
                 
             case .noble:
-                subrequirementRow(label: "Lord friendships", current: statisticsService.friendshipsCreated, required: 10)
+                subrequirementRow(label: "Lord friendships", current: statisticsService.friendshipsCreated, required: 1)
             }
         }
         .padding(.horizontal, 4)
@@ -605,8 +597,6 @@ struct AbilitiesView: View {
             return calculateUnholyTongueProgress()
         case .mysteriousPerson:
             return calculateMysteriousPersonProgress()
-        case .darkness:
-            return calculateDarknessProgress()
         case .memoryErasure:
             return calculateMemoryErasureProgress()
         case .oldFriend:
@@ -615,8 +605,6 @@ struct AbilitiesView: View {
             return calculateUndeadCasanovaProgress()
         case .sonOfDracula:
             return calculateSonOfDraculaProgress()
-        case .ghost:
-            return calculateGhostProgress()
         case .insight:
             return calculateInsightProgress()
         case .lionAmongSheep:
@@ -743,13 +731,6 @@ struct AbilitiesView: View {
         return (bribeProgress + barterProgress) / 2.0
     }
     
-    private func calculateDarknessProgress() -> Double {
-        let desiredProgress = min(1.0, Double(statisticsService.feedingsOverDesiredVictims) / 15.0)
-        let daysProgress = min(1.0, Double(statisticsService.daysSurvived) / 21.0)
-        let sleepingProgress = min(1.0, Double(statisticsService.feedingsOverSleepingVictims) / 30.0)
-        return (desiredProgress + daysProgress + sleepingProgress) / 3.0
-    }
-    
     private func calculateMemoryErasureProgress() -> Double {
         let daysProgress = min(1.0, Double(statisticsService.daysSurvived) / 40.0)
         let dominationProgress = min(1.0, Double(statisticsService.peopleDominated) / 20.0)
@@ -757,7 +738,7 @@ struct AbilitiesView: View {
     }
     
     private func calculateOldFriendProgress() -> Double {
-        return min(1.0, Double(statisticsService.friendshipsCreated) / 10.0)
+        return min(1.0, Double(statisticsService.friendshipsCreated) / 5.0)
     }
     
     private func calculateUndeadCasanovaProgress() -> Double {
@@ -771,10 +752,6 @@ struct AbilitiesView: View {
         let daysProgress = min(1.0, Double(statisticsService.daysSurvived) / 100.0)
         let drainProgress = min(1.0, Double(statisticsService.victimsDrained) / 50.0)
         return (daysProgress + drainProgress) / 2.0
-    }
-    
-    private func calculateGhostProgress() -> Double {
-        return min(1.0, Double(statisticsService.disappearances) / 30.0)
     }
     
     private func calculateInsightProgress() -> Double {
@@ -796,7 +773,7 @@ struct AbilitiesView: View {
     }
     
     private func calculateNobleProgress() -> Double {
-        return min(1.0, Double(statisticsService.friendshipsCreated) / 10.0)
+        return min(1.0, Double(statisticsService.friendshipsCreated) / 1.0)
     }
 }
 

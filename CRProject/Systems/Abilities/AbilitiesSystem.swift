@@ -35,12 +35,10 @@ class AbilitiesSystem: ObservableObject {
     var hasMasquerade: Bool { playerAbilities.contains(.masquerade) }
     var hasUnholyTongue: Bool { playerAbilities.contains(.unholyTongue) }
     var hasMysteriousPerson: Bool { playerAbilities.contains(.mysteriousPerson) }
-    var hasDarkness: Bool { playerAbilities.contains(.darkness) }
     var hasMemoryErasure: Bool { playerAbilities.contains(.memoryErasure) }
     var hasOldFriend: Bool { playerAbilities.contains(.oldFriend) }
     var hasUndeadCasanova: Bool { playerAbilities.contains(.undeadCasanova) }
     var hasSonOfDracula: Bool { playerAbilities.contains(.sonOfDracula) }
-    var hasGhost: Bool { playerAbilities.contains(.ghost) }
     var hasInsight: Bool { playerAbilities.contains(.insight) }
     var hasLionAmongSheep: Bool { playerAbilities.contains(.lionAmongSheep) }
     var hasDreamstealer: Bool { playerAbilities.contains(.dreamstealer) }
@@ -167,19 +165,13 @@ class AbilitiesSystem: ObservableObject {
         return StatisticsService.shared.bribes >= 10 && StatisticsService.shared.bartersCompleted >= 20
     }
     
-    func checkIsMeetsDarknessRequirements() -> Bool {
-        return StatisticsService.shared.feedingsOverDesiredVictims >= 15 && 
-               StatisticsService.shared.daysSurvived >= 21 && 
-               StatisticsService.shared.feedingsOverSleepingVictims >= 30
-    }
-    
     func checkIsMeetsMemoryErasureRequirements() -> Bool {
         return StatisticsService.shared.daysSurvived >= 40 && 
                StatisticsService.shared.peopleDominated >= 20
     }
     
     func checkIsMeetsOldFriendRequirements() -> Bool {
-        return StatisticsService.shared.friendshipsCreated >= 10
+        return StatisticsService.shared.friendshipsCreated >= 5
     }
     
     func checkIsMeetsUndeadCasanovaRequirements() -> Bool {
@@ -191,10 +183,6 @@ class AbilitiesSystem: ObservableObject {
     func checkIsMeetsSonOfDraculaRequirements() -> Bool {
         return StatisticsService.shared.daysSurvived >= 100 && 
                StatisticsService.shared.victimsDrained >= 50
-    }
-    
-    func checkIsMeetsGhostRequirements() -> Bool {
-        return StatisticsService.shared.disappearances >= 30
     }
     
     func checkIsMeetsInsightRequirements() -> Bool {
@@ -214,7 +202,7 @@ class AbilitiesSystem: ObservableObject {
     }
     
     func checkIsMeetsNobleRequirements() -> Bool {
-        return StatisticsService.shared.friendshipsCreated >= 10
+        return StatisticsService.shared.friendshipsCreated >= 1
     }
     
     func canUnlock(_ ability: Ability) -> Bool {
@@ -240,12 +228,10 @@ class AbilitiesSystem: ObservableObject {
         case .masquerade: return checkIsMeetsMasqueradeRequirements()
         case .unholyTongue: return checkIsMeetsUnholyTongueRequirements()
         case .mysteriousPerson: return checkIsMeetsMysteriousPersonRequirements()
-        case .darkness: return checkIsMeetsDarknessRequirements()
         case .memoryErasure: return checkIsMeetsMemoryErasureRequirements()
         case .oldFriend: return checkIsMeetsOldFriendRequirements()
         case .undeadCasanova: return checkIsMeetsUndeadCasanovaRequirements()
         case .sonOfDracula: return checkIsMeetsSonOfDraculaRequirements()
-        case .ghost: return checkIsMeetsGhostRequirements()
         case .insight: return checkIsMeetsInsightRequirements()
         case .lionAmongSheep: return checkIsMeetsLionAmongSheepRequirements()
         case .dreamstealer: return checkIsMeetsDreamstealerRequirements()
@@ -283,12 +269,10 @@ enum Ability: String, CaseIterable {
     case masquerade
     case unholyTongue
     case mysteriousPerson
-    case darkness
     case memoryErasure
     case oldFriend
     case undeadCasanova
     case sonOfDracula
-    case ghost
     case insight
     case lionAmongSheep
     case dreamstealer
@@ -318,12 +302,10 @@ enum Ability: String, CaseIterable {
          case .masquerade: return "Masquerade"
          case .unholyTongue: return "Unholy Tongue"
          case .mysteriousPerson: return "Mysterious Person"
-         case .darkness: return "Darkness"
          case .memoryErasure: return "Memory Erasure"
          case .oldFriend: return "Old Friend"
          case .undeadCasanova: return "Undead Casanova"
          case .sonOfDracula: return "Son of Dracula"
-         case .ghost: return "Ghost"
          case .insight: return "Insight"
          case .lionAmongSheep: return "Lion Among Sheep"
          case .dreamstealer: return "Dreamstealer"
@@ -376,8 +358,6 @@ enum Ability: String, CaseIterable {
             return "Increases persuasion success chance to 20%"
         case .mysteriousPerson:
             return "Convince persons to make fake alibies for you"
-        case .darkness:
-            return "Turn off all light sources to perform single actions out of witnesses sight"
         case .memoryErasure:
             return "Calm person if fleeing, reduce awareness and reset negative relationships to zero"
         case .oldFriend:
@@ -386,8 +366,6 @@ enum Ability: String, CaseIterable {
             return "Persons who've spent nights with you gain permanent relationship bonuses and can help convince others that gossip about you is false once per day"
         case .sonOfDracula:
             return "Each drained victim permanently increases your blood pool by 1"
-        case .ghost:
-            return "Shadow Veil appearance/disappearance does not affect awareness"
         case .insight:
             return "Investigate all unknown NPCs immediately after entering location"
         case .lionAmongSheep:
@@ -445,18 +423,14 @@ enum Ability: String, CaseIterable {
             return "Bribe 20 victims"
         case .mysteriousPerson:
             return "Perform 10 successful bribes. Complete 20 barters"
-        case .darkness:
-            return "Feed on 15 desired victims. Survive 21 days. Feed over 30 sleeping victims"
         case .memoryErasure:
             return "Survive 40 days. Perform 20 dominations"
         case .oldFriend:
-            return "Create 10 friendships"
+            return "Create 5 friendships"
         case .undeadCasanova:
             return "Create 15 friendships. Spend nights with someone 20 times. Feed on 20 desired victims"
         case .sonOfDracula:
             return "Survive 100 days. Drain 50 desired victims"
-        case .ghost:
-            return "Disappear 30 times"
         case .insight:
             return "Investigate 100 NPCs"
         case .lionAmongSheep:
@@ -466,7 +440,7 @@ enum Ability: String, CaseIterable {
         case .kingSalamon:
             return "Dominate over 10 victims"
         case .noble:
-            return "Create friendship with 10 lords"
+            return "Create friendship with 1 lord"
         }
     }
     
@@ -493,12 +467,10 @@ enum Ability: String, CaseIterable {
             case .masquerade: return "theatermasks.fill"
             case .unholyTongue: return "mouth.fill"
             case .mysteriousPerson: return "person.crop.rectangle.stack"
-            case .darkness: return "lightbulb.slash.fill"
             case .memoryErasure: return "brain.fill"
             case .oldFriend: return "person.2.fill"
             case .undeadCasanova: return "heart.circle.fill"
             case .sonOfDracula: return "drop.triangle.fill"
-            case .ghost: return "figure.walk.motion"
             case .insight: return "eye.fill"
             case .lionAmongSheep: return "person.3.fill"
             case .dreamstealer: return "bed.double.fill"
@@ -531,8 +503,6 @@ enum Ability: String, CaseIterable {
                 return .orange
             case .mysteriousPerson:
                 return .mint
-            case .darkness:
-                return .purple
             case .memoryErasure:
                 return .purple
             case .oldFriend:
@@ -541,8 +511,6 @@ enum Ability: String, CaseIterable {
                 return .pink
             case .sonOfDracula:
                 return .red
-            case .ghost:
-                return .gray
             case .insight:
                 return .blue
             case .lionAmongSheep:
