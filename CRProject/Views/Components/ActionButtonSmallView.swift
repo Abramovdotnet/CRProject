@@ -10,6 +10,7 @@ class ActionButtonSmallView: UIButton {
     init(onTap: (() -> Void)? = nil) {
         super.init(frame: .zero)
         self.onTap = onTap
+        self.translatesAutoresizingMaskIntoConstraints = false
         addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         addTarget(self, action: #selector(animateDown), for: .touchDown)
         addTarget(self, action: #selector(animateUp), for: [.touchUpInside, .touchUpOutside, .touchCancel])
@@ -129,6 +130,7 @@ class ActionButtonSmallView: UIButton {
     convenience init(title: String, icon: String, color: UIColor, onTap: (() -> Void)? = nil) {
         self.init()
         self.onTap = onTap
+        self.translatesAutoresizingMaskIntoConstraints = false
         setupCustomUI(title: title, icon: icon, color: color)
         addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
         addTarget(self, action: #selector(animateDown), for: .touchDown)

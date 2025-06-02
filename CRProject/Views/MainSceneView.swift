@@ -535,7 +535,13 @@ struct MainSceneView: View {
                             ZStack {
                                 Color.black.edgesIgnoringSafeArea(.all)
                                 
-                                SmithingView(player: gameStateService.player!, mainViewModel: viewModel)
+                                SmithingViewControllerWrapper(
+                                    player: gameStateService.player!,
+                                    mainViewModel: viewModel,
+                                    onDismiss: {
+                                        safePopNavigation()
+                                    }
+                                )
                             }
                             .navigationBarHidden(true)
                             .gesture(
