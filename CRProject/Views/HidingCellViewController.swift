@@ -486,6 +486,7 @@ class HidingCellViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
+        view.clipsToBounds = false  // Позволяем фоновому изображению покрывать весь экран
         setupBackgroundImage()
         setupDustEffect()
         setupCellTitleLabel()
@@ -515,23 +516,15 @@ class HidingCellViewController: UIViewController {
         }
     }
 
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Включаем интерактивный жест только когда контроллер начинает исчезать
+        navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+    }
+
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        // Увеличиваю горизонтальный extraSpace
-        let extraSpaceX: CGFloat = 200
-        let extraSpaceY: CGFloat = 100
-        backgroundImageView.frame = CGRect(
-            x: -extraSpaceX / 2,
-            y: -extraSpaceY / 2,
-            width: view.bounds.width + extraSpaceX,
-            height: view.bounds.height + extraSpaceY
-        )
-        view.sendSubviewToBack(backgroundImageView)
-        // Dust effect должен быть над фоном, но под UI
-        if let dustView = dustEffectView?.view {
-            dustView.frame = view.bounds
-            view.insertSubview(dustView, aboveSubview: backgroundImageView)
-        }
+        // Теперь и backgroundImageView и dustEffect управляются constraints - ручная установка frame не нужна
     }
 
     private func setupCellTitleLabel() {
@@ -560,19 +553,33 @@ class HidingCellViewController: UIViewController {
         } else {
             backgroundImageView.image = UIImage(named: "gaze2")
         }
-        backgroundImageView.contentMode = .scaleAspectFill
-        backgroundImageView.clipsToBounds = true
+        backgroundImageView.contentMode = .scaleAspectFill  // Масштабируем с сохранением пропорций и заполнением
+        backgroundImageView.clipsToBounds = false  // Позволяем изображению выходить за границы
         view.addSubview(backgroundImageView)
         view.sendSubviewToBack(backgroundImageView)
+        
+        // Привязываем к полному размеру view (не safe area) с небольшим отступом для покрытия всех краев
+        NSLayoutConstraint.activate([
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: -20),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -20),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 20)
+        ])
     }
 
     private func setupDustEffect() {
         let dustViewHostingController = UIHostingController(rootView: DustEmitterView())
         dustViewHostingController.view.backgroundColor = .clear
-        dustViewHostingController.view.translatesAutoresizingMaskIntoConstraints = true // Для frame-based layout
-        dustViewHostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        dustViewHostingController.view.translatesAutoresizingMaskIntoConstraints = false  // Переключаемся на constraints
         addChild(dustViewHostingController)
-        view.addSubview(dustViewHostingController.view)
+        view.insertSubview(dustViewHostingController.view, aboveSubview: backgroundImageView)
+        // Используем constraints вместо frame-based layout
+        NSLayoutConstraint.activate([
+            dustViewHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            dustViewHostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            dustViewHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            dustViewHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
         dustViewHostingController.didMove(toParent: self)
         self.dustEffectView = dustViewHostingController
     }
@@ -713,11 +720,8 @@ class HidingCellViewController: UIViewController {
 
     private func setupLayout() {
         NSLayoutConstraint.activate([
-            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
-            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-
+            // Убираем constraints для backgroundImageView - теперь используется только frame
+            
             cellTitleLabel.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 2),
             cellTitleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             cellTitleLabel.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
@@ -795,7 +799,7 @@ class HidingCellViewController: UIViewController {
     }
 
     @objc private func leaveTapped() {
-        navigationController?.interactivePopGestureRecognizer?.isEnabled = true // вернуть свайп после ухода
+        // Включаем интерактивный жест будет в viewWillDisappear
         GameStateService.shared.movePlayerThroughHideouts(to: .none)
         navigationController?.popViewController(animated: true)
     }

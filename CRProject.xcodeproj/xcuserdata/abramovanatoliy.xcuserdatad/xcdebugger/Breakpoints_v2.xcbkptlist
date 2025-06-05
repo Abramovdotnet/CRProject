@@ -1818,8 +1818,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "470"
             endingLineNumber = "470"
-            landmarkName = "setupBackgroundImage()"
-            landmarkType = "7">
+            landmarkName = "HidingCellViewController"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy

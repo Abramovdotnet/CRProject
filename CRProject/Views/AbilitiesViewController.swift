@@ -41,6 +41,7 @@ class AbilitiesViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
+        view.clipsToBounds = false
         
         setupBackground()
         setupTopWidget()
@@ -58,7 +59,7 @@ class AbilitiesViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateBackgroundFrames()
+        // Background и dust effect теперь управляются constraints - никаких костылей не нужно
     }
     
     // MARK: - Setup Methods
@@ -69,13 +70,32 @@ class AbilitiesViewController: UIViewController {
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.clipsToBounds = false
         backgroundImageView.alpha = 0.7
+        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backgroundImageView)
+        view.sendSubviewToBack(backgroundImageView)
+        
+        // Привязываем к полному размеру view (не safe area) с небольшим отступом для покрытия всех краев
+        NSLayoutConstraint.activate([
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: -20),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -20),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 20)
+        ])
         
         // Dust effect
         let dustViewHostingController = UIHostingController(rootView: DustEmitterView())
         dustViewHostingController.view.backgroundColor = .clear
+        dustViewHostingController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(dustViewHostingController)
-        view.addSubview(dustViewHostingController.view)
+        view.insertSubview(dustViewHostingController.view, aboveSubview: backgroundImageView)
+        
+        NSLayoutConstraint.activate([
+            dustViewHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            dustViewHostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            dustViewHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            dustViewHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        
         dustViewHostingController.didMove(toParent: self)
         self.dustEffectView = dustViewHostingController
     }
@@ -362,19 +382,6 @@ class AbilitiesViewController: UIViewController {
     private func updateStatisticsContent() {
         // Обновляем статистики при изменении данных
         setupStatisticsContent()
-    }
-    
-    private func updateBackgroundFrames() {
-        let extraSpace: CGFloat = 100
-        let expandedFrame = CGRect(
-            x: -extraSpace/2,
-            y: -extraSpace/2,
-            width: view.bounds.width + extraSpace,
-            height: view.bounds.height + extraSpace
-        )
-        
-        backgroundImageView.frame = expandedFrame
-        dustEffectView?.view.frame = view.bounds
     }
     
     private func setupAbilitiesContent() {

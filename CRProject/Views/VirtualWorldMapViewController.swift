@@ -91,6 +91,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.clipsToBounds = false // Позволяем фоновому изображению покрывать весь экран
         setupBackgroundImage()
         setupDustEffect() // Добавляем эффект пыли сразу после фона
         loadSceneData()
@@ -177,11 +178,14 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.clipsToBounds = false
         view.addSubview(backgroundImageView)
+        view.sendSubviewToBack(backgroundImageView)
+        
+        // Привязываем к полному размеру view (не safe area) с небольшим отступом для покрытия всех краев
         NSLayoutConstraint.activate([
-            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor),
-            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: -20),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -20),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 20)
         ])
     }
     
@@ -205,10 +209,10 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
             
             view.insertSubview(tempImageView, aboveSubview: backgroundImageView)
             NSLayoutConstraint.activate([
-                tempImageView.topAnchor.constraint(equalTo: view.topAnchor),
-                tempImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-                tempImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-                tempImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+                tempImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: -20),
+                tempImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20),
+                tempImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -20),
+                tempImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 20)
             ])
             
             // Анимируем кроссфейд

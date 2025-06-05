@@ -216,6 +216,7 @@ class DialogueViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
+        view.clipsToBounds = false
         
         setupBackgroundImage()
         setupDustEffect()
@@ -232,21 +233,7 @@ class DialogueViewController: UIViewController {
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         
-        // Update background frame
-        let extraSpace: CGFloat = 100
-        backgroundImageView.frame = CGRect(
-            x: -extraSpace / 2,
-            y: -extraSpace / 2,
-            width: view.bounds.width + extraSpace,
-            height: view.bounds.height + extraSpace
-        )
-        view.sendSubviewToBack(backgroundImageView)
-        
-        // Update dust effect frame
-        dustEffectView?.view.frame = view.bounds
-        if let dustView = dustEffectView?.view {
-            view.insertSubview(dustView, aboveSubview: backgroundImageView)
-        }
+        // Background и dust effect теперь управляются constraints - никаких костылей не нужно
         
         // Setup gradient layers for fade effects
         // Only if content is already loaded
@@ -350,16 +337,32 @@ class DialogueViewController: UIViewController {
         backgroundImageView.contentMode = .scaleAspectFill
         backgroundImageView.clipsToBounds = false
         view.addSubview(backgroundImageView)
+        view.sendSubviewToBack(backgroundImageView)
+        
+        // Привязываем к полному размеру view (не safe area) с небольшим отступом для покрытия всех краев
+        NSLayoutConstraint.activate([
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: -20),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -20),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 20)
+        ])
     }
     
     private func setupDustEffect() {
         let dustViewHostingController = UIHostingController(rootView: DustEmitterView())
         dustViewHostingController.view.backgroundColor = .clear
-        dustViewHostingController.view.translatesAutoresizingMaskIntoConstraints = true
-        dustViewHostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        
+        dustViewHostingController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(dustViewHostingController)
-        view.addSubview(dustViewHostingController.view)
+        view.insertSubview(dustViewHostingController.view, aboveSubview: backgroundImageView)
+        
+        // Используем constraints вместо frame-based layout
+        NSLayoutConstraint.activate([
+            dustViewHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            dustViewHostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            dustViewHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            dustViewHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        
         dustViewHostingController.didMove(toParent: self)
         self.dustEffectView = dustViewHostingController
     }

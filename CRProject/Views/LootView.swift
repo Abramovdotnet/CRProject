@@ -32,6 +32,7 @@ class BackgroundImageViewController: UIViewController {
         super.viewDidLoad()
         // Базовый чёрный фон (будет виден в крайнем случае, если что-то пойдёт не так)
         view.backgroundColor = .black
+        view.clipsToBounds = false // Позволяем фоновому изображению покрывать весь экран
         
         // Первоначальная настройка элементов
         setupBackground()
@@ -39,27 +40,7 @@ class BackgroundImageViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        
-        // Получаем максимальную доступную область
-        let viewport = view.bounds
-        
-        // Увеличиваем размер на 100 пикселей во всех направлениях, чтобы гарантированно покрыть всю область
-        let extraSpace: CGFloat = 100
-        let expandedFrame = CGRect(
-            x: -extraSpace/2,
-            y: -extraSpace/2,
-            width: viewport.width + extraSpace,
-            height: viewport.height + extraSpace
-        )
-        
-        // Применяем расширенный размер к фоновому изображению
-        backgroundImageView.frame = expandedFrame
-        
-        // Устанавливаем размеры затемняющего слоя на область всего экрана
-        overlayView.frame = viewport
-        
-        // Dust effect должен занимать весь экран
-        dustEffectView?.view.frame = viewport
+        // Background, overlay и dust effect теперь управляются constraints - никаких костылей не нужно
     }
     
     private func setupBackground() {
@@ -69,23 +50,46 @@ class BackgroundImageViewController: UIViewController {
         
         backgroundImageView.image = backgroundImage
         backgroundImageView.contentMode = .scaleAspectFill
-        // Важно: разрешаем выход за пределы границ
-        backgroundImageView.clipsToBounds = false
+        backgroundImageView.clipsToBounds = false // Позволяем изображению выходить за границы
+        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(backgroundImageView)
         view.sendSubviewToBack(backgroundImageView)
         
+        // Привязываем к полному размеру view (не safe area) с небольшим отступом для покрытия всех краев
+        NSLayoutConstraint.activate([
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: -20),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -20),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 20)
+        ])
+        
         // 2. Добавляем полупрозрачный оверлей
         overlayView.backgroundColor = UIColor.black.withAlphaComponent(0.3)
-        overlayView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        overlayView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(overlayView)
         view.sendSubviewToBack(overlayView)
+        
+        NSLayoutConstraint.activate([
+            overlayView.topAnchor.constraint(equalTo: view.topAnchor),
+            overlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            overlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            overlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
         
         // 3. Добавляем эффект пыли
         let dustView = UIHostingController(rootView: DustEmitterView())
         dustView.view.backgroundColor = .clear
-        dustView.view.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        dustView.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(dustView)
         view.addSubview(dustView.view)
+        
+        NSLayoutConstraint.activate([
+            dustView.view.topAnchor.constraint(equalTo: view.topAnchor),
+            dustView.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            dustView.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            dustView.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        
         dustView.didMove(toParent: self)
         self.dustEffectView = dustView
     }

@@ -45,8 +45,8 @@ class QuestJournalViewController: UIViewController, UITableViewDataSource, UITab
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // self.view.backgroundColor = .clear // Убрали, так как будет фоновое изображение
         view.backgroundColor = .black // Черный фон как запасной вариант
+        view.clipsToBounds = false // Позволяем фоновому изображению покрывать весь экран
 
         setupBackgroundImage() // Настройка фонового изображения
         setupTopWidget() // Настройка верхнего виджета
@@ -64,24 +64,7 @@ class QuestJournalViewController: UIViewController, UITableViewDataSource, UITab
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-
-        // Обновление frame для backgroundImageView с учетом extraSpace
-        let extraSpace: CGFloat = 100 // Дополнительное пространство для растягивания фона
-        backgroundImageView.frame = CGRect(
-            x: -extraSpace / 2,
-            y: -extraSpace / 2,
-            width: view.bounds.width + extraSpace,
-            height: view.bounds.height + extraSpace
-        )
-        // Убедимся, что фон всегда сзади
-        view.sendSubviewToBack(backgroundImageView)
-        // Устанавливаем frame для dustEffectView
-        dustEffectView?.view.frame = view.bounds
-        // Убедимся, что dustEffectView над фоном, но под остальными элементами (если нужно)
-        // В LootView он добавляется последним из фоновых элементов, так что будет поверх backgroundImageView и overlayView (если бы он был)
-        if let dustView = dustEffectView?.view {
-            view.insertSubview(dustView, aboveSubview: backgroundImageView)
-        }
+        // Background и dust effect теперь управляются constraints - никаких костылей не нужно
     }
 
     // MARK: - Setup
@@ -160,25 +143,37 @@ class QuestJournalViewController: UIViewController, UITableViewDataSource, UITab
     }
 
     private func setupBackgroundImage() {
-        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false // Важно для AutoLayout, если используется
+        backgroundImageView.translatesAutoresizingMaskIntoConstraints = false
         backgroundImageView.image = UIImage(named: "questJournal")
-        backgroundImageView.contentMode = .scaleAspectFill
+        backgroundImageView.contentMode = .scaleAspectFill // Масштабируем с сохранением пропорций и заполнением
         backgroundImageView.clipsToBounds = false // Позволяем изображению выходить за границы
         view.addSubview(backgroundImageView)
-        // view.sendSubviewToBack(backgroundImageView) // Перенесено в viewDidLayoutSubviews для корректного порядка с dust
+        view.sendSubviewToBack(backgroundImageView)
+        
+        // Привязываем к полному размеру view (не safe area) с небольшим отступом для покрытия всех краев
+        NSLayoutConstraint.activate([
+            backgroundImageView.topAnchor.constraint(equalTo: view.topAnchor, constant: -20),
+            backgroundImageView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20),
+            backgroundImageView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -20),
+            backgroundImageView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 20)
+        ])
     }
 
     private func setupDustEffect() {
         let dustViewHostingController = UIHostingController(rootView: DustEmitterView())
         dustViewHostingController.view.backgroundColor = .clear
-        dustViewHostingController.view.translatesAutoresizingMaskIntoConstraints = true // Для frame-based layout
-        dustViewHostingController.view.autoresizingMask = [.flexibleWidth, .flexibleHeight] // Чтобы растягивался
-        
+        dustViewHostingController.view.translatesAutoresizingMaskIntoConstraints = false
         addChild(dustViewHostingController)
-        // Добавляем view эффекта пыли. Его frame будет установлен в viewDidLayoutSubviews.
-        // Порядок добавления важен, если мы хотим, чтобы он был над фоном, но под UI.
-        // Мы будем управлять его положением в viewDidLayoutSubviews.
-        view.addSubview(dustViewHostingController.view) 
+        view.insertSubview(dustViewHostingController.view, aboveSubview: backgroundImageView)
+        
+        // Используем constraints вместо frame-based layout
+        NSLayoutConstraint.activate([
+            dustViewHostingController.view.topAnchor.constraint(equalTo: view.topAnchor),
+            dustViewHostingController.view.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            dustViewHostingController.view.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            dustViewHostingController.view.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        
         dustViewHostingController.didMove(toParent: self)
         self.dustEffectView = dustViewHostingController
     }

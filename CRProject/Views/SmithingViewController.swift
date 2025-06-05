@@ -52,6 +52,7 @@ class SmithingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .black
+        view.clipsToBounds = false
         
         setupBackground()
         setupTopWidget()
@@ -69,7 +70,7 @@ class SmithingViewController: UIViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        updateBackgroundFrames()
+        // Background и dust effect теперь управляются constraints - никаких костылей не нужно
     }
     
     // MARK: - Setup Methods
@@ -463,25 +464,10 @@ extension SmithingViewController {
         let isSelected = viewModel.showOnlyKnownRecipes
         
         if isSelected {
-            knownFilterButton.alpha = 1.0
             knownFilterButton.layer.shadowOpacity = 0.8
         } else {
-            knownFilterButton.alpha = 0.7
             knownFilterButton.layer.shadowOpacity = 0.3
         }
-    }
-    
-    private func updateBackgroundFrames() {
-        let extraSpace: CGFloat = 100
-        let expandedFrame = CGRect(
-            x: -extraSpace/2,
-            y: -extraSpace/2,
-            width: view.bounds.width + extraSpace,
-            height: view.bounds.height + extraSpace
-        )
-        
-        backgroundImageView.frame = expandedFrame
-        dustEffectView?.view.frame = view.bounds
     }
 }
 
