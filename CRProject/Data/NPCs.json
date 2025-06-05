@@ -822,7 +822,7 @@
     "Id": 1245,
     "Name": "Cecily Larsen",
     "Sex": "female",
-    "Age": 55,
+    "Age": 36,
     "Profession": "Alchemist",
     "IsVampire": false,
     "Morality": "Neutral good",
@@ -1782,7 +1782,7 @@
   },
   {
     "Id": 4413,
-    "Name": "Charles Hoffmann",
+    "Name": "Charles Crow",
     "Sex": "male",
     "Age": 54,
     "Profession": "Bookseller",

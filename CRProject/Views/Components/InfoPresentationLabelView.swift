@@ -7,6 +7,7 @@ enum InfoPresentationItem {
     case text(String)   // Text with Optima-Regular 14
     case professionIcon(String, UIColor) // SF Symbol with profession color and glow
     case activityIcon(String, UIColor) // SF Symbol with activity color and glow
+    case animatedAssetIcon(String, UIColor) // Asset image with animated glow effect
 }
 
 class InfoPresentationLabelView: UIView {
@@ -83,6 +84,8 @@ class InfoPresentationLabelView: UIView {
             return createGlowingIconView(symbolName: symbolName, color: color)
         case .activityIcon(let symbolName, let color):
             return createGlowingIconView(symbolName: symbolName, color: color)
+        case .animatedAssetIcon(let symbolName, let color):
+            return createAnimatedAssetIconView(symbolName: symbolName, color: color)
         }
     }
     
@@ -131,7 +134,73 @@ class InfoPresentationLabelView: UIView {
             containerView.heightAnchor.constraint(equalToConstant: iconSize)
         ])
         
-        // Generate glow image asynchronously - точно как в NPCCharacterCell
+        // Generate glow image
+        Self.getCachedGlowImage(size: CGSize(width: iconSize + 12, height: iconSize + 12), color: color) { glowImage in
+            DispatchQueue.main.async {
+                glowView.image = glowImage
+            }
+        }
+        
+        return containerView
+    }
+    
+    private func createAnimatedAssetIconView(symbolName: String, color: UIColor) -> UIView {
+        let containerView = UIView()
+        containerView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let iconSize: CGFloat = 28 // Same size as other glowing icons
+        let assetSize: CGFloat = 16 // Make asset smaller so glow is visible
+        
+        // Create main icon view
+        let iconView = UIImageView()
+        iconView.frame = CGRect(x: 0, y: 0, width: iconSize, height: iconSize)
+        iconView.contentMode = .center
+        iconView.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+        iconView.clipsToBounds = true
+        iconView.layer.cornerRadius = iconSize / 2
+        iconView.layer.borderWidth = 0
+        iconView.layer.shadowColor = UIColor.black.cgColor
+        iconView.layer.shadowRadius = 2
+        iconView.layer.shadowOpacity = 0.5
+        iconView.layer.shadowOffset = CGSize(width: 0, height: 1)
+        iconView.alpha = 1.0
+        containerView.addSubview(iconView)
+        
+        // Create asset image view with smaller size
+        let assetImageView = UIImageView()
+        assetImageView.frame = CGRect(
+            x: (iconSize - assetSize) / 2,
+            y: (iconSize - assetSize) / 2,
+            width: assetSize,
+            height: assetSize
+        )
+        assetImageView.contentMode = .scaleAspectFit
+        
+        // Load asset image
+        if let assetImage = UIImage(named: symbolName) {
+            assetImageView.image = assetImage
+        }
+        iconView.addSubview(assetImageView)
+        
+        // Create animated glow view BEHIND the icon
+        let glowView = UIImageView()
+        glowView.contentMode = .scaleAspectFill
+        glowView.alpha = 0.8
+        glowView.isUserInteractionEnabled = false
+        iconView.addSubview(glowView)
+        iconView.sendSubviewToBack(glowView)
+        
+        // Set glow frame
+        let glowSize = iconSize + 12
+        glowView.frame = CGRect(x: -6, y: -6, width: glowSize, height: glowSize)
+        
+        // Setup constraints for container
+        NSLayoutConstraint.activate([
+            containerView.widthAnchor.constraint(equalToConstant: iconSize),
+            containerView.heightAnchor.constraint(equalToConstant: iconSize)
+        ])
+        
+        // Generate glow image
         Self.getCachedGlowImage(size: CGSize(width: iconSize + 12, height: iconSize + 12), color: color) { glowImage in
             DispatchQueue.main.async {
                 glowView.image = glowImage
@@ -221,6 +290,59 @@ class InfoPresentationLabelView: UIView {
             .professionIcon(npc.profession.icon, professionColor),
             .text(npc.name),
             .activityIcon(npc.currentActivity.icon, activityColor)
+        ]
+        
+        configure(with: items, textColor: textColor)
+    }
+    
+    // Convenience method for DesiredVictim information
+    func configureWithDesiredVictim(_ desiredVictim: DesiredVictim, textColor: UIColor = .white) {
+        var items: [InfoPresentationItem] = []
+        
+        // Add desired victim icon using SF Symbol with red glow effect BEFORE the text
+        items.append(.professionIcon("arrow.up.heart.fill", UIColor.systemRed))
+        
+        // Add "Desires:" text after the icon
+        items.append(.text("Desires:"))
+        
+        // Add desired sex icon only (no text)
+        if let desiredSex = desiredVictim.desiredSex {
+            let sexIcon = desiredSex == .female ? "figure.stand.dress" : "figure.wave"
+            items.append(.professionIcon(sexIcon, UIColor.systemYellow))
+        }
+        
+        // Add desired profession icon only (no text)
+        if let desiredProfession = desiredVictim.desiredProfession {
+            let professionColor = convertSwiftUIColorToUIColor(desiredProfession.color)
+            items.append(.professionIcon(desiredProfession.icon, professionColor))
+        }
+        
+        // Add desired morality icon only (no text)
+        if let desiredMorality = desiredVictim.desiredMorality {
+            let moralityColor = convertSwiftUIColorToUIColor(desiredMorality.color)
+            items.append(.professionIcon(desiredMorality.icon, moralityColor))
+        }
+        
+        configure(with: items, textColor: textColor)
+    }
+    
+    // Convenience method for NPC count information
+    func configureWithNPCCountInfo(count: Int, textColor: UIColor = .white) {
+        let items: [InfoPresentationItem] = [
+            .professionIcon("person.3.fill", UIColor.systemRed), // Use professionIcon with red glow
+            .text("\(count)")
+        ]
+        
+        configure(with: items, textColor: textColor)
+    }
+    
+    // Convenience method for location information with name, type, and NPC count
+    func configureWithLocationInfo(locationName: String, locationType: String, locationIcon: String, locationColor: UIColor, npcCount: Int, textColor: UIColor = .white) {
+        let items: [InfoPresentationItem] = [
+            .professionIcon(locationIcon, locationColor), // Location type icon with color and glow
+            .text(locationName),
+            .professionIcon("person.3.fill", UIColor.systemRed), // Use professionIcon with red glow
+            .text("\(npcCount)")
         ]
         
         configure(with: items, textColor: textColor)

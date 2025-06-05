@@ -125,6 +125,12 @@ class SceneViewController: UIViewController {
     // Selected NPC Info
     private let selectedNPCInfoView = InfoPresentationLabelView()
     
+    // Desired Victim Info
+    private let desiredVictimInfoView = InfoPresentationLabelView()
+    
+    // NPC Count Info
+    private let npcCountInfoView = InfoPresentationLabelView()
+    
     // Chat container
     private let chatContainerView = UIView()
     private var chatViewController: ChatViewController?
@@ -191,6 +197,16 @@ class SceneViewController: UIViewController {
                 self?.updateSelectedNPCInfo()
             }
             .store(in: &cancellables)
+        
+        // Subscribe to desired victim changes
+        if let player = mainViewModel.gameStateService.player {
+            player.desiredVictim.objectWillChange
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] in
+                    self?.updateDesiredVictimInfo()
+                }
+                .store(in: &cancellables)
+        }
     }
     
     private func updateNPCsList(with newNPCs: [NPC]) {
@@ -218,6 +234,9 @@ class SceneViewController: UIViewController {
             gridView.trailingAnchor.constraint(equalTo: npcsGridContainerView.trailingAnchor),
             gridView.bottomAnchor.constraint(equalTo: npcsGridContainerView.bottomAnchor)
         ])
+        
+        // Update NPC count info
+        updateNPCCountInfo()
     }
     
     private func updateBackground() {
@@ -243,6 +262,57 @@ class SceneViewController: UIViewController {
             print("SceneView: No NPC selected, hiding info view")
             selectedNPCInfoView.isHidden = true
         }
+    }
+    
+    private func updateDesiredVictimInfo() {
+        guard let player = mainViewModel.gameStateService.player else {
+            desiredVictimInfoView.isHidden = true
+            return
+        }
+        
+        let desiredVictim = player.desiredVictim
+        
+        // Check if any criteria are set
+        let hasCriteria = desiredVictim.desiredSex != nil || 
+                         desiredVictim.desiredAgeRange != nil ||
+                         desiredVictim.desiredProfession != nil ||
+                         desiredVictim.desiredMorality != nil
+        
+        if hasCriteria {
+            desiredVictimInfoView.configureWithDesiredVictim(desiredVictim, textColor: UIColor(Theme.textColor))
+            desiredVictimInfoView.isHidden = false
+            print("SceneView: Desired victim info view shown with criteria")
+        } else {
+            desiredVictimInfoView.isHidden = true
+            print("SceneView: No desired victim criteria, hiding info view")
+        }
+    }
+    
+    // Helper method to convert SwiftUI Color to UIColor (если еще нет)
+    private func convertSwiftUIColorToUIColor(_ color: Color) -> UIColor {
+        if color == .red { return UIColor.systemRed }
+        if color == .blue { return UIColor.systemBlue }
+        if color == .green { return UIColor.systemGreen }
+        if color == .yellow { return UIColor.systemYellow }
+        if color == .orange { return UIColor.systemOrange }
+        if color == .purple { return UIColor.systemPurple }
+        if color == .pink { return UIColor.systemPink }
+        if color == .gray { return UIColor.systemGray }
+        if color == .brown { 
+            if #available(iOS 15.0, *) {
+                return UIColor.systemBrown
+            } else {
+                return UIColor(red: 0.6, green: 0.4, blue: 0.2, alpha: 1.0)
+            }
+        }
+        if color == .mint { 
+            if #available(iOS 15.0, *) {
+                return UIColor.systemMint
+            } else {
+                return UIColor(red: 0, green: 0.8, blue: 0.6, alpha: 1.0)
+            }
+        }
+        return UIColor.white
     }
     
     override func viewDidLoad() {
@@ -272,6 +342,8 @@ class SceneViewController: UIViewController {
         setupButtonStacks()
         setupNPCsGrid()
         setupSelectedNPCInfo()
+        setupDesiredVictimInfo()
+        setupNPCCountInfo()
         setupNPCWidgetOverlay()
         setupChat()
         setupLayout()
@@ -340,6 +412,50 @@ class SceneViewController: UIViewController {
         
         // Initial update
         updateSelectedNPCInfo()
+    }
+    
+    private func setupDesiredVictimInfo() {
+        desiredVictimInfoView.translatesAutoresizingMaskIntoConstraints = false
+        desiredVictimInfoView.isHidden = true
+        view.addSubview(desiredVictimInfoView)
+        
+        // Initial update
+        updateDesiredVictimInfo()
+    }
+    
+    private func setupNPCCountInfo() {
+        npcCountInfoView.translatesAutoresizingMaskIntoConstraints = false
+        npcCountInfoView.isHidden = true
+        view.addSubview(npcCountInfoView)
+        
+        // Initial update
+        updateNPCCountInfo()
+    }
+    
+    private func updateNPCCountInfo() {
+        let npcCount = mainViewModel.npcs.count
+        let locationName = mainViewModel.currentScene?.name ?? "Unknown"
+        let locationType = mainViewModel.currentScene?.sceneType.displayName ?? "Unknown"
+        let locationIcon = mainViewModel.currentScene?.sceneType.iconName ?? "house.fill"
+        
+        // Get location color from SceneTypeColorProvider
+        let locationColor: UIColor
+        if let sceneType = mainViewModel.currentScene?.sceneType {
+            locationColor = SceneTypeColorProvider.color(for: sceneType)
+        } else {
+            locationColor = UIColor.systemGray
+        }
+        
+        npcCountInfoView.configureWithLocationInfo(
+            locationName: locationName, 
+            locationType: locationType,
+            locationIcon: locationIcon,
+            locationColor: locationColor,
+            npcCount: npcCount, 
+            textColor: UIColor(Theme.textColor)
+        )
+        npcCountInfoView.isHidden = false
+        print("SceneView: Location info view shown: \(locationName) (\(locationType)) with \(npcCount) NPCs")
     }
     
     private func setupChat() {
@@ -710,16 +826,28 @@ class SceneViewController: UIViewController {
             selectedNPCInfoView.widthAnchor.constraint(equalToConstant: 180), // Same width as chat
             selectedNPCInfoView.heightAnchor.constraint(equalToConstant: 46), // Height for avatar + padding
             
-            // Action buttons stack - positioned below selected NPC info (third position)
+            // NPC Count Info - positioned at top left, above desired victim info
+            npcCountInfoView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
+            npcCountInfoView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+            npcCountInfoView.widthAnchor.constraint(equalToConstant: 250), // Increased width since we removed type text
+            npcCountInfoView.heightAnchor.constraint(equalToConstant: 46), // Same height as other info views
+            
+            // Desired Victim Info - positioned to the right of NPC count info
+            desiredVictimInfoView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
+            desiredVictimInfoView.leadingAnchor.constraint(equalTo: npcCountInfoView.trailingAnchor, constant: 10),
+            desiredVictimInfoView.trailingAnchor.constraint(equalTo: chatContainerView.leadingAnchor, constant: -10),
+            desiredVictimInfoView.heightAnchor.constraint(equalToConstant: 46), // Height for criteria info
+            
+            // Action buttons stack - positioned below selected NPC info (third position in right column)
             leftButtonStackView.topAnchor.constraint(equalTo: selectedNPCInfoView.bottomAnchor, constant: 10),
             leftButtonStackView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
             leftButtonStackView.widthAnchor.constraint(equalToConstant: 180), // Same width as chat
             
-            // NPCs Grid - positioned between left edge and chat area, takes most space
-            npcsGridContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
+            // NPCs Grid - positioned below desired victim info, between left edge and chat area
+            npcsGridContainerView.topAnchor.constraint(equalTo: desiredVictimInfoView.bottomAnchor, constant: 10),
             npcsGridContainerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
             npcsGridContainerView.trailingAnchor.constraint(equalTo: chatContainerView.leadingAnchor, constant: -10),
-            npcsGridContainerView.heightAnchor.constraint(equalToConstant: 300), // Fixed height for NPCs grid
+            npcsGridContainerView.heightAnchor.constraint(equalToConstant: 260), // Reduced height to accommodate desired victim info
             
             // Chat buttons stack - positioned on the right edge, spanning full height
             chatButtonsStackView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
@@ -1033,8 +1161,10 @@ class SceneViewController: UIViewController {
         destinationVC.navigationItem.hidesBackButton = true
         destinationVC.navigationController?.setNavigationBarHidden(true, animated: false)
         
-        // Add swipe to dismiss gesture
-        addSwipeToDismissGesture(to: destinationVC)
+        // Add swipe to dismiss gesture only for allowed destinations
+        if shouldAddSwipeGesture(for: destination) {
+            addSwipeToDismissGesture(to: destinationVC)
+        }
         
         // Push the view controller
         if let navigationController = self.customNavigationController {
@@ -1052,6 +1182,16 @@ class SceneViewController: UIViewController {
         let swipeGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeToDismiss))
         swipeGesture.direction = .right
         viewController.view.addGestureRecognizer(swipeGesture)
+    }
+    
+    // Новый метод для проверки, нужно ли добавлять жест свайпа
+    private func shouldAddSwipeGesture(for destination: NavigationDestination) -> Bool {
+        switch destination {
+        case .combat, .navigation, .hidingCell:
+            return false // Запрещаем свайп для боя, карты и убежища
+        default:
+            return true // Разрешаем свайп для остальных экранов
+        }
     }
     
     @objc private func handleSwipeToDismiss() {

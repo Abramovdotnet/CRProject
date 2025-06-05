@@ -2,58 +2,92 @@ import SwiftUI
 import UIKit
 import Combine
 
-// MARK: - Custom Progress View with adjustable height
-class CustomHeightUIProgressView: UIProgressView {
-    var heightConstraint: NSLayoutConstraint?
-    var shadowLayer: CALayer?
+// MARK: - Custom Progress Bar with glow effect
+class CustomGlowProgressBar: UIView {
+    private let backgroundLayer = CALayer()
+    private let progressLayer = CALayer()
+    private let glowLayer = CALayer()
+    
+    var progress: Float = 0.0 {
+        didSet {
+            updateProgress()
+        }
+    }
+    
+    var progressColor: UIColor = .red {
+        didSet {
+            updateColors()
+        }
+    }
+    
+    var trackColor: UIColor = UIColor(white: 0.3, alpha: 0.5) {
+        didSet {
+            backgroundLayer.backgroundColor = trackColor.cgColor
+        }
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        setupLayers()
+    }
+    
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setupLayers()
+    }
+    
+    private func setupLayers() {
+        // Background track
+        backgroundLayer.cornerRadius = 2.5
+        backgroundLayer.backgroundColor = trackColor.cgColor
+        layer.addSublayer(backgroundLayer)
+        
+        // Glow layer (behind progress)
+        glowLayer.cornerRadius = 2.5
+        glowLayer.shadowOffset = .zero
+        glowLayer.shadowRadius = 4
+        glowLayer.shadowOpacity = 0.8
+        layer.addSublayer(glowLayer)
+        
+        // Progress layer
+        progressLayer.cornerRadius = 2.5
+        progressLayer.backgroundColor = progressColor.cgColor
+        layer.addSublayer(progressLayer)
+        
+        updateColors()
+    }
     
     override func layoutSubviews() {
         super.layoutSubviews()
         
-        if heightConstraint == nil {
-            heightConstraint = constraints.first { $0.firstAttribute == .height }
-            if heightConstraint == nil {
-                heightConstraint = heightAnchor.constraint(equalToConstant: 10)
-                heightConstraint?.isActive = true
-            } else {
-                heightConstraint?.constant = 10
-            }
-        }
+        backgroundLayer.frame = bounds
+        glowLayer.frame = bounds
         
-        // Закругляем все подвиды для эллиптической формы
-        layer.cornerRadius = 5
-        clipsToBounds = true
-        
-        subviews.forEach { 
-            $0.layer.cornerRadius = 5 
-        }
-        
-        // Теневой слой для прогресс-бара (отдельно от самого прогресс-бара)
-        if shadowLayer == nil {
-            shadowLayer = CALayer()
-            shadowLayer?.frame = bounds
-            shadowLayer?.cornerRadius = 5
-            shadowLayer?.backgroundColor = UIColor.clear.cgColor
-            shadowLayer?.shadowColor = progressTintColor?.cgColor
-            shadowLayer?.shadowOffset = CGSize(width: 0, height: 0)
-            shadowLayer?.shadowOpacity = 0.9
-            shadowLayer?.shadowRadius = 5
-            
-            // Добавляем теневой слой за прогресс-баром
-            if let shadowLayer = shadowLayer {
-                layer.superlayer?.insertSublayer(shadowLayer, below: layer)
-            }
-        }
-        
-        // Обновляем размер и положение теневого слоя
-        shadowLayer?.frame = frame
-        shadowLayer?.position = center
+        updateProgress()
     }
     
-    // Обновление цвета тени при изменении цвета прогресса
-    override var progressTintColor: UIColor? {
-        didSet {
-            shadowLayer?.shadowColor = progressTintColor?.cgColor
+    private func updateProgress() {
+        let progressWidth = bounds.width * CGFloat(progress)
+        progressLayer.frame = CGRect(x: 0, y: 0, width: progressWidth, height: bounds.height)
+        
+        // Update glow layer frame to match progress
+        glowLayer.frame = CGRect(x: 0, y: 0, width: progressWidth, height: bounds.height)
+    }
+    
+    private func updateColors() {
+        progressLayer.backgroundColor = progressColor.cgColor
+        glowLayer.backgroundColor = progressColor.cgColor
+        glowLayer.shadowColor = progressColor.cgColor
+    }
+    
+    func setProgress(_ progress: Float, animated: Bool) {
+        if animated {
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(0.3)
+            self.progress = progress
+            CATransaction.commit()
+        } else {
+            self.progress = progress
         }
     }
 }
@@ -75,20 +109,16 @@ class TopWidgetUIViewController: UIViewController {
     private let timeLabel = UILabel()
     private let dayLabel = UILabel()
     private let lockImageView = UIImageView()
-    private let sceneTypeImageView = UIImageView()
-    private let sceneNameLabel = UILabel()
-    private let peopleImageView = UIImageView()
-    private let peopleCountLabel = UILabel()
     // Добавляем разделитель (spacer), чтобы отделить левую часть виджета от правой
     private let flexibleSpacerView = UIView()
     private let awarenessImageView = UIImageView()
     private let awarenessLabel = UILabel()
     // Заменяем стандартный прогресс-бар на кастомный с регулируемой высотой
-    private let awarenessProgressView = CustomHeightUIProgressView()
+    private let awarenessProgressView = CustomGlowProgressBar()
     private let bloodImageView = UIImageView()
     private let bloodLabel = UILabel()
     // Заменяем стандартный прогресс-бар на кастомный с регулируемой высотой
-    private let bloodProgressView = CustomHeightUIProgressView()
+    private let bloodProgressView = CustomGlowProgressBar()
     private let coinImageView = UIImageView()
     private let coinValueLabel = UILabel()
     
@@ -99,6 +129,16 @@ class TopWidgetUIViewController: UIViewController {
     private let resetDesiresButton = UIButton()
     private let maxAchievementsButton = UIButton()
     private let debugOverlayButton = UIButton()
+    
+    // Glow views для иконок (добавляем как в InfoPresentationLabelView)
+    private let dayNightGlowView = UIImageView()
+    private let awarenessGlowView = UIImageView()
+    private let bloodGlowView = UIImageView()
+    private let coinGlowView = UIImageView()
+    
+    // Static cache for glow images to avoid regenerating them
+    private static var glowImageCache: [String: UIImage] = [:]
+    private static let cacheQueue = DispatchQueue(label: "glowImageCache", qos: .utility)
     
     // Animation constants
     private let animationDuration: TimeInterval = 0.5
@@ -128,6 +168,106 @@ class TopWidgetUIViewController: UIViewController {
         
         // Явно устанавливаем видимость
         bloodProgressView.isHidden = false
+        
+        // Настраиваем свечения после установки UI иерархии
+        setupAllIconGlows()
+    }
+    
+    // Настройка всех свечений после создания UI иерархии
+    private func setupAllIconGlows() {
+        // Заменяем простые SF символы на светящиеся иконки с круглым фоном как в InfoPresentationLabelView
+        setupGlowingIcon(imageView: dayNightImageView, symbolName: "sun.max.fill", color: .yellow)
+        setupGlowingIcon(imageView: awarenessImageView, symbolName: "figure.walk.triangle.fill", 
+                         color: UIColor(red: 0.65, green: 0.28, blue: 0.95, alpha: 1.0))
+        setupGlowingIcon(imageView: bloodImageView, symbolName: "drop.fill", 
+                         color: UIColor(Theme.bloodProgressColor))
+        setupGlowingIcon(imageView: coinImageView, symbolName: "cedisign", color: .green)
+    }
+    
+    // Создание светящейся иконки точно как в InfoPresentationLabelView.createGlowingIconView
+    private func setupGlowingIcon(imageView: UIImageView, symbolName: String, color: UIColor) {
+        let iconSize: CGFloat = 28 // Точно как в InfoPresentationLabelView
+        
+        // Настраиваем main icon view - точно как в InfoPresentationLabelView
+        imageView.frame = CGRect(x: 0, y: 0, width: iconSize, height: iconSize)
+        imageView.contentMode = .center // Точно как в InfoPresentationLabelView
+        imageView.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+        imageView.clipsToBounds = true
+        imageView.layer.cornerRadius = iconSize / 2
+        imageView.layer.borderWidth = 0 // Убираем белую обводку
+        imageView.layer.shadowColor = UIColor.black.cgColor
+        imageView.layer.shadowRadius = 2 // Уменьшаем с 3 до 2
+        imageView.layer.shadowOpacity = 0.5 // Уменьшаем с 0.8 до 0.5
+        imageView.layer.shadowOffset = CGSize(width: 0, height: 1)
+        imageView.alpha = 1.0
+        imageView.tintColor = color
+        
+        // Create SF Symbol with proper configuration - точно как в InfoPresentationLabelView
+        let iconConfig = UIImage.SymbolConfiguration(pointSize: 10) // Точно как в InfoPresentationLabelView
+        let symbolImage = UIImage(systemName: symbolName, withConfiguration: iconConfig)
+        imageView.image = symbolImage
+        
+        // Glow для иконки - добавляем как subview к иконке (без constraints) - точно как в InfoPresentationLabelView
+        let glowView = UIImageView()
+        glowView.contentMode = .scaleAspectFill
+        glowView.alpha = 0.8
+        glowView.isUserInteractionEnabled = false
+        glowView.tag = 999 // Тег для поиска glow view
+        imageView.addSubview(glowView)
+        imageView.sendSubviewToBack(glowView)
+        
+        // Устанавливаем размеры glow views напрямую (без constraints) - точно как в InfoPresentationLabelView
+        let glowSize = iconSize + 12
+        glowView.frame = CGRect(x: -6, y: -6, width: glowSize, height: glowSize)
+        
+        // Set size constraints для imageView
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.widthAnchor.constraint(equalToConstant: iconSize).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: iconSize).isActive = true
+        
+        // Generate glow image
+        Self.getCachedGlowImage(size: CGSize(width: iconSize + 12, height: iconSize + 12), color: color) { glowImage in
+            DispatchQueue.main.async {
+                glowView.image = glowImage
+            }
+        }
+    }
+    
+    // Обновление только символа и цвета существующей иконки без пересоздания
+    private func updateGlowingIcon(imageView: UIImageView, symbolName: String, color: UIColor) {
+        // Обновляем цвет tint
+        imageView.tintColor = color
+        
+        // Обновляем символ
+        let iconConfig = UIImage.SymbolConfiguration(pointSize: 10)
+        let symbolImage = UIImage(systemName: symbolName, withConfiguration: iconConfig)
+        imageView.image = symbolImage
+        
+        // Находим glow view и обновляем его
+        if let glowView = imageView.subviews.first(where: { $0.tag == 999 }) as? UIImageView {
+            let iconSize: CGFloat = 28
+            Self.getCachedGlowImage(size: CGSize(width: iconSize + 12, height: iconSize + 12), color: color) { glowImage in
+                DispatchQueue.main.async {
+                    glowView.image = glowImage
+                }
+            }
+        }
+    }
+    
+    // Простые SF символы как в InfoPresentationLabelView (createSymbolView)
+    private func setupSimpleSymbol(imageView: UIImageView, symbolName: String, color: UIColor) {
+        imageView.contentMode = .scaleAspectFit
+        imageView.tintColor = color
+        
+        // Create SF Symbol with proper configuration - точно как в InfoPresentationLabelView
+        let symbolConfig = UIImage.SymbolConfiguration(pointSize: 16, weight: .medium, scale: .medium)
+        let symbolImage = UIImage(systemName: symbolName, withConfiguration: symbolConfig)
+        imageView.image = symbolImage
+        
+        // Set size constraints - точно как в InfoPresentationLabelView
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 20).isActive = true
     }
     
     private func setupUI() {
@@ -158,7 +298,7 @@ class TopWidgetUIViewController: UIViewController {
     private func setupUIElements() {
         // Configure all UI elements with initial state
         
-        // Day/Night Icon
+        // Day/Night Icon - простая иконка с легким свечением
         dayNightImageView.contentMode = .scaleAspectFit
         dayNightImageView.tintColor = .white
         
@@ -177,73 +317,34 @@ class TopWidgetUIViewController: UIViewController {
         lockImageView.tintColor = UIColor(red: 0.9, green: 0.8, blue: 0.8, alpha: 1.0)
         lockImageView.isHidden = true
         
-        // Scene Type Image
-        sceneTypeImageView.contentMode = .scaleAspectFit
-        sceneTypeImageView.tintColor = .white
-        
-        // Scene Name Label - используем точное соответствие SwiftUI Color.yellow
-        sceneNameLabel.textColor = UIColor.systemYellow
-        sceneNameLabel.font = UIFont(name: "Optima", size: 12)
-        sceneNameLabel.lineBreakMode = .byTruncatingTail // Добавит ... если название не поместится
-        
-        // People Image
-        peopleImageView.contentMode = .scaleAspectFit
-        peopleImageView.tintColor = .white
-        peopleImageView.image = UIImage(systemName: "person.3.fill")
-        
-        // People Count Label
-        peopleCountLabel.textColor = .white
-        peopleCountLabel.font = UIFont(name: "Optima", size: 12)
-        peopleCountLabel.textAlignment = .center // Центрируем текст внутри фиксированного пространства
-        
-        // Awareness Image
+        // Awareness Image - будет настроено в setupCircularIcon
         awarenessImageView.contentMode = .scaleAspectFit
-        awarenessImageView.tintColor = UIColor(red: 0.4, green: 0.1, blue: 0.5, alpha: 1.0)
-        awarenessImageView.image = UIImage(systemName: "figure.walk.triangle.fill")
         
         // Awareness Label
         awarenessLabel.textColor = .white
         awarenessLabel.font = UIFont(name: "Optima", size: 12)
-        awarenessLabel.textAlignment = .center // Центрируем текст внутри фиксированного пространства
+        awarenessLabel.textAlignment = .center
         
-        // Awareness Progress - Улучшенный стильный дизайн
-        awarenessProgressView.trackTintColor = UIColor(red: 0.08, green: 0.08, blue: 0.15, alpha: 0.95)
-        awarenessProgressView.progressTintColor = UIColor(red: 0.65, green: 0.28, blue: 0.95, alpha: 1.0)
-        awarenessProgressView.layer.cornerRadius = 5
-        awarenessProgressView.clipsToBounds = true
+        // Awareness Progress - простой стиль с свечением
+        awarenessProgressView.trackColor = UIColor(red: 0.08, green: 0.08, blue: 0.15, alpha: 0.95)
+        awarenessProgressView.progressColor = UIColor(red: 0.65, green: 0.28, blue: 0.95, alpha: 1.0)
         awarenessProgressView.progress = 0.0
-        awarenessProgressView.isHidden = false
         
-        // Добавляем рамку для визуального выделения
-        awarenessProgressView.layer.borderColor = UIColor(red: 0.65, green: 0.35, blue: 0.95, alpha: 0.3).cgColor
-        awarenessProgressView.layer.borderWidth = 0.3
-        
-        // Blood Image
+        // Blood Image - будет настроено в setupCircularIcon
         bloodImageView.contentMode = .scaleAspectFit
-        bloodImageView.tintColor = UIColor(red: 0.8, green: 0.1, blue: 0.1, alpha: 1.0)
-        bloodImageView.image = UIImage(systemName: "drop.fill")
         
         // Blood Label
         bloodLabel.textColor = .white
         bloodLabel.font = UIFont(name: "Optima", size: 12)
         bloodLabel.textAlignment = .center
         
-        // Blood Progress - Улучшенный стильный дизайн
-        bloodProgressView.trackTintColor = UIColor(red: 0.15, green: 0.03, blue: 0.03, alpha: 0.95)
-        bloodProgressView.progressTintColor = UIColor(red: 1.0, green: 0.28, blue: 0.18, alpha: 1.0)
-        bloodProgressView.layer.cornerRadius = 5
-        bloodProgressView.clipsToBounds = true
+        // Blood Progress - простой стиль с свечением
+        bloodProgressView.trackColor = UIColor(red: 0.15, green: 0.03, blue: 0.03, alpha: 0.95)
+        bloodProgressView.progressColor = UIColor(Theme.bloodProgressColor)
         bloodProgressView.progress = 0.5
-        bloodProgressView.isHidden = false
         
-        // Добавляем рамку для визуального выделения
-        bloodProgressView.layer.borderColor = UIColor(red: 1.0, green: 0.35, blue: 0.2, alpha: 0.3).cgColor
-        bloodProgressView.layer.borderWidth = 0.3
-        
-        // Coin Image
+        // Coin Image - будет настроено в setupCircularIcon
         coinImageView.contentMode = .scaleAspectFit
-        coinImageView.tintColor = .green
-        coinImageView.image = UIImage(systemName: "cedisign")
         
         // Coin Value Label
         coinValueLabel.textColor = .green
@@ -288,20 +389,14 @@ class TopWidgetUIViewController: UIViewController {
             view.removeFromSuperview()
         }
         
-        // Add items in order to the stack view - сначала базовые элементы
+        // Add items in order to the stack view - сначала базовые элементы (убираем локацию и NPC count)
         contentStackView.addArrangedSubview(dayNightImageView)
         contentStackView.addArrangedSubview(timeLabel)
         contentStackView.addArrangedSubview(dayLabel)
-        contentStackView.addArrangedSubview(sceneTypeImageView)
-        contentStackView.addArrangedSubview(sceneNameLabel)
-        
-        // Далее блок NPC counter
-        contentStackView.addArrangedSubview(peopleImageView)
-        contentStackView.addArrangedSubview(peopleCountLabel)
         
         // Добавляем хороший отступ перед шкалами для визуального разделения
         let smallSpacer = UIView()
-        smallSpacer.widthAnchor.constraint(equalToConstant: 12).isActive = true
+        smallSpacer.widthAnchor.constraint(equalToConstant: 20).isActive = true  // Увеличиваем отступ с 12 до 20
         contentStackView.addArrangedSubview(smallSpacer)
         
         // Группа крови - плотное размещение элементов
@@ -313,7 +408,7 @@ class TopWidgetUIViewController: UIViewController {
         
         // Добавляем разделитель между группами шкал
         let spacerBetweenBars = UIView()
-        spacerBetweenBars.widthAnchor.constraint(equalToConstant: 12).isActive = true
+        spacerBetweenBars.widthAnchor.constraint(equalToConstant: 20).isActive = true  // Увеличиваем отступ с 12 до 20
         contentStackView.addArrangedSubview(spacerBetweenBars)
         
         // Группа awareness - плотное размещение элементов
@@ -328,7 +423,7 @@ class TopWidgetUIViewController: UIViewController {
         
         // Добавляем отступ перед Coins
         let coinsSpacer = UIView()
-        coinsSpacer.widthAnchor.constraint(equalToConstant: 10).isActive = true
+        coinsSpacer.widthAnchor.constraint(equalToConstant: 15).isActive = true  // Увеличиваем отступ с 10 до 15
         contentStackView.addArrangedSubview(coinsSpacer)
         
         // Опциональные элементы могут быть скрыты если не хватает места
@@ -368,31 +463,21 @@ class TopWidgetUIViewController: UIViewController {
         ])
         
         // Устанавливаем только высоту stackView без привязки к верху и низу
-        contentStackView.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        contentStackView.heightAnchor.constraint(equalToConstant: 35).isActive = true // Увеличиваем с 30 до 35 под новые иконки
         
-        // Set fixed sizes for images and progress bars
-        let imageSize: CGFloat = 16  // Уменьшаем с 20 до 16
-        let progressBarWidth: CGFloat = 80  // Уменьшаем с 100 до 80
-        let healthBarWidth: CGFloat = 80  // Уменьшаем с 120 до 80
+        // Set fixed sizes for progress bars
+        let progressBarWidth: CGFloat = 120  // Увеличиваем с 80 до 120 благодаря освободившемуся месту
+        let healthBarWidth: CGFloat = 120  // Увеличиваем с 80 до 120 благодаря освободившемуся месту
+        let debugButtonSize: CGFloat = 20  // Размер debug кнопок (меньше основных иконок)
         
         // Задаем приоритеты и размеры элементов, начиная с наиболее важных
         
-        // Название локации должно иметь большую важность и быть всегда видимым
-        sceneNameLabel.setContentHuggingPriority(.defaultHigh, for: .horizontal)
-        sceneNameLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
-        // Уменьшаем размер, чтобы уменьшить общую ширину
-        sceneNameLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true  // Уменьшаем с 100 до 80
-        sceneNameLabel.lineBreakMode = .byTruncatingTail
-        
-        // Остальные текстовые элементы с фиксированной шириной
+        // Остальные текстовые элементы с фиксированной шириной (убираем настройки для sceneNameLabel и peopleCountLabel)
         timeLabel.setContentHuggingPriority(.required, for: .horizontal)
         timeLabel.widthAnchor.constraint(equalToConstant: 50).isActive = true  // Увеличиваем с 40 до 50 для отображения минут
         
         dayLabel.setContentHuggingPriority(.required, for: .horizontal)
         dayLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true  // Уменьшаем с 55 до 45
-        
-        peopleCountLabel.setContentHuggingPriority(.required, for: .horizontal)
-        peopleCountLabel.widthAnchor.constraint(equalToConstant: 20).isActive = true  // Уменьшаем с 25 до 20
         
         awarenessLabel.setContentHuggingPriority(.required, for: .horizontal)
         awarenessLabel.widthAnchor.constraint(equalToConstant: 35).isActive = true  // Увеличиваем с 30 до 35
@@ -403,11 +488,8 @@ class TopWidgetUIViewController: UIViewController {
         coinValueLabel.setContentHuggingPriority(.required, for: .horizontal)
         coinValueLabel.widthAnchor.constraint(equalToConstant: 35).isActive = true  // Уменьшаем с 45 до 35
         
-        // Фиксируем размеры иконок
-        [dayNightImageView, lockImageView, sceneTypeImageView, peopleImageView,
-         awarenessImageView, bloodImageView, coinImageView].forEach { imageView in
-            imageView.widthAnchor.constraint(equalToConstant: imageSize).isActive = true
-            imageView.heightAnchor.constraint(equalToConstant: imageSize).isActive = true
+        // Устанавливаем приоритеты для иконок (размеры устанавливаются в setupGlowingIcon - 28x28)
+        [dayNightImageView, lockImageView, awarenessImageView, bloodImageView, coinImageView].forEach { imageView in
             imageView.setContentHuggingPriority(.required, for: .horizontal)
         }
         
@@ -426,6 +508,8 @@ class TopWidgetUIViewController: UIViewController {
         awarenessWidthConstraint.isActive = true
         // Устанавливаем минимальную ширину для шкалы awareness
         awarenessProgressView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
+        // Устанавливаем высоту для awareness progress bar
+        awarenessProgressView.heightAnchor.constraint(equalToConstant: 5).isActive = true
         
         // Увеличиваем приоритет и ширину для прогресс-бара крови (здоровья)
         bloodProgressView.setContentHuggingPriority(.defaultLow + 5, for: .horizontal) // Снижаем с 10 до 5 чтобы обе шкалы имели равный приоритет
@@ -437,12 +521,14 @@ class TopWidgetUIViewController: UIViewController {
         
         // Задаем минимальную ширину для прогресс-бара здоровья, чтобы он всегда был виден
         bloodProgressView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true // Уменьшаем с 80 до 50
+        // Устанавливаем высоту для blood progress bar
+        bloodProgressView.heightAnchor.constraint(equalToConstant: 5).isActive = true
         
         // Фиксированный размер для кнопок отладки с приоритетом
         [respawnButton, resetAwarenessButton, resetBloodButton, 
          resetDesiresButton, maxAchievementsButton, debugOverlayButton].forEach { button in
-            button.widthAnchor.constraint(equalToConstant: imageSize).isActive = true
-            button.heightAnchor.constraint(equalToConstant: imageSize).isActive = true
+            button.widthAnchor.constraint(equalToConstant: debugButtonSize).isActive = true
+            button.heightAnchor.constraint(equalToConstant: debugButtonSize).isActive = true
             button.setContentHuggingPriority(.required, for: .horizontal)
             button.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
         }
@@ -474,18 +560,6 @@ class TopWidgetUIViewController: UIViewController {
         viewModel.$currentDay
             .sink { [weak self] day in
                 self?.animateTextChange(for: self?.dayLabel, to: "Day \(day)")
-            }
-            .store(in: &cancellables)
-        
-        viewModel.$currentScene
-            .sink { [weak self] scene in
-                self?.updateSceneUI(scene: scene)
-            }
-            .store(in: &cancellables)
-        
-        viewModel.$npcs
-            .sink { [weak self] npcs in
-                self?.animateTextChange(for: self?.peopleCountLabel, to: "\(npcs.count)")
             }
             .store(in: &cancellables)
         
@@ -540,8 +614,6 @@ class TopWidgetUIViewController: UIViewController {
         updateDayNightUI(isNight: viewModel.isNight)
         timeLabel.text = " \(viewModel.currentHour):\(String(format: "%02d", viewModel.currentMinute))"
         dayLabel.text = "Day \(viewModel.currentDay)"
-        updateSceneUI(scene: viewModel.currentScene)
-        peopleCountLabel.text = "\(viewModel.npcs.count)"
         updateAwarenessUI(level: awarenessService.awarenessLevel)
         
         // Обязательно обновляем значение для шкалы здоровья
@@ -549,100 +621,60 @@ class TopWidgetUIViewController: UIViewController {
         updateBloodUI(percentage: bloodValue)
         
         coinValueLabel.text = "\(viewModel.playerCoinsValue)"
-        
-        // Явно устанавливаем видимость для всех элементов
-        bloodImageView.isHidden = false
-        bloodLabel.isHidden = false
-        bloodProgressView.isHidden = false
     }
     
     private func updateDayNightUI(isNight: Bool) {
-        // Анимируем смену иконки день/ночь
+        // Обновляем круглую иконку день/ночь
+        let backgroundColor: UIColor = isNight ? .white : .yellow
+        let symbolName = isNight ? "moon.fill" : "sun.max.fill"
+        
         UIView.transition(with: dayNightImageView, duration: animationDuration, options: .transitionCrossDissolve, animations: {
-            self.dayNightImageView.image = UIImage(systemName: isNight ? "moon.fill" : "sun.max.fill")
-            self.dayNightImageView.tintColor = isNight ? .white : .yellow
+            self.updateGlowingIcon(imageView: self.dayNightImageView, symbolName: symbolName, color: backgroundColor)
         }, completion: nil)
-    }
-    
-    private func updateSceneUI(scene: Scene?) {
-        // Анимируем изменение иконки локации
-        UIView.animate(withDuration: animationDuration) {
-            self.lockImageView.alpha = scene?.isLocked == true ? 1.0 : 0.0
-        } completion: { _ in
-            self.lockImageView.isHidden = scene?.isLocked != true
-        }
-        
-        UIView.transition(with: sceneTypeImageView, duration: animationDuration, options: .transitionCrossDissolve, animations: {
-            self.sceneTypeImageView.image = UIImage(systemName: scene?.sceneType.iconName ?? "")
-        }, completion: nil)
-        
-        animateTextChange(for: sceneNameLabel, to: scene?.name ?? "Unknown")
     }
     
     private func updateAwarenessUI(level: Float) {
         // Анимируем изменения awareness
         animateTextChange(for: awarenessLabel, to: "\(Int(level))%")
         
-        // Явно устанавливаем видимость прогресс-бара
-        awarenessProgressView.isHidden = false
-        
-        // Изменяем цвет в зависимости от уровня
+        // Изменяем цвет в зависимости от уровня, сохраняя стиль свечения как в NPCCell
         UIView.animate(withDuration: animationDuration) {
             if level > 70 {
-                // Опасный уровень - более яркий красноватый цвет
-                self.awarenessProgressView.progressTintColor = UIColor(red: 0.8, green: 0.15, blue: 0.7, alpha: 1.0)
+                // Опасный уровень - более яркий красно-фиолетовый цвет
+                self.awarenessProgressView.progressColor = UIColor(red: 0.8, green: 0.15, blue: 0.7, alpha: 1.0)
             } else if level > 40 {
                 // Средний уровень - стандартный фиолетовый цвет
-                self.awarenessProgressView.progressTintColor = UIColor(red: 0.65, green: 0.28, blue: 0.95, alpha: 1.0)
+                self.awarenessProgressView.progressColor = UIColor(red: 0.65, green: 0.28, blue: 0.95, alpha: 1.0)
             } else {
                 // Безопасный уровень - более спокойный фиолетовый
-                self.awarenessProgressView.progressTintColor = UIColor(red: 0.5, green: 0.25, blue: 0.75, alpha: 1.0)
+                self.awarenessProgressView.progressColor = UIColor(red: 0.5, green: 0.25, blue: 0.75, alpha: 1.0)
             }
         }
         
         // Плавно анимируем прогресс бар
-        UIView.animate(withDuration: animationDuration, delay: 0, options: .curveEaseInOut) {
-            self.awarenessProgressView.setProgress(level / 100.0, animated: true)
-        }
-        
-        // После анимации принудительно обновляем состояние
-        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
-            self.awarenessProgressView.setNeedsDisplay()
-            self.awarenessProgressView.layoutIfNeeded()
-        }
+        awarenessProgressView.setProgress(level / 100.0, animated: true)
     }
     
     private func updateBloodUI(percentage: Float) {
         // Анимируем изменения blood meter
         animateTextChange(for: bloodLabel, to: "\(Int(percentage))%")
         
-        // Явно устанавливаем видимость прогресс-бара
-        bloodProgressView.isHidden = false
-        
-        // Изменяем цвет в зависимости от уровня
+        // Изменяем цвет в зависимости от уровня, но используем Theme.bloodProgressColor как базовый
         UIView.animate(withDuration: animationDuration) {
             if percentage < 30 {
                 // Опасно низкий уровень - более темный красный
-                self.bloodProgressView.progressTintColor = UIColor(red: 0.8, green: 0.15, blue: 0.15, alpha: 1.0)
+                self.bloodProgressView.progressColor = UIColor(red: 0.8, green: 0.15, blue: 0.15, alpha: 1.0)
             } else if percentage < 50 {
-                // Средний уровень - стандартный красный
-                self.bloodProgressView.progressTintColor = UIColor(red: 1.0, green: 0.2, blue: 0.15, alpha: 1.0)
+                // Средний уровень - базовый цвет из Theme
+                self.bloodProgressView.progressColor = UIColor(Theme.bloodProgressColor)
             } else {
                 // Высокий уровень - более яркий красный
-                self.bloodProgressView.progressTintColor = UIColor(red: 1.0, green: 0.3, blue: 0.2, alpha: 1.0)
+                self.bloodProgressView.progressColor = UIColor(red: 1.0, green: 0.3, blue: 0.2, alpha: 1.0)
             }
         }
         
         // Плавно анимируем прогресс бар
-        UIView.animate(withDuration: animationDuration, delay: 0, options: .curveEaseInOut) {
-            self.bloodProgressView.setProgress(percentage / 100.0, animated: true)
-        }
-        
-        // После анимации принудительно обновляем состояние
-        DispatchQueue.main.asyncAfter(deadline: .now() + animationDuration) {
-            self.bloodProgressView.setNeedsDisplay()
-            self.bloodProgressView.layoutIfNeeded()
-        }
+        bloodProgressView.setProgress(percentage / 100.0, animated: true)
     }
     
     // Вспомогательная функция для анимации изменения текста
@@ -703,23 +735,11 @@ class TopWidgetUIViewController: UIViewController {
             coinImageView.isHidden = false
             coinValueLabel.isHidden = false
         }
-        
-        // Принудительно обновляем bloodProgressView для гарантии его видимости
-        bloodProgressView.isHidden = false
-        awarenessProgressView.isHidden = false
-        bloodProgressView.setNeedsDisplay()
-        bloodProgressView.layoutIfNeeded()
-        awarenessProgressView.setNeedsDisplay()
-        awarenessProgressView.layoutIfNeeded()
     }
     
     // После полной загрузки интерфейса проверяем видимость элементов 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
-        // Повторно проверяем и обновляем UI элементы
-        bloodProgressView.isHidden = false
-        awarenessProgressView.isHidden = false
         
         // Обновляем значения прогресс-баров
         if let bloodPercentage = playerBloodMeter?.bloodPercentage {
@@ -729,12 +749,69 @@ class TopWidgetUIViewController: UIViewController {
         // Обновляем шкалу awareness
         let awarenessLevel = awarenessService.awarenessLevel
         awarenessProgressView.progress = awarenessLevel / 100.0
+    }
+    
+    // MARK: - Glow Effect Methods (copied from InfoPresentationLabelView)
+    
+    // Кэшированная генерация radial alpha glow для иконок
+    private static func getCachedGlowImage(size: CGSize, color: UIColor, completion: @escaping (UIImage?) -> Void) {
+        // Создаем уникальный ключ на основе размера и компонентов цвета
+        var red: CGFloat = 0, green: CGFloat = 0, blue: CGFloat = 0, alpha: CGFloat = 0
+        color.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        let cacheKey = String(format: "%.0fx%.0f_%.3f_%.3f_%.3f_%.3f", size.width, size.height, red, green, blue, alpha)
         
-        // Принудительно обновляем UI
-        bloodProgressView.setNeedsDisplay()
-        bloodProgressView.layoutIfNeeded()
-        awarenessProgressView.setNeedsDisplay() 
-        awarenessProgressView.layoutIfNeeded()
+        // Проверяем кэш в основном потоке
+        if let cachedImage = glowImageCache[cacheKey] {
+            completion(cachedImage)
+            return
+        }
+        
+        // Генерируем изображение в фоновом потоке
+        cacheQueue.async {
+            let glowImage = makeRadialGlowImage(size: size, color: color)
+            
+            // Сохраняем в кэш
+            if let image = glowImage {
+                glowImageCache[cacheKey] = image
+            }
+            
+            // Возвращаем результат
+            completion(glowImage)
+        }
+    }
+    
+    // Оптимизированная генерация radial alpha glow для иконок
+    private static func makeRadialGlowImage(size: CGSize, color: UIColor) -> UIImage? {
+        let scale = UIScreen.main.scale
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        guard let ctx = UIGraphicsGetCurrentContext() else { return nil }
+        
+        // Оптимизация: используем более эффективный способ создания градиента
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let colors = [color.withAlphaComponent(0.4).cgColor, color.withAlphaComponent(0.0).cgColor] as CFArray
+        let locations: [CGFloat] = [0.0, 1.0]
+        
+        guard let gradient = CGGradient(colorsSpace: colorSpace, colors: colors, locations: locations) else {
+            UIGraphicsEndImageContext()
+            return nil
+        }
+        
+        let center = CGPoint(x: size.width * 0.5, y: size.height * 0.5)
+        let radius = size.width * 0.5
+        
+        ctx.drawRadialGradient(gradient, startCenter: center, startRadius: 0, endCenter: center, endRadius: radius, options: .drawsAfterEndLocation)
+        
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        
+        return image?.withRenderingMode(.alwaysOriginal)
+    }
+    
+    // Method to clear cache if needed (for memory management)
+    static func clearGlowImageCache() {
+        cacheQueue.async {
+            glowImageCache.removeAll()
+        }
     }
 }
 
