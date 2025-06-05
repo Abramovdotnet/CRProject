@@ -267,7 +267,7 @@ struct MainSceneView: View {
                                 // Center NPCSGridView
                                 VStack {
                                     if showHistory {
-                                        ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
+                                        ChatViewControllerWrapper(eventsBus: DependencyManager.shared.resolve())
                                             .frame(maxWidth: .infinity)
                                     } else {
                                         NPCSGridViewRepresentable(
@@ -293,8 +293,7 @@ struct MainSceneView: View {
                                         PlayerWidget(player: GameStateService.shared.player!)
                                     }
                                
-                                    // Chat History
-                                    /*ChatHistoryView(eventsBus: DependencyManager.shared.resolve())
+                                    /*ChatViewControllerWrapper(eventsBus: DependencyManager.shared.resolve())
                                         .frame(maxWidth: .infinity)*/
                                 }
 
@@ -644,19 +643,22 @@ struct MainSceneView: View {
                     object: nil,
                     queue: .main
                 ) { [self] notification in
-                    guard let userInfo = notification.userInfo else {
-                        DebugLogService.shared.log("Error: Received .openDialogueTrigger notification with nil userInfo.", category: "Error")
+                    guard let userInfo = notification.userInfo,
+                          !userInfo.isEmpty else {
+                        DebugLogService.shared.log("Error: Received .openDialogueTrigger notification with nil or empty userInfo.", category: "Error")
                         return
                     }
 
-                    guard let dialogueFilename = userInfo["specificDialogueFilename"] as? String else {
-                        DebugLogService.shared.log("Error: .openDialogueTrigger missing 'specificDialogueFilename' in userInfo: \(userInfo)", category: "Error")
+                    guard let dialogueFilename = userInfo["specificDialogueFilename"] as? String,
+                          !dialogueFilename.isEmpty else {
+                        DebugLogService.shared.log("Error: .openDialogueTrigger missing or invalid 'specificDialogueFilename' in userInfo: \(userInfo)", category: "Error")
                         return
                     }
 
-                    let forceOpen = userInfo["forceOpen"] as? Bool ?? false
-                    let targetNPCId = userInfo["targetNPCId"] as? Int
-                    let interactingNPCIdFromQuest = userInfo["interactingNPCId"] as? Int
+                    // Safely extract other values with proper type checking
+                    let forceOpen = (userInfo["forceOpen"] as? NSNumber)?.boolValue ?? false
+                    let targetNPCId = (userInfo["targetNPCId"] as? NSNumber)?.intValue
+                    let interactingNPCIdFromQuest = (userInfo["interactingNPCId"] as? NSNumber)?.intValue
                     
                     DebugLogService.shared.log("Received .openDialogueTrigger: file='\(dialogueFilename)', targetNPCId=\(targetNPCId ?? -1), forceOpen=\(forceOpen), interactingFromQuest=\(interactingNPCIdFromQuest ?? -1)", category: "DialogueTrigger")
 

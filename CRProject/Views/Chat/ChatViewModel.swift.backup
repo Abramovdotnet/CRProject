@@ -1,0 +1,357 @@
+import Foundation
+import UIKit
+import Combine
+
+class ChatViewModel: ObservableObject {
+    @Published private(set) var messages: [ChatMessage] = []
+    
+    private let gameEventsBusService: GameEventsBusService
+    private let gameTimeService: GameTimeService
+    private var cancellables = Set<AnyCancellable>()
+    
+    init(gameEventsBusService: GameEventsBusService = DependencyManager.shared.resolve(),
+         gameTimeService: GameTimeService = DependencyManager.shared.resolve()) {
+        self.gameEventsBusService = gameEventsBusService
+        self.gameTimeService = gameTimeService
+        
+        setupObservers()
+    }
+    
+    private func setupObservers() {
+        // Subscribe to messages from GameEventsBusService
+        gameEventsBusService.$messages
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] newMessages in
+                self?.messages = newMessages
+            }
+            .store(in: &cancellables)
+    }
+    
+    // MARK: - Public Methods
+    
+    func addMessage(message: String? = nil, type: MessageType) {
+        gameEventsBusService.addMessage(message: message, type: type)
+    }
+    
+    func addMessageWithIcon(
+        message: String? = nil,
+        type: MessageType,
+        location: String? = nil,
+        primaryNPC: NPC? = nil,
+        player: Player? = nil,
+        secondaryNPC: NPC? = nil,
+        interactionType: NPCInteraction? = nil,
+        hasSuccess: Bool = false,
+        isSuccess: Bool? = nil,
+        isDiscussion: Bool = false,
+        messageLocation: String? = nil,
+        rumorInteractionType: NPCInteraction? = nil,
+        rumorPrimaryNPC: NPC? = nil,
+        rumorSecondaryNPC: NPC? = nil
+    ) {
+        gameEventsBusService.addMessageWithIcon(
+            message: message,
+            type: type,
+            location: location,
+            primaryNPC: primaryNPC,
+            player: player,
+            secondaryNPC: secondaryNPC,
+            interactionType: interactionType,
+            hasSuccess: hasSuccess,
+            isSuccess: isSuccess,
+            isDiscussion: isDiscussion,
+            messageLocation: messageLocation,
+            rumorInteractionType: rumorInteractionType,
+            rumorPrimaryNPC: rumorPrimaryNPC,
+            rumorSecondaryNPC: rumorSecondaryNPC
+        )
+    }
+    
+    func clearChatHistory() {
+        gameEventsBusService.clearChatHistory()
+    }
+    
+    // Helper methods for common message types
+    func addSystemMessage(_ message: String? = nil) {
+        gameEventsBusService.addSystemMessage(message)
+    }
+    
+    func addWarningMessage(_ message: String? = nil) {
+        gameEventsBusService.addWarningMessage(message)
+    }
+    
+    func addEventMessage(_ message: String? = nil) {
+        gameEventsBusService.addEventMessage(message)
+    }
+    
+    func addDialogueMessage(message: String? = nil) {
+        gameEventsBusService.addDialogueMessage(message: message)
+    }
+    
+    func addDangerMessage(message: String? = nil) {
+        gameEventsBusService.addDangerMessage(message: message)
+    }
+    
+    func addCommonMessage(message: String? = nil) {
+        gameEventsBusService.addCommonMessage(message: message)
+    }
+    
+    // MARK: - Message Formatting Helpers
+    
+    private var chatFont: UIFont {
+        return UIFont(name: "Optima-Regular", size: 10) ?? UIFont.systemFont(ofSize: 10)
+    }
+    
+    func getTypeColor(for type: MessageType) -> UIColor {
+        switch type {
+        case .common: return UIColor.white.withAlphaComponent(0.9)
+        case .warning: return UIColor.yellow.withAlphaComponent(0.9)
+        case .system: return UIColor.blue.withAlphaComponent(0.9)
+        case .dialogue: return UIColor.green.withAlphaComponent(0.9)
+        case .event: return UIColor(red: 1.0, green: 0.6, blue: 0.2, alpha: 0.9)
+        case .danger: return UIColor.red.withAlphaComponent(0.9)
+        }
+    }
+    
+    // MARK: - Styled Icon Creation (Similar to ActionButtonSmallView)
+    
+    private func createStyledIcon(systemName: String, color: UIColor, size: CGFloat = 12) -> UIImage? {
+        let glowSize = CGSize(width: size + 8, height: size + 8)
+        
+        return UIGraphicsImageRenderer(size: glowSize).image { context in
+            // Draw radial glow background
+            let glowImage = makeRadialGlowImage(size: glowSize, color: color)
+            glowImage?.draw(in: CGRect(origin: .zero, size: glowSize))
+            
+            // Draw the SF Symbol icon
+            if let symbolImage = UIImage(systemName: systemName) {
+                let symbolRect = CGRect(
+                    x: (glowSize.width - size) / 2,
+                    y: (glowSize.height - size) / 2,
+                    width: size,
+                    height: size
+                )
+                
+                // Apply color and shadow to symbol
+                context.cgContext.setShadow(offset: .zero, blur: 2, color: color.cgColor)
+                symbolImage.withTintColor(color, renderingMode: .alwaysOriginal).draw(in: symbolRect)
+            }
+        }
+    }
+    
+    private func makeRadialGlowImage(size: CGSize, color: UIColor) -> UIImage? {
+        let scale = UIScreen.main.scale
+        UIGraphicsBeginImageContextWithOptions(size, false, scale)
+        guard let ctx = UIGraphicsGetCurrentContext() else { return nil }
+        
+        let colors = [color.withAlphaComponent(0.35).cgColor, color.withAlphaComponent(0.0).cgColor] as CFArray
+        let center = CGPoint(x: size.width/2, y: size.height/2)
+        
+        guard let grad = CGGradient(colorsSpace: CGColorSpaceCreateDeviceRGB(), colors: colors, locations: [0,1]) else { return nil }
+        
+        ctx.drawRadialGradient(grad, startCenter: center, startRadius: 0, endCenter: center, endRadius: size.width/2, options: .drawsAfterEndLocation)
+        let img = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return img?.withRenderingMode(.alwaysOriginal)
+    }
+    
+    private func createIconAttachment(for interactionType: NPCInteraction, size: CGFloat = 12) -> NSTextAttachment {
+        let attachment = NSTextAttachment()
+        
+        let iconName: String
+        let iconColor: UIColor
+        
+        switch interactionType {
+        case .conversation:
+            iconName = "bubble.left.fill"
+            iconColor = .systemBlue
+        case .trade:
+            iconName = "cart.fill"
+            iconColor = .systemGreen
+        case .observing:
+            iconName = "magnifyingglass"
+            iconColor = .systemYellow
+        case .theft:
+            iconName = "bag.fill"
+            iconColor = .systemOrange
+        case .awareAboutVampire:
+            iconName = "bolt.heart.fill"
+            iconColor = .systemPurple
+        case .prostitution:
+            iconName = "drop.halffull"
+            iconColor = .systemRed
+        case .vampireMilitaryReport:
+            iconName = "drop.fill"
+            iconColor = .systemRed
+        case .drunkFight, .gambleFight:
+            iconName = "flame.fill"
+            iconColor = .systemRed
+        case .argue:
+            iconName = "exclamationmark.triangle.fill"
+            iconColor = .systemOrange
+        case .service:
+            iconName = "hand.raised.fill"
+            iconColor = .systemBlue
+        case .patrol:
+            iconName = "shield.fill"
+            iconColor = .systemIndigo
+        case .makingLove:
+            iconName = "heart.fill"
+            iconColor = .systemPink
+        case .flirt:
+            iconName = "heart.circle.fill"
+            iconColor = .systemPink
+        case .smithingCraft:
+            iconName = "hammer.fill"
+            iconColor = .systemOrange
+        case .alchemyCraft:
+            iconName = "flask.fill"
+            iconColor = .systemPurple
+        case .findOutCasualty:
+            iconName = "exclamationmark.circle.fill"
+            iconColor = .systemRed
+        case .askForProtection:
+            iconName = "shield.lefthalf.filled"
+            iconColor = .systemBlue
+        case .arrest:
+            iconName = "hand.point.up.left.fill"
+            iconColor = .systemRed
+        default:
+            iconName = "star.fill"
+            iconColor = .systemGray
+        }
+        
+        if let styledIcon = createStyledIcon(systemName: iconName, color: iconColor, size: size) {
+            attachment.image = styledIcon
+        }
+        
+        // Set bounds to align with text baseline
+        attachment.bounds = CGRect(x: 0, y: -2, width: size + 4, height: size + 4)
+        
+        return attachment
+    }
+    
+    private func createCoinIcon(size: CGFloat = 12) -> NSTextAttachment {
+        let attachment = NSTextAttachment()
+        
+        if let styledIcon = createStyledIcon(systemName: "dollarsign.circle.fill", color: .systemYellow, size: size) {
+            attachment.image = styledIcon
+        }
+        
+        attachment.bounds = CGRect(x: 0, y: -2, width: size + 4, height: size + 4)
+        return attachment
+    }
+    
+    private func createDiscussionIcon(size: CGFloat = 12) -> NSTextAttachment {
+        let attachment = NSTextAttachment()
+        
+        if let styledIcon = createStyledIcon(systemName: "bubble.left.and.bubble.right.fill", color: .systemCyan, size: size) {
+            attachment.image = styledIcon
+        }
+        
+        attachment.bounds = CGRect(x: 0, y: -2, width: size + 4, height: size + 4)
+        return attachment
+    }
+    
+    func buildAttributedString(for message: ChatMessage, isPlayer: Bool = false) -> NSAttributedString {
+        let attributedString = NSMutableAttributedString()
+        
+        // Timestamp
+        let timestampAttributes: [NSAttributedString.Key: Any] = [
+            .font: chatFont,
+            .foregroundColor: UIColor(Theme.textColor)
+        ]
+        attributedString.append(NSAttributedString(string: "\(message.timestampHourString) ", attributes: timestampAttributes))
+        
+        if !message.message.isEmpty {
+            // Simple message
+            let messageAttributes: [NSAttributedString.Key: Any] = [
+                .font: chatFont,
+                .foregroundColor: getTypeColor(for: message.type)
+            ]
+            attributedString.append(NSAttributedString(string: message.message, attributes: messageAttributes))
+        } else if message.isDiscussion, let interactionType = message.rumorInteractionType {
+            // Discussion message
+            buildDiscussionMessage(attributedString: attributedString, message: message, interactionType: interactionType, isPlayer: isPlayer)
+        } else if let interactionType = message.interactionType {
+            // Interaction message
+            buildInteractionMessage(attributedString: attributedString, message: message, interactionType: interactionType, isPlayer: isPlayer)
+        }
+        
+        return attributedString
+    }
+    
+    private func buildDiscussionMessage(attributedString: NSMutableAttributedString, message: ChatMessage, interactionType: NPCInteraction, isPlayer: Bool) {
+        let textAttributes: [NSAttributedString.Key: Any] = [
+            .font: chatFont,
+            .foregroundColor: UIColor(Theme.textColor)
+        ]
+        
+        // Character name
+        let characterName = isPlayer ? (message.player?.name ?? "") : (message.primaryNPC?.name ?? "")
+        attributedString.append(NSAttributedString(string: "\(characterName) discussed with \(message.secondaryNPC?.name ?? "") how \(message.rumorPrimaryNPC?.name ?? "") ", attributes: textAttributes))
+        
+        // Add styled discussion icon
+        attributedString.append(NSAttributedString(attachment: createDiscussionIcon()))
+        attributedString.append(NSAttributedString(string: " ", attributes: textAttributes))
+        
+        // Add interaction description
+        let interactionAttributes: [NSAttributedString.Key: Any] = [
+            .font: chatFont,
+            .foregroundColor: UIColor.yellow.withAlphaComponent(0.9)
+        ]
+        attributedString.append(NSAttributedString(string: "[\(interactionType.description.capitalized)] ", attributes: interactionAttributes))
+        
+        // Add secondary rumor NPC and location
+        attributedString.append(NSAttributedString(string: "\(message.rumorSecondaryNPC?.name ?? "") at ", attributes: textAttributes))
+        attributedString.append(NSAttributedString(string: "\(message.messageLocation ?? "")", attributes: interactionAttributes))
+    }
+    
+    private func buildInteractionMessage(attributedString: NSMutableAttributedString, message: ChatMessage, interactionType: NPCInteraction, isPlayer: Bool) {
+        let textAttributes: [NSAttributedString.Key: Any] = [
+            .font: chatFont,
+            .foregroundColor: UIColor(Theme.textColor)
+        ]
+        
+        // Character name
+        let characterName = isPlayer ? (message.player?.name ?? "") : (message.primaryNPC?.name ?? "")
+        attributedString.append(NSAttributedString(string: "\(characterName) ", attributes: textAttributes))
+        
+        // Add success/failure indicator
+        if message.hasSuccess {
+            let successColor = message.isSuccess == true ? UIColor.green : UIColor.red
+            let successText = message.isSuccess == true ? "Successfully" : "Unsuccessfully"
+            let successAttributes: [NSAttributedString.Key: Any] = [
+                .font: chatFont,
+                .foregroundColor: successColor
+            ]
+            attributedString.append(NSAttributedString(string: "[\(successText)] ", attributes: successAttributes))
+        }
+        
+        // Add coin exchange indicator with styled icon
+        if interactionType.hasCoinsExchange {
+            attributedString.append(NSAttributedString(attachment: createCoinIcon()))
+            attributedString.append(NSAttributedString(string: " ", attributes: textAttributes))
+        }
+        
+        // Add styled interaction icon
+        attributedString.append(NSAttributedString(attachment: createIconAttachment(for: interactionType)))
+        attributedString.append(NSAttributedString(string: " ", attributes: textAttributes))
+        
+        // Add interaction description
+        let interactionAttributes: [NSAttributedString.Key: Any] = [
+            .font: chatFont,
+            .foregroundColor: UIColor.yellow.withAlphaComponent(0.9)
+        ]
+        attributedString.append(NSAttributedString(string: "[\(interactionType.description.capitalized)] ", attributes: interactionAttributes))
+        
+        // Add secondary NPC name if present
+        if let secondaryNPC = message.secondaryNPC {
+            attributedString.append(NSAttributedString(string: "\(secondaryNPC.name)", attributes: textAttributes))
+        }
+    }
+    
+    deinit {
+        cancellables.removeAll()
+    }
+} 

@@ -48,6 +48,13 @@ class CustomNPCSGridView: NPCSGridView {
     }
     
     private func handleCustomTap(on npc: NPC) {
+        // Defensive programming: validate NPC object integrity
+        guard !npc.name.isEmpty,
+              npc.id > 0 else {
+            print("Error: Invalid NPC object detected in handleCustomTap")
+            return
+        }
+        
         let currentTime = Date()
         if let lastTapTime = lastTapTimes[npc.id], currentTime.timeIntervalSince(lastTapTime) < 0.3 {
             // Double tap detected - show NPC widget and trigger investigate action
@@ -56,22 +63,31 @@ class CustomNPCSGridView: NPCSGridView {
             // Also call the original onAction for investigate (like the parent class does)
             if let onAction = getOnAction() {
                 print("Calling onAction(.investigate) for NPC: \(npc.name)")
-                onAction(.investigate(npc))
+                // Ensure we're on main thread for UI operations
+                DispatchQueue.main.async {
+                    onAction(.investigate(npc))
+                }
             }
             lastTapTimes[npc.id] = nil
         } else {
             // Single tap - update selection (same as parent class behavior)
             print("Single tap on NPC: \(npc.name)")
-            let oldSelectedNPC = npcManager.selectedNPC
-            npcManager.select(with: npc)
             
-            // Update cells for both the previously selected NPC and newly selected NPC
-            if let oldNPC = oldSelectedNPC {
-                updateNPCCell(for: oldNPC)
+            // Ensure NPC manager operations happen on main thread
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
+                
+                let oldSelectedNPC = self.npcManager.selectedNPC
+                self.npcManager.select(with: npc)
+                
+                // Update cells for both the previously selected NPC and newly selected NPC
+                if let oldNPC = oldSelectedNPC {
+                    self.updateNPCCell(for: oldNPC)
+                }
+                self.updateNPCCell(for: npc)
+                
+                self.lastTapTimes[npc.id] = currentTime
             }
-            updateNPCCell(for: npc)
-            
-            lastTapTimes[npc.id] = currentTime
         }
     }
     
@@ -99,12 +115,19 @@ class SceneViewController: UIViewController {
     private var dustEffectView: UIHostingController<DustEmitterView>?
     
     // Button stacks
-    private let leftButtonStackView = UIStackView()
-    private let rightButtonStackView = UIStackView()
+    private let leftButtonStackView = UIStackView() // New left stack for former right buttons
+    private let chatButtonsStackView = UIStackView() // Horizontal stack under chat
     
     // NPCs Grid View
     private let npcsGridContainerView = UIView()
     private var npcsGridView: NPCSGridView?
+    
+    // Selected NPC Info
+    private let selectedNPCInfoView = InfoPresentationLabelView()
+    
+    // Chat container
+    private let chatContainerView = UIView()
+    private var chatViewController: ChatViewController?
     
     // NPC Widget Overlay
     private let npcWidgetOverlayView = UIView()
@@ -160,6 +183,14 @@ class SceneViewController: UIViewController {
                 self?.updateNPCsList(with: npcs)
             }
             .store(in: &cancellables)
+        
+        // Subscribe to selected NPC changes
+        NPCInteractionManager.shared.$selectedNPC
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] selectedNPC in
+                self?.updateSelectedNPCInfo()
+            }
+            .store(in: &cancellables)
     }
     
     private func updateNPCsList(with newNPCs: [NPC]) {
@@ -197,6 +228,23 @@ class SceneViewController: UIViewController {
         backgroundImageView.image = UIImage(named: imageName) ?? UIImage(named: "MainSceneBackground")
     }
     
+    private func updateSelectedNPCInfo() {
+        let selectedNPC = NPCInteractionManager.shared.selectedNPC
+        
+        if let npc = selectedNPC {
+            print("SceneView: Updating info for selected NPC: \(npc.name) (ID: \(npc.id))")
+            
+            // Configure info view with profession icon, name, and activity icon
+            selectedNPCInfoView.configureWithNPCInfo(npc: npc, textColor: UIColor(Theme.textColor))
+            
+            selectedNPCInfoView.isHidden = false
+            print("SceneView: NPC info view shown with profession and activity icons")
+        } else {
+            print("SceneView: No NPC selected, hiding info view")
+            selectedNPCInfoView.isHidden = true
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -223,7 +271,9 @@ class SceneViewController: UIViewController {
         setupTopWidget()
         setupButtonStacks()
         setupNPCsGrid()
+        setupSelectedNPCInfo()
         setupNPCWidgetOverlay()
+        setupChat()
         setupLayout()
         setupNavigationObservers()
     }
@@ -255,21 +305,21 @@ class SceneViewController: UIViewController {
     }
     
     private func setupButtonStacks() {
-        // Left stack
+        // Left stack - now vertical container for action buttons with two rows
         leftButtonStackView.axis = .vertical
-        leftButtonStackView.spacing = 4
+        leftButtonStackView.spacing = 8
         leftButtonStackView.alignment = .center
-        leftButtonStackView.distribution = .fill
+        leftButtonStackView.distribution = .equalSpacing
         leftButtonStackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(leftButtonStackView)
         
-        // Right stack
-        rightButtonStackView.axis = .vertical
-        rightButtonStackView.spacing = 4
-        rightButtonStackView.alignment = .center
-        rightButtonStackView.distribution = .fill
-        rightButtonStackView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(rightButtonStackView)
+        // Chat buttons stack - vertical under chat
+        chatButtonsStackView.axis = .vertical
+        chatButtonsStackView.spacing = 6 // Reduced spacing
+        chatButtonsStackView.alignment = .center
+        chatButtonsStackView.distribution = .equalSpacing // Changed from fillEqually
+        chatButtonsStackView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(chatButtonsStackView)
         
         updateButtonStacks()
     }
@@ -283,94 +333,129 @@ class SceneViewController: UIViewController {
         updateNPCsList(with: mainViewModel.npcs)
     }
     
+    private func setupSelectedNPCInfo() {
+        selectedNPCInfoView.translatesAutoresizingMaskIntoConstraints = false
+        selectedNPCInfoView.isHidden = true
+        view.addSubview(selectedNPCInfoView)
+        
+        // Initial update
+        updateSelectedNPCInfo()
+    }
+    
+    private func setupChat() {
+        chatContainerView.translatesAutoresizingMaskIntoConstraints = false
+        chatContainerView.backgroundColor = .clear
+        view.addSubview(chatContainerView)
+        
+        // Create and add chat controller
+        let chatVM = ChatViewModel()
+        let chatController = ChatViewController(viewModel: chatVM)
+        
+        addChild(chatController)
+        chatContainerView.addSubview(chatController.view)
+        chatController.view.translatesAutoresizingMaskIntoConstraints = false
+        chatController.didMove(toParent: self)
+        
+        self.chatViewController = chatController
+        
+        // Setup chat view constraints
+        NSLayoutConstraint.activate([
+            chatController.view.topAnchor.constraint(equalTo: chatContainerView.topAnchor),
+            chatController.view.leadingAnchor.constraint(equalTo: chatContainerView.leadingAnchor),
+            chatController.view.trailingAnchor.constraint(equalTo: chatContainerView.trailingAnchor),
+            chatController.view.bottomAnchor.constraint(equalTo: chatContainerView.bottomAnchor)
+        ])
+    }
+    
     private func updateButtonStacks() {
         // Clear existing buttons
         leftButtonStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
-        rightButtonStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        chatButtonsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         
-        // Left buttons
+        // Chat buttons (former left buttons) - now using ActionButtonRoundedSmallView
         if mainViewModel.isAdvanceTimeButtonVisible() {
-            let button = ActionButtonSmallView(title: "Time", icon: "hourglass.bottomhalf.fill", color: UIColor(Theme.textColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "hourglass.bottomhalf.fill", color: UIColor(Theme.textColor), size: 32) {
                 self.mainViewModel.advanceTime()
             }
-            leftButtonStackView.addArrangedSubview(button)
+            chatButtonsStackView.addArrangedSubview(button)
         }
         
         if mainViewModel.isBlacksmithButtonVisible() {
-            let button = ActionButtonSmallView(title: "Smith", icon: "hammer.fill", color: UIColor(Theme.textColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "hammer.fill", color: UIColor(Theme.textColor), size: 32) {
                 self.navigateTo(.smithing)
             }
-            leftButtonStackView.addArrangedSubview(button)
+            chatButtonsStackView.addArrangedSubview(button)
         }
         
         if mainViewModel.isQuestJournalButtonVisible() {
-            let button = ActionButtonSmallView(title: "Journal", icon: "book.closed.fill", color: UIColor(Theme.textColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "book.closed.fill", color: UIColor(Theme.textColor), size: 32) {
                 self.navigateTo(.questJournal)
             }
-            leftButtonStackView.addArrangedSubview(button)
+            chatButtonsStackView.addArrangedSubview(button)
         }
         
         if mainViewModel.isNavigationButtonVisible() {
-            let button = ActionButtonSmallView(title: "Map", icon: "map.fill", color: UIColor(Theme.bloodProgressColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "map.fill", color: UIColor(Theme.bloodProgressColor), size: 32) {
                 self.navigateTo(.navigation)
             }
-            leftButtonStackView.addArrangedSubview(button)
+            chatButtonsStackView.addArrangedSubview(button)
         }
         
         if mainViewModel.isHidingCellButtonVisible() {
-            let button = ActionButtonSmallView(title: "Hide", icon: "eye.circle.fill", color: UIColor(Theme.textColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "eye.circle.fill", color: UIColor(Theme.textColor), size: 32) {
                 self.mainViewModel.getGameStateService().movePlayerToNearestHideout()
                 self.navigateTo(.hidingCell)
             }
-            leftButtonStackView.addArrangedSubview(button)
+            chatButtonsStackView.addArrangedSubview(button)
         }
         
         if mainViewModel.isInvisibilityButtonVisible() {
-            // TODO: Handle multiple hideouts
-            let button = ActionButtonSmallView(title: "Invis", icon: "eye.fill", color: UIColor(Theme.bloodProgressColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "eye.fill", color: UIColor(Theme.bloodProgressColor), size: 32) {
                 // TODO: Show smoke effect and move to hideout
             }
-            leftButtonStackView.addArrangedSubview(button)
+            chatButtonsStackView.addArrangedSubview(button)
         }
         
         if mainViewModel.isReappearButtonVisible() {
-            let button = ActionButtonSmallView(title: "Appear", icon: "eye.slash", color: .red) {
+            let button = ActionButtonRoundedSmallView(icon: "eye.slash", color: .red, size: 32) {
                 self.mainViewModel.getGameStateService().movePlayerThroughHideouts(to: .none)
             }
-            leftButtonStackView.addArrangedSubview(button)
+            chatButtonsStackView.addArrangedSubview(button)
         }
         
         if mainViewModel.isWhisperButtonVisible() {
-            let button = ActionButtonSmallView(title: "Whisper", icon: Ability.whisper.icon, color: .systemPink) {
+            let button = ActionButtonRoundedSmallView(icon: Ability.whisper.icon, color: .systemPink, size: 32) {
                 self.mainViewModel.getGameStateService().whisperToRandomNpc()
             }
-            leftButtonStackView.addArrangedSubview(button)
+            chatButtonsStackView.addArrangedSubview(button)
         }
         
         if mainViewModel.isInventoryButtonVisible() {
-            let button = ActionButtonSmallView(title: "Bag", icon: "duffle.bag.fill", color: UIColor(Theme.bloodProgressColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "duffle.bag.fill", color: UIColor(Theme.bloodProgressColor), size: 32) {
                 self.navigateTo(.inventory)
             }
-            leftButtonStackView.addArrangedSubview(button)
+            chatButtonsStackView.addArrangedSubview(button)
         }
         
         if mainViewModel.isAbilitiesButtonVisible() {
-            let button = ActionButtonSmallView(title: "Skills", icon: "moon.stars.circle.fill", color: UIColor(Theme.bloodProgressColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "moon.stars.circle.fill", color: UIColor(Theme.bloodProgressColor), size: 32) {
                 self.navigateTo(.abilities)
             }
-            leftButtonStackView.addArrangedSubview(button)
+            chatButtonsStackView.addArrangedSubview(button)
         }
         
-        // Right buttons
+        // Collect all action buttons first
+        var actionButtons: [ActionButtonRoundedSmallView] = []
+        
         if mainViewModel.isLootButtonVisible() {
-            let button = ActionButtonSmallView(title: "Loot", icon: "bag.fill", color: UIColor(Theme.textColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "bag.fill", color: UIColor(Theme.textColor), size: 32) {
                 self.navigateTo(.loot)
             }
-            rightButtonStackView.addArrangedSubview(button)
+            actionButtons.append(button)
         }
         
         if mainViewModel.isConversationButtonVisible() {
-            let button = ActionButtonSmallView(title: "Talk", icon: "bubble.left.fill", color: UIColor(Theme.textColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "bubble.left.fill", color: UIColor(Theme.textColor), size: 32) {
                 guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return }
                 self.mainViewModel.handleNPCAction(.startConversation(selectedNPC))
                 
@@ -380,58 +465,82 @@ class SceneViewController: UIViewController {
                     self.navigateTo(.dialogue)
                 }
             }
-            rightButtonStackView.addArrangedSubview(button)
+            actionButtons.append(button)
         }
         
         if mainViewModel.isTradeButtonVisible() {
-            let button = ActionButtonSmallView(title: "Trade", icon: "cart.fill", color: UIColor(Theme.textColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "cart.fill", color: UIColor(Theme.textColor), size: 32) {
                 self.navigateTo(.trade)
             }
-            rightButtonStackView.addArrangedSubview(button)
+            actionButtons.append(button)
         }
         
         if mainViewModel.isIntimidationButtonVisible() {
-            let button = ActionButtonSmallView(title: "Gaze", icon: "bolt.heart.fill", color: UIColor(Theme.bloodProgressColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "bolt.heart.fill", color: UIColor(Theme.bloodProgressColor), size: 32) {
                 guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return }
                 self.mainViewModel.handleNPCAction(.startIntimidation(selectedNPC))
                 // Handle VampireGaze - will be triggered by observer
             }
-            rightButtonStackView.addArrangedSubview(button)
+            actionButtons.append(button)
         }
         
         if mainViewModel.isFeedButtonVisible() {
-            let button = ActionButtonSmallView(title: "Feed", icon: "drop.halffull", color: UIColor(Theme.bloodProgressColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "drop.halffull", color: UIColor(Theme.bloodProgressColor), size: 32) {
                 guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return }
                 self.mainViewModel.handleNPCAction(.feed(selectedNPC))
             }
-            rightButtonStackView.addArrangedSubview(button)
+            actionButtons.append(button)
         }
         
         if mainViewModel.isDrainButtonVisible() {
-            let button = ActionButtonSmallView(title: "Drain", icon: "drop.fill", color: UIColor(Theme.bloodProgressColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "drop.fill", color: UIColor(Theme.bloodProgressColor), size: 32) {
                 guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return }
                 self.mainViewModel.handleNPCAction(.drain(selectedNPC))
             }
-            rightButtonStackView.addArrangedSubview(button)
+            actionButtons.append(button)
         }
         
         if mainViewModel.isCombatButtonVisible() {
-            let button = ActionButtonSmallView(title: "Fight", icon: "flame", color: UIColor(Theme.bloodProgressColor)) {
+            let button = ActionButtonRoundedSmallView(icon: "flame", color: UIColor(Theme.bloodProgressColor), size: 32) {
                 guard let selectedNPC = NPCInteractionManager.shared.selectedNPC else { return }
                 GameStateService.shared.startCombat(npc: selectedNPC)
                 // Combat will be triggered by notification observer
             }
-            rightButtonStackView.addArrangedSubview(button)
+            actionButtons.append(button)
         }
         
-        // Add spacers at the end
-        let leftSpacer = UIView()
-        leftSpacer.setContentHuggingPriority(.defaultLow, for: .vertical)
-        leftButtonStackView.addArrangedSubview(leftSpacer)
-        
-        let rightSpacer = UIView()
-        rightSpacer.setContentHuggingPriority(.defaultLow, for: .vertical)
-        rightButtonStackView.addArrangedSubview(rightSpacer)
+        // Create horizontal rows for action buttons
+        if !actionButtons.isEmpty {
+            // First row - up to 4 buttons
+            let firstRowStack = UIStackView()
+            firstRowStack.axis = .horizontal
+            firstRowStack.spacing = 8
+            firstRowStack.alignment = .center
+            firstRowStack.distribution = .equalSpacing
+            firstRowStack.translatesAutoresizingMaskIntoConstraints = false
+            
+            let firstRowButtons = Array(actionButtons.prefix(4))
+            for button in firstRowButtons {
+                firstRowStack.addArrangedSubview(button)
+            }
+            leftButtonStackView.addArrangedSubview(firstRowStack)
+            
+            // Second row - remaining buttons (if any)
+            if actionButtons.count > 4 {
+                let secondRowStack = UIStackView()
+                secondRowStack.axis = .horizontal
+                secondRowStack.spacing = 8
+                secondRowStack.alignment = .center
+                secondRowStack.distribution = .equalSpacing
+                secondRowStack.translatesAutoresizingMaskIntoConstraints = false
+                
+                let secondRowButtons = Array(actionButtons.dropFirst(4))
+                for button in secondRowButtons {
+                    secondRowStack.addArrangedSubview(button)
+                }
+                leftButtonStackView.addArrangedSubview(secondRowStack)
+            }
+        }
     }
     
     private func setupTopWidget() {
@@ -589,23 +698,33 @@ class SceneViewController: UIViewController {
             topWidgetViewController!.view.trailingAnchor.constraint(equalTo: topWidgetContainerView.trailingAnchor),
             topWidgetViewController!.view.bottomAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor),
             
-            // Left button stack - increased width to accommodate ActionButtonSmallView
-            leftButtonStackView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 20),
-            leftButtonStackView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            leftButtonStackView.widthAnchor.constraint(equalToConstant: 120),
-            leftButtonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            // Chat container - positioned at the top right after top widget (first position)
+            chatContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
+            chatContainerView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
+            chatContainerView.widthAnchor.constraint(equalToConstant: 180),
+            chatContainerView.heightAnchor.constraint(equalToConstant: 200),
             
-            // Right button stack - increased width to accommodate ActionButtonSmallView
-            rightButtonStackView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 20),
-            rightButtonStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            rightButtonStackView.widthAnchor.constraint(equalToConstant: 120),
-            rightButtonStackView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            // Selected NPC Info - positioned below chat (second position)
+            selectedNPCInfoView.topAnchor.constraint(equalTo: chatContainerView.bottomAnchor, constant: 10),
+            selectedNPCInfoView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
+            selectedNPCInfoView.widthAnchor.constraint(equalToConstant: 180), // Same width as chat
+            selectedNPCInfoView.heightAnchor.constraint(equalToConstant: 46), // Height for avatar + padding
             
-            // NPCs Grid - center area between button stacks
-            npcsGridContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 20),
-            npcsGridContainerView.leadingAnchor.constraint(equalTo: leftButtonStackView.trailingAnchor, constant: 10),
-            npcsGridContainerView.trailingAnchor.constraint(equalTo: rightButtonStackView.leadingAnchor, constant: -10),
-            npcsGridContainerView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20)
+            // Action buttons stack - positioned below selected NPC info (third position)
+            leftButtonStackView.topAnchor.constraint(equalTo: selectedNPCInfoView.bottomAnchor, constant: 10),
+            leftButtonStackView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
+            leftButtonStackView.widthAnchor.constraint(equalToConstant: 180), // Same width as chat
+            
+            // NPCs Grid - positioned between left edge and chat area, takes most space
+            npcsGridContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
+            npcsGridContainerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
+            npcsGridContainerView.trailingAnchor.constraint(equalTo: chatContainerView.leadingAnchor, constant: -10),
+            npcsGridContainerView.heightAnchor.constraint(equalToConstant: 300), // Fixed height for NPCs grid
+            
+            // Chat buttons stack - positioned on the right edge, spanning full height
+            chatButtonsStackView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
+            chatButtonsStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
+            chatButtonsStackView.widthAnchor.constraint(equalToConstant: 40),
         ])
     }
     
@@ -648,19 +767,31 @@ class SceneViewController: UIViewController {
     }
     
     @objc private func handleOpenDialogueTrigger(_ notification: Notification) {
-        guard let userInfo = notification.userInfo else {
-            print("Error: Received .openDialogueTrigger notification with nil userInfo.")
+        // Defensive programming: ensure we're on main thread and have valid userInfo
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                self.handleOpenDialogueTrigger(notification)
+            }
             return
         }
         
-        guard let dialogueFilename = userInfo["specificDialogueFilename"] as? String else {
-            print("Error: .openDialogueTrigger missing 'specificDialogueFilename' in userInfo")
+        guard let userInfo = notification.userInfo,
+              !userInfo.isEmpty else {
+            print("Error: Received .openDialogueTrigger notification with nil or empty userInfo.")
             return
         }
         
-        let forceOpen = userInfo["forceOpen"] as? Bool ?? false
-        let targetNPCId = userInfo["targetNPCId"] as? Int
-        let interactingNPCIdFromQuest = userInfo["interactingNPCId"] as? Int
+        // Safely extract the dialogue filename with type checking
+        guard let dialogueFilename = userInfo["specificDialogueFilename"] as? String,
+              !dialogueFilename.isEmpty else {
+            print("Error: .openDialogueTrigger missing or invalid 'specificDialogueFilename' in userInfo: \(userInfo)")
+            return
+        }
+        
+        // Safely extract other values with proper type checking
+        let forceOpen = (userInfo["forceOpen"] as? NSNumber)?.boolValue ?? false
+        let targetNPCId = (userInfo["targetNPCId"] as? NSNumber)?.intValue
+        let interactingNPCIdFromQuest = (userInfo["interactingNPCId"] as? NSNumber)?.intValue
         
         print("Received .openDialogueTrigger: file='\(dialogueFilename)', targetNPCId=\(targetNPCId ?? -1), forceOpen=\(forceOpen)")
         
@@ -720,7 +851,7 @@ class SceneViewController: UIViewController {
     }
     
     @objc private func handleStartBattle(_ notification: Notification) {
-        guard let npc = notification.object as? NPC else {
+        guard notification.object is NPC else {
             print("Error: startBattle notification - NPC object is missing.")
             return
         }

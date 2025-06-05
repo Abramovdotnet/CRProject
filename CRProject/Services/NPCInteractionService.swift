@@ -293,15 +293,22 @@ class NPCInteractionService : GameService {
                 
                 // Post notification for view models to handle
                 let userInfo: [String: Any] = [
-                    "reportingNPC": otherNPC,
+                    "reportingNPCId": otherNPC.id,  // Store NPC ID instead of NPC object
                     "dialogueFilename": "CasualtySuspicionDialogue.json"
                 ]
                 
-                NotificationCenter.default.post(
-                    name: Notification.Name("openDialogueTrigger"),
-                    object: nil, 
-                    userInfo: userInfo
-                )
+                // Safe notification posting with error handling
+                DispatchQueue.main.async {
+                    do {
+                        NotificationCenter.default.post(
+                            name: Notification.Name("openDialogueTrigger"),
+                            object: nil, 
+                            userInfo: userInfo
+                        )
+                    } catch {
+                        DebugLogService.shared.log("NPCInteractionService Error: Failed to post openDialogueTrigger notification: \(error)", category: "Error")
+                    }
+                }
                 
                 DebugLogService.shared.log("Casualty suspicion dialogue triggered for \(otherNPC.name)", category: "Dialogue")
             }

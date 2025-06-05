@@ -225,7 +225,7 @@ class MainSceneViewModel: ObservableObject {
         
         // Create initial scene using LocationReader
         do {
-            let initialScene = try LocationReader.getRuntimeLocation(by: 3)
+            let initialScene = try LocationReader.getRuntimeLocation(by: 2)
             try gameStateService.changeLocation(to: initialScene.id)
             
             // Set default awareness to 0
@@ -593,25 +593,54 @@ class MainSceneViewModel: ObservableObject {
     // MARK: - NPC Interaction Handling (Moved from MainSceneView)
     // Consider moving handleNPCAction here if appropriate
     func handleNPCAction(_ action: NPCAction) {
+        // Ensure we're on main thread for UI operations
+        guard Thread.isMainThread else {
+            DispatchQueue.main.async {
+                self.handleNPCAction(action)
+            }
+            return
+        }
+        
         print("MainSceneViewModel.handleNPCAction called with: \(action)")
         
         switch action {
         case .startConversation(let npc):
+            // Validate NPC object integrity
+            guard !npc.name.isEmpty, npc.id > 0 else {
+                print("Error: Invalid NPC object in startConversation")
+                return
+            }
             print("Starting conversation with: \(npc.name)")
             // Просто обрабатываем событие для NPCManager
             npcManager.startConversation(with: npc)
         case .startIntimidation(let npc):
+            guard !npc.name.isEmpty, npc.id > 0 else {
+                print("Error: Invalid NPC object in startIntimidation")
+                return
+            }
             print("Starting intimidation with: \(npc.name)")
             showVampireGaze(npc: npc)
         case .feed(let npc):
+            guard !npc.name.isEmpty, npc.id > 0 else {
+                print("Error: Invalid NPC object in feed")
+                return
+            }
             print("Feeding on: \(npc.name)")
             feedOnCharacter(npc)
             npcManager.playerInteracted(with: npc)
         case .drain(let npc):
+            guard !npc.name.isEmpty, npc.id > 0 else {
+                print("Error: Invalid NPC object in drain")
+                return
+            }
             print("Draining: \(npc.name)")
             emptyBloodFromCharacter(npc)
             npcManager.playerInteracted(with: npc)
         case .investigate(let npc):
+            guard !npc.name.isEmpty, npc.id > 0 else {
+                print("Error: Invalid NPC object in investigate")
+                return
+            }
             print("Investigating: \(npc.name)")
             investigateNPC(npc)
             npcManager.select(with: npc)

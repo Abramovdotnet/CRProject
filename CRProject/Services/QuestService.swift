@@ -333,11 +333,16 @@ class QuestService: GameService {
              userInfo["interactingNPCId"] = interactingId
         }
         
-        NotificationCenter.default.post(
-            name: Notification.Name("openDialogueTrigger"),
-            object: nil,
-            userInfo: userInfo
-        )
+        DebugLogService.shared.log("QuestService: Posting .openDialogueTrigger notification with userInfo: \(userInfo)", category: "QuestAction")
+        
+        // Safe notification posting with error handling
+        DispatchQueue.main.async {
+            do {
+                NotificationCenter.default.post(name: Notification.Name("openDialogueTrigger"), object: nil, userInfo: userInfo)
+            } catch {
+                DebugLogService.shared.log("QuestService Error: Failed to post openDialogueTrigger notification: \(error)", category: "Error")
+            }
+        }
     }
     
     private func executeActions(_ actions: [DialogueAction]?, npcContext: NPC? = nil) {

@@ -33,6 +33,11 @@ class NPCReader : GameService {
             DebugLogService.shared.log("getNPCs returning \(convertedNPCs.count) NPCs", category: "NPC")
             
             npcsPool = convertedNPCs
+            
+            for npc in npcsPool {
+                npc.isUnknown = false
+            }
+            
             return npcsPool
         }
     }
