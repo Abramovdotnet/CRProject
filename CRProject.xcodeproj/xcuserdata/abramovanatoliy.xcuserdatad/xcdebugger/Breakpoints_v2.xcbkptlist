@@ -1914,7 +1914,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "63"
             endingLineNumber = "63"
-            landmarkName = "updateSelectionGlow(isSelected:animationDuration:)"
+            landmarkName = "setupCellShadow()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

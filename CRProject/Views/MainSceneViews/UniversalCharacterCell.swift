@@ -23,6 +23,9 @@ class UniversalCharacterCell: UIView {
     
     private let iconSize: CGFloat = 28 // Было 22, увеличиваем радиус иконок
     
+    private let desiredVictimIconContainer = UIView() // Новый контейнер для иконки жертвы
+    private let desiredVictimGlow = UIImageView() // Glow для иконки жертвы
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -204,39 +207,34 @@ class UniversalCharacterCell: UIView {
         questIndicatorIcon.isHidden = true 
         addSubview(questIndicatorIcon)
         
-        // Desired victim indicator - positioned at bottom of avatar with red glow
-        let desiredX = avatarFrame.midX - iconSize/2
-        let desiredY = avatarFrame.maxY - iconSize/2 + 4 // Перемещаем к нижнему краю
-        desiredVictimIndicator.frame = CGRect(x: desiredX, y: desiredY, width: iconSize, height: iconSize)
-        desiredVictimIndicator.contentMode = .scaleAspectFit
-        desiredVictimIndicator.layer.shadowColor = UIColor.red.cgColor // Red shadow
-        desiredVictimIndicator.layer.shadowRadius = 10 // Increased from 5 to 10
-        desiredVictimIndicator.layer.shadowOpacity = 1.0 // Increased from 0.8 to 1.0
-        desiredVictimIndicator.layer.shadowOffset = CGSize(width: 0, height: 0)
-        desiredVictimIndicator.backgroundColor = UIColor.black.withAlphaComponent(0.3) // More transparent background
+        // Desired victim icon - делаем как professionIcon
+        let desiredX = avatarFrame.minX + 4
+        let desiredY = avatarFrame.maxY - iconSize - 4
+        desiredVictimIconContainer.frame = CGRect(x: desiredX, y: desiredY, width: iconSize, height: iconSize)
+        desiredVictimIconContainer.backgroundColor = UIColor.black.withAlphaComponent(0.8)
+        desiredVictimIconContainer.layer.cornerRadius = iconSize/2
+        desiredVictimIconContainer.clipsToBounds = true
+        desiredVictimIconContainer.layer.borderWidth = 0
+        desiredVictimIconContainer.layer.shadowColor = UIColor.black.cgColor
+        desiredVictimIconContainer.layer.shadowRadius = 2
+        desiredVictimIconContainer.layer.shadowOpacity = 0.5
+        desiredVictimIconContainer.layer.shadowOffset = CGSize(width: 0, height: 1)
+        desiredVictimIconContainer.alpha = 1.0
+        // Glow
+        desiredVictimGlow.contentMode = .scaleAspectFill
+        desiredVictimGlow.alpha = 0.8
+        desiredVictimGlow.isUserInteractionEnabled = false
+        desiredVictimGlow.frame = CGRect(x: -6, y: -6, width: iconSize + 12, height: iconSize + 12)
+        desiredVictimIconContainer.addSubview(desiredVictimGlow)
+        desiredVictimIconContainer.sendSubviewToBack(desiredVictimGlow)
+        // SF Symbol
+        desiredVictimIndicator.frame = CGRect(x: 0, y: 0, width: iconSize, height: iconSize)
+        desiredVictimIndicator.contentMode = .center
+        desiredVictimIndicator.backgroundColor = .clear
         desiredVictimIndicator.layer.cornerRadius = iconSize/2
-        desiredVictimIndicator.clipsToBounds = false // Allow glow to extend beyond bounds
-        addSubview(desiredVictimIndicator)
-        
-        // Add pulsating animation to victim indicator with more dramatic effect
-        let pulseAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-        pulseAnimation.duration = 0.5 // Уменьшено с 0.8 до 0.5
-        pulseAnimation.fromValue = 0.3
-        pulseAnimation.toValue = 1.0
-        pulseAnimation.autoreverses = true
-        pulseAnimation.repeatCount = Float.infinity
-        pulseAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        desiredVictimIndicator.layer.add(pulseAnimation, forKey: "pulseAnimation")
-        
-        // Add shadow radius animation for more dramatic glow effect
-        let glowAnimation = CABasicAnimation(keyPath: "shadowRadius")
-        glowAnimation.duration = 0.5 // Уменьшено с 0.8 до 0.5
-        glowAnimation.fromValue = 6
-        glowAnimation.toValue = 12
-        glowAnimation.autoreverses = true
-        glowAnimation.repeatCount = Float.infinity
-        glowAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        desiredVictimIndicator.layer.add(glowAnimation, forKey: "glowAnimation")
+        desiredVictimIndicator.clipsToBounds = true
+        desiredVictimIconContainer.addSubview(desiredVictimIndicator)
+        addSubview(desiredVictimIconContainer)
     }
 
     func configure(with npc: NPC, isSelected: Bool, isDisabled: Bool) {
@@ -367,53 +365,25 @@ class UniversalCharacterCell: UIView {
         if !npc.isUnknown, let player = GameStateService.shared.getPlayer(),
            player.desiredVictim.isDesiredVictim(npc: npc) {
             UIView.animate(withDuration: animationDuration) {
-                self.desiredVictimIndicator.alpha = 1.0
-                self.desiredVictimIndicator.isHidden = false
+                self.desiredVictimIconContainer.alpha = 1.0
+                self.desiredVictimIconContainer.isHidden = false
             }
             UIView.transition(with: desiredVictimIndicator,
                              duration: animationDuration,
                              options: .transitionCrossDissolve,
                              animations: {
-                self.desiredVictimIndicator.image = UIImage(named: "sphere1")
-                self.desiredVictimIndicator.tintColor = UIColor.white
+                let heartConfig = UIImage.SymbolConfiguration(pointSize: 12, weight: .bold)
+                let heartImage = UIImage(systemName: "arrow.up.heart.fill", withConfiguration: heartConfig)
+                self.desiredVictimIndicator.image = heartImage
+                self.desiredVictimIndicator.tintColor = UIColor.systemRed
             }, completion: nil)
-            CATransaction.begin()
-            CATransaction.setAnimationDuration(animationDuration)
-            if isSelected {
-                desiredVictimIndicator.layer.shadowColor = UIColor.systemRed.cgColor
-                desiredVictimIndicator.layer.shadowRadius = 15
-                desiredVictimIndicator.layer.shadowOpacity = 1.0
-            } else {
-                desiredVictimIndicator.layer.shadowColor = UIColor.systemRed.cgColor
-                desiredVictimIndicator.layer.shadowRadius = 12
-                desiredVictimIndicator.layer.shadowOpacity = 1.0
-            }
-            CATransaction.commit()
-            if desiredVictimIndicator.layer.animation(forKey: "pulseAnimation") == nil {
-                let pulseAnimation = CABasicAnimation(keyPath: "shadowOpacity")
-                pulseAnimation.duration = 0.5
-                pulseAnimation.fromValue = 0.3
-                pulseAnimation.toValue = 1.0
-                pulseAnimation.autoreverses = true
-                pulseAnimation.repeatCount = Float.infinity
-                pulseAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-                desiredVictimIndicator.layer.add(pulseAnimation, forKey: "pulseAnimation")
-                let glowAnimation = CABasicAnimation(keyPath: "shadowRadius")
-                glowAnimation.duration = 0.5
-                glowAnimation.fromValue = isSelected ? 10 : 8
-                glowAnimation.toValue = isSelected ? 18 : 15
-                glowAnimation.autoreverses = true
-                glowAnimation.repeatCount = Float.infinity
-                glowAnimation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-                desiredVictimIndicator.layer.add(glowAnimation, forKey: "glowAnimation")
-            }
+            // Glow
+            self.desiredVictimGlow.image = Self.makeRadialGlowImage(size: CGSize(width: iconSize + 12, height: iconSize + 12), color: UIColor.systemRed)
         } else {
             UIView.animate(withDuration: animationDuration) {
-                self.desiredVictimIndicator.alpha = 0.0
+                self.desiredVictimIconContainer.alpha = 0.0
             } completion: { _ in
-                self.desiredVictimIndicator.isHidden = true
-                self.desiredVictimIndicator.layer.removeAnimation(forKey: "pulseAnimation")
-                self.desiredVictimIndicator.layer.removeAnimation(forKey: "glowAnimation")
+                self.desiredVictimIconContainer.isHidden = true
             }
         }
         // Устанавливаем прозрачность для мертвых NPC
@@ -556,7 +526,7 @@ class UniversalCharacterCell: UIView {
         healthPercentageLabel.isHidden = false
         healthPercentageLabel.alpha = 1.0
         // --- Индикаторы жертвы и квеста скрыты ---
-        desiredVictimIndicator.isHidden = true
+        desiredVictimIconContainer.isHidden = true
         questIndicatorIcon.isHidden = true
         // --- Анимация прозрачности для игрока ---
         UIView.animate(withDuration: animationDuration) {
@@ -668,6 +638,13 @@ class UniversalCharacterCell: UIView {
         // Индикатор здоровья всегда скрыт
         
         self.healthIndicator.isHidden = self.healthIndicator.opacity == 0.0
+
+        // Обновляем позицию и размер desiredVictimIconContainer и его subviews
+        let desiredX = avatarFrameLayout.minX + 4
+        let desiredY = avatarFrameLayout.maxY - iconSize - 4
+        desiredVictimIconContainer.frame = CGRect(x: desiredX, y: desiredY, width: iconSize, height: iconSize)
+        desiredVictimGlow.frame = CGRect(x: -6, y: -6, width: iconSize + 12, height: iconSize + 12)
+        desiredVictimIndicator.frame = CGRect(x: 0, y: 0, width: iconSize, height: iconSize)
     }
 
     override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {

@@ -111,14 +111,14 @@ class TopWidgetUIViewController: UIViewController {
     private let lockImageView = UIImageView()
     // Добавляем разделитель (spacer), чтобы отделить левую часть виджета от правой
     private let flexibleSpacerView = UIView()
-    private let awarenessImageView = UIImageView()
-    private let awarenessLabel = UILabel()
-    // Заменяем стандартный прогресс-бар на кастомный с регулируемой высотой
-    private let awarenessProgressView = CustomGlowProgressBar()
     private let bloodImageView = UIImageView()
     private let bloodLabel = UILabel()
     // Заменяем стандартный прогресс-бар на кастомный с регулируемой высотой
     private let bloodProgressView = CustomGlowProgressBar()
+    // Добавляем элементы для осведомленности (заменяют монеты)
+    private let awarenessImageView = UIImageView()
+    private let awarenessProgressView = CustomGlowProgressBar()
+    private let awarenessLabel = UILabel()
     private let coinImageView = UIImageView()
     private let coinValueLabel = UILabel()
     
@@ -132,7 +132,6 @@ class TopWidgetUIViewController: UIViewController {
     
     // Glow views для иконок (добавляем как в InfoPresentationLabelView)
     private let dayNightGlowView = UIImageView()
-    private let awarenessGlowView = UIImageView()
     private let bloodGlowView = UIImageView()
     private let coinGlowView = UIImageView()
     
@@ -177,11 +176,10 @@ class TopWidgetUIViewController: UIViewController {
     private func setupAllIconGlows() {
         // Заменяем простые SF символы на светящиеся иконки с круглым фоном как в InfoPresentationLabelView
         setupGlowingIcon(imageView: dayNightImageView, symbolName: "sun.max.fill", color: .yellow)
-        setupGlowingIcon(imageView: awarenessImageView, symbolName: "figure.walk.triangle.fill", 
-                         color: UIColor(red: 0.65, green: 0.28, blue: 0.95, alpha: 1.0))
         setupGlowingIcon(imageView: bloodImageView, symbolName: "drop.fill", 
                          color: UIColor(Theme.bloodProgressColor))
-        setupGlowingIcon(imageView: coinImageView, symbolName: "cedisign", color: .green)
+        setupGlowingIcon(imageView: awarenessImageView, symbolName: "figure.walk.triangle.fill", 
+                         color: UIColor(red: 0.65, green: 0.28, blue: 0.95, alpha: 1.0))
     }
     
     // Создание светящейся иконки точно как в InfoPresentationLabelView.createGlowingIconView
@@ -317,19 +315,6 @@ class TopWidgetUIViewController: UIViewController {
         lockImageView.tintColor = UIColor(red: 0.9, green: 0.8, blue: 0.8, alpha: 1.0)
         lockImageView.isHidden = true
         
-        // Awareness Image - будет настроено в setupCircularIcon
-        awarenessImageView.contentMode = .scaleAspectFit
-        
-        // Awareness Label
-        awarenessLabel.textColor = .white
-        awarenessLabel.font = UIFont(name: "Optima", size: 12)
-        awarenessLabel.textAlignment = .center
-        
-        // Awareness Progress - простой стиль с свечением
-        awarenessProgressView.trackColor = UIColor(red: 0.08, green: 0.08, blue: 0.15, alpha: 0.95)
-        awarenessProgressView.progressColor = UIColor(red: 0.65, green: 0.28, blue: 0.95, alpha: 1.0)
-        awarenessProgressView.progress = 0.0
-        
         // Blood Image - будет настроено в setupCircularIcon
         bloodImageView.contentMode = .scaleAspectFit
         
@@ -350,6 +335,19 @@ class TopWidgetUIViewController: UIViewController {
         coinValueLabel.textColor = .green
         coinValueLabel.font = UIFont(name: "Optima", size: 12)
         coinValueLabel.textAlignment = .left
+        
+        // Awareness Image - будет настроено в setupCircularIcon
+        awarenessImageView.contentMode = .scaleAspectFit
+        
+        // Awareness Progress - стиль с фиолетовым свечением для осведомленности
+        awarenessProgressView.trackColor = UIColor(red: 0.08, green: 0.08, blue: 0.15, alpha: 0.95)
+        awarenessProgressView.progressColor = UIColor(red: 0.65, green: 0.28, blue: 0.95, alpha: 1.0)
+        awarenessProgressView.progress = 0.5
+        
+        // Awareness Label
+        awarenessLabel.textColor = .white
+        awarenessLabel.font = UIFont(name: "Optima", size: 12)
+        awarenessLabel.textAlignment = .center
         
         // Debug Buttons
         setupDebugButtons()
@@ -389,53 +387,28 @@ class TopWidgetUIViewController: UIViewController {
             view.removeFromSuperview()
         }
         
-        // Add items in order to the stack view - сначала базовые элементы (убираем локацию и NPC count)
-        contentStackView.addArrangedSubview(dayNightImageView)
-        contentStackView.addArrangedSubview(timeLabel)
-        contentStackView.addArrangedSubview(dayLabel)
-        
-        // Добавляем хороший отступ перед шкалами для визуального разделения
-        let smallSpacer = UIView()
-        smallSpacer.widthAnchor.constraint(equalToConstant: 20).isActive = true  // Увеличиваем отступ с 12 до 20
-        contentStackView.addArrangedSubview(smallSpacer)
-        
-        // Группа крови - плотное размещение элементов
+        // Add items in order to the stack view - СНАЧАЛА ЗДОРОВЬЕ, потом время и дата
+        // Группа крови - в самом начале
         contentStackView.addArrangedSubview(bloodLabel)
-        // Нет отступа между значением и шкалой
         contentStackView.addArrangedSubview(bloodProgressView)
-        // Нет отступа между шкалой и иконкой
         contentStackView.addArrangedSubview(bloodImageView)
         
-        // Добавляем разделитель между группами шкал
-        let spacerBetweenBars = UIView()
-        spacerBetweenBars.widthAnchor.constraint(equalToConstant: 20).isActive = true  // Увеличиваем отступ с 12 до 20
-        contentStackView.addArrangedSubview(spacerBetweenBars)
+        // Добавляем отступ после здоровья
+        let healthSpacer = UIView()
+        healthSpacer.widthAnchor.constraint(equalToConstant: 20).isActive = true
+        contentStackView.addArrangedSubview(healthSpacer)
         
-        // Группа awareness - плотное размещение элементов
-        contentStackView.addArrangedSubview(awarenessLabel)
-        // Нет отступа между значением и шкалой
-        contentStackView.addArrangedSubview(awarenessProgressView)
-        // Нет отступа между шкалой и иконкой
-        contentStackView.addArrangedSubview(awarenessImageView)
+        // Day/Night Icon
+        contentStackView.addArrangedSubview(dayNightImageView)
         
-        // Добавляем spacer только если есть достаточно места
-        contentStackView.addArrangedSubview(flexibleSpacerView)
+        // Day and Time
+        contentStackView.addArrangedSubview(dayLabel)
+        contentStackView.addArrangedSubview(timeLabel)
         
-        // Добавляем отступ перед Coins
-        let coinsSpacer = UIView()
-        coinsSpacer.widthAnchor.constraint(equalToConstant: 15).isActive = true  // Увеличиваем отступ с 10 до 15
-        contentStackView.addArrangedSubview(coinsSpacer)
+        // Lock indicator
+        contentStackView.addArrangedSubview(lockImageView)
         
-        // Опциональные элементы могут быть скрыты если не хватает места
-        contentStackView.addArrangedSubview(coinImageView)
-        contentStackView.addArrangedSubview(coinValueLabel)
-        
-        // Опционально добавляем lockImageView если сцена заблокирована
-        if !lockImageView.isHidden {
-            contentStackView.addArrangedSubview(lockImageView)
-        }
-        
-        // Добавляем debug кнопки в конец для удобства
+        // Debug buttons moved here (before awareness bar)
         let debugButtonStack = UIStackView(arrangedSubviews: [
             respawnButton, resetAwarenessButton, resetBloodButton,
             resetDesiresButton, maxAchievementsButton, debugOverlayButton
@@ -444,6 +417,14 @@ class TopWidgetUIViewController: UIViewController {
         debugButtonStack.spacing = 1 // Минимальное расстояние между кнопками
         contentStackView.addArrangedSubview(debugButtonStack)
         debugButtonStack.setContentHuggingPriority(.required, for: .horizontal)
+        
+        // Flexible spacer для отталкивания awareness к правому краю
+        contentStackView.addArrangedSubview(flexibleSpacerView)
+        
+        // Awareness moved to the end: иконка, прогресс-бар, значение - будут прилегать к правому краю
+        contentStackView.addArrangedSubview(awarenessImageView)
+        contentStackView.addArrangedSubview(awarenessProgressView)
+        contentStackView.addArrangedSubview(awarenessLabel)
     }
     
     private func setupConstraints() {
@@ -459,7 +440,7 @@ class TopWidgetUIViewController: UIViewController {
         NSLayoutConstraint.activate([
             contentStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 3), // Было 5, уменьшаем до 3
             contentStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 2),
-            contentStackView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -2),
+            contentStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -2), // Убираем lessThanOrEqualTo, чтобы awareness мог прилегать к краю
         ])
         
         // Устанавливаем только высоту stackView без привязки к верху и низу
@@ -479,50 +460,43 @@ class TopWidgetUIViewController: UIViewController {
         dayLabel.setContentHuggingPriority(.required, for: .horizontal)
         dayLabel.widthAnchor.constraint(equalToConstant: 45).isActive = true  // Уменьшаем с 55 до 45
         
-        awarenessLabel.setContentHuggingPriority(.required, for: .horizontal)
-        awarenessLabel.widthAnchor.constraint(equalToConstant: 35).isActive = true  // Увеличиваем с 30 до 35
-        
         bloodLabel.setContentHuggingPriority(.required, for: .horizontal)
         bloodLabel.widthAnchor.constraint(equalToConstant: 35).isActive = true  // Увеличиваем с 30 до 35
         
-        coinValueLabel.setContentHuggingPriority(.required, for: .horizontal)
-        coinValueLabel.widthAnchor.constraint(equalToConstant: 35).isActive = true  // Уменьшаем с 45 до 35
+        awarenessLabel.setContentHuggingPriority(.required, for: .horizontal)
+        awarenessLabel.widthAnchor.constraint(equalToConstant: 35).isActive = true  // Как bloodLabel
         
         // Устанавливаем приоритеты для иконок (размеры устанавливаются в setupGlowingIcon - 28x28)
-        [dayNightImageView, lockImageView, awarenessImageView, bloodImageView, coinImageView].forEach { imageView in
+        [dayNightImageView, lockImageView, bloodImageView, awarenessImageView].forEach { imageView in
             imageView.setContentHuggingPriority(.required, for: .horizontal)
         }
         
         // Настраиваем flexibleSpacerView, чтобы он растягивался и занимал всё свободное пространство
         flexibleSpacerView.setContentHuggingPriority(.defaultLow, for: .horizontal)
         flexibleSpacerView.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        // Ограничиваем максимальную ширину spacer для экономии места
-        flexibleSpacerView.widthAnchor.constraint(lessThanOrEqualToConstant: 50).isActive = true
+        // Убираем ограничение максимальной ширины, чтобы awareness мог прилегать к правому краю
         
         // Прогресс-бары должны иметь возможность сжиматься при необходимости, но поддерживать минимальную ширину
-        awarenessProgressView.setContentHuggingPriority(.defaultLow + 5, for: .horizontal)
-        awarenessProgressView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        bloodProgressView.setContentHuggingPriority(.defaultLow + 5, for: .horizontal)
+        bloodProgressView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
         // Вместо жесткого констрейнта делаем приоритетный с уменьшенной шириной
-        let awarenessWidthConstraint = awarenessProgressView.widthAnchor.constraint(equalToConstant: progressBarWidth)
-        awarenessWidthConstraint.priority = .defaultHigh
-        awarenessWidthConstraint.isActive = true
-        // Устанавливаем минимальную ширину для шкалы awareness
-        awarenessProgressView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
-        // Устанавливаем высоту для awareness progress bar
-        awarenessProgressView.heightAnchor.constraint(equalToConstant: 5).isActive = true
-        
-        // Увеличиваем приоритет и ширину для прогресс-бара крови (здоровья)
-        bloodProgressView.setContentHuggingPriority(.defaultLow + 5, for: .horizontal) // Снижаем с 10 до 5 чтобы обе шкалы имели равный приоритет
-        bloodProgressView.setContentCompressionResistancePriority(.required - 10, for: .horizontal) // Снижаем приоритет сжатия
-        // Устанавливаем фиксированную ширину для шкалы здоровья с высоким приоритетом
         let bloodWidthConstraint = bloodProgressView.widthAnchor.constraint(equalToConstant: healthBarWidth)
-        bloodWidthConstraint.priority = .defaultHigh // Снижаем с required-1 до defaultHigh
+        bloodWidthConstraint.priority = .defaultHigh
         bloodWidthConstraint.isActive = true
         
         // Задаем минимальную ширину для прогресс-бара здоровья, чтобы он всегда был виден
         bloodProgressView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true // Уменьшаем с 80 до 50
         // Устанавливаем высоту для blood progress bar
         bloodProgressView.heightAnchor.constraint(equalToConstant: 5).isActive = true
+        
+        // Прогресс-бар осведомленности (такие же настройки как для blood)
+        awarenessProgressView.setContentHuggingPriority(.defaultLow + 5, for: .horizontal)
+        awarenessProgressView.setContentCompressionResistancePriority(.required - 10, for: .horizontal)
+        let awarenessWidthConstraint = awarenessProgressView.widthAnchor.constraint(equalToConstant: healthBarWidth)
+        awarenessWidthConstraint.priority = .defaultHigh
+        awarenessWidthConstraint.isActive = true
+        awarenessProgressView.widthAnchor.constraint(greaterThanOrEqualToConstant: 50).isActive = true
+        awarenessProgressView.heightAnchor.constraint(equalToConstant: 5).isActive = true
         
         // Фиксированный размер для кнопок отладки с приоритетом
         [respawnButton, resetAwarenessButton, resetBloodButton, 
@@ -569,10 +543,11 @@ class TopWidgetUIViewController: UIViewController {
             }
             .store(in: &cancellables)
         
-        // Observe awareness service
+        // Subscribe to awareness changes using $awarenessLevel
         awarenessService.$awarenessLevel
-            .sink { [weak self] level in
-                self?.updateAwarenessUI(level: level)
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateAwarenessUI()
             }
             .store(in: &cancellables)
         
@@ -614,13 +589,13 @@ class TopWidgetUIViewController: UIViewController {
         updateDayNightUI(isNight: viewModel.isNight)
         timeLabel.text = " \(viewModel.currentHour):\(String(format: "%02d", viewModel.currentMinute))"
         dayLabel.text = "Day \(viewModel.currentDay)"
-        updateAwarenessUI(level: awarenessService.awarenessLevel)
         
         // Обязательно обновляем значение для шкалы здоровья
         let bloodValue = playerBloodMeter?.bloodPercentage ?? 0
         updateBloodUI(percentage: bloodValue)
         
-        coinValueLabel.text = "\(viewModel.playerCoinsValue)"
+        // Обновляем осведомленность
+        updateAwarenessUI()
     }
     
     private func updateDayNightUI(isNight: Bool) {
@@ -631,28 +606,6 @@ class TopWidgetUIViewController: UIViewController {
         UIView.transition(with: dayNightImageView, duration: animationDuration, options: .transitionCrossDissolve, animations: {
             self.updateGlowingIcon(imageView: self.dayNightImageView, symbolName: symbolName, color: backgroundColor)
         }, completion: nil)
-    }
-    
-    private func updateAwarenessUI(level: Float) {
-        // Анимируем изменения awareness
-        animateTextChange(for: awarenessLabel, to: "\(Int(level))%")
-        
-        // Изменяем цвет в зависимости от уровня, сохраняя стиль свечения как в NPCCell
-        UIView.animate(withDuration: animationDuration) {
-            if level > 70 {
-                // Опасный уровень - более яркий красно-фиолетовый цвет
-                self.awarenessProgressView.progressColor = UIColor(red: 0.8, green: 0.15, blue: 0.7, alpha: 1.0)
-            } else if level > 40 {
-                // Средний уровень - стандартный фиолетовый цвет
-                self.awarenessProgressView.progressColor = UIColor(red: 0.65, green: 0.28, blue: 0.95, alpha: 1.0)
-            } else {
-                // Безопасный уровень - более спокойный фиолетовый
-                self.awarenessProgressView.progressColor = UIColor(red: 0.5, green: 0.25, blue: 0.75, alpha: 1.0)
-            }
-        }
-        
-        // Плавно анимируем прогресс бар
-        awarenessProgressView.setProgress(level / 100.0, animated: true)
     }
     
     private func updateBloodUI(percentage: Float) {
@@ -675,6 +628,17 @@ class TopWidgetUIViewController: UIViewController {
         
         // Плавно анимируем прогресс бар
         bloodProgressView.setProgress(percentage / 100.0, animated: true)
+    }
+    
+    private func updateAwarenessUI() {
+        let currentLevel = Int(awarenessService.getAwareness())
+        let awarenessText = "\(currentLevel)%"
+        
+        // Анимируем изменения awareness meter
+        animateTextChange(for: awarenessLabel, to: awarenessText)
+        
+        // Плавно анимируем прогресс бар
+        awarenessProgressView.setProgress(Float(currentLevel) / 100.0, animated: true)
     }
     
     // Вспомогательная функция для анимации изменения текста
@@ -745,10 +709,6 @@ class TopWidgetUIViewController: UIViewController {
         if let bloodPercentage = playerBloodMeter?.bloodPercentage {
             bloodProgressView.progress = bloodPercentage / 100.0
         }
-        
-        // Обновляем шкалу awareness
-        let awarenessLevel = awarenessService.awarenessLevel
-        awarenessProgressView.progress = awarenessLevel / 100.0
     }
     
     // MARK: - Glow Effect Methods (copied from InfoPresentationLabelView)

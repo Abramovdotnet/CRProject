@@ -111,6 +111,10 @@ class SceneViewController: UIViewController {
     private let topWidgetContainerView = UIView()
     private var topWidgetViewController: TopWidgetUIViewController?
     
+    // Bottom widget
+    private let bottomWidgetContainerView = UIView()
+    private var bottomWidgetViewController: BottomWidgetUIViewController?
+    
     // Dust effect
     private var dustEffectView: UIHostingController<DustEmitterView>?
     
@@ -125,20 +129,14 @@ class SceneViewController: UIViewController {
     // Selected NPC Info
     private let selectedNPCInfoView = InfoPresentationLabelView()
     
-    // Desired Victim Info
-    private let desiredVictimInfoView = InfoPresentationLabelView()
-    
-    // NPC Count Info
-    private let npcCountInfoView = InfoPresentationLabelView()
-    
-    // Chat container
-    private let chatContainerView = UIView()
-    private var chatViewController: ChatViewController?
-    
     // NPC Widget Overlay
     private let npcWidgetOverlayView = UIView()
     private var npcWidgetViewController: UIHostingController<NPCWidget>?
     private var isNPCWidgetVisible = false
+    
+    // Chat container
+    private let chatContainerView = UIView()
+    private var chatViewController: ChatViewController?
     
     init(mainViewModel: MainSceneViewModel) {
         self.mainViewModel = mainViewModel
@@ -197,16 +195,6 @@ class SceneViewController: UIViewController {
                 self?.updateSelectedNPCInfo()
             }
             .store(in: &cancellables)
-        
-        // Subscribe to desired victim changes
-        if let player = mainViewModel.gameStateService.player {
-            player.desiredVictim.objectWillChange
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] in
-                    self?.updateDesiredVictimInfo()
-                }
-                .store(in: &cancellables)
-        }
     }
     
     private func updateNPCsList(with newNPCs: [NPC]) {
@@ -234,9 +222,6 @@ class SceneViewController: UIViewController {
             gridView.trailingAnchor.constraint(equalTo: npcsGridContainerView.trailingAnchor),
             gridView.bottomAnchor.constraint(equalTo: npcsGridContainerView.bottomAnchor)
         ])
-        
-        // Update NPC count info
-        updateNPCCountInfo()
     }
     
     private func updateBackground() {
@@ -261,30 +246,6 @@ class SceneViewController: UIViewController {
         } else {
             print("SceneView: No NPC selected, hiding info view")
             selectedNPCInfoView.isHidden = true
-        }
-    }
-    
-    private func updateDesiredVictimInfo() {
-        guard let player = mainViewModel.gameStateService.player else {
-            desiredVictimInfoView.isHidden = true
-            return
-        }
-        
-        let desiredVictim = player.desiredVictim
-        
-        // Check if any criteria are set
-        let hasCriteria = desiredVictim.desiredSex != nil || 
-                         desiredVictim.desiredAgeRange != nil ||
-                         desiredVictim.desiredProfession != nil ||
-                         desiredVictim.desiredMorality != nil
-        
-        if hasCriteria {
-            desiredVictimInfoView.configureWithDesiredVictim(desiredVictim, textColor: UIColor(Theme.textColor))
-            desiredVictimInfoView.isHidden = false
-            print("SceneView: Desired victim info view shown with criteria")
-        } else {
-            desiredVictimInfoView.isHidden = true
-            print("SceneView: No desired victim criteria, hiding info view")
         }
     }
     
@@ -339,10 +300,10 @@ class SceneViewController: UIViewController {
         
         setupDustEffect()
         setupTopWidget()
+        setupBottomWidget()
         setupButtonStacks()
         setupNPCsGrid()
         setupSelectedNPCInfo()
-        setupDesiredVictimInfo()
         setupNPCCountInfo()
         setupNPCWidgetOverlay()
         setupChat()
@@ -409,53 +370,15 @@ class SceneViewController: UIViewController {
         selectedNPCInfoView.translatesAutoresizingMaskIntoConstraints = false
         selectedNPCInfoView.isHidden = true
         view.addSubview(selectedNPCInfoView)
-        
         // Initial update
         updateSelectedNPCInfo()
     }
     
-    private func setupDesiredVictimInfo() {
-        desiredVictimInfoView.translatesAutoresizingMaskIntoConstraints = false
-        desiredVictimInfoView.isHidden = true
-        view.addSubview(desiredVictimInfoView)
-        
-        // Initial update
-        updateDesiredVictimInfo()
-    }
-    
     private func setupNPCCountInfo() {
-        npcCountInfoView.translatesAutoresizingMaskIntoConstraints = false
-        npcCountInfoView.isHidden = true
-        view.addSubview(npcCountInfoView)
-        
-        // Initial update
-        updateNPCCountInfo()
-    }
-    
-    private func updateNPCCountInfo() {
-        let npcCount = mainViewModel.npcs.count
-        let locationName = mainViewModel.currentScene?.name ?? "Unknown"
-        let locationType = mainViewModel.currentScene?.sceneType.displayName ?? "Unknown"
-        let locationIcon = mainViewModel.currentScene?.sceneType.iconName ?? "house.fill"
-        
-        // Get location color from SceneTypeColorProvider
-        let locationColor: UIColor
-        if let sceneType = mainViewModel.currentScene?.sceneType {
-            locationColor = SceneTypeColorProvider.color(for: sceneType)
-        } else {
-            locationColor = UIColor.systemGray
-        }
-        
-        npcCountInfoView.configureWithLocationInfo(
-            locationName: locationName, 
-            locationType: locationType,
-            locationIcon: locationIcon,
-            locationColor: locationColor,
-            npcCount: npcCount, 
-            textColor: UIColor(Theme.textColor)
-        )
-        npcCountInfoView.isHidden = false
-        print("SceneView: Location info view shown: \(locationName) (\(locationType)) with \(npcCount) NPCs")
+        // NPC Count Info
+        // private let npcCountInfoView = InfoPresentationLabelView()
+        // Desired Victim Info
+        // private let desiredVictimInfoView = InfoPresentationLabelView()
     }
     
     private func setupChat() {
@@ -672,6 +595,19 @@ class SceneViewController: UIViewController {
         self.topWidgetViewController = widgetVC
     }
     
+    private func setupBottomWidget() {
+        bottomWidgetContainerView.backgroundColor = .clear
+        bottomWidgetContainerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(bottomWidgetContainerView)
+        
+        let widgetVC = BottomWidgetUIViewController(viewModel: mainViewModel)
+        addChild(widgetVC)
+        bottomWidgetContainerView.addSubview(widgetVC.view)
+        widgetVC.view.translatesAutoresizingMaskIntoConstraints = false
+        widgetVC.didMove(toParent: self)
+        self.bottomWidgetViewController = widgetVC
+    }
+    
     private func setupNPCWidgetOverlay() {
         npcWidgetOverlayView.translatesAutoresizingMaskIntoConstraints = false
         npcWidgetOverlayView.backgroundColor = UIColor.black.withAlphaComponent(0.7)
@@ -807,52 +743,46 @@ class SceneViewController: UIViewController {
             topWidgetContainerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
             topWidgetContainerView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             topWidgetContainerView.heightAnchor.constraint(equalToConstant: 35),
-            
             // Top widget content
             topWidgetViewController!.view.topAnchor.constraint(equalTo: topWidgetContainerView.topAnchor),
             topWidgetViewController!.view.leadingAnchor.constraint(equalTo: topWidgetContainerView.leadingAnchor),
             topWidgetViewController!.view.trailingAnchor.constraint(equalTo: topWidgetContainerView.trailingAnchor),
             topWidgetViewController!.view.bottomAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor),
-            
+            // Bottom widget - centered at the very bottom of the screen (outside safe area)
+            bottomWidgetContainerView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 0),
+            bottomWidgetContainerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            bottomWidgetContainerView.widthAnchor.constraint(equalToConstant: 700),
+            bottomWidgetContainerView.heightAnchor.constraint(equalToConstant: 80),
+            // Bottom widget content
+            bottomWidgetViewController!.view.topAnchor.constraint(equalTo: bottomWidgetContainerView.topAnchor),
+            bottomWidgetViewController!.view.leadingAnchor.constraint(equalTo: bottomWidgetContainerView.leadingAnchor),
+            bottomWidgetViewController!.view.trailingAnchor.constraint(equalTo: bottomWidgetContainerView.trailingAnchor),
+            bottomWidgetViewController!.view.bottomAnchor.constraint(equalTo: bottomWidgetContainerView.bottomAnchor),
             // Chat container - positioned at the top right after top widget (first position)
             chatContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
             chatContainerView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
-            chatContainerView.widthAnchor.constraint(equalToConstant: 180),
-            chatContainerView.heightAnchor.constraint(equalToConstant: 200),
-            
+            chatContainerView.widthAnchor.constraint(equalToConstant: 200),
+            chatContainerView.heightAnchor.constraint(equalToConstant: 140),
             // Selected NPC Info - positioned below chat (second position)
             selectedNPCInfoView.topAnchor.constraint(equalTo: chatContainerView.bottomAnchor, constant: 10),
             selectedNPCInfoView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
-            selectedNPCInfoView.widthAnchor.constraint(equalToConstant: 180), // Same width as chat
+            selectedNPCInfoView.widthAnchor.constraint(equalToConstant: 200), // Same width as chat
             selectedNPCInfoView.heightAnchor.constraint(equalToConstant: 46), // Height for avatar + padding
-            
-            // NPC Count Info - positioned at top left, above desired victim info
-            npcCountInfoView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
-            npcCountInfoView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
-            npcCountInfoView.widthAnchor.constraint(equalToConstant: 250), // Increased width since we removed type text
-            npcCountInfoView.heightAnchor.constraint(equalToConstant: 46), // Same height as other info views
-            
-            // Desired Victim Info - positioned to the right of NPC count info
-            desiredVictimInfoView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
-            desiredVictimInfoView.leadingAnchor.constraint(equalTo: npcCountInfoView.trailingAnchor, constant: 10),
-            desiredVictimInfoView.trailingAnchor.constraint(equalTo: chatContainerView.leadingAnchor, constant: -10),
-            desiredVictimInfoView.heightAnchor.constraint(equalToConstant: 46), // Height for criteria info
-            
             // Action buttons stack - positioned below selected NPC info (third position in right column)
             leftButtonStackView.topAnchor.constraint(equalTo: selectedNPCInfoView.bottomAnchor, constant: 10),
             leftButtonStackView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
-            leftButtonStackView.widthAnchor.constraint(equalToConstant: 180), // Same width as chat
-            
-            // NPCs Grid - positioned below desired victim info, between left edge and chat area
-            npcsGridContainerView.topAnchor.constraint(equalTo: desiredVictimInfoView.bottomAnchor, constant: 10),
+            leftButtonStackView.widthAnchor.constraint(equalToConstant: 200), // Same width as chat
+
+            // NPCs Grid - positioned below top widget, between left edge and chat area, with bottom constraint adjusted
+            npcsGridContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
             npcsGridContainerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
             npcsGridContainerView.trailingAnchor.constraint(equalTo: chatContainerView.leadingAnchor, constant: -10),
-            npcsGridContainerView.heightAnchor.constraint(equalToConstant: 260), // Reduced height to accommodate desired victim info
-            
-            // Chat buttons stack - positioned on the right edge, spanning full height
+            npcsGridContainerView.heightAnchor.constraint(equalToConstant: 300),
+            // Chat buttons stack - positioned on the right edge, spanning from top to bottom widget
             chatButtonsStackView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
             chatButtonsStackView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: 0),
             chatButtonsStackView.widthAnchor.constraint(equalToConstant: 40),
+            chatButtonsStackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomWidgetContainerView.topAnchor, constant: -10),
         ])
     }
     
