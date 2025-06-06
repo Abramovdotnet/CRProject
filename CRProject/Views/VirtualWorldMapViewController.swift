@@ -270,6 +270,7 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         scrollView.delegate = self
         scrollView.backgroundColor = .clear
         scrollView.minimumZoomScale = 0.3
+        //scrollView.clipsToBounds = false 
         scrollView.maximumZoomScale = 2.0
         scrollView.contentSize = contentSize
         scrollView.bouncesZoom = false
@@ -277,9 +278,9 @@ class VirtualWorldMapViewController: UIViewController, UIScrollViewDelegate {
         
         NSLayoutConstraint.activate([
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: 20),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: -80),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: 80)
         ])
         
         // Принудительно обновляем layout

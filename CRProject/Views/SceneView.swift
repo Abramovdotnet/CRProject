@@ -138,6 +138,8 @@ class SceneViewController: UIViewController {
     private let chatContainerView = UIView()
     private var chatViewController: ChatViewController?
     
+    private var chatContainerHeightConstraint: NSLayoutConstraint?
+    
     init(mainViewModel: MainSceneViewModel) {
         self.mainViewModel = mainViewModel
         super.init(nibName: nil, bundle: nil)
@@ -193,15 +195,14 @@ class SceneViewController: UIViewController {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] selectedNPC in
                 self?.updateSelectedNPCInfo()
+                self?.updateChatContainerHeight()
             }
             .store(in: &cancellables)
     }
     
     private func updateNPCsList(with newNPCs: [NPC]) {
-        // Remove existing grid view
-        npcsGridView?.removeFromSuperview()
-        
-        // Create new NPCSGridView with updated NPCs
+        // Remove existing grid view with animation
+        let oldGrid = npcsGridView
         let gridView = CustomNPCSGridView(
             npcs: newNPCs,
             npcManager: .shared,
@@ -211,11 +212,15 @@ class SceneViewController: UIViewController {
                 self?.showNPCWidget(for: npc)
             }
         )
-        
         gridView.translatesAutoresizingMaskIntoConstraints = false
-        npcsGridContainerView.addSubview(gridView)
+
+        UIView.transition(with: npcsGridContainerView, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            oldGrid?.removeFromSuperview()
+            self.npcsGridContainerView.addSubview(gridView)
+        }, completion: nil)
+
         self.npcsGridView = gridView
-        
+
         NSLayoutConstraint.activate([
             gridView.topAnchor.constraint(equalTo: npcsGridContainerView.topAnchor),
             gridView.leadingAnchor.constraint(equalTo: npcsGridContainerView.leadingAnchor),
@@ -404,6 +409,32 @@ class SceneViewController: UIViewController {
             chatController.view.trailingAnchor.constraint(equalTo: chatContainerView.trailingAnchor),
             chatController.view.bottomAnchor.constraint(equalTo: chatContainerView.bottomAnchor)
         ])
+
+        // --- NEW: update chat header info ---
+        updateChatHeaderInfo()
+        // Подписка на изменения локации и NPC
+        mainViewModel.$currentScene
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateChatHeaderInfo()
+            }
+            .store(in: &cancellables)
+        mainViewModel.$npcs
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] _ in
+                self?.updateChatHeaderInfo()
+            }
+            .store(in: &cancellables)
+    }
+    
+    private func updateChatHeaderInfo() {
+        guard let chatVC = self.chatViewController else { return }
+        let scene = mainViewModel.currentScene
+        let locationName = scene?.name ?? "Unknown"
+        let locationIcon = scene?.sceneType.iconName ?? "location"
+        let locationColor = scene != nil ? SceneTypeColorProvider.color(for: scene!.sceneType) : UIColor.systemGray
+        let npcCount = mainViewModel.npcs.count
+        chatVC.updateHeaderInfo(locationName: locationName, locationIcon: locationIcon, locationColor: locationColor, npcCount: npcCount)
     }
     
     private func updateButtonStacks() {
@@ -737,6 +768,12 @@ class SceneViewController: UIViewController {
     }
     
     private func setupLayout() {
+        // Chat container - positioned at the top right after top widget (first position)
+        let chatTop = chatContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10)
+        let chatTrailing = chatContainerView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10)
+        let chatWidth = chatContainerView.widthAnchor.constraint(equalToConstant: 200)
+        chatContainerHeightConstraint = chatContainerView.heightAnchor.constraint(equalToConstant: NPCInteractionManager.shared.selectedNPC != nil ? 140 : 300)
+
         NSLayoutConstraint.activate([
             // Top widget - exactly like CharacterInventoryViewController
             topWidgetContainerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 2),
@@ -758,11 +795,11 @@ class SceneViewController: UIViewController {
             bottomWidgetViewController!.view.leadingAnchor.constraint(equalTo: bottomWidgetContainerView.leadingAnchor),
             bottomWidgetViewController!.view.trailingAnchor.constraint(equalTo: bottomWidgetContainerView.trailingAnchor),
             bottomWidgetViewController!.view.bottomAnchor.constraint(equalTo: bottomWidgetContainerView.bottomAnchor),
-            // Chat container - positioned at the top right after top widget (first position)
-            chatContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
-            chatContainerView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
-            chatContainerView.widthAnchor.constraint(equalToConstant: 200),
-            chatContainerView.heightAnchor.constraint(equalToConstant: 140),
+            // Chat container
+            chatTop,
+            chatTrailing,
+            chatWidth,
+            chatContainerHeightConstraint!,
             // Selected NPC Info - positioned below chat (second position)
             selectedNPCInfoView.topAnchor.constraint(equalTo: chatContainerView.bottomAnchor, constant: 10),
             selectedNPCInfoView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
@@ -772,7 +809,6 @@ class SceneViewController: UIViewController {
             leftButtonStackView.topAnchor.constraint(equalTo: selectedNPCInfoView.bottomAnchor, constant: 10),
             leftButtonStackView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
             leftButtonStackView.widthAnchor.constraint(equalToConstant: 200), // Same width as chat
-
             // NPCs Grid - positioned below top widget, between left edge and chat area, with bottom constraint adjusted
             npcsGridContainerView.topAnchor.constraint(equalTo: topWidgetContainerView.bottomAnchor, constant: 10),
             npcsGridContainerView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 10),
@@ -784,6 +820,14 @@ class SceneViewController: UIViewController {
             chatButtonsStackView.widthAnchor.constraint(equalToConstant: 40),
             chatButtonsStackView.bottomAnchor.constraint(lessThanOrEqualTo: bottomWidgetContainerView.topAnchor, constant: -10),
         ])
+    }
+    
+    private func updateChatContainerHeight() {
+        let newHeight: CGFloat = NPCInteractionManager.shared.selectedNPC != nil ? 140 : 300
+        if chatContainerHeightConstraint?.constant != newHeight {
+            chatContainerHeightConstraint?.constant = newHeight
+            // Убрана анимация и layoutIfNeeded
+        }
     }
     
     // MARK: - Navigation Setup

@@ -8,7 +8,9 @@ class NPCSGridView: UIView {
         didSet {
             // Set up NPC observation for each NPC
             setupNPCObservation()
-            collectionView.reloadData()
+            UIView.transition(with: collectionView, duration: 0.3, options: .transitionCrossDissolve, animations: {
+                self.collectionView.reloadData()
+            }, completion: nil)
         }
     }
     let npcManager: NPCInteractionManager

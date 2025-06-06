@@ -7,6 +7,7 @@ class ChatViewController: UIViewController {
     
     // UI Elements
     private let tableView = UITableView()
+    private let headerInfoView = SimpleInfoView()
     
     init(viewModel: ChatViewModel = ChatViewModel()) {
         self.viewModel = viewModel
@@ -31,12 +32,23 @@ class ChatViewController: UIViewController {
         view.layer.shadowOffset = CGSize(width: 0, height: 0)
         view.clipsToBounds = false
         
+        setupHeaderInfoView()
         setupTableView()
         setupObservers()
     }
     
+    private func setupHeaderInfoView() {
+        headerInfoView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(headerInfoView)
+        NSLayoutConstraint.activate([
+            headerInfoView.topAnchor.constraint(equalTo: view.topAnchor, constant: 4),
+            headerInfoView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+            headerInfoView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            headerInfoView.heightAnchor.constraint(equalToConstant: 32)
+        ])
+    }
+    
     private func setupTableView() {
-        // Setup table view
         tableView.backgroundColor = .clear
         tableView.separatorStyle = .none
         tableView.allowsSelection = false
@@ -45,16 +57,14 @@ class ChatViewController: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.contentInsetAdjustmentBehavior = .never
         
-        // Register cell
         tableView.register(ChatMessageTableViewCell.self, forCellReuseIdentifier: ChatMessageTableViewCell.identifier)
         tableView.dataSource = self
         tableView.delegate = self
         
         view.addSubview(tableView)
         
-        // Setup constraints with proper padding for styled container
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 8),
+            tableView.topAnchor.constraint(equalTo: headerInfoView.bottomAnchor, constant: 4),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -8)
@@ -141,6 +151,13 @@ class ChatViewController: UIViewController {
     
     func clearChatHistory() {
         viewModel.clearChatHistory()
+    }
+    
+    func updateHeaderInfo(locationName: String, locationIcon: String, locationColor: UIColor, npcCount: Int) {
+        headerInfoView.configure(with: [
+            (icon: locationIcon, color: locationColor, text: locationName),
+            (icon: "person.3.fill", color: UIColor.systemRed, text: "\(npcCount)")
+        ], font: UIFont(name: "Optima", size: 10) ?? UIFont.systemFont(ofSize: 10))
     }
     
     deinit {
