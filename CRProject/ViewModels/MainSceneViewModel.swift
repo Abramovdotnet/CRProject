@@ -19,7 +19,6 @@ class MainSceneViewModel: ObservableObject {
     @Published var selectedItemIndex: Int = 0
     @Published private(set) var locationPositions: [Int: CGPoint]?
     @Published private(set) var visibleLocations: Set<Int> = []
-    @Published var isDebugOverlayVisible = false
     @Published var playerCoinsValue: Int = 0
     @Published var isShowingVampireGazeView = false
     
@@ -291,32 +290,6 @@ class MainSceneViewModel: ObservableObject {
     }
     
     // MARK: - NPC Management
-    func respawnNPCs() {
-        DebugLogService.shared.log("Respawning NPCs...", category: "NPC")
-        npcs = []
-        
-        let randomCount = Int.random(in: 3...10)
-        DebugLogService.shared.log("Generating \(randomCount) NPCs", category: "NPC")
-        
-        npcs = NPCReader.getRandomNPCs(count: randomCount)
-        
-        DebugLogService.shared.log("Created \(npcs.count) NPCs", category: "NPC")
-        
-        for npc in npcs {
-            DebugLogService.shared.log("NPC: \(npc.name) with ID \(npc.id)", category: "NPC")
-        }
-        
-        DebugLogService.shared.log("Setting \(npcs.count) NPCs to current scene: \(gameStateService.currentScene?.name ?? "unknown")", category: "NPC")
-        gameStateService.currentScene?.setCharacters(npcs)
-        
-        // Check if scene received the characters
-        if let sceneNPCs = gameStateService.currentScene?.getNPCs() {
-            DebugLogService.shared.log("Scene now has \(sceneNPCs.count) NPCs", category: "NPC")
-        }
-        
-        DebugLogService.shared.log("Total viewModel NPCs: \(npcs.count)", category: "NPC")
-    }
-    
     func endGame(){
         isGameEnd = true
     }
@@ -575,11 +548,6 @@ class MainSceneViewModel: ObservableObject {
     
     func isLocationAccessible(_ scene: Scene) -> Bool {
         return (GameTimeService.shared.isNightTime || (AbilitiesSystem.shared.hasDayWalker && GameStateService.shared.player?.bloodMeter.currentBlood ?? 0 >= 70)) && !scene.isLocked
-    }
-    
-    func toggleDebugOverlay() {
-        isDebugOverlayVisible.toggle()
-        DebugLogService.shared.log("Debug overlay \(isDebugOverlayVisible ? "shown" : "hidden")", category: "Debug")
     }
     
     func getAvailableHideouts() -> [HidingCell] {

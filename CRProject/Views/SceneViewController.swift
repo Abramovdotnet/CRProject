@@ -804,7 +804,7 @@ class SceneViewController: UIViewController {
             selectedNPCInfoView.topAnchor.constraint(equalTo: chatContainerView.bottomAnchor, constant: 10),
             selectedNPCInfoView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),
             selectedNPCInfoView.widthAnchor.constraint(equalToConstant: 200), // Same width as chat
-            selectedNPCInfoView.heightAnchor.constraint(equalToConstant: 100), // Height for avatar + padding
+            selectedNPCInfoView.heightAnchor.constraint(equalToConstant: 120), // Height for avatar + padding
             // Action buttons stack - positioned below selected NPC info (third position in right column)
             leftButtonStackView.topAnchor.constraint(equalTo: selectedNPCInfoView.bottomAnchor, constant: 10),
             leftButtonStackView.trailingAnchor.constraint(equalTo: chatButtonsStackView.leadingAnchor, constant: -10),

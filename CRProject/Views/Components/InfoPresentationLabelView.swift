@@ -267,18 +267,33 @@ class InfoPresentationLabelView: UIView {
         self.textColor = textColor
         stackView.axis = .vertical
         stackView.alignment = .leading
-        stackView.spacing = 4
-        
-        // Имя
-        stackView.addArrangedSubview(createIconRow(icon: "person.fill", color: .white, text: npc.name))
-        // Профессия
-        stackView.addArrangedSubview(createIconRow(icon: npc.profession.icon, color: convertSwiftUIColorToUIColor(npc.profession.color), text: npc.profession.rawValue.capitalized))
-        // Мораль
-        stackView.addArrangedSubview(createIconRow(icon: npc.morality.icon, color: convertSwiftUIColorToUIColor(npc.morality.color), text: npc.morality.description))
-        // Мотивация
-        stackView.addArrangedSubview(createIconRow(icon: npc.motivation.icon, color: convertSwiftUIColorToUIColor(npc.motivation.color), text: npc.motivation.description))
-        // Активность
-        stackView.addArrangedSubview(createIconRow(icon: npc.currentActivity.icon, color: convertSwiftUIColorToUIColor(npc.currentActivity.color), text: npc.currentActivity.description.capitalized))
+        stackView.spacing = 0 // spacing теперь управляется spacer'ами
+
+        // Собираем строки
+        let nameRow = createIconRow(icon: "person.fill", color: .white, text: npc.name)
+        let professionRow = createIconRow(icon: npc.profession.icon, color: convertSwiftUIColorToUIColor(npc.profession.color), text: npc.profession.rawValue.capitalized)
+        let moralityRow = createIconRow(icon: npc.morality.icon, color: convertSwiftUIColorToUIColor(npc.morality.color), text: npc.morality.description)
+        let motivationRow = createIconRow(icon: npc.motivation.icon, color: convertSwiftUIColorToUIColor(npc.motivation.color), text: npc.motivation.description)
+        let activityRow = createIconRow(icon: npc.currentActivity.icon, color: convertSwiftUIColorToUIColor(npc.currentActivity.color), text: npc.currentActivity.description.capitalized)
+
+        // Добавляем строки с кастомными spacer'ами
+        stackView.addArrangedSubview(nameRow)
+        stackView.addArrangedSubview(makeSpacer(height: 4)) // spacing между именем и профессией
+        stackView.addArrangedSubview(professionRow)
+        stackView.addArrangedSubview(makeSpacer(height: 8))
+        stackView.addArrangedSubview(moralityRow)
+        stackView.addArrangedSubview(makeSpacer(height: 8))
+        stackView.addArrangedSubview(motivationRow)
+        stackView.addArrangedSubview(makeSpacer(height: 8))
+        stackView.addArrangedSubview(activityRow)
+    }
+
+    // Spacer для вертикального stackView
+    private func makeSpacer(height: CGFloat) -> UIView {
+        let spacer = UIView()
+        spacer.translatesAutoresizingMaskIntoConstraints = false
+        spacer.heightAnchor.constraint(equalToConstant: height).isActive = true
+        return spacer
     }
 
     // Вспомогательный метод: горизонтальный стек с иконкой и подписью
@@ -288,7 +303,7 @@ class InfoPresentationLabelView: UIView {
         row.alignment = .center
         row.spacing = 8
         row.translatesAutoresizingMaskIntoConstraints = false
-        let iconView = createGlowingIconView(symbolName: icon, color: color)
+        let iconView = createGlowingIconView(symbolName: icon, color: color, iconSize: 12) // увеличен размер
         let label = UILabel()
         label.text = text
         label.font = UIFont(name: "Optima-Regular", size: 10) ?? UIFont.systemFont(ofSize: 10)
@@ -299,6 +314,37 @@ class InfoPresentationLabelView: UIView {
         row.addArrangedSubview(iconView)
         row.addArrangedSubview(label)
         return row
+    }
+    
+    // Изменённый метод: теперь можно задавать размер иконки
+    private func createGlowingIconView(symbolName: String, color: UIColor, iconSize: CGFloat = 16) -> UIImageView {
+        let iconView = UIImageView()
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.contentMode = .center
+        iconView.backgroundColor = UIColor.clear
+        iconView.clipsToBounds = false
+        iconView.tintColor = color
+        let iconConfig = UIImage.SymbolConfiguration(pointSize: iconSize)
+        let symbolImage = UIImage(systemName: symbolName, withConfiguration: iconConfig)
+        iconView.image = symbolImage
+        // Glow
+        let glowView = UIImageView()
+        glowView.contentMode = .scaleAspectFill
+        glowView.alpha = 0.8
+        glowView.isUserInteractionEnabled = false
+        let glowSize = iconSize + 12
+        glowView.frame = CGRect(x: -6, y: -6, width: glowSize, height: glowSize)
+        Self.getCachedGlowImage(size: CGSize(width: glowSize, height: glowSize), color: color) { glowImage in
+            DispatchQueue.main.async {
+                glowView.image = glowImage
+            }
+        }
+        iconView.addSubview(glowView)
+        iconView.sendSubviewToBack(glowView)
+        // min size
+        iconView.widthAnchor.constraint(equalToConstant: iconSize).isActive = true
+        iconView.heightAnchor.constraint(equalToConstant: iconSize).isActive = true
+        return iconView
     }
     
     // Convenience method for DesiredVictim information

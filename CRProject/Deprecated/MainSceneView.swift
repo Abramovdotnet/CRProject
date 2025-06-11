@@ -408,7 +408,6 @@ struct MainSceneView: View {
                     .foregroundColor(Theme.textColor)
                     .animation(.easeInOut(duration: 0.5), value: lowBloodRedOpacity)
                     .navigationBarHidden(true)
-                    .withDebugOverlay(viewModel: viewModel)
                     .navigationDestination(for: NavigationDestination.self) { destination in
                         switch destination {
                         case .navigation:

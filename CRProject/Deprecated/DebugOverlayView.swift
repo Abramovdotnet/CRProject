@@ -1,4 +1,4 @@
-import SwiftUI
+/*import SwiftUI
 
 struct DebugOverlayView: View {
     @ObservedObject var viewModel: MainSceneViewModel
@@ -8,7 +8,7 @@ struct DebugOverlayView: View {
     @State private var scrollProxy: ScrollViewProxy?
     
     var body: some View {
-        GeometryReader { geometry in
+        /*GeometryReader { geometry in
             if viewModel.isDebugOverlayVisible {
                 VStack(alignment: .leading, spacing: 4) {
                     // Header with title and close button
@@ -155,3 +155,4 @@ extension View {
         }
     }
 } 
+         */*/

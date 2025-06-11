@@ -123,12 +123,10 @@ class TopWidgetUIViewController: UIViewController {
     private let coinValueLabel = UILabel()
     
     // Debug buttons
-    private let respawnButton = UIButton()
     private let resetAwarenessButton = UIButton()
     private let resetBloodButton = UIButton()
     private let resetDesiresButton = UIButton()
     private let maxAchievementsButton = UIButton()
-    private let debugOverlayButton = UIButton()
     
     // Glow views для иконок (добавляем как в InfoPresentationLabelView)
     private let dayNightGlowView = UIImageView()
@@ -354,9 +352,6 @@ class TopWidgetUIViewController: UIViewController {
     }
     
     private func setupDebugButtons() {
-        // Respawn NPCs button
-        configureDebugButton(respawnButton, systemName: "figure.walk", action: #selector(respawnNPCs))
-        
         // Reset Awareness button
         configureDebugButton(resetAwarenessButton, systemName: "figure.walk.diamond", action: #selector(resetAwareness))
         
@@ -368,9 +363,6 @@ class TopWidgetUIViewController: UIViewController {
         
         // Max Achievements button
         configureDebugButton(maxAchievementsButton, systemName: "sparkles", action: #selector(maxOutAchievements))
-        
-        // Debug Overlay button
-        configureDebugButton(debugOverlayButton, systemName: "hammer.fill", action: #selector(toggleDebugOverlay))
     }
     
     private func configureDebugButton(_ button: UIButton, systemName: String, action: Selector) {
@@ -410,8 +402,7 @@ class TopWidgetUIViewController: UIViewController {
         
         // Debug buttons moved here (before awareness bar)
         let debugButtonStack = UIStackView(arrangedSubviews: [
-            respawnButton, resetAwarenessButton, resetBloodButton,
-            resetDesiresButton, maxAchievementsButton, debugOverlayButton
+            resetAwarenessButton, resetBloodButton, resetDesiresButton, maxAchievementsButton
         ])
         debugButtonStack.axis = .horizontal
         debugButtonStack.spacing = 1 // Минимальное расстояние между кнопками
@@ -499,8 +490,7 @@ class TopWidgetUIViewController: UIViewController {
         awarenessProgressView.heightAnchor.constraint(equalToConstant: 5).isActive = true
         
         // Фиксированный размер для кнопок отладки с приоритетом
-        [respawnButton, resetAwarenessButton, resetBloodButton, 
-         resetDesiresButton, maxAchievementsButton, debugOverlayButton].forEach { button in
+        [resetAwarenessButton, resetBloodButton, resetDesiresButton, maxAchievementsButton].forEach { button in
             button.widthAnchor.constraint(equalToConstant: debugButtonSize).isActive = true
             button.heightAnchor.constraint(equalToConstant: debugButtonSize).isActive = true
             button.setContentHuggingPriority(.required, for: .horizontal)
@@ -652,10 +642,6 @@ class TopWidgetUIViewController: UIViewController {
     
     // MARK: - Action Methods
     
-    @objc private func respawnNPCs() {
-                    viewModel.respawnNPCs()
-                }
-    
     @objc private func resetAwareness() {
                     viewModel.resetAwareness()
                 }
@@ -671,10 +657,6 @@ class TopWidgetUIViewController: UIViewController {
     @objc private func maxOutAchievements() {
                     StatisticsService.shared.maxOutAchievements()
                 }
-                
-    @objc private func toggleDebugOverlay() {
-                    viewModel.toggleDebugOverlay()
-    }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
