@@ -89,59 +89,35 @@ class InfoPresentationLabelView: UIView {
         }
     }
     
-    private func createGlowingIconView(symbolName: String, color: UIColor) -> UIView {
-        let containerView = UIView()
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        
-        let iconSize: CGFloat = 28 // Точно как в NPCCharacterCell
-        
-        // Create main icon view - точно как в NPCCharacterCell
+    private func createGlowingIconView(symbolName: String, color: UIColor) -> UIImageView {
+        let iconSize: CGFloat = 12 // Вернул оригинальный размер
         let iconView = UIImageView()
-        iconView.frame = CGRect(x: 0, y: 0, width: iconSize, height: iconSize)
-        iconView.contentMode = .center // Точно как в NPCCharacterCell
-        iconView.backgroundColor = UIColor.black.withAlphaComponent(0.8)
-        iconView.clipsToBounds = true
-        iconView.layer.cornerRadius = iconSize / 2
-        iconView.layer.borderWidth = 0 // Убираем белую обводку
-        iconView.layer.shadowColor = UIColor.black.cgColor
-        iconView.layer.shadowRadius = 2 // Уменьшаем с 3 до 2
-        iconView.layer.shadowOpacity = 0.5 // Уменьшаем с 0.8 до 0.5
-        iconView.layer.shadowOffset = CGSize(width: 0, height: 1)
-        iconView.alpha = 1.0
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.contentMode = .center
+        iconView.backgroundColor = UIColor.clear
+        iconView.clipsToBounds = false
         iconView.tintColor = color
-        containerView.addSubview(iconView)
-        
-        // Create SF Symbol with proper configuration - точно как в NPCCharacterCell
-        let iconConfig = UIImage.SymbolConfiguration(pointSize: 10) // Точно как в NPCCharacterCell
+        let iconConfig = UIImage.SymbolConfiguration(pointSize: iconSize)
         let symbolImage = UIImage(systemName: symbolName, withConfiguration: iconConfig)
         iconView.image = symbolImage
-        
-        // Glow для иконки - добавляем как subview к иконке (без constraints) - точно как в NPCCharacterCell
+        // Glow
         let glowView = UIImageView()
         glowView.contentMode = .scaleAspectFill
         glowView.alpha = 0.8
         glowView.isUserInteractionEnabled = false
-        iconView.addSubview(glowView)
-        iconView.sendSubviewToBack(glowView)
-        
-        // Устанавливаем размеры glow views напрямую (без constraints) - точно как в NPCCharacterCell
         let glowSize = iconSize + 12
         glowView.frame = CGRect(x: -6, y: -6, width: glowSize, height: glowSize)
-        
-        // Setup constraints только для container
-        NSLayoutConstraint.activate([
-            containerView.widthAnchor.constraint(equalToConstant: iconSize),
-            containerView.heightAnchor.constraint(equalToConstant: iconSize)
-        ])
-        
-        // Generate glow image
-        Self.getCachedGlowImage(size: CGSize(width: iconSize + 12, height: iconSize + 12), color: color) { glowImage in
+        Self.getCachedGlowImage(size: CGSize(width: glowSize, height: glowSize), color: color) { glowImage in
             DispatchQueue.main.async {
                 glowView.image = glowImage
             }
         }
-        
-        return containerView
+        iconView.addSubview(glowView)
+        iconView.sendSubviewToBack(glowView)
+        // min size
+        iconView.widthAnchor.constraint(equalToConstant: iconSize).isActive = true
+        iconView.heightAnchor.constraint(equalToConstant: iconSize).isActive = true
+        return iconView
     }
     
     private func createAnimatedAssetIconView(symbolName: String, color: UIColor) -> UIView {
@@ -281,18 +257,48 @@ class InfoPresentationLabelView: UIView {
         configure(with: items, textColor: textColor)
     }
     
-    // New convenience method for NPC with profession and activity icons
+    // New convenience method for NPC with profession and activity icons, now each property on its own line
     func configureWithNPCInfo(npc: NPC, textColor: UIColor = .white) {
-        let professionColor = convertSwiftUIColorToUIColor(npc.profession.color)
-        let activityColor = convertSwiftUIColorToUIColor(npc.currentActivity.color)
+        // Очищаем основной stackView
+        stackView.arrangedSubviews.forEach { view in
+            stackView.removeArrangedSubview(view)
+            view.removeFromSuperview()
+        }
+        self.textColor = textColor
+        stackView.axis = .vertical
+        stackView.alignment = .leading
+        stackView.spacing = 4
         
-        let items: [InfoPresentationItem] = [
-            .professionIcon(npc.profession.icon, professionColor),
-            .text(npc.name),
-            .activityIcon(npc.currentActivity.icon, activityColor)
-        ]
-        
-        configure(with: items, textColor: textColor)
+        // Имя
+        stackView.addArrangedSubview(createIconRow(icon: "person.fill", color: .white, text: npc.name))
+        // Профессия
+        stackView.addArrangedSubview(createIconRow(icon: npc.profession.icon, color: convertSwiftUIColorToUIColor(npc.profession.color), text: npc.profession.rawValue.capitalized))
+        // Мораль
+        stackView.addArrangedSubview(createIconRow(icon: npc.morality.icon, color: convertSwiftUIColorToUIColor(npc.morality.color), text: npc.morality.description))
+        // Мотивация
+        stackView.addArrangedSubview(createIconRow(icon: npc.motivation.icon, color: convertSwiftUIColorToUIColor(npc.motivation.color), text: npc.motivation.description))
+        // Активность
+        stackView.addArrangedSubview(createIconRow(icon: npc.currentActivity.icon, color: convertSwiftUIColorToUIColor(npc.currentActivity.color), text: npc.currentActivity.description.capitalized))
+    }
+
+    // Вспомогательный метод: горизонтальный стек с иконкой и подписью
+    private func createIconRow(icon: String, color: UIColor, text: String) -> UIStackView {
+        let row = UIStackView()
+        row.axis = .horizontal
+        row.alignment = .center
+        row.spacing = 8
+        row.translatesAutoresizingMaskIntoConstraints = false
+        let iconView = createGlowingIconView(symbolName: icon, color: color)
+        let label = UILabel()
+        label.text = text
+        label.font = UIFont(name: "Optima-Regular", size: 10) ?? UIFont.systemFont(ofSize: 10)
+        label.textColor = color
+        label.numberOfLines = 1
+        label.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        label.setContentCompressionResistancePriority(.defaultHigh, for: .horizontal)
+        row.addArrangedSubview(iconView)
+        row.addArrangedSubview(label)
+        return row
     }
     
     // Convenience method for DesiredVictim information
